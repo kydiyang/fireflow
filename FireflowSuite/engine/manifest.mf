@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.fireflow.engine
+OpenIDE-Module-Layer: org/fireflow/engine/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/fireflow/engine/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
