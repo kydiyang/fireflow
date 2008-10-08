@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="org.fireflow.engine.impl.ProcessInstance" table="T_FF_RT_PROCESSINSTANCE">
+		<id name="id" type="java.lang.String">
+			<column name="ID" length="50"/>
+			<generator class="uuid.hex"/>
+		</id>
+		<property name="processId" type="java.lang.String" update="false">
+			<column name="PROCESS_ID" length="50" not-null="true" />
+		</property>		
+		<property name="name" type="java.lang.String" update="false">
+			<column name="NAME" length="100"/>
+		</property>
+		<property name="displayName" type="java.lang.String" >
+			<column name="DISPLAY_NAME" length="128"/>
+		</property>
+		<property name="state" type="java.lang.Integer">
+			<column name="STATE"></column>
+		</property>
+		<property name="parentProcessInstanceId" type="java.lang.String">
+			<column name="PARENT_PROCESSINSTANCE_ID"></column>
+		</property>
+		<property name="parentTaskInstanceId" type="java.lang.String">
+			<column name="PARENT_TASKINSTANCE_ID"></column>
+		</property>                
+                
+		<!-- 
+		<many-to-one name="parentProcessInstance"
+			column="PARENT_PROCESSINSTANCE_ID"
+			class="org.fireflow.engine.impl.ProcessInstance"
+			update="false"
+			lazy="proxy"
+        	cascade="none"/>
+        	
+        <set name="taskInstances"
+        	cascade="save-update,delete,all-delete-orphan"
+        	inverse="true"
+			order-by="CREATED_TIME">
+			<key column="PROCESSINSTANCE_ID"/>
+			<one-to-many class="org.fireflow.engine.impl.TaskInstance"/>
+		</set>
+		
+        <set name="joinPoints"
+        	cascade="save-update,delete,all-delete-orphan"
+        	inverse="true"
+			order-by="CREATED_TIME">
+			<key column="PROCESSINSTANCE_ID"/>
+			<one-to-many class="org.fireflow.engine.impl.JoinPoint"/>
+		</set>		
+        <set name="tokens"
+        	cascade="save-update,delete,all-delete-orphan"
+        	inverse="true"
+			order-by="CREATED_TIME">
+			<key column="PROCESSINSTANCE_ID"/>
+			<one-to-many class="org.fireflow.kenel.impl.Token"/>
+		</set>		
+		 -->	
+		<map name="processInstanceVariables" table="T_FF_RT_PROCESSINSTANCE_VARIABLE" lazy="true">
+			<key column="PROCESSINSTANCE_ID"/>
+			<index column="NAME" type="java.lang.String"></index>
+			<element column="VALUE" type="org.fireflow.engine.variable.ProcessInstanceVariableType"></element>
+		</map>
+	</class>
+</hibernate-mapping>
