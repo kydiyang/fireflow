@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.fireflow.designer
+OpenIDE-Module-Layer: org/fireflow/designer/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/fireflow/designer/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.IOProvider
+OpenIDE-Module-Specification-Version: 1.0
+
+Name: org/fireflow/designer/datamodel/FPDLDataLoader.class
+Install-Before: org.openide.loaders.XMLDataObject, org.netbeans.modules.xml.core.XMLDataObject
+OpenIDE-Module-Class: Loader
+
