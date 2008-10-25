@@ -368,10 +368,10 @@ public class TaskEditor extends EntityEditor {
     
     protected void showSubflowEditor(JTextField textField){
         IResourceManager resourceManager = this.fpdlDataObject.getResourceManager();
-        ApplicationEditor applicationEditor = ApplicationEditor.getInstance();
-        applicationEditor.revert(this.fpdlDataObject, (Task) this.wfElement,resourceManager, textField);
+        SubWorkflowEditor subflowEditor = SubWorkflowEditor.getInstance();
+        subflowEditor.revert(this.fpdlDataObject, (Task) this.wfElement,resourceManager, textField);
 
-        JDialog dialog = applicationEditor;
+        JDialog dialog = subflowEditor;
         dialog.setPreferredSize(new Dimension(400, 300));
         dialog.setLocationRelativeTo(null);
         dialog.validate();

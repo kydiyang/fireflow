@@ -25,7 +25,7 @@ public class DataFieldEditor extends EntityEditor {
     public DataFieldEditor(AbstractNode node,IWFElement element, FPDLDataObject dataObj) {
         super(node,element, dataObj);
         init();
-                System.out.println("====dataObj is null?"+dataObj);
+//                System.out.println("====dataObj is null?"+dataObj);
     }
 
     protected void init() {

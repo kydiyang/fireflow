@@ -140,7 +140,7 @@ public class SimulatorPanel extends JGraph implements GraphSelectionListener,ISt
         for (int i=0;i<activities.size();i++){
             Activity activity = activities.get(i);
             
-            List<ITaskInstance> taskInstList = persistenceService.findTaskInstances(currentProcessInstance, activity.getId());
+            List<ITaskInstance> taskInstList = persistenceService.findTaskInstancesForProcessInstance(null, activity.getId());
 //            System.err.println("=====activity "+activity.getId()+"; taskList size is "+taskInstList.size());
             if (taskInstList==null || taskInstList.size()==0) continue;
             
@@ -186,10 +186,10 @@ public class SimulatorPanel extends JGraph implements GraphSelectionListener,ISt
             }
             
             int volum = synchronizer.getEnteringTransitions().size()*synchronizer.getLeavingTransitions().size();
-            IJoinPoint joinPoint = persistenceService.findJoinPoint(currentProcessInstance, synchronizer.getId());
+            IJoinPoint joinPoint = persistenceService.findJoinPointsForProcessInstance(null, synchronizer.getId());
             
             if (joinPoint==null) continue;
-            System.out.println(" synchronizer is "+synchronizer.getId()+"; volum is "+volum+"; value is "+joinPoint.getValue()+";alive is "+joinPoint.getAlive());
+//            System.out.println(" synchronizer is "+synchronizer.getId()+"; volum is "+volum+"; value is "+joinPoint.getValue()+";alive is "+joinPoint.getAlive());
             if (joinPoint.getValue()<volum && joinPoint.getAlive()){
                 updateTheWorkflowGraph(synchronizer.getSn(),WAITING);
             }else if (joinPoint.getValue()==volum && joinPoint.getAlive()){
@@ -208,7 +208,7 @@ public class SimulatorPanel extends JGraph implements GraphSelectionListener,ISt
                 continue;
             }            
             int volum = endnode.getEnteringTransitions().size();
-            IJoinPoint joinPoint = persistenceService.findJoinPoint(currentProcessInstance, endnode.getId());
+            IJoinPoint joinPoint = persistenceService.findJoinPointsForProcessInstance(null, endnode.getId());
             if (joinPoint==null) continue;
             if (joinPoint.getValue()<volum && joinPoint.getAlive()){
                 updateTheWorkflowGraph(endnode.getSn(),WAITING);

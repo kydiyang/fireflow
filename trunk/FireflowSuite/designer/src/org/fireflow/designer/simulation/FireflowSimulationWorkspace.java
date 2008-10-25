@@ -49,6 +49,7 @@ public class FireflowSimulationWorkspace extends AbstractMultiViewElement {
     }
 
     private void myInitComponents() {
+
         ProcessGraphModel graphModel = ((FPDLDataObject) this.dObj).getProcessGraphModel();
         GraphLayoutCache layoutCache = new GraphLayoutCache(graphModel, new MyViewFactory(), false);
         HashSet<String> localAttributes = new HashSet<String>();
@@ -59,10 +60,6 @@ public class FireflowSimulationWorkspace extends AbstractMultiViewElement {
         SimulatorPanel graph = new SimulatorPanel(graphModel, layoutCache);
 
         IFireflowSession fireflowSession = (IFireflowSession) beanFactory.getBean("fireflowSession");
-//        StartWorkflowProcessAction startWorkflowProcessAction = 
-//                new StartWorkflowProcessAction((WorkflowProcess)graphModel.getWorkflowProcessElement().getContent(),
-//                "Start",ImageLoader.getImageIcon("go16.gif"));
-//        simulatorToolbar.add(startWorkflowProcessAction);
 
         fireflowSimulator = new FireflowSimulator(fireflowSession, (WorkflowProcess) graphModel.getWorkflowProcessElement().getContent(), graph, designScrollPanel);
 
@@ -71,6 +68,7 @@ public class FireflowSimulationWorkspace extends AbstractMultiViewElement {
         this.designScrollPanel.getViewport().add(graph);
         MemoryPersistenceService persistenceService = (MemoryPersistenceService) beanFactory.getBean("persistenceService");
         persistenceService.addStorageChangeListenser(graph);
+
     }
 
     public JComponent getVisualRepresentation() {

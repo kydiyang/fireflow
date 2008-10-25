@@ -35,7 +35,7 @@ public class MemoryPersistenceService implements IPersistenceService {
     private Hashtable<String, IJoinPoint> joinPointStorage = new Hashtable<String, IJoinPoint>();
     private Hashtable<String, IToken> tokenStorage = new Hashtable<String, IToken>();
 
-    public void saveProcessInstance(IProcessInstance processInstance) {
+    public void saveOrUpdateProcessInstance(IProcessInstance processInstance) {
         if (processInstance.getId() == null || processInstance.getId().trim().equals("")) {
             String id = UUID.randomUUID().toString();
             ((ProcessInstance) processInstance).setId(id);
@@ -51,7 +51,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         this.fireStorageChangedEvent(e);
     }
 
-    public void saveTaskInstance(ITaskInstance taskInstance) {
+    public void saveOrUpdateTaskInstance(ITaskInstance taskInstance) {
         if (taskInstance.getId() == null || taskInstance.getId().trim().equals("")) {
             String id = UUID.randomUUID().toString();
             ((TaskInstance) taskInstance).setId(id);
@@ -67,7 +67,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         this.fireStorageChangedEvent(e);
     }
 
-    public void saveWorkItem(IWorkItem workitem) {
+    public void saveOrUpdateWorkItem(IWorkItem workitem) {
         if (workitem.getId() == null || workitem.getId().trim().equals("")) {
             String id = UUID.randomUUID().toString();
             ((WorkItem) workitem).setId(id);
@@ -84,7 +84,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         this.fireStorageChangedEvent(e);
     }
 
-    public void saveJoinPoint(IJoinPoint joinPoint) {
+    public void saveOrUpdateJoinPoint(IJoinPoint joinPoint) {
         if (((JoinPoint) joinPoint).getId() == null ||
                 ((JoinPoint) joinPoint).getId().trim().equals("")) {
             String id = UUID.randomUUID().toString();
@@ -103,7 +103,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         this.fireStorageChangedEvent(e);
     }
 
-    public void saveToken(IToken token) {
+    public void saveOrUpdateToken(IToken token) {
         if (token.getId() == null || token.getId().trim().equals("")) {
             String id = UUID.randomUUID().toString();
             ((Token) token).setId(id);
@@ -148,12 +148,12 @@ public class MemoryPersistenceService implements IPersistenceService {
      * @param synchronizerId
      * @return
      */
-    public IJoinPoint findJoinPoint(IProcessInstance processInstance, String synchronizerId) {
-        System.out.println("===this.joinPointStorage.size is " + this.joinPointStorage.size());
+    public IJoinPoint findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId) {
+//        System.out.println("===this.joinPointStorage.size is " + this.joinPointStorage.size());
         Iterator itr = this.joinPointStorage.values().iterator();
         while (itr.hasNext()) {
             JoinPoint joinPoint = (JoinPoint) itr.next();
-            System.out.println("====joinpoint.getProcessInstance is " + joinPoint.getProcessInstance());
+//            System.out.println("====joinpoint.getProcessInstance is " + joinPoint.getProcessInstance());
             if (joinPoint.getProcessInstance() != null && joinPoint.getProcessInstance().getId().equals(processInstance.getId()) && synchronizerId.equals(joinPoint.getSynchronizerId())) {
                 return joinPoint;
             }
@@ -183,7 +183,7 @@ public class MemoryPersistenceService implements IPersistenceService {
      * @return
      */
     @Override
-    public List<ITaskInstance> findTaskInstances(IProcessInstance processInstance, String activityID) {
+    public List<ITaskInstance> findTaskInstancesForProcessInstance(java.lang.String processInstanceId, String activityID) {
         Iterator itr = this.taskInstanceStorage.values().iterator();
         List<ITaskInstance> taskInstances = new ArrayList<ITaskInstance>();
         while (itr.hasNext()) {
@@ -215,7 +215,7 @@ public class MemoryPersistenceService implements IPersistenceService {
 //        return taskInstances;
 //    }
     @Override
-    public List<IToken> findTokens(IProcessInstance processInstance, String nodeId) {
+    public List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId) {
         Iterator itr = this.tokenStorage.values().iterator();
         List<IToken> tokens = new ArrayList<IToken>();
         while (itr.hasNext()) {
@@ -228,7 +228,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         return tokens;
     }
 
-    public List<IWorkItem> findWorkItemsForTaskInstance(TaskInstance taskInstance) {
+    public List<IWorkItem> findWorkItemsForTaskInstance(String taskInstanceId) {
         Iterator itr = this.workItemStorage.values().iterator();
         List<IWorkItem> workitems = new ArrayList<IWorkItem>();
         while (itr.hasNext()) {
@@ -246,13 +246,13 @@ public class MemoryPersistenceService implements IPersistenceService {
         return this.workItemStorage.get(id);
     }
 
-    public List<IWorkItem> findWorkItem4Task(String taskid) {
+    public List<IWorkItem> findWorkItemForTask(String taskid) {
 //        WorkItem wi = ;
         List<ITaskInstance> taskInstList = this.findTaskInstanceByTaskId(taskid);
         List<IWorkItem> result = new Vector<IWorkItem>();
         for (int i = 0; i < taskInstList.size(); i++) {
             ITaskInstance taskInst = taskInstList.get(i);
-            List<IWorkItem> tmp = this.findWorkItemsForTaskInstance((TaskInstance) taskInst);
+            List<IWorkItem> tmp = this.findWorkItemsForTaskInstance(null,(TaskInstance) taskInst);
             result.addAll(tmp);
         }
         return result;
@@ -341,12 +341,12 @@ public class MemoryPersistenceService implements IPersistenceService {
     private void clearAll4ProcessInstance(IProcessInstance processInstance) {
         this.processInstanceStorage.remove(processInstance.getId());
 
-        List<ITaskInstance> taskInstanceList = this.findTaskInstances(processInstance, null);
+        List<ITaskInstance> taskInstanceList = this.findTaskInstancesForProcessInstance( null,null);
         for (int j = 0; j < taskInstanceList.size(); j++) {
             ITaskInstance taskInstance = taskInstanceList.get(j);
             this.taskInstanceStorage.remove(taskInstance.getId());
 
-            List<IWorkItem> workitemList = this.findWorkItemsForTaskInstance((TaskInstance) taskInstance);
+            List<IWorkItem> workitemList = this.findWorkItemsForTaskInstance(null,(TaskInstance) taskInstance);
             for (int k = 0; k < workitemList.size(); k++) {
                 this.workItemStorage.remove(workitemList.get(k).getId());
             }

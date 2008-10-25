@@ -551,7 +551,7 @@ public final class Utilities {
             if (properties != null) {
                 out = new FileOutputStream(fileName);
 //				informationMessage("Writing properties file: " + fileName);
-                System.out.println("Writing properties file: " + fileName);
+//                System.out.println("Writing properties file: " + fileName);
                 // should use store(), but it's missing from Java 1.1
                 properties.save(out, fileHeader);
             }

@@ -53,7 +53,7 @@ public final class SimulationDataViewerTopComponent extends TopComponent impleme
 
         MemoryPersistenceService persistenceService = (MemoryPersistenceService) FireflowSimulationWorkspace.beanFactory.getBean("persistenceService");
         this.setMemoryPersistenceService(persistenceService);
-//        setIcon(Utilities.loadImage(ICON_PATH, true));
+
     }
 
     private void myInitComponents() {
