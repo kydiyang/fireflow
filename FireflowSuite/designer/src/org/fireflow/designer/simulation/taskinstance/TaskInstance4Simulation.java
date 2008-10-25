@@ -65,12 +65,7 @@ public class TaskInstance4Simulation extends TaskInstance {
 
         RuntimeContext ctx = RuntimeContext.getInstance();
         WorkflowProcess workflowProcess = ctx.getDefinitionService().getWorkflowProcessById(workflowProcessId);
-
-        String validateResult = workflowProcess.validate();
-        if (validateResult != null) {
-            JOptionPane.showMessageDialog(null, validateResult, "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        String validateResult = null;
         if (workflowProcess == null) {
             JFileChooser chooser = new JFileChooser();
             FileFilter filter = new FileFilter() {
@@ -121,7 +116,11 @@ public class TaskInstance4Simulation extends TaskInstance {
                 throw new EngineException("Not found the workflow process definition");
             }
         }
-
+        validateResult = workflowProcess.validate();
+        if (validateResult != null) {
+            JOptionPane.showMessageDialog(null, validateResult, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         //创建新的模拟面板
         FireflowSimulator simulator = FireflowSimulator.getCurrentSimulator();
 //        SimulatorPanel panel = simulator.getSimulatorPanel4Process(workflowProcess.getId());

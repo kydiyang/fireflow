@@ -4,14 +4,17 @@
  */
 package org.fireflow.designer.datamodel;
 
-
 import cn.bestsolution.tools.resourcesmanager.util.ImageLoader;
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 import org.fireflow.designer.actions.DeleteElementAction;
 import org.fireflow.designer.actions.NewActivityAction;
 import org.fireflow.designer.actions.NewActivityWithFormAction;
@@ -50,7 +53,6 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.netbeans.modules.xml.multiview.XmlMultiViewDataObject;
 import org.netbeans.modules.xml.multiview.XmlMultiViewDataSynchronizer;
-import org.netbeans.spi.xml.cookies.DataObjectAdapters;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -60,9 +62,11 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.cookies.SaveCookie;
 import org.openide.windows.WindowManager;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
-   
     private ExplorerManager explorerManager = null;
     private WorkflowProcess workflowProcess = null;
     private Action[] actions = null;
@@ -74,26 +78,53 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         super(pf, loader);
         CookieSet cookies = getCookieSet();
         cookies.add((Node.Cookie) DataEditorSupport.create(this, getPrimaryEntry(), cookies));
-//        cookies.add(new FPDLFileOpenSupport(this.getPrimaryEntry()));
-//        cookies.add(new MySaveCookieImpl());
+        System.out.println("====Inside FPDLDataObject:: ============================-----------------------");
+        System.out.println("====the fileobj's name is "+this.getPrimaryFile().getName()+"; path is "+this.getPrimaryFile().getPath());
 
-        parseDefinitionFile();
-
-        graphModel = new ProcessGraphModel(this.explorerManager);
-        modelSynchronizer = new ModelSynchronizer(this);
+        //模版文件不进一步解析
+        if ("Templates/Other/ProcessDefinition.xml".equals(this.getPrimaryFile().getPath())){
+            return;
+        }
         
-        DefinitionService4Simulation defSrv = (DefinitionService4Simulation) FireflowSimulationWorkspace.beanFactory.getBean("definitionService");
-        defSrv.setWorkflowProcess(this.workflowProcess);
+        try {
+            parseDefinitionFile();
 
+            graphModel = new ProcessGraphModel(this.explorerManager);
+
+            modelSynchronizer = new ModelSynchronizer(this);
+
+            DefinitionService4Simulation defSrv = (DefinitionService4Simulation) FireflowSimulationWorkspace.beanFactory.getBean("definitionService");
+            defSrv.setWorkflowProcess(this.workflowProcess);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void parseDefinitionFile() throws IOException {
         try {
-            org.xml.sax.InputSource in = DataObjectAdapters.inputSource(this);
+            java.io.InputStream is = getEditorSupport().getInputStream();
+
+            //下面的代码应该放在Dom4JFPDLParser中，并在Dom4JFPDLParser增加setEncoding()方法....
+            SAXReader reader = new SAXReader();
+            reader.setEntityResolver(new EntityResolver() {
+
+                String emptyDtd = "";
+                ByteArrayInputStream bytels = new ByteArrayInputStream(emptyDtd.getBytes());
+
+                public InputSource resolveEntity(String publicId,
+                        String systemId) throws SAXException, IOException {
+                    return new InputSource(bytels);
+                }
+            });
+            String encoding = this.getEncodingHelper().detectEncoding(is);
+            reader.setEncoding(encoding);
+            Document document = reader.read(is);            
+             //....上面的代码应该放在Dom4JFPDLParser中，并在Dom4JFPDLParser增加setEncoding()方法
+            
             Dom4JFPDLParser parser = new Dom4JFPDLParser();
-
-            workflowProcess = parser.parse(in);
-
+            workflowProcess = parser.parse(document);
+//            System.out.println("===Inside FPDLDataObject.parseDefinitionFile()::workflowprocess is "+workflowProcess.getName());
             InstanceContent lookupContent = new InstanceContent();
             AbstractLookup lookup = new AbstractLookup(lookupContent);
             lookupContent.add(this);
@@ -104,6 +135,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
             Children.Array array = new Children.Array();
             array.add(new Node[]{workflowProcessElement});
             AbstractNode root = new AbstractNode(array) {
+
                 @Override
                 public Action[] getActions(boolean b) {
                     //return new Action[]{};
@@ -112,12 +144,15 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
             };
 
             explorerManager = new ExplorerManager();
-            
+
             lookupContent.add(explorerManager);
-            
+
             explorerManager.setRootContext(root);
+//            System.out.println("===Inside FPDLDataObject.parseDefinitionFile()::explorerManager is "+explorerManager);
             initActions(explorerManager);
         } catch (FPDLParserException ex) {
+            Exceptions.printStackTrace(ex);
+        }catch(DocumentException ex){
             Exceptions.printStackTrace(ex);
         }
     }
@@ -128,45 +163,45 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         NewStartNodeAction newStartNodeAction = new NewStartNodeAction(explorerManager, "新建开始节点", ImageLoader.getImageIcon("startNode16.gif"));
         actions[0] = newStartNodeAction;
 
-        NewActivityAction newActivityAction = new NewActivityAction(explorerManager, "新建空环节",  ImageLoader.getImageIcon("activity16.gif"));
+        NewActivityAction newActivityAction = new NewActivityAction(explorerManager, "新建空环节", ImageLoader.getImageIcon("activity16.gif"));
         actions[1] = newActivityAction;
 
-        NewActivityWithFormAction newActivityWithFormAction = new NewActivityWithFormAction(explorerManager, "新建表单环节",  ImageLoader.getImageIcon("activity_manual_16.gif"));
+        NewActivityWithFormAction newActivityWithFormAction = new NewActivityWithFormAction(explorerManager, "新建表单环节", ImageLoader.getImageIcon("activity_manual_16.gif"));
         actions[2] = newActivityWithFormAction;
 
-        NewActivityWithSubflowAction newActivityWithSubflowAction = new NewActivityWithSubflowAction(explorerManager, "新建子流程环节",  ImageLoader.getImageIcon("activity_subflow_16.gif"));
+        NewActivityWithSubflowAction newActivityWithSubflowAction = new NewActivityWithSubflowAction(explorerManager, "新建子流程环节", ImageLoader.getImageIcon("activity_subflow_16.gif"));
         actions[3] = newActivityWithSubflowAction;
 
-        NewActivityWithToolAction newActivityWithToolAction = new NewActivityWithToolAction(explorerManager, "新建应用程序环节",  ImageLoader.getImageIcon("activity_tool_16.gif"));
+        NewActivityWithToolAction newActivityWithToolAction = new NewActivityWithToolAction(explorerManager, "新建应用程序环节", ImageLoader.getImageIcon("activity_tool_16.gif"));
         actions[4] = newActivityWithToolAction;
 
-        NewSynchronizerAction newSynchronizerAction = new NewSynchronizerAction(explorerManager, "新建同步器节点",  ImageLoader.getImageIcon("synchronizer16.gif"));
+        NewSynchronizerAction newSynchronizerAction = new NewSynchronizerAction(explorerManager, "新建同步器节点", ImageLoader.getImageIcon("synchronizer16.gif"));
         actions[5] = newSynchronizerAction;
 
-        NewEndNodeAction newEndNodeAction = new NewEndNodeAction(explorerManager, "新建结束节点",  ImageLoader.getImageIcon("endNode16.gif"));
+        NewEndNodeAction newEndNodeAction = new NewEndNodeAction(explorerManager, "新建结束节点", ImageLoader.getImageIcon("endNode16.gif"));
         actions[6] = newEndNodeAction;
 
-        NewDataFieldAction newDatafieldAction = new NewDataFieldAction(explorerManager, "新建流程变量",  ImageLoader.getImageIcon("datafield16.gif"));
+        NewDataFieldAction newDatafieldAction = new NewDataFieldAction(explorerManager, "新建流程变量", ImageLoader.getImageIcon("datafield16.gif"));
         actions[7] = newDatafieldAction;
 
         //insert seperator
         actions[8] = null;
-        
-        NewFormTask newFormTask = new NewFormTask(explorerManager, "新建表单",  ImageLoader.getImageIcon("manual_task_16.gif"));
+
+        NewFormTask newFormTask = new NewFormTask(explorerManager, "新建表单", ImageLoader.getImageIcon("manual_task_16.gif"));
         actions[9] = newFormTask;
 
-        NewSubflowTask newSubflowTask = new NewSubflowTask(explorerManager, "新建子流程",  ImageLoader.getImageIcon("subflow_task_16.gif"));
+        NewSubflowTask newSubflowTask = new NewSubflowTask(explorerManager, "新建子流程", ImageLoader.getImageIcon("subflow_task_16.gif"));
         actions[10] = newSubflowTask;
 
-        NewToolTask newToolTask = new NewToolTask(explorerManager, "新建应用程序",  ImageLoader.getImageIcon("tool_task_16.gif"));
+        NewToolTask newToolTask = new NewToolTask(explorerManager, "新建应用程序", ImageLoader.getImageIcon("tool_task_16.gif"));
         actions[11] = newToolTask;
-        
+
         //insert one seperator 
         actions[12] = null;
-        
-        DeleteElementAction deleteElementAction = new DeleteElementAction(explorerManager,"删除", ImageLoader.getImageIcon("delete16.gif"));
+
+        DeleteElementAction deleteElementAction = new DeleteElementAction(explorerManager, "删除", ImageLoader.getImageIcon("delete16.gif"));
         actions[13] = deleteElementAction;
-        
+
     }
 
     @Override
@@ -179,13 +214,6 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         return getCookieSet().getLookup();
     }
 
-    /*
-    public void save() {
-    this.setModified(true);
-    System.out.println("===========save FPDLDataObject222");
-    //        this.getCookieSet().assign(SaveCookie.class, new MySaveCookieImpl());
-    }
-     * */
     public ExplorerManager getExplorerManager() {
         return explorerManager;
     }
@@ -221,6 +249,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
     protected DesignMultiViewDesc[] getMultiViewDesc() {
 
         return new DesignMultiViewDesc[]{new MyDesignMultiViewDesc(this), new MySimulatorMultiViewDesc(this)};
+//        return new DesignMultiViewDesc[]{new MyDesignMultiViewDesc(this)};
     }
 
     @Override
@@ -233,6 +262,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
 
         public MyDesignMultiViewDesc(FPDLDataObject fpdlDataObject) {
             super(fpdlDataObject, "Design");
+            
         }
 
         @Override
@@ -320,19 +350,18 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
     private class MySaveCookieImpl implements SaveCookie {
 
         public void save() throws IOException {
-            System.out.println("=============save .....");
             modelUpdatedFromUI();
         }
     }
 
     public IResourceManager getResourceManager() {
-        
+
         if ((workflowProcess.getResourceFile() == null || workflowProcess.getResourceFile().trim().equals(""))) {
             return null;
         }
 
         if (DesignerConstant.RUN_ENV == 1) {
-            
+
             Project project = FileOwnerQuery.getOwner(this.getPrimaryFile());
 
             ClassPath classpath = ClassPath.getClassPath(project.getProjectDirectory().getFileObject("src"),
@@ -363,7 +392,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         } else if (DesignerConstant.RUN_ENV == 2) {
 
         }
-        
+
         return null;
 
     }

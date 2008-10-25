@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.fireflow.engine.definition.DefinitionService;
+import org.fireflow.engine.definition.DefinitionService4FileSystem;
 import org.fireflow.model.DataField;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
@@ -20,10 +20,10 @@ import org.fireflow.model.net.Transition;
  *
  * @author chennieyun
  */
-public class DefinitionService4Simulation extends DefinitionService {
+public class DefinitionService4Simulation extends DefinitionService4FileSystem {
 
     public void setWorkflowProcess(WorkflowProcess process) {
-        workflowProcessMap.put(process.getName(), process);
+        workflowDefinitionMap.put(process.getName(), process);
     }
 
     public void reloadWorkflowProcess() {

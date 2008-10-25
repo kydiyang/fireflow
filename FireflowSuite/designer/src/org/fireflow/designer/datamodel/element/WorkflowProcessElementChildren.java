@@ -55,7 +55,9 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
         if (arg0.equals(IFPDLElement.START_NODE)) {
             InstanceContent lookupContent = new InstanceContent();
             AbstractLookup lookup = new AbstractLookup(lookupContent);
-            lookupContent.add(workflowProcess.getStartNode());
+            if (workflowProcess.getStartNode()!=null){
+                lookupContent.add(workflowProcess.getStartNode());
+            }
             if (dataObject != null) {
                 lookupContent.add(dataObject);
             }

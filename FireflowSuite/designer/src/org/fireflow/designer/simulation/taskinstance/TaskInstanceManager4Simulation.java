@@ -37,7 +37,7 @@ public class TaskInstanceManager4Simulation implements ITaskInstanceManager {
             // 1、创建Task实例，并设置工作流系统定义的属性
             ITaskInstance taskInstance = this.createTaskInstance(token, task,
                     activity);
-            System.out.println("====Inside TaskinstanceManager4Simulation:: the token.getProcessInstance() is "+token.getProcessInstance());
+//            System.out.println("====Inside TaskinstanceManager4Simulation:: the token.getProcessInstance() is "+token.getProcessInstance());
             ((TaskInstance) taskInstance).setProcessInstance(token.getProcessInstance());
             ((TaskInstance) taskInstance).setActivityId(activity.getId());
             ((TaskInstance) taskInstance).setCompletionStrategy(task.getAssignmentStrategy());
@@ -54,7 +54,7 @@ public class TaskInstanceManager4Simulation implements ITaskInstanceManager {
             ((TaskInstance) taskInstance).setTaskType(task.getType());
 
             // 2、保存实例
-            persistenceService.saveTaskInstance(taskInstance);
+            persistenceService.saveOrUpdateTaskInstance(taskInstance);
 //			token.getProcessInstance().getTaskInstances().add(taskInstance);
 
             // 3、分配任务

@@ -18,6 +18,7 @@ public class FPDLDataLoader extends UniFileLoader {
 
     public FPDLDataLoader() {
         super("org.fireflow.designer.datamodel.FPDLDataObject");
+//        System.out.println("================是否动用了dataloader?");
     }
 
     @Override

@@ -82,10 +82,10 @@ public class FPDLNavigatorPanel implements NavigatorPanel, LookupListener {
 
     private void setNewContent(Collection newData) {
         Iterator it = newData.iterator();
-        System.out.println("==================Inside setNewContent,newData size=" + newData.size());
+//        System.out.println("==================Inside setNewContent,newData size=" + newData.size());
         if (it.hasNext()) {
             fpdlDataObj = (FPDLDataObject) it.next();
-            System.out.println("==================FPDLDataObject=" + fpdlDataObj);
+//            System.out.println("==================FPDLDataObject=" + fpdlDataObj);
 //            explorerManager = new ExplorerManager();
 //            explorerManager.setRootContext(fpdlDataObj.getWorkflowProcessElement());
             explorerManager = fpdlDataObj.getExplorerManager();

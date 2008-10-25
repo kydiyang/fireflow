@@ -53,8 +53,8 @@ public class ActivitiesElement extends AbstractNode implements IFPDLElement {
             haveSameName = false;         
             num++;
             activityName = "Activity" + num;            
-            System.out.println("activityName is "+activityName);
-            System.out.println("activitiesList.size() is "+activitiesList.size());
+//            System.out.println("activityName is "+activityName);
+//            System.out.println("activitiesList.size() is "+activitiesList.size());
             for (int i = 0; i < activitiesList.size(); i++) {
                 Activity act = (Activity) activitiesList.get(i);
                 if (act.getName().equals(activityName)) {

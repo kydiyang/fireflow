@@ -52,11 +52,11 @@ import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 
-public class ProcessGraphModel extends DefaultGraphModel implements NodeListener{
+public class ProcessGraphModel extends DefaultGraphModel implements NodeListener {
 
     private WorkflowProcessElement workflowProcessElement = null;
     private ExplorerManager explorerManager = null;
-    Map<String,DefaultGraphCell> cellsMap = new Hashtable<String,DefaultGraphCell>();
+    Map<String, DefaultGraphCell> cellsMap = new Hashtable<String, DefaultGraphCell>();
     private JGraph designPanel = null;
 
     public ProcessGraphModel(ExplorerManager explorerManager) {
@@ -110,7 +110,7 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         IFPDLElement fpdlElement = (IFPDLElement) cell.getUserObject();
         IWFElement wfElement = (IWFElement) fpdlElement.getContent();
 //        System.out.println("fpdlElemtn is " + fpdlElement);
-        Map<String,String> extendedAttributes = wfElement.getExtendedAttributes();
+        Map<String, String> extendedAttributes = wfElement.getExtendedAttributes();
 
 
         extendedAttributes.put(ExtendedAttributeNames.BOUNDS_X, Integer.toString((int) rect.getX()));
@@ -128,7 +128,7 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
 //        if (cellView == null) {
 //            return;
 //        }
-        System.out.println("edge.source is " + edge.getSource().getClass().getName());
+//        System.out.println("edge.source is " + edge.getSource().getClass().getName());
 
         List l = GraphConstants.getPoints(edge.getAttributes());
 //        List l = GraphConstants.getPoints(edge.getAttributes());
@@ -188,9 +188,9 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         IWFElement workflowElem = (IWFElement) fpdlElement.getContent();
         return (GraphCell) cellsMap.get(workflowElem.getSn());
     }
-    
-    public GraphCell getGraphCellByWFElementSn(String elementSn){
-        System.out.println("====Inside ProcessGraphModel..cellsMap size is "+cellsMap.size());
+
+    public GraphCell getGraphCellByWFElementSn(String elementSn) {
+//        System.out.println("====Inside ProcessGraphModel..cellsMap size is "+cellsMap.size());
         return (GraphCell) cellsMap.get(elementSn);
     }
 
@@ -198,13 +198,21 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         return explorerManager;
     }
 
-    
-    
     public void revert() {
+//        System.out.println("====___====explorerManager is "+explorerManager);
+//        System.out.print("====____===explorerManager.getRootContext() is "+explorerManager.getRootContext());
+//        System.out.println("====___====explorerManager.getRootContext().getChildren() is "+explorerManager.getRootContext().getChildren());
+//        System.out.println("========== explorerManager.getRootContext().getChildren().getNodes() is "+ explorerManager.getRootContext().getChildren().getNodes());
+        if (explorerManager == null || explorerManager.getRootContext() == null ||
+                explorerManager.getRootContext().getChildren() == null ||
+                explorerManager.getRootContext().getChildren().getNodes().length <= 0) {
+            return;
+        }
+
         workflowProcessElement = (WorkflowProcessElement) explorerManager.getRootContext().getChildren().getNodes()[0];
         workflowProcessElement.addNodeListener(this);
-        WorkflowProcess workflowProcess = (WorkflowProcess)workflowProcessElement.getContent();
-        
+        WorkflowProcess workflowProcess = (WorkflowProcess) workflowProcessElement.getContent();
+
         Node activitiesNode = workflowProcessElement.getChildren().findChild(IFPDLElement.ACTIVITIES);
         activitiesNode.addNodeListener(this);
 
@@ -220,22 +228,24 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         Node[] nodes = new Node[]{activitiesNode, synchronizersNode, endNodesNode};
 
         ConnectionSet cs = new ConnectionSet();
-        Map<DefaultGraphCell,Map> attributes = new Hashtable<DefaultGraphCell,Map>();
+        Map<DefaultGraphCell, Map> attributes = new Hashtable<DefaultGraphCell, Map>();
 
 
-        try {
+        try { 
+            Map<String, String> cellAttribute = null;
             //1 开始节点
             IFPDLElement startElement = (IFPDLElement) workflowProcessElement.getChildren().findChild(IFPDLElement.START_NODE);
-            DefaultGraphCell startVertex = new DefaultGraphCell(startElement);
-            startVertex.addPort();
-            Map<String,String> cellAttribute = startVertex.getAttributes();
-            GraphConstants.setBounds(cellAttribute, this.parseRectangle(
-                    ((IWFElement) startElement.getContent()).getExtendedAttributes(),
-                    new Rectangle(0, 0, 20, 20)));
-            attributes.put(startVertex, cellAttribute);
+            if (startElement != null) {
+                DefaultGraphCell startVertex = new DefaultGraphCell(startElement);
+                startVertex.addPort();
+                cellAttribute = startVertex.getAttributes();
+                GraphConstants.setBounds(cellAttribute, this.parseRectangle(
+                        ((IWFElement) startElement.getContent()).getExtendedAttributes(),
+                        new Rectangle(0, 0, 20, 20)));
+                attributes.put(startVertex, cellAttribute);
 
-            cellsMap.put(((IWFElement) startElement.getContent()).getSn(), startVertex);
-
+                cellsMap.put(((IWFElement) startElement.getContent()).getSn(), startVertex);
+            }
             //2 其他节点
             for (int m = 0; m < nodes.length; m++) {
                 Node node = nodes[m];
@@ -275,7 +285,7 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
                 DefaultEdge edge = new DefaultEdge(transElement);
                 Transition trans = (Transition) transElement.getContent();
 
-                if ( cellsMap.get(trans.getFromNode().getSn()) != null &&
+                if (cellsMap.get(trans.getFromNode().getSn()) != null &&
                         cellsMap.get(trans.getToNode().getSn()) != null) {
                     transitionStyle = edge.getAttributes();
                     GraphConstants.setLineEnd(transitionStyle,
@@ -289,12 +299,12 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
                     }
 
                     List pointList = this.parsePointList(trans.getExtendedAttributes(),
-                             cellsMap.get(trans.getFromNode().getSn()),  cellsMap.get(trans.getToNode().getSn()));
+                            cellsMap.get(trans.getFromNode().getSn()), cellsMap.get(trans.getToNode().getSn()));
                     if (pointList != null) {
                         GraphConstants.setPoints(transitionStyle, pointList);
                     }
 
-                    Object port1 = ( cellsMap.get(trans.getFromNode().getSn())).getChildAt(0);
+                    Object port1 = (cellsMap.get(trans.getFromNode().getSn())).getChildAt(0);
 
                     Object port2 = (cellsMap.get(trans.getToNode().getSn())).getChildAt(0);
 
@@ -322,7 +332,7 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         IFPDLElement child = (IFPDLElement) nodesAdded[0];
         ((AbstractNode) child).addNodeListener(this);
 
-        
+
         if (child.getElementType().equals(IFPDLElement.START_NODE) ||
                 child.getElementType().equals(IFPDLElement.ACTIVITY) ||
                 child.getElementType().equals(IFPDLElement.SYNCHRONIZER) ||
@@ -333,7 +343,7 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
             cellsMap.put(((IWFElement) child.getContent()).getSn(), vertex);
             Map extendAttributes = ((IWFElement) child.getContent()).getExtendedAttributes();
             Rectangle bounds = parseRectangle(extendAttributes);
-            Map<DefaultGraphCell,Map> attributeMap = new HashMap<DefaultGraphCell,Map>();
+            Map<DefaultGraphCell, Map> attributeMap = new HashMap<DefaultGraphCell, Map>();
             Map cellAttribute = vertex.getAttributes();
             GraphConstants.setBounds(cellAttribute, bounds);
             attributeMap.put(vertex, cellAttribute);
@@ -344,22 +354,22 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
             designPanel.setSelectionCells(insert);
         } else if (child.getElementType().equals(IFPDLElement.TRANSITION)) {
             Transition trans = (Transition) child.getContent();
-            DefaultGraphCell fromCell =  cellsMap.get(trans.getFromNode().getSn());
-            DefaultGraphCell toCell =  cellsMap.get(trans.getToNode().getSn());
+            DefaultGraphCell fromCell = cellsMap.get(trans.getFromNode().getSn());
+            DefaultGraphCell toCell = cellsMap.get(trans.getToNode().getSn());
             DefaultEdge edge = new DefaultEdge(child);
             cellsMap.put(trans.getSn(), edge);
 
             ConnectionSet cs = new ConnectionSet();
 
-            Map<DefaultGraphCell,Map> attributes = new Hashtable<DefaultGraphCell,Map>();
+            Map<DefaultGraphCell, Map> attributes = new Hashtable<DefaultGraphCell, Map>();
             AttributeMap transitionStyle = new AttributeMap();
             GraphConstants.setLineEnd(transitionStyle,
                     GraphConstants.ARROW_SIMPLE);
-            System.out.println("==from cell is "+fromCell);
-            System.out.println("from.getUserObject is "+fromCell.getUserObject());
-            System.out.println("==Inside ProcessGraphModel:: childrenAdded(): edge  "+((AbstractNode)edge.getUserObject()).getName());
-            System.out.println("==Inside ProcessGraphModel:: childrenAdded(): fromcell  "+((AbstractNode)fromCell.getUserObject()).getName());
-            System.out.println("==Inside ProcessGraphModel:: childrenAdded(): toCell  "+((AbstractNode)toCell.getUserObject()).getName());
+//            System.out.println("==from cell is " + fromCell);
+//            System.out.println("from.getUserObject is " + fromCell.getUserObject());
+//            System.out.println("==Inside ProcessGraphModel:: childrenAdded(): edge  " + ((AbstractNode) edge.getUserObject()).getName());
+//            System.out.println("==Inside ProcessGraphModel:: childrenAdded(): fromcell  " + ((AbstractNode) fromCell.getUserObject()).getName());
+//            System.out.println("==Inside ProcessGraphModel:: childrenAdded(): toCell  " + ((AbstractNode) toCell.getUserObject()).getName());
             cs.connect(edge, fromCell.getChildAt(0), toCell.getChildAt(0));
 
             attributes.put(edge, transitionStyle);
@@ -380,16 +390,20 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         Node[] nodesDeleted = arg0.getDelta();
 //        IFPDLElement parent = (IFPDLElement) arg0.getSource();
 //        IFPDLElement child = (IFPDLElement) nodesDeleted[0];
-        for (int i=0;nodesDeleted!=null && i<nodesDeleted.length;i++){
+        for (int i = 0; nodesDeleted != null && i < nodesDeleted.length; i++) {
             IFPDLElement child = (IFPDLElement) nodesDeleted[i];
-            String id = ((IWFElement)child.getContent()).getId();
-            String sn = ((IWFElement)child.getContent()).getSn();
+            String id = ((IWFElement) child.getContent()).getId();
+            String sn = ((IWFElement) child.getContent()).getSn();
             DefaultGraphCell cell = this.cellsMap.get(sn);
             List list = cell.getChildren();
             List objToDelete = new Vector();
-            if (cell!=null)objToDelete.add(cell);
-            if (list!=null) objToDelete.addAll(list);
-            if (cell!=null){
+            if (cell != null) {
+                objToDelete.add(cell);
+            }
+            if (list != null) {
+                objToDelete.addAll(list);
+            }
+            if (cell != null) {
                 this.remove(objToDelete.toArray());
             }
         }
@@ -466,13 +480,13 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
 
     private Point2D parseLabelPosition(Map extendAttributes) {
         String positionStr = (String) extendAttributes.get(ExtendedAttributeNames.LABEL_POSITION);
-        
-        System.out.println("=========positionStr is "+positionStr);
-        
+
+        System.out.println("=========positionStr is " + positionStr);
+
         if (positionStr == null) {
             return null;
         }
-        
+
         return parsePoint(positionStr);
     }
 
@@ -505,8 +519,8 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
     private Rectangle parseRectangle(Map extendAttributes) {
 //        System.out.println("==========extendAttributes size is "+extendAttributes.size());
         Iterator itr = extendAttributes.keySet().iterator();
-        
-        while (itr.hasNext()){
+
+        while (itr.hasNext()) {
             System.out.println(itr.next());
         }
         String xStr = (String) extendAttributes.get(ExtendedAttributeNames.BOUNDS_X);
@@ -551,7 +565,7 @@ public class ProcessGraphModel extends DefaultGraphModel implements NodeListener
         return bounds;
     }
 
-    public void setDesignPanel(JGraph designPanel){
+    public void setDesignPanel(JGraph designPanel) {
         this.designPanel = designPanel;
     }
 }

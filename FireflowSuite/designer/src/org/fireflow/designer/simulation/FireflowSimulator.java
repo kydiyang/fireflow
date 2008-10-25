@@ -158,7 +158,7 @@ public class FireflowSimulator {
 
     public void acceptWorkItem4Task(String taskId) {
         IPersistenceService persistenceService = RuntimeContext.getInstance().getPersistenceService();
-        List<IWorkItem> workItemList = persistenceService.findWorkItem4Task(taskId);
+        List<IWorkItem> workItemList = persistenceService.findWorkItemForTask(taskId);
         for (int i = 0; i < workItemList.size(); i++) {
             IWorkItem wi = workItemList.get(i);
             if (wi.getState() == IWorkItem.INITIALIZED) {
@@ -183,7 +183,7 @@ public class FireflowSimulator {
 
     public void completeWorkItem4Task(String taskId) {
         IPersistenceService persistenceService = RuntimeContext.getInstance().getPersistenceService();
-        List<IWorkItem> workItemList = persistenceService.findWorkItem4Task(taskId);
+        List<IWorkItem> workItemList = persistenceService.findWorkItemForTask(taskId);
         for (int i = 0; i < workItemList.size(); i++) {
             IWorkItem wi = workItemList.get(i);
             if (wi.getState() == IWorkItem.STARTED) {
@@ -209,7 +209,7 @@ public class FireflowSimulator {
     public void setWorkflowVariable(String name,Object value){
         IPersistenceService persistenceService = RuntimeContext.getInstance().getPersistenceService();
         currentSimulatorPanel.getCurrentProcessInstance().setProcessInstanceVariable(name, value);
-        persistenceService.saveProcessInstance(currentSimulatorPanel.getCurrentProcessInstance());
+        persistenceService.saveOrUpdateProcessInstance(currentSimulatorPanel.getCurrentProcessInstance());
     }
 
     public void initAll(){
