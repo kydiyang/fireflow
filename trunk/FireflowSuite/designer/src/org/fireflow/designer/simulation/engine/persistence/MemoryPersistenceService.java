@@ -13,6 +13,7 @@ import java.util.Vector;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkItem;
+import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.JoinPoint;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.TaskInstance;
@@ -77,8 +78,10 @@ public class MemoryPersistenceService implements IPersistenceService {
             workItemStorage.put(workitem.getId(), workitem);
         }
 
+        IProcessInstance processInstance = workitem.getTaskInstance().getProcessInstance();
+        processInstance.setRuntimeContext(this.rtCtx);
         StorageChangedEvent e = new StorageChangedEvent(this);
-        e.setProcessInstance(workitem.getTaskInstance().getProcessInstance());
+        e.setProcessInstance(processInstance);
         e.setProcessId(workitem.getTaskInstance().getProcessInstance().getProcessId());
         e.setProcessInstanceId(workitem.getTaskInstance().getProcessInstance().getId());
         this.fireStorageChangedEvent(e);
@@ -96,8 +99,10 @@ public class MemoryPersistenceService implements IPersistenceService {
             joinPointStorage.put(((JoinPoint) joinPoint).getId(), joinPoint);
         }
 
+        IProcessInstance processInstance = joinPoint.getProcessInstance();
+        processInstance.setRuntimeContext(this.rtCtx);
         StorageChangedEvent e = new StorageChangedEvent(this);
-        e.setProcessInstance(joinPoint.getProcessInstance());
+        e.setProcessInstance(processInstance);
         e.setProcessId(joinPoint.getProcessInstance().getProcessId());
         e.setProcessInstanceId(joinPoint.getProcessInstance().getId());
         this.fireStorageChangedEvent(e);
@@ -119,28 +124,28 @@ public class MemoryPersistenceService implements IPersistenceService {
         this.fireStorageChangedEvent(e);
     }
 
-    public void updateWorkItem(IWorkItem workItem) {
-        String id = workItem.getId();
-        this.workItemStorage.put(id, workItem);
+//    public void updateWorkItem(IWorkItem workItem) {
+//        String id = workItem.getId();
+//        this.workItemStorage.put(id, workItem);
+//
+//        StorageChangedEvent e = new StorageChangedEvent(this);
+//        e.setProcessInstance(workItem.getTaskInstance().getProcessInstance());
+//        e.setProcessId(workItem.getTaskInstance().getProcessInstance().getProcessId());
+//        e.setProcessInstanceId(workItem.getTaskInstance().getProcessInstance().getId());
+//        this.fireStorageChangedEvent(e);
+//
+//    }
 
-        StorageChangedEvent e = new StorageChangedEvent(this);
-        e.setProcessInstance(workItem.getTaskInstance().getProcessInstance());
-        e.setProcessId(workItem.getTaskInstance().getProcessInstance().getProcessId());
-        e.setProcessInstanceId(workItem.getTaskInstance().getProcessInstance().getId());
-        this.fireStorageChangedEvent(e);
-
-    }
-
-    public void updateTaskInstance(ITaskInstance taskInstance) {
-        String id = taskInstance.getId();
-        this.taskInstanceStorage.put(id, taskInstance);
-
-        StorageChangedEvent e = new StorageChangedEvent(this);
-        e.setProcessInstance(taskInstance.getProcessInstance());
-        e.setProcessId(taskInstance.getProcessInstance().getProcessId());
-        e.setProcessInstanceId(taskInstance.getProcessInstance().getId());
-        this.fireStorageChangedEvent(e);
-    }
+//    public void updateTaskInstance(ITaskInstance taskInstance) {
+//        String id = taskInstance.getId();
+//        this.taskInstanceStorage.put(id, taskInstance);
+//
+//        StorageChangedEvent e = new StorageChangedEvent(this);
+//        e.setProcessInstance(taskInstance.getProcessInstance());
+//        e.setProcessId(taskInstance.getProcessInstance().getProcessId());
+//        e.setProcessInstanceId(taskInstance.getProcessInstance().getId());
+//        this.fireStorageChangedEvent(e);
+//    }
 
     /**
      * 
@@ -148,26 +153,30 @@ public class MemoryPersistenceService implements IPersistenceService {
      * @param synchronizerId
      * @return
      */
-    public IJoinPoint findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId) {
+    public List<IJoinPoint> findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId) {
 //        System.out.println("===this.joinPointStorage.size is " + this.joinPointStorage.size());
+        if (synchronizerId==null || synchronizerId.equals("")){
+            return findJoinPoint4ProcessInstance(processInstanceId);
+        }
+        List<IJoinPoint> result = new ArrayList<IJoinPoint>();
         Iterator itr = this.joinPointStorage.values().iterator();
         while (itr.hasNext()) {
             JoinPoint joinPoint = (JoinPoint) itr.next();
 //            System.out.println("====joinpoint.getProcessInstance is " + joinPoint.getProcessInstance());
-            if (joinPoint.getProcessInstance() != null && joinPoint.getProcessInstance().getId().equals(processInstance.getId()) && synchronizerId.equals(joinPoint.getSynchronizerId())) {
-                return joinPoint;
+            if (joinPoint.getProcessInstance() != null && joinPoint.getProcessInstance().getId().equals(processInstanceId) && synchronizerId.equals(joinPoint.getSynchronizerId())) {
+                result.add(joinPoint);
             }
         }
 
-        return null;
+        return result;
     }
 
-    public List<IJoinPoint> findJoinPoint4ProcessInstance(IProcessInstance processInstance) {
+    private List<IJoinPoint> findJoinPoint4ProcessInstance(String processInstanceId) {
         Iterator itr = this.joinPointStorage.values().iterator();
         List<IJoinPoint> result = new ArrayList<IJoinPoint>();
         while (itr.hasNext()) {
             JoinPoint joinPoint = (JoinPoint) itr.next();
-            if (joinPoint.getProcessInstance() != null && joinPoint.getProcessInstance().getId().equals(processInstance.getId())) {
+            if (joinPoint.getProcessInstance() != null && joinPoint.getProcessInstance().getId().equals(processInstanceId)) {
                 result.add(joinPoint);
             }
         }
@@ -189,7 +198,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         while (itr.hasNext()) {
             TaskInstance taskInst = (TaskInstance) itr.next();
 //            System.out.println("============Inside MemoryPersistenceService.findTaskInstance:: taskInstance.getProcessInstance is " + taskInst.getProcessInstance());
-            if (taskInst.getProcessInstance() != null && taskInst.getProcessInstance().getId().equals(processInstance.getId())) {
+            if (taskInst.getProcessInstance() != null && taskInst.getProcessInstance().getId().equals(processInstanceId)) {
                 if (activityID != null && !activityID.equals("") && taskInst.getActivityId().equals(activityID)) {
                     taskInstances.add(taskInst);
                 } else if (activityID == null || activityID.equals("")) {
@@ -220,7 +229,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         List<IToken> tokens = new ArrayList<IToken>();
         while (itr.hasNext()) {
             Token token = (Token) itr.next();
-            if (token.getProcessInstance() != null && token.getProcessInstance().getId().equals(processInstance.getId()) && token.getNodeId().equals(nodeId)) {
+            if (token.getProcessInstance() != null && token.getProcessInstance().getId().equals(processInstanceId) && token.getNodeId().equals(nodeId)) {
                 tokens.add(token);
             }
         }
@@ -233,7 +242,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         List<IWorkItem> workitems = new ArrayList<IWorkItem>();
         while (itr.hasNext()) {
             WorkItem wi = (WorkItem) itr.next();
-            if (wi.getTaskInstance() != null && wi.getTaskInstance().getId().equals(taskInstance.getId())) {
+            if (wi.getTaskInstance() != null && wi.getTaskInstance().getId().equals(taskInstanceId)) {
                 workitems.add(wi);
             }
 
@@ -252,7 +261,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         List<IWorkItem> result = new Vector<IWorkItem>();
         for (int i = 0; i < taskInstList.size(); i++) {
             ITaskInstance taskInst = taskInstList.get(i);
-            List<IWorkItem> tmp = this.findWorkItemsForTaskInstance(null,(TaskInstance) taskInst);
+            List<IWorkItem> tmp = this.findWorkItemsForTaskInstance(taskInst.getId());
             result.addAll(tmp);
         }
         return result;
@@ -346,7 +355,7 @@ public class MemoryPersistenceService implements IPersistenceService {
             ITaskInstance taskInstance = taskInstanceList.get(j);
             this.taskInstanceStorage.remove(taskInstance.getId());
 
-            List<IWorkItem> workitemList = this.findWorkItemsForTaskInstance(null,(TaskInstance) taskInstance);
+            List<IWorkItem> workitemList = this.findWorkItemsForTaskInstance(taskInstance.getId());
             for (int k = 0; k < workitemList.size(); k++) {
                 this.workItemStorage.remove(workitemList.get(k).getId());
             }
@@ -357,7 +366,7 @@ public class MemoryPersistenceService implements IPersistenceService {
         }
 
 
-        List<IJoinPoint> joinpointList = this.findJoinPoint4ProcessInstance(processInstance);
+        List<IJoinPoint> joinpointList = this.findJoinPoint4ProcessInstance(processInstance.getId());
         for (int m = 0; m < joinpointList.size(); m++) {
             this.joinPointStorage.remove(joinpointList.get(m));
         }
@@ -381,7 +390,6 @@ public class MemoryPersistenceService implements IPersistenceService {
     }
 
     public List<IToken> findTokens(IProcessInstance processInstance) {
-//        throw new UnsupportedOperationException("Not supported yet.");
         List<IToken> resultList = new ArrayList<IToken>();
         Iterator tokensIter = this.tokenStorage.values().iterator();
         while (tokensIter.hasNext()) {
@@ -412,5 +420,41 @@ public class MemoryPersistenceService implements IPersistenceService {
             }
         }
         return result;
+    }
+
+    public IProcessInstance findProcessInstanceById(String id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public IJoinPoint findJoinPointById(String id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public WorkflowDefinition findWorkflowDefinitionById(String id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersion(String processId, int version) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public WorkflowDefinition findLatestVersionOfWorkflowDefinitionByProcessId(String processId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public List<WorkflowDefinition> findWorkflowDefinitionByProcessId(String processId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public List<WorkflowDefinition> findAllLatestVersionOfWorkflowDefinition() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Integer findTheLatestVersionOfWorkflowDefinition(String processId) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

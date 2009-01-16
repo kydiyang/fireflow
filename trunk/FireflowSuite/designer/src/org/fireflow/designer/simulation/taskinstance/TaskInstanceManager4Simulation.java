@@ -7,12 +7,14 @@ package org.fireflow.designer.simulation.taskinstance;
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.calendar.ICalendarService;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.ITaskInstanceManager;
 import org.fireflow.kenel.IActivityInstance;
 import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.KenelException;
+import org.fireflow.model.Duration;
 import org.fireflow.model.Task;
 import org.fireflow.model.net.Activity;
 import org.fireflow.model.reference.Participant;
@@ -30,7 +32,7 @@ public class TaskInstanceManager4Simulation implements ITaskInstanceManager {
         Activity activity = activityInstance.getActivity();
         RuntimeContext ctx = RuntimeContext.getInstance();
         IPersistenceService persistenceService = ctx.getPersistenceService();
-
+        ICalendarService calService = ctx.getCalendarService();
 //		Package pkg = activity.getWorkflowProcess().getPackage();
         for (int i = 0; i < activity.getTasks().size(); i++) {
             Task task = activity.getTasks().get(i);
@@ -41,7 +43,7 @@ public class TaskInstanceManager4Simulation implements ITaskInstanceManager {
             ((TaskInstance) taskInstance).setProcessInstance(token.getProcessInstance());
             ((TaskInstance) taskInstance).setActivityId(activity.getId());
             ((TaskInstance) taskInstance).setCompletionStrategy(task.getAssignmentStrategy());
-            ((TaskInstance) taskInstance).setCreatedTime(ctx.getSysDate());
+            ((TaskInstance) taskInstance).setCreatedTime(ctx.getCalendarService().getSysDate());
             ((TaskInstance) taskInstance).setDisplayName(task.getDisplayName());
             ((TaskInstance) taskInstance).setName(task.getName());
             if (task.getStartMode().equals(Task.AUTOMATIC)){
@@ -52,7 +54,12 @@ public class TaskInstanceManager4Simulation implements ITaskInstanceManager {
             
             ((TaskInstance) taskInstance).setTaskId(task.getId());
             ((TaskInstance) taskInstance).setTaskType(task.getType());
+            //计算超时
+            Duration duration = task.getDuration();
 
+            if (duration != null && calService != null) {
+                ((TaskInstance) taskInstance).setExpiredTime(calService.dateAfter(calService.getSysDate(), duration));
+            }
             // 2、保存实例
             persistenceService.saveOrUpdateTaskInstance(taskInstance);
 //			token.getProcessInstance().getTaskInstances().add(taskInstance);
@@ -74,8 +81,7 @@ public class TaskInstanceManager4Simulation implements ITaskInstanceManager {
             // startMode是否可以去掉？没有什么意义。mual类型的task的自动起动可以通过workitem的eventhandler实现
 
             if (Task.SUBFLOW.equals(task.getType()) || Task.TOOL.equals(task.getType())) {
-                taskInstance.start();
-
+                ((TaskInstance)taskInstance).start();
             }
 
         }

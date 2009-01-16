@@ -37,8 +37,9 @@ public class EndNodeElement extends AbstractNode implements IFPDLElement{
         WorkflowProcess workflowProcess = (WorkflowProcess) endNode.getParent();
         workflowProcess.getEndNodes().remove(endNode);
 
-
-        ExplorerManager explorerManager = this.getLookup().lookup(ExplorerManager.class);
+        FPDLDataObject dataObj = this.getLookup().lookup(FPDLDataObject.class);
+//        ExplorerManager explorerManager = this.getLookup().lookup(ExplorerManager.class);
+        ExplorerManager explorerManager = dataObj.getExplorerManager();
         WorkflowProcessElement workflowProcessElement = (WorkflowProcessElement) explorerManager.getRootContext().getChildren().getNodes()[0];        
         Node transitionsElement = workflowProcessElement.getChildren().findChild(IFPDLElement.TRANSITIONS);
         List transitionList = workflowProcess.getTransitions();

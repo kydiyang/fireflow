@@ -16,7 +16,6 @@ import org.fireflow.designer.properties.editor.ActivityEditorPane;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.net.Activity;
-import org.fireflow.model.net.Activity;
 import org.fireflow.model.net.Transition;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
@@ -77,7 +76,9 @@ public class ActivityElement extends AbstractNode implements IFPDLElement {
         WorkflowProcess workflowProcess = (WorkflowProcess) activity.getParent();
         workflowProcess.getActivities().remove(activity);
 
-        ExplorerManager explorerManager = this.getLookup().lookup(ExplorerManager.class);
+//        ExplorerManager explorerManager = this.getLookup().lookup(ExplorerManager.class);
+        FPDLDataObject dataObj = this.getLookup().lookup(FPDLDataObject.class);
+        ExplorerManager explorerManager = dataObj.getExplorerManager();
         WorkflowProcessElement workflowProcessElement = (WorkflowProcessElement) explorerManager.getRootContext().getChildren().getNodes()[0];
         Node transitionsElement = workflowProcessElement.getChildren().findChild(IFPDLElement.TRANSITIONS);
 

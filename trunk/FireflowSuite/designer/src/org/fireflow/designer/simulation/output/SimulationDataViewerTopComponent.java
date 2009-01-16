@@ -19,12 +19,14 @@ import org.fireflow.designer.simulation.FireflowSimulationWorkspace;
 import org.fireflow.designer.simulation.engine.persistence.IStorageChangeListener;
 import org.fireflow.designer.simulation.engine.persistence.MemoryPersistenceService;
 import org.fireflow.designer.simulation.engine.persistence.StorageChangedEvent;
+import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
@@ -299,6 +301,7 @@ class TaskInstanceTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
+        SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Object[] processInstanceStorageArr = taskInstanceStorage.values().toArray();
         TaskInstance taskInst = (TaskInstance) processInstanceStorageArr[rowIndex];
         switch (columnIndex) {
@@ -335,16 +338,32 @@ class TaskInstanceTableModel extends AbstractTableModel {
                 return taskInst.getCompletionStrategy();
 
             case 8:
-                return taskInst.getCreatedTime();
+                if (taskInst.getCreatedTime()!=null){
+                    return dFormat.format(taskInst.getCreatedTime());
+                }else{
+                    return "";
+                }
 
             case 9:
-                return taskInst.getStartedTime();
+                if (taskInst.getStartedTime()!=null){
+                    return dFormat.format(taskInst.getStartedTime());
+                }else{
+                    return "";
+                }                
 
             case 10:
-                return taskInst.getExpiredTime();
+                if (taskInst.getExpiredTime()!=null){
+                    return dFormat.format(taskInst.getExpiredTime());
+                }else{
+                    return "";
+                }                  
 
             case 11:
-                return taskInst.getEndTime();
+                if (taskInst.getEndTime()!=null){
+                    return dFormat.format(taskInst.getEndTime());
+                }else{
+                    return "";
+                }                  
 
             default:
                 return "";
@@ -354,7 +373,7 @@ class TaskInstanceTableModel extends AbstractTableModel {
 
 class WorkItemTableModel extends AbstractTableModel {
 
-    private static final String[] columnNames = new String[]{"Id", "State", "Create Time", "Accept Time", "End Time", "Actor Id", "Comments"};
+    private static final String[] columnNames = new String[]{"Id", "State", "Create Time", "Signed Time", "End Time", "Actor Id", "Comments"};
     Map workItemStorage = null;
 
     public WorkItemTableModel(Map storage) {
@@ -380,6 +399,7 @@ class WorkItemTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
+        SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Object[] processInstanceStorageArr = workItemStorage.values().toArray();
         WorkItem workItem = (WorkItem) processInstanceStorageArr[rowIndex];
         switch (columnIndex) {
@@ -399,13 +419,25 @@ class WorkItemTableModel extends AbstractTableModel {
                 return workItem.getState();
 
             case 2:
-                return workItem.getCreatedTime();
+                if (workItem.getCreatedTime()!=null){
+                    return dFormat.format(workItem.getCreatedTime());
+                }else{
+                    return "";
+                }                 
 
             case 3:
-                return workItem.getAcceptedTime();
+                if (workItem.getAcceptedTime()!=null){
+                    return dFormat.format(workItem.getAcceptedTime());
+                }else{
+                    return "";
+                }                   
 
             case 4:
-                return workItem.getEndTime();
+                if (workItem.getEndTime()!=null){
+                    return dFormat.format(workItem.getEndTime());
+                }else{
+                    return "";
+                }                   
 
             case 5:
                 return workItem.getActorId();
@@ -475,7 +507,11 @@ class ProcessInstanceVariable4Simulation {
 
     public ProcessInstanceVariable4Simulation(IProcessInstance processInstance, String name, Object value) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        processDisplayName = processInstance.getWorkflowProcess().getDisplayName();
+        try {
+            processDisplayName = processInstance.getWorkflowProcess().getDisplayName();
+        } catch (EngineException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         this.name = name;
         if (value != null) {
             if (value instanceof Integer) {

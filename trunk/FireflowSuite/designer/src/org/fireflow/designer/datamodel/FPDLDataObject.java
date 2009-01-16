@@ -5,16 +5,13 @@
 package org.fireflow.designer.datamodel;
 
 import cn.bestsolution.tools.resourcesmanager.util.ImageLoader;
+import cn.bestsolution.tools.resourcesmanager.util.Utilities;
 import java.awt.Image;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 import org.fireflow.designer.actions.DeleteElementAction;
 import org.fireflow.designer.actions.NewActivityAction;
 import org.fireflow.designer.actions.NewActivityWithFormAction;
@@ -34,10 +31,10 @@ import org.fireflow.designer.simulation.FireflowSimulationWorkspace;
 import org.fireflow.designer.simulation.engine.definition.DefinitionService4Simulation;
 import org.fireflow.designer.util.DesignerConstant;
 import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.io.Dom4JFPDLParser;
-import org.fireflow.model.io.Dom4JFPDLSerializer;
 import org.fireflow.model.io.FPDLParserException;
 import org.fireflow.model.io.FPDLSerializerException;
+import org.fireflow.model.io.JAXP_FPDL_Parser;
+import org.fireflow.model.io.JAXP_FPDL_Serializer;
 import org.fireflow.model.reference.IResourceManager;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.project.FileOwnerQuery;
@@ -54,24 +51,21 @@ import org.openide.util.Lookup;
 import org.netbeans.modules.xml.multiview.XmlMultiViewDataObject;
 import org.netbeans.modules.xml.multiview.XmlMultiViewDataSynchronizer;
 import org.openide.explorer.ExplorerManager;
+import org.openide.text.DataEditorSupport;
+import org.openide.cookies.SaveCookie;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.text.DataEditorSupport;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
-import org.openide.cookies.SaveCookie;
 import org.openide.windows.WindowManager;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
+
     private ExplorerManager explorerManager = null;
     private WorkflowProcess workflowProcess = null;
     private Action[] actions = null;
     private ModelSynchronizer modelSynchronizer = null;
-    private static final String IMAGE_ICON_BASE = "org/fireflow/designer/resources/workflowprocess16.gif";
+    private static final String IMAGE_ICON_BASE = "workflowprocess16.gif";
     private ProcessGraphModel graphModel = null;
 
     public FPDLDataObject(FileObject pf, FPDLDataLoader loader) throws DataObjectExistsException, IOException {
@@ -79,15 +73,27 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         CookieSet cookies = getCookieSet();
         cookies.add((Node.Cookie) DataEditorSupport.create(this, getPrimaryEntry(), cookies));
         System.out.println("====Inside FPDLDataObject:: ============================-----------------------");
-        System.out.println("====the fileobj's name is "+this.getPrimaryFile().getName()+"; path is "+this.getPrimaryFile().getPath());
+        System.out.println("====the fileobj's name is " + this.getPrimaryFile().getName() + "; path is " + this.getPrimaryFile().getPath());
 
         //模版文件不进一步解析
-        if ("Templates/Other/ProcessDefinition.xml".equals(this.getPrimaryFile().getPath())){
+        if ("Templates/Other/ProcessDefinition.xml".equals(this.getPrimaryFile().getPath())) {
             return;
         }
-        
+
         try {
             parseDefinitionFile();
+        } catch (Exception ex) {
+            //如果发生任何错误，则将WorkflowProcess 初始化成一个空的WorkflowProcess
+            this.workflowProcess = new WorkflowProcess("ERROR");
+            this.workflowProcess.setDescription(Utilities.errorStackToString(ex));
+        }
+        
+        initExplorerManager();
+
+        initActions(explorerManager);
+        
+        try {
+
 
             graphModel = new ProcessGraphModel(this.explorerManager);
 
@@ -101,60 +107,41 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         }
     }
 
-    private void parseDefinitionFile() throws IOException {
-        try {
-            java.io.InputStream is = getEditorSupport().getInputStream();
+    private void parseDefinitionFile() throws IOException, FPDLParserException {
 
-            //下面的代码应该放在Dom4JFPDLParser中，并在Dom4JFPDLParser增加setEncoding()方法....
-            SAXReader reader = new SAXReader();
-            reader.setEntityResolver(new EntityResolver() {
+        java.io.InputStream is = getEditorSupport().getInputStream();
 
-                String emptyDtd = "";
-                ByteArrayInputStream bytels = new ByteArrayInputStream(emptyDtd.getBytes());
+        String encoding = this.getEncodingHelper().detectEncoding(is);
 
-                public InputSource resolveEntity(String publicId,
-                        String systemId) throws SAXException, IOException {
-                    return new InputSource(bytels);
-                }
-            });
-            String encoding = this.getEncodingHelper().detectEncoding(is);
-            reader.setEncoding(encoding);
-            Document document = reader.read(is);            
-             //....上面的代码应该放在Dom4JFPDLParser中，并在Dom4JFPDLParser增加setEncoding()方法
-            
-            Dom4JFPDLParser parser = new Dom4JFPDLParser();
-            workflowProcess = parser.parse(document);
-//            System.out.println("===Inside FPDLDataObject.parseDefinitionFile()::workflowprocess is "+workflowProcess.getName());
-            InstanceContent lookupContent = new InstanceContent();
-            AbstractLookup lookup = new AbstractLookup(lookupContent);
-            lookupContent.add(this);
-            lookupContent.add(workflowProcess);
+        JAXP_FPDL_Parser parser = new JAXP_FPDL_Parser();
 
-            WorkflowProcessElement workflowProcessElement = new WorkflowProcessElement(lookup);
+        workflowProcess = parser.parse(is);
+    }
 
-            Children.Array array = new Children.Array();
-            array.add(new Node[]{workflowProcessElement});
-            AbstractNode root = new AbstractNode(array) {
+    private void initExplorerManager() {
+        InstanceContent lookupContent = new InstanceContent();
+        AbstractLookup lookup = new AbstractLookup(lookupContent);
+        lookupContent.add(this);
+        lookupContent.add(workflowProcess);
 
-                @Override
-                public Action[] getActions(boolean b) {
-                    //return new Action[]{};
-                    return actions;
-                }
-            };
+        WorkflowProcessElement workflowProcessElement = new WorkflowProcessElement(lookup);
 
-            explorerManager = new ExplorerManager();
+        Children.Array array = new Children.Array();
+        array.add(new Node[]{workflowProcessElement});
+        AbstractNode root = new AbstractNode(array) {
 
-            lookupContent.add(explorerManager);
+            @Override
+            public Action[] getActions(boolean b) {
+                return new Action[]{};
+//                return actions;
+            }
+        };
 
-            explorerManager.setRootContext(root);
-//            System.out.println("===Inside FPDLDataObject.parseDefinitionFile()::explorerManager is "+explorerManager);
-            initActions(explorerManager);
-        } catch (FPDLParserException ex) {
-            Exceptions.printStackTrace(ex);
-        }catch(DocumentException ex){
-            Exceptions.printStackTrace(ex);
-        }
+        explorerManager = new ExplorerManager();
+
+//        lookupContent.add(explorerManager);
+
+        explorerManager.setRootContext(root);
     }
 
     protected void initActions(ExplorerManager explorerManager) {
@@ -262,7 +249,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
 
         public MyDesignMultiViewDesc(FPDLDataObject fpdlDataObject) {
             super(fpdlDataObject, "Design");
-            
+
         }
 
         @Override
@@ -273,7 +260,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         @Override
         public Image getIcon() {
 
-            return Utilities.loadImage(IMAGE_ICON_BASE);
+            return ImageLoader.getImage(IMAGE_ICON_BASE);
         }
 
         @Override
@@ -296,7 +283,7 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
         @Override
         public Image getIcon() {
 
-            return Utilities.loadImage(IMAGE_ICON_BASE);
+            return ImageLoader.getImage(IMAGE_ICON_BASE);
         }
 
         @Override
@@ -323,8 +310,11 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
                 ExplorerManager explorerManager = (ExplorerManager) arg0;
                 WorkflowProcessElement workflowProcessElement = (WorkflowProcessElement) explorerManager.getRootContext().getChildren().getNodes()[0];
                 WorkflowProcess workflowProcess = (WorkflowProcess) workflowProcessElement.getContent();
-                Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
-                Writer out = new StringWriter();
+//                Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
+                JAXP_FPDL_Serializer ser = new JAXP_FPDL_Serializer();
+                StringWriter out = new StringWriter();
+//                java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+//                BufferedOutputStream out = new BufferedOutputStream();
                 ser.serialize(workflowProcess, out);
                 out.close();
 
@@ -390,7 +380,6 @@ public class FPDLDataObject extends XmlMultiViewDataObject {//MultiDataObject {
                 return null;
             }
         } else if (DesignerConstant.RUN_ENV == 2) {
-
         }
 
         return null;

@@ -3,19 +3,10 @@
     xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-    
-    <bean id="fireflowSession"
-   class="org.fireflow.engine.impl.FireflowSession">
-        <property name="runtimeContext">
-            <ref local="runtimeContext"/>
-        </property>
-    </bean>
-    
     <bean id="runtimeContext"
    class="org.fireflow.engine.RuntimeContext"
    init-method="initialize"
    factory-method="getInstance">
-        
         <property name="persistenceService">
             <ref local="persistenceService"/>
         </property>
@@ -30,14 +21,16 @@
         </property>
         <property name="conditionResolver">
             <ref local="conditionResolver"/>
-        </property>             
+        </property>
+        <property name="calendarService">
+            <ref local="calendarService"/>
+        </property>        
     </bean>
-    
     <bean id="conditionResolver" class="org.fireflow.engine.condition.ConditionResolver">
     </bean>
-    
     <bean id="taskInstanceManager"
-   class="org.fireflow.designer.simulation.taskinstance.TaskInstanceManager4Simulation"></bean>
+   class="org.fireflow.designer.simulation.taskinstance.TaskInstanceManager4Simulation">
+    </bean>
     
     <!-- **************Kenel Manager Begin*************** -->
     <bean id="kenelManager"
@@ -49,30 +42,28 @@
                         <ref local="startNodeInstanceEventListenser"/>
                     </list>
                 </entry>
-                
                 <entry key="org.fireflow.kenel.ActivityInstance">
                     <list>
                         <ref local="nodeInstanceEventListener"/>
                     </list>
-                </entry>    
-                
+                </entry>
                 <entry key="org.fireflow.kenel.SynchronizerInstance">
                     <list>
                         <ref local="synchronizerInstanceEventListenser"/>
                     </list>
-                </entry>          
+                </entry>
                 <entry key="org.fireflow.kenel.EndNodeInstance">
                     <list>
                         <ref local="endNodeInstanceEventListenser"/>
                     </list>
-                </entry>     
+                </entry>
                 <entry key="org.fireflow.kenel.TransitionInstance">
                     <list>
                         <ref local="transitionInstanceEventListenser"/>
                     </list>
-                </entry>                           
+                </entry>
             </map>
-        </property>                          
+        </property>
     </bean>
     <!-- **************Kenel Manager End*************** -->
 	
@@ -87,25 +78,26 @@
    class="org.fireflow.designer.simulation.engine.persistence.MemoryPersistenceService">
     </bean>
     <!-- ***************Persistence End******************* -->	
-        
+	<!-- **************CalendarService Begin******************** -->
+    <bean id="calendarService"
+		class="org.fireflow.engine.calendar.DefaultCalendarService">
+    </bean>
+	<!-- ***************CalendarService End******************* -->	        
     <!-- kenel extensions (begin) -->
     <bean id="startNodeInstanceEventListenser"
-          class="org.fireflow.designer.simulation.engine.kenelextensions.StartNodeInstanceExtension"
+          class="org.fireflow.designer.simulation.engine.kenelextensions.StartNodeInstanceExtension4Simulation"
     />
-    
     <bean id="nodeInstanceEventListener"
-          class="org.fireflow.designer.simulation.engine.kenelextensions.ActivityInstanceExtension"
-    />        
-    
+          class="org.fireflow.designer.simulation.engine.kenelextensions.ActivityInstanceExtension4Simulation"
+    />
     <bean id="synchronizerInstanceEventListenser"
-          class="org.fireflow.designer.simulation.engine.kenelextensions.SynchronizerInstanceExtension"
-    />          
-    
+          class="org.fireflow.designer.simulation.engine.kenelextensions.SynchronizerInstanceExtension4Simulation"
+    />
     <bean id="endNodeInstanceEventListenser"
-          class="org.fireflow.designer.simulation.engine.kenelextensions.EndNodeInstanceExtension"
-    />     
+          class="org.fireflow.designer.simulation.engine.kenelextensions.EndNodeInstanceExtension4Simulation"
+    />
     <bean id="transitionInstanceEventListenser"
-          class="org.fireflow.designer.simulation.engine.kenelextensions.TransitionInstanceExtension"
+          class="org.fireflow.designer.simulation.engine.kenelextensions.TransitionInstanceExtension4Simulation"
     />           
-    <!-- kenel extensions  (end)-->        
+    <!-- kenel extensions  (end)-->
 </beans>

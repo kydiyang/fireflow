@@ -51,7 +51,7 @@ public class DataFieldElement extends AbstractNode implements IFPDLElement{
     @Override
     public String getDisplayName(){
         DataField datafield = this.getLookup().lookup(DataField.class);
-        return datafield.getName();
+        return datafield.getDisplayName();
     }
     
     @Override

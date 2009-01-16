@@ -58,7 +58,7 @@ public class ActivitiesElementChildren extends Children.Keys<String> implements 
         lookupContent.add(activity);
         if (dataObject!=null ) lookupContent.add(dataObject);
         lookupContent.add(parent.getLookup().lookup(WorkflowProcess.class));
-        lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
+//        lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
         lookupContent.add(activity.getTasks());
         
         ActivityElement activityElement = new ActivityElement(lookup);

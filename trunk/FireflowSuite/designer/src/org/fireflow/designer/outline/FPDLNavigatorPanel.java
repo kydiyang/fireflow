@@ -7,7 +7,6 @@ package org.fireflow.designer.outline;
 import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,7 +14,6 @@ import org.fireflow.designer.datamodel.FPDLDataObject;
 import org.fireflow.designer.properties.PropertiesEditPaneTopComponent;
 import org.netbeans.spi.navigator.NavigatorPanel;
 import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.util.Lookup;
 //import org.fireflow.designer.properties.
@@ -72,12 +70,7 @@ public class FPDLNavigatorPanel implements NavigatorPanel, LookupListener {
     }
 
     public Lookup getLookup() {
-
-        if (explorerManager != null) {
-            return ExplorerUtils.createLookup(explorerManager, new ActionMap());
-        } else {
-            return null;
-        }
+        return null;
     }
 
     private void setNewContent(Collection newData) {
@@ -85,9 +78,7 @@ public class FPDLNavigatorPanel implements NavigatorPanel, LookupListener {
 //        System.out.println("==================Inside setNewContent,newData size=" + newData.size());
         if (it.hasNext()) {
             fpdlDataObj = (FPDLDataObject) it.next();
-//            System.out.println("==================FPDLDataObject=" + fpdlDataObj);
-//            explorerManager = new ExplorerManager();
-//            explorerManager.setRootContext(fpdlDataObj.getWorkflowProcessElement());
+
             explorerManager = fpdlDataObj.getExplorerManager();
 
             MyNavigatorComponent naviComp = (MyNavigatorComponent) this.getComponent();
@@ -99,8 +90,6 @@ public class FPDLNavigatorPanel implements NavigatorPanel, LookupListener {
             explorerManager.addPropertyChangeListener(propertiesEditPane);
 
             propertiesEditPane.open();
-
-
         }
     }
 }
