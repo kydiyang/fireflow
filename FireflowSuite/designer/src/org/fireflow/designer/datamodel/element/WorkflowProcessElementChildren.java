@@ -7,7 +7,6 @@ package org.fireflow.designer.datamodel.element;
 import org.fireflow.designer.datamodel.FPDLDataObject;
 import org.fireflow.designer.datamodel.IFPDLElement;
 import org.fireflow.model.WorkflowProcess;
-import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.AbstractLookup;
@@ -50,7 +49,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
         Node parent = this.getNode();
         workflowProcess = parent.getLookup().lookup(WorkflowProcess.class);
         dataObject = parent.getLookup().lookup(FPDLDataObject.class);
-        ExplorerManager explorerManager = parent.getLookup().lookup(ExplorerManager.class);
+//        ExplorerManager explorerManager = parent.getLookup().lookup(ExplorerManager.class);
 
         if (arg0.equals(IFPDLElement.START_NODE)) {
             InstanceContent lookupContent = new InstanceContent();
@@ -62,7 +61,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
                 lookupContent.add(dataObject);
             }
             lookupContent.add(workflowProcess);
-            lookupContent.add(explorerManager);
+//            lookupContent.add(explorerManager);
             Node[] nodes = new Node[1];
             nodes[0] = new StartNodeElement(lookup);
             return nodes;
@@ -75,7 +74,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
                 lookupContent.add(dataObject);
             }
             lookupContent.add(workflowProcess);
-            lookupContent.add(explorerManager);
+//            lookupContent.add(explorerManager);
 
             Node[] nodes = new Node[1];
             nodes[0] = new DataFieldsElement(lookup);
@@ -90,7 +89,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
                 lookupContent.add(dataObject);
             }
             lookupContent.add(workflowProcess);
-            lookupContent.add(explorerManager);
+//            lookupContent.add(explorerManager);
 
             Node[] nodes = new Node[1];
             nodes[0] = new ActivitiesElement(lookup);
@@ -105,7 +104,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
                 lookupContent.add(dataObject);
             }
             lookupContent.add(workflowProcess);
-            lookupContent.add(explorerManager);
+//            lookupContent.add(explorerManager);
             Node[] nodes = new Node[1];
             nodes[0] = new SynchronizersElement(lookup);
             return nodes;
@@ -119,7 +118,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
                 lookupContent.add(dataObject);
             }
             lookupContent.add(workflowProcess);
-            lookupContent.add(explorerManager);
+//            lookupContent.add(explorerManager);
             Node[] nodes = new Node[1];
             nodes[0] = new TransitionsElement(lookup);
             return nodes;
@@ -133,7 +132,7 @@ public class WorkflowProcessElementChildren extends Children.Keys<String> implem
                 lookupContent.add(dataObject);
             }
             lookupContent.add(workflowProcess);
-            lookupContent.add(explorerManager);
+//            lookupContent.add(explorerManager);
             Node[] nodes = new Node[1];
             nodes[0] = new EndNodesElement(lookup);
             return nodes;

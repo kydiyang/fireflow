@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import org.fireflow.designer.simulation.engine.definition.DefinitionService4Simulation;
+import org.fireflow.designer.simulation.engine.definition.WorkflowDefinition4Simulation;
 import org.fireflow.designer.simulation.engine.persistence.MemoryPersistenceService;
 import org.fireflow.engine.EngineException;
-import org.fireflow.engine.IFireflowSession;
+import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.designer.util.DesignerConstant;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.kenel.KenelException;
 import org.fireflow.model.WorkflowProcess;
@@ -35,7 +36,7 @@ public class FireflowSimulator {
 
 
     private WorkflowProcess workflowProcess = null;
-    private IFireflowSession fireflowSession = null;
+    private IWorkflowSession fireflowSession = null;
 //    private MemoryPersistenceService persistenceService = null;
 //    private GraphLayoutCache graphLayoutCache = null;
     
@@ -55,7 +56,7 @@ public class FireflowSimulator {
     }
     
     
-    public FireflowSimulator(IFireflowSession session, WorkflowProcess workflowProcess, SimulatorPanel simulatorPanel,JScrollPane simulatorContainer) {
+    public FireflowSimulator(IWorkflowSession session, WorkflowProcess workflowProcess, SimulatorPanel simulatorPanel,JScrollPane simulatorContainer) {
 //        explorerManager = explorerMgr;
 //        this.graphLayoutCache = layoutCache;
         fireflowSession = session;
@@ -131,15 +132,16 @@ public class FireflowSimulator {
         initAll();//清空上一次的测试数据
         
         try {
-            fireflowSession.begin(null);
-            fireflowSession.getRuntimeContext().getKenelManager().createNetInstance(workflowProcess);
+            WorkflowDefinition workflowDef = new WorkflowDefinition4Simulation();
+            workflowDef.setWorkflowProcess(workflowProcess);
+            workflowDef.setVersion(1);
+            fireflowSession.getRuntimeContext().getKenelManager().createNetInstance(workflowDef);
             IProcessInstance processInstance = fireflowSession.createProcessInstance(workflowProcess.getName());
 //            processInstance.setProcessInstanceVariable("jine", new Integer(800));
             processInstance.run();
             
             mainSimulatorPanel.setCurrentProcessInstance(processInstance);
             
-            fireflowSession.end();
         } catch (EngineException ex) {
             InputOutput inputOutput = IOProvider.getDefault().getIO(DesignerConstant.FIREFLOW_OUTPUT, false);
             inputOutput.getErr().println(Utilities.errorStackToString(ex));
@@ -163,7 +165,7 @@ public class FireflowSimulator {
             IWorkItem wi = workItemList.get(i);
             if (wi.getState() == IWorkItem.INITIALIZED) {
                 try {
-                    wi.accept();
+                    wi.sign();
                 } catch (EngineException ex) {
                     InputOutput inputOutput = IOProvider.getDefault().getIO(DesignerConstant.FIREFLOW_OUTPUT, false);
                     inputOutput.getErr().println(Utilities.errorStackToString(ex));
@@ -230,8 +232,6 @@ public class FireflowSimulator {
             mainSimulatorPanel.getTaskColorProps().clear();
             ((MemoryPersistenceService) persistenceService).addStorageChangeListenser(mainSimulatorPanel);
             
-            ((DefinitionService4Simulation) ctx.getDefinitionService()).reloadWorkflowProcess();
-
             ctx.initAllNetInstances();
 
         } catch (KenelException ex) {

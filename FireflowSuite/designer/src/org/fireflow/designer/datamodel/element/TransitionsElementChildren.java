@@ -10,7 +10,6 @@ import org.fireflow.designer.datamodel.FPDLDataObject;
 import org.fireflow.model.IWFElement;
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.net.Transition;
-import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.AbstractLookup;
@@ -50,7 +49,7 @@ public class TransitionsElementChildren extends Children.Keys<String> implements
             lookupContent.add(parent.getLookup().lookup(WorkflowProcess.class));
             FPDLDataObject fpdlDataObject = parent.getLookup().lookup(FPDLDataObject.class);
             if (fpdlDataObject!=null) lookupContent.add(fpdlDataObject);
-            lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
+//            lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
 
             TransitionElement transElem = new TransitionElement(lookup);
             Node[] nodes = new Node[]{transElem};

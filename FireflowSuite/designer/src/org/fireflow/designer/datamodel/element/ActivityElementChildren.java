@@ -55,7 +55,7 @@ public class ActivityElementChildren extends Children.Keys<String> implements IC
         FPDLDataObject dataObj = parent.getLookup().lookup(FPDLDataObject.class);
         if (dataObj!=null)lookupContent.add(dataObj);
         lookupContent.add(parent.getLookup().lookup(WorkflowProcess.class));
-        lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
+//        lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
 
         TaskElement taskElement = new TaskElement(lookup);
         return taskElement;

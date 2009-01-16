@@ -52,7 +52,7 @@ public class EndNodesElementChildren extends Children.Keys<String> implements IC
             FPDLDataObject dataObj = parent.getLookup().lookup(FPDLDataObject.class);
             if (dataObj!=null)instanceContent.add(dataObj);
             instanceContent.add(parent.getLookup().lookup(WorkflowProcess.class));
-            instanceContent.add(parent.getLookup().lookup(ExplorerManager.class));
+//            instanceContent.add(parent.getLookup().lookup(ExplorerManager.class));
             EndNodeElement endNodeElm = new EndNodeElement(lookup);
 
             Node[] nodes = new Node[]{endNodeElm};

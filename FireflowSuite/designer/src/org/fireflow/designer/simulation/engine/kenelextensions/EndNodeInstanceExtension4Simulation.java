@@ -16,25 +16,14 @@
  */
 package org.fireflow.designer.simulation.engine.kenelextensions;
 
+import org.fireflow.engine.kenelextensions.EndNodeInstanceExtension;
 import org.fireflow.kenel.impl.EndNodeInstance;
 
 /**
  * @author chennieyun
  *
  */
-public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
-	public String getExtentionPointName() {
-		// TODO Auto-generated method stub
-		return EndNodeInstance.Extension_Point_NodeInstanceEventListener;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
-	 */
-	public String getExtentionTargetName() {
-		// TODO Auto-generated method stub
-		return EndNodeInstance.Extension_Target_Name;
-	}
-        
+public class EndNodeInstanceExtension4Simulation extends EndNodeInstanceExtension {
+       
      
 }

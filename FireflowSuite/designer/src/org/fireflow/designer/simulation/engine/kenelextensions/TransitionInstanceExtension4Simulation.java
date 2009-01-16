@@ -16,7 +16,7 @@ import org.fireflow.kenel.plugin.IKenelExtension;
  *
  * @author chennieyun
  */
-public class TransitionInstanceExtension implements IKenelExtension,
+public class TransitionInstanceExtension4Simulation implements IKenelExtension,
 		ITransitionInstanceEventListener{
 //    FireflowSimulator fireflowSimulator = null;
 //        public void setFireflowSimulator(FireflowSimulator fireflowSimulator){

@@ -53,7 +53,7 @@ public class DataFieldsElementChildren extends Children.Keys<String> implements 
             FPDLDataObject dataObj = parent.getLookup().lookup(FPDLDataObject.class);
             if (dataObj!=null)lookupContent.add(dataObj);
             lookupContent.add(parent.getLookup().lookup(WorkflowProcess.class));
-            lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
+//            lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
             
             DataFieldElement dataFieldElement = new DataFieldElement(lookup);
             return new Node[]{dataFieldElement};

@@ -23,6 +23,7 @@ import org.fireflow.designer.simulation.engine.persistence.MemoryPersistenceServ
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.kenel.KenelException;
 import org.fireflow.model.WorkflowProcess;
@@ -47,6 +48,7 @@ public class TaskInstance4Simulation extends TaskInstance {
      * @throws org.fireflow.engine.EngineException
      */
     protected void startToolTask() throws EngineException {
+        System.out.println("====Inside TaskInstance4Simulation::startToolTask...");
         if (this.getState().intValue() == ITaskInstance.INITIALIZED ||
                 this.getState().intValue() == ITaskInstance.STARTED) {
             try {
@@ -61,10 +63,13 @@ public class TaskInstance4Simulation extends TaskInstance {
     @Override
     protected void startSubflowTask() throws EngineException, KenelException {
         //检查自流程的定义文件是否已经装载，如果没有则弹出兑换框，让操作员选择
+        //System.out.println("====Inside TaskInstance4Simulation.startSubflowTask():: the task is "+this.getTask().getId());
         String workflowProcessId = this.getTask().getSubWorkflowProcess().getWorkflowProcessId();
 
         RuntimeContext ctx = RuntimeContext.getInstance();
-        WorkflowProcess workflowProcess = ctx.getDefinitionService().getWorkflowProcessById(workflowProcessId);
+        WorkflowDefinition workflowDef = ctx.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(workflowProcessId);
+        System.out.println("====Inside TaskInstance4Simulation.startSubflowTask():: the workflowDef of "+workflowProcessId+" is "+workflowDef.getName());
+        WorkflowProcess workflowProcess = workflowDef.getWorkflowProcess();
         String validateResult = null;
         if (workflowProcess == null) {
             JFileChooser chooser = new JFileChooser();
@@ -104,9 +109,9 @@ public class TaskInstance4Simulation extends TaskInstance {
                     }
 
                     DefinitionService4Simulation defService = (DefinitionService4Simulation) ctx.getDefinitionService();
-                    defService.setWorkflowProcess(subWorkflow);
+                    WorkflowDefinition subWorkflowDef = defService.setWorkflowProcess(subWorkflow);
 
-                    ctx.getKenelManager().createNetInstance(subWorkflow);
+                    ctx.getKenelManager().createNetInstance(subWorkflowDef);
                     workflowProcess = subWorkflow;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -157,6 +162,8 @@ public class TaskInstance4Simulation extends TaskInstance {
         simulator.addSimulatorPanel(graph);
         MemoryPersistenceService persistenceService = (MemoryPersistenceService) ctx.getPersistenceService();
         persistenceService.addStorageChangeListenser(graph);
+        
+        ctx.getKenelManager().createNetInstance(workflowDef);
 //        } else {
 //            simulator.setCurrentSimulatorPanel(panel);
 //        }

@@ -16,23 +16,13 @@
  */
 package org.fireflow.designer.simulation.engine.kenelextensions;
 
-import org.fireflow.kenel.impl.StartNodeInstance;;
+import org.fireflow.engine.kenelextensions.SynchronizerInstanceExtension;
 
 /**
  * @author chennieyun
  *
  */
-public class StartNodeInstanceExtension extends SynchronizerInstanceExtension {
-	public String getExtentionPointName() {
-		// TODO Auto-generated method stub
-		return StartNodeInstance.Extension_Point_NodeInstanceEventListener;
-	}
+public class SynchronizerInstanceExtension4Simulation extends SynchronizerInstanceExtension {
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
-	 */
-	public String getExtentionTargetName() {
-		// TODO Auto-generated method stub
-		return StartNodeInstance.Extension_Target_Name;
-	}
+
 }

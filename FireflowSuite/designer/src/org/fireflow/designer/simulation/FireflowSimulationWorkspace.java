@@ -10,10 +10,9 @@ import javax.swing.JScrollPane;
 import org.fireflow.designer.datamodel.FPDLDataObject;
 import org.fireflow.designer.editpanel.graph.MyViewFactory;
 import org.fireflow.designer.editpanel.graph.ProcessGraphModel;
-import org.fireflow.designer.simulation.engine.definition.DefinitionService4Simulation;
 import org.fireflow.designer.simulation.engine.persistence.MemoryPersistenceService;
-import org.fireflow.designer.simulation.output.SimulationDataViewerTopComponent;
-import org.fireflow.engine.IFireflowSession;
+import org.fireflow.designer.util.MyXmlBeanFactory;
+import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.WorkflowProcess;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphLayoutCache;
@@ -21,7 +20,6 @@ import org.netbeans.modules.xml.multiview.AbstractMultiViewElement;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -31,7 +29,7 @@ import org.springframework.core.io.ClassPathResource;
 public class FireflowSimulationWorkspace extends AbstractMultiViewElement {
     static ClassPathResource resource = new ClassPathResource(
             "/org/fireflow/designer/simulation/FireflowContext.xml");
-    public static XmlBeanFactory beanFactory = new XmlBeanFactory(resource);
+    public static MyXmlBeanFactory beanFactory = new MyXmlBeanFactory(resource);
     
     Lookup lookup = null;
     JScrollPane designScrollPanel = new JScrollPane();
@@ -59,9 +57,9 @@ public class FireflowSimulationWorkspace extends AbstractMultiViewElement {
         layoutCache.setLocalAttributes(localAttributes);
         SimulatorPanel graph = new SimulatorPanel(graphModel, layoutCache);
 
-        IFireflowSession fireflowSession = (IFireflowSession) beanFactory.getBean("fireflowSession");
+        RuntimeContext ctx = (RuntimeContext) beanFactory.getBean("runtimeContext");
 
-        fireflowSimulator = new FireflowSimulator(fireflowSession, (WorkflowProcess) graphModel.getWorkflowProcessElement().getContent(), graph, designScrollPanel);
+        fireflowSimulator = new FireflowSimulator(ctx.getWorkflowSession(), (WorkflowProcess) graphModel.getWorkflowProcessElement().getContent(), graph, designScrollPanel);
 
         simulatorToolbar = new SimulatorToolbar(fireflowSimulator);
 

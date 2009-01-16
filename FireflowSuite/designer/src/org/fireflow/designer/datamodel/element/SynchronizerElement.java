@@ -37,9 +37,9 @@ public class SynchronizerElement extends AbstractNode implements IFPDLElement{
         WorkflowProcess workflowProcess = (WorkflowProcess) synch.getParent();
         workflowProcess.getSynchronizers().remove(synch);
         
-//        FPDLDataObject dataObj = this.getLookup().lookup(FPDLDataObject.class);
-//        ExplorerManager explorerManager = dataObj.getExplorerManager();
-        ExplorerManager explorerManager = this.getLookup().lookup(ExplorerManager.class);
+        FPDLDataObject dataObj = this.getLookup().lookup(FPDLDataObject.class);
+        ExplorerManager explorerManager = dataObj.getExplorerManager();
+//        ExplorerManager explorerManager = this.getLookup().lookup(ExplorerManager.class);
         WorkflowProcessElement workflowProcessElement = (WorkflowProcessElement) explorerManager.getRootContext().getChildren().getNodes()[0];        
         Node transitionsElement = workflowProcessElement.getChildren().findChild(IFPDLElement.TRANSITIONS);
         List transitionList = workflowProcess.getTransitions();

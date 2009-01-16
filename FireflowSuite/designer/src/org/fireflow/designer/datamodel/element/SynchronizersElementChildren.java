@@ -49,7 +49,7 @@ public class SynchronizersElementChildren extends Children.Keys<String> implemen
             FPDLDataObject dataObject = parent.getLookup().lookup(FPDLDataObject.class);
             if (dataObject!=null)lookupContent.add(dataObject);
             lookupContent.add(parent.getLookup().lookup(WorkflowProcess.class));
-            lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
+//            lookupContent.add(parent.getLookup().lookup(ExplorerManager.class));
             SynchronizerElement synchElement = new SynchronizerElement(lookup);
             Node[] nodes = new Node[]{synchElement};
             return nodes;
