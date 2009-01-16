@@ -17,6 +17,7 @@
 package org.fireflow.engine.taskinstance;
 
 import org.fireflow.engine.EngineException;
+import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.kenel.IActivityInstance;
 import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.KenelException;
@@ -24,7 +25,7 @@ import org.fireflow.kenel.KenelException;
  * @author chennieyun
  *
  */
-public interface ITaskInstanceManager {
+public interface ITaskInstanceManager extends IRuntimeContextAware{
 	/**
 	 * 创建taskinstance实例
 	 * @param token

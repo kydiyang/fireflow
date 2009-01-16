@@ -1,0 +1,6 @@
+在Fireflow中，实际上存在两个事件系统，
+第一个是Kenel的，通过该事件系统实现了engine的插件式结构，Kenel的事件当前只能由Engine监听（所以，设计器上，synchronizer和transition应该没有事件属性）。
+
+第二个事件系统是Engine的，Engine产生的事件由业务字系统进行监听，所以Process,Task都有事件监听器。
+    疑问：activity是否需要事件监听器？
+    Engine的事件监听器定义在workflowprocess文件中，运行时采用singleton模式，因此监听器的实现类必须是无状态的.

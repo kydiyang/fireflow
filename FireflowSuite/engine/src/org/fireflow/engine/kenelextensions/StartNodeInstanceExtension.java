@@ -23,6 +23,7 @@ import org.fireflow.kenel.impl.StartNodeInstance;;
  *
  */
 public class StartNodeInstanceExtension extends SynchronizerInstanceExtension {
+    
 	public String getExtentionPointName() {
 		// TODO Auto-generated method stub
 		return StartNodeInstance.Extension_Point_NodeInstanceEventListener;

@@ -16,26 +16,20 @@
  */
 package org.fireflow.engine.definition;
 
-import java.io.IOException;
 import java.util.List;
+import org.fireflow.engine.IRuntimeContextAware;
 
-import org.fireflow.model.DataField;
-import org.fireflow.model.Task;
-import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.io.FPDLParserException;
-import org.fireflow.model.net.Activity;
-import org.fireflow.model.net.Transition;
 /**
  * @author chennieyun
  *
  */
-public interface IDefinitionService {
-	public WorkflowProcess getWorkflowProcessByName(String name);
-	public void setDefinitionFiles(List<String> definitionFileNames)throws IOException,FPDLParserException;
-	public List<WorkflowProcess> getAllWorkflowProcesses();
-        public WorkflowProcess getWorkflowProcessById(String id);
-        public Activity getActivityById(String id);
-        public Task getTaskById(String id);
-        public Transition getTransitionById(String id);
-        public DataField getDataFieldById(String id);
+public interface IDefinitionService extends IRuntimeContextAware {
+//	public WorkflowProcess getWorkflowProcessByName(String name);
+//	public void setDefinitionFiles(List<String> definitionFileNames)throws IOException,FPDLParserException;
+//	public List<WorkflowProcess> getAllWorkflowProcesses();
+//        public WorkflowProcess getWorkflowProcessById(String id);
+    
+    public List<WorkflowDefinition> getAllLatestVersionOfWorkflowDefinitions();
+    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersion(String processId ,Integer version);
+    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId);
 }

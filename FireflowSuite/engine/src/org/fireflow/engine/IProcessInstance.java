@@ -16,11 +16,9 @@
  */
 package org.fireflow.engine;
 
+import java.util.Date;
 import java.util.Map;
 
-import org.fireflow.kenel.IJoinPoint;
-import org.fireflow.kenel.ISynchronizerInstance;
-import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.KenelException;
 import org.fireflow.model.WorkflowProcess;
 /**
@@ -35,26 +33,97 @@ public interface IProcessInstance {
 	
 	public void run()throws EngineException,KenelException;
 	
+        /**
+         * return the process instance's Id.
+         * @return
+         */
 	public String getId();
-	
-	public String getParentProcessInstanceId() ;
-        public String getParentTaskInstanceId();
-	
-//	public IJoinPoint createJoinPoint(ISynchronizerInstance synchInst,IToken token)throws EngineException;
-	
+        
+        /**
+         * return the process instance's name,which equals to the workflow process's name
+         * @return
+         */
+        public String getName();	
+        
+        /**
+         * return the process instance's display-name ，
+         * which equals to the workflow process's  display-name.
+         * @return
+         */
+        public String getDisplayName();
+
+        /**
+         * return the workflow process's id
+         * @return
+         */
+        public String getProcessId();
+        
+        public Integer getState();
+        
+        /**
+         * return the workflow process's version.
+         * 
+         * @return
+         */
+        public Integer getVersion();		
+        
+        public Date getCreatedTime();
+        
+        public Date getStartedTime();
+        
+        public Date getEndTime();
+        
+        public Date getExpiredTime();
+        /**
+         * Get the process instance variable,return null if the variable is not existing .
+         * @param name the name of the variable
+         * @return the value of the variable. It may be Integer,String,Boolean,java.util.Date or Float
+         */
 	public Object getProcessInstanceVariable(String name);
 	
+        /**
+         * Save the process instance variable.If there is a variable with the same name ,it will be updated.
+         * @param name
+         * @param var The value of the variable. It may be Integer,String,Boolean,java.util.Date or Float
+         */
 	public void setProcessInstanceVariable(String name,Object var);
 	
+        /**
+         * Get all the process instance variables. the key of the returned map is the variable's name
+         * @return 
+         */
 	public Map getProcessInstanceVariables();
+        
+        /**
+         * update the process instance variables batched.
+         * @param vars
+         */
 	public void setProcessInstanceVariables(Map vars);
         
-        public String getName();
+
+        /**
+         * return the corresponding workflow process.
+         * @return
+         */
+        public WorkflowProcess getWorkflowProcess()throws EngineException;
         
-        public WorkflowProcess getWorkflowProcess();
+        /**
+         * get the parent process instance's id , null if no parent process instance.
+         * @return
+         */
+	public String getParentProcessInstanceId() ;
         
-        public String getProcessId();
-//	public ProcessInstance getParentProcessInstance() ;
-//	public Set getTaskInstances();
+        /**
+         * get the parent taskinstance's id ,null if no parent taskinstance.
+         * @return
+         */
+        public String getParentTaskInstanceId();    
+        
+        
+	/**
+	 * Abort the process instance 。
+	 * @throws RuntimeException
+	 */
+	public void abort()throws EngineException;        
 	
 }

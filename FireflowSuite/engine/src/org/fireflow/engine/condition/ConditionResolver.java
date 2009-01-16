@@ -18,17 +18,20 @@ package org.fireflow.engine.condition;
 
 import java.util.Map;
 
-import org.fireflow.kenel.condition.IConditionResolver;
+import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.condition.IConditionResolver;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
+import org.fireflow.engine.IRuntimeContextAware;
 /**
  * @author chennieyun
  *
  */
-public class ConditionResolver implements IConditionResolver {
-
+public class ConditionResolver implements IConditionResolver,IRuntimeContextAware {
+        protected RuntimeContext rtCtx = null;
+        
 	/* (non-Javadoc)
 	 * @see org.fireflow.kenel.condition.IConditionResolver#resolveBooleanExpression(java.lang.String)
 	 */
@@ -46,4 +49,10 @@ public class ConditionResolver implements IConditionResolver {
 		}
 	}
 
+    public void setRuntimeContext(RuntimeContext ctx) {
+        rtCtx = ctx;
+    }
+    public RuntimeContext getRuntimeContext(){
+        return this.rtCtx;
+    } 
 }

@@ -17,39 +17,43 @@
 package org.fireflow.engine;
 
 import java.util.Date;
-import java.util.Set;
 
 import org.fireflow.engine.ou.IAssignable;
 import org.fireflow.kenel.KenelException;
 import org.fireflow.model.Task;
+import org.fireflow.model.WorkflowProcess;
+import org.fireflow.model.net.Activity;
 
 /**
  * @author chennieyun
  *
  */
-public interface ITaskInstance extends IAssignable{
+public interface ITaskInstance {
 	public static final int INITIALIZED = 0;
 	public static final int STARTED = 1;
 	public static final int COMPLETED = 2;
 	public static final int CANCELED = -1;
-	public Task getTask();
+        
+
 	public String getId();
 	public String getTaskId();
 	public String getName();
 	public String getDisplayName();
-//	public String getDescription();
-//	public String getWorkflowProcessInstanceId();
 	public IProcessInstance getProcessInstance();
 	public Date getCreatedTime();
 	public Date getStartedTime();
 	public Date getEndTime();
 	public Date getExpiredTime();//过期时间
 	public Integer getState();
-	public String getCompletionStrategy();
-	public void setCompletionStrategy(String s);
-	
-	public void complete()throws EngineException,KenelException;	
-	public void start()throws EngineException,KenelException;
-	
+	public String getAssignmentStrategy();
+        
+        public String getActivityId();
+        public String getTaskType();
+        
+        public void abort() throws EngineException,KenelException;	
+        
+        public Activity getActivity() throws EngineException;
+        public WorkflowProcess getWorkflowProcess() throws EngineException;
+	public Task getTask() throws EngineException;        
 //	public Set getWorkItems() ;	
 }

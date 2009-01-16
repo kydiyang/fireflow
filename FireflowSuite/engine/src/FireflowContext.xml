@@ -3,111 +3,125 @@
 	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-
-	<bean id="fireflowSession"
-		class="org.fireflow.engine.impl.FireflowSession">
-		<property name="runtimeContext">
-			<ref local="runtimeContext"/>
-		</property>
-	</bean>
-
-	<bean id="runtimeContext"
+    <bean id="runtimeContext"
 		class="org.fireflow.engine.RuntimeContext"
 		init-method="initialize"
 		factory-method="getInstance">
-		
-		<property name="persistenceService">
-			<ref local="persistenceService"/>
-		</property>
-		<property name="definitionService">
-			<ref local="definitionService"/>
-		</property>
-		<property name="kenelManager">
-			<ref local="kenelManager"/>
-		</property>
-		<property name="taskInstanceManager">
-			<ref local="taskInstanceManager"/>
-		</property>
-		<property name="conditionResolver">
-			<ref local="conditionResolver"/>
-		</property>
-
-
-	</bean>
-	
-	<bean id="conditionResolver" class="org.fireflow.engine.condition.ConditionResolver">
-	</bean>
-
-	<bean id="taskInstanceManager"
-		class="org.fireflow.engine.taskinstance.BasicTaskInstanceManager"></bean>
+        <property name="persistenceService">
+            <ref local="persistenceService"/>
+        </property>
+        <property name="definitionService">
+            <ref local="definitionService"/>
+        </property>
+        <property name="kenelManager">
+            <ref local="kenelManager"/>
+        </property>
+        <property name="taskInstanceManager">
+            <ref local="taskInstanceManager"/>
+        </property>
+        <property name="conditionResolver">
+            <ref local="conditionResolver"/>
+        </property>
+        <property name="calendarService">
+            <ref local="calendarService"/>
+        </property>
+    </bean>
+    <bean id="conditionResolver" class="org.fireflow.engine.condition.ConditionResolver">
+    </bean>
+    <bean id="taskInstanceManager"
+		class="org.fireflow.engine.taskinstance.BasicTaskInstanceManager">
+    </bean>
 
 	<!-- **************Kenel Manager Begin*************** -->
-	<bean id="kenelManager"
+    <bean id="kenelManager"
 		class="org.fireflow.kenel.KenelManager">
-                <property name="kenelExtensions">
-                    <map>
-                        <entry key="org.fireflow.kenel.StartNodeInstance">
-                            <list>
-                                <ref local="startNodeInstanceEventListenser"/>
-                            </list>
-                        </entry>
-                        
-                        <entry key="org.fireflow.kenel.ActivityInstance">
-                            <list>
-                                <ref local="nodeInstanceEventListener"/>
-                            </list>
-                        </entry>    
-                        
-                        <entry key="org.fireflow.kenel.SynchronizerInstance">
-                            <list>
-                                <ref local="synchronizerInstanceEventListenser"/>
-                            </list>
-                        </entry>          
-                        <entry key="org.fireflow.kenel.EndNodeInstance">
-                            <list>
-                                <ref local="endNodeInstanceEventListenser"/>
-                            </list>
-                        </entry>                            
-                    </map>
-                </property>                                    
-                    </bean>
+        <property name="kenelExtensions">
+            <map>
+                <entry key="org.fireflow.kenel.StartNodeInstance">
+                    <list>
+                        <ref local="startNodeInstanceEventListenser"/>
+                    </list>
+                </entry>
+                <entry key="org.fireflow.kenel.ActivityInstance">
+                    <list>
+                        <ref local="nodeInstanceEventListener"/>
+                    </list>
+                </entry>
+                <entry key="org.fireflow.kenel.SynchronizerInstance">
+                    <list>
+                        <ref local="synchronizerInstanceEventListenser"/>
+                    </list>
+                </entry>
+                <entry key="org.fireflow.kenel.EndNodeInstance">
+                    <list>
+                        <ref local="endNodeInstanceEventListenser"/>
+                    </list>
+                </entry>
+                <entry key="org.fireflow.kenel.TransitionInstance">
+                    <list>
+                        <ref local="transitionInstanceEventListenser"/>
+                    </list>
+                </entry>                
+            </map>
+        </property>
+    </bean>
 	<!-- **************Kenel Manager End*************** -->
 	
 	<!-- **************workflow Definitions Begin*******  -->
-	<bean id="definitionService"
+    <bean id="definitionService"
 		class="org.fireflow.engine.definition.DefinitionService">
-		<property name="definitionFiles">
-			<list>
-				<value>
+        <property name="definitionFiles">
+            <list>
+                <value>
 				/myworkflowDef.xml
-				</value>
-				
-			</list>
-		</property>
-	</bean>
+                </value>
+            </list>
+        </property>
+    </bean>
 	<!-- **************workflow Definitions End*******  -->
 
 	<!-- **************Persistence Begin******************** -->
-	<bean id="persistenceService"
+    <bean id="persistenceService"
 		class="org.fireflow.engine.persistence.hibernate.PersistenceServiceHibernateImpl">
-	</bean>
+    </bean>
 	<!-- ***************Persistence End******************* -->	
         
+	<!-- **************CalendarService Begin******************** -->
+    <bean id="calendarService"
+		class="org.fireflow.engine.calendar.DefaultCalendarService">
+    </bean>
+	<!-- ***************CalendarService End******************* -->	        
+        
         <!-- kenel extensions (begin) -->
-        <bean id="startNodeInstanceEventListenser"
-        class="org.fireflow.engine.kenelextensions.StartNodeInstanceExtension"
-        />
-        
-        <bean id="nodeInstanceEventListener"
-        class="org.fireflow.engine.kenelextensions.ActivityInstanceExtension"
-        />        
-        
-        <bean id="synchronizerInstanceEventListenser"
-        class="org.fireflow.engine.kenelextensions.SynchronizerInstanceExtension"
-        />          
-        
-        <bean id="endNodeInstanceEventListenser"
-        class="org.fireflow.engine.kenelextensions.EndNodeInstanceExtension"
-        />          
+    <bean id="startNodeInstanceEventListenser"
+        class="org.fireflow.engine.kenelextensions.StartNodeInstanceExtension">
+            <property name="runtimeContext">
+                <ref local="runtimeContext"/>
+            </property>
+    </bean>
+    <bean id="nodeInstanceEventListener"
+        class="org.fireflow.engine.kenelextensions.ActivityInstanceExtension">
+            <property name="runtimeContext">
+                <ref local="runtimeContext"/>
+            </property>
+    </bean>            
+    <bean id="synchronizerInstanceEventListenser"
+        class="org.fireflow.engine.kenelextensions.SynchronizerInstanceExtension">
+            <property name="runtimeContext">
+                <ref local="runtimeContext"/>
+            </property>
+    </bean>            
+    <bean id="endNodeInstanceEventListenser"
+        class="org.fireflow.engine.kenelextensions.EndNodeInstanceExtension">
+            <property name="runtimeContext">
+                <ref local="runtimeContext"/>
+            </property>
+    </bean>
+    <bean id="transitionInstanceEventListenser"
+        class="org.fireflow.engine.kenelextensions.TransitionInstanceExtension">
+            <property name="runtimeContext">
+                <ref local="runtimeContext"/>
+            </property>
+    </bean>    
         <!-- kenel extensions  (end)-->
 </beans>

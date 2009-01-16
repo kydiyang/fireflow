@@ -32,6 +32,8 @@ public interface INetInstance {
 //	public IRuntimeContext getRuntimeContext();
 	
 	public String getId();
+        
+        public Integer getVersion();
 	
 	//TODO 实参-形参如何体现？通过Context?
 	public void run(IProcessInstance processInstance)throws KenelException;
@@ -42,13 +44,8 @@ public interface INetInstance {
 	 */
 	public void complete()throws KenelException;
 	
-	/**
-	 * 强行中止流程实例，不管是否达到终态。
-	 * @throws RuntimeException
-	 */
-	public void abort()throws KenelException;
 	
 	public WorkflowProcess getWorkflowProcess();
 	
-	
+	public Object getWFElementInstance(String wfElementId) ;
 }

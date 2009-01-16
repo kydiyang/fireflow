@@ -1,27 +1,27 @@
-/**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
- * All rights reserved. 
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation。
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses. *
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
+
 package org.fireflow.engine;
 
+import org.fireflow.engine.calendar.DefaultCalendarService;
+import org.fireflow.engine.condition.ConditionResolver;
+import org.fireflow.engine.definition.DefinitionService4DBMS;
+
 /**
- * @author chennieyun
  *
+ * @author chennieyun
  */
 public class RuntimeContextFactory {
-//	public static IRuntimeContext getRuntimeContext(){
-//		return null;
-//	}
+    private static RuntimeContext ctx = null;
+    
+//    public static getRuntimeContext(){
+//        if (ctx==null){
+//            ctx = RuntimeContext.getInstance();
+//            ctx.setCalendarService(new DefaultCalendarService());
+//            ctx.setConditionResolver(new ConditionResolver());
+//            ctx.setDefinitionService(new DefinitionService4DBMS());
+//        }
+//    }
 }
