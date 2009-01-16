@@ -21,7 +21,9 @@ package org.fireflow.model;
 public class DataField extends AbstractWFElement { 
 	public static final String STRING = "STRING";
 	public static final String FLOAT = "FLOAT";
+        public static final String DOUBLE = "DOUBLE";
 	public static final String INTEGER = "INTEGER";
+        public static final String LONG = "LONG";
 	public static final String DATETIME = "DATETIME";
 	public static final String BOOLEAN = "BOOLEAN";
 	
@@ -29,7 +31,9 @@ public class DataField extends AbstractWFElement {
     private String initialValue;
 //    private int length;
 
-
+    public DataField(){
+        this.setDataType(STRING);
+    }
     public DataField(WorkflowProcess workflowProcess, String name, String dataType){
         super(workflowProcess, name);
         setDataType(dataType);

@@ -16,6 +16,7 @@
  */
 package org.fireflow.model;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,5 +42,6 @@ public interface IWFElement {
 
 	public void setParent(IWFElement parent) ;
 	
+        public List<EventListener> getEventListeners() ;
 	public Map<String,String> getExtendedAttributes() ;
 }

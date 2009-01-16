@@ -35,6 +35,9 @@ public class Activity extends Node {
     private List<Task> tasks = new ArrayList<Task>();
     private String completionStrategy = ALL;
 
+    public Activity(){
+        
+    }
     public Activity(WorkflowProcess workflowProcess, String name) {
         super(workflowProcess, name);
     }

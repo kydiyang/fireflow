@@ -5,7 +5,8 @@ import java.util.List;
 import org.fireflow.model.WorkflowProcess;
 
 public class EndNode extends Synchronizer {
-
+    public EndNode(){
+    }
 	public EndNode(WorkflowProcess workflowProcess, String name) {
 		super(workflowProcess, name);
 		// TODO Auto-generated constructor stub

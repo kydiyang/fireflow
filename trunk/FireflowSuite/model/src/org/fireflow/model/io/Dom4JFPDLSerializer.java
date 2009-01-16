@@ -17,6 +17,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.fireflow.model.DataField;
 import org.fireflow.model.Duration;
+import org.fireflow.model.EventListener;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.net.Activity;
@@ -63,8 +64,8 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Element workflowProcessElement = df.createElement(new QName(
                 WORKFLOW_PROCESS, FPDL_NS));
         workflowProcessElement.addNamespace(FPDL_NS_PREFIX, FPDL_URI);
-        workflowProcessElement.addNamespace(XSD_NS_PREFIX, XSD_URI);
-        workflowProcessElement.addNamespace(XSI_NS_PREFIX, XSI_URI);
+//        workflowProcessElement.addNamespace(XSD_NS_PREFIX, XSD_URI);
+//        workflowProcessElement.addNamespace(XSI_NS_PREFIX, XSI_URI);
         workflowProcessElement.addAttribute(ID, workflowProcess.getId());
         workflowProcessElement.addAttribute(NAME, workflowProcess.getName());
         workflowProcessElement.addAttribute(DISPLAY_NAME, workflowProcess.getDisplayName());
@@ -83,11 +84,13 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         writeTransitions(workflowProcess.getTransitions(),
                 workflowProcessElement);
 
+        writeEventListeners(workflowProcess.getEventListeners(),workflowProcessElement);
+        
         writeExtendedAttributes(workflowProcess.getExtendedAttributes(),
                 workflowProcessElement);
 
         Document document = df.createDocument(workflowProcessElement);
-        document.addDocType(WORKFLOW_PROCESS, this.PUBLIC_ID, this.SYSTEM_ID);
+        document.addDocType(FPDL_NS_PREFIX+":"+WORKFLOW_PROCESS, PUBLIC_ID, SYSTEM_ID);
         return document;
 
     }
@@ -106,6 +109,22 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    protected void writeEventListeners(List eventListeners,Element parentElement){
+        if (eventListeners == null || eventListeners.size() == 0) {
+            return ;
+        }
+
+        Element eventListenersElm =
+                Util4Serializer.addElement(parentElement,
+                EVENT_LISTENERS);
+        for (int i=0;i<eventListeners.size();i++) {
+            EventListener listener = (EventListener)eventListeners.get(i);
+            Element eventListenerElm = Util4Serializer.addElement(
+                    eventListenersElm, EVENT_LISTENER);
+            eventListenerElm.addAttribute(CLASS_NAME, listener.getClassName());
+        }        
+    }
+    
     protected void writeDataFields(List dataFields, Element parent)
             throws FPDLSerializerException {
 
@@ -229,7 +248,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         activityElement.addAttribute(COMPLETION_STRATEGY, activity.getCompletionStrategy());
 
         Util4Serializer.addElement(activityElement, DESCRIPTION, activity.getDescription());
-
+        writeEventListeners(activity.getEventListeners(),activityElement);
         writeExtendedAttributes(activity.getExtendedAttributes(),
                 activityElement);
 
@@ -254,7 +273,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         taskElement.addAttribute(NAME, task.getName());
         taskElement.addAttribute(DISPLAY_NAME, task.getDisplayName());
         taskElement.addAttribute(TYPE, task.getType());
-        taskElement.addAttribute(START_MODE, task.getStartMode());
+//        taskElement.addAttribute(START_MODE, task.getStartMode());
         taskElement.addAttribute(COMPLETION_STRATEGY, task.getAssignmentStrategy());
         taskElement.addAttribute(DEFAULT_VIEW, task.getDefaultView());
         taskElement.addAttribute(PRIORITY, Integer.toString(task.getPriority()));
@@ -270,7 +289,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         this.writePerformer(task.getPerformer(), taskElement);
 
         writeDuration(task.getDuration(), taskElement);
-
+        writeEventListeners(task.getEventListeners(),taskElement);
         writeExtendedAttributes(task.getExtendedAttributes(), taskElement);
     }
 
