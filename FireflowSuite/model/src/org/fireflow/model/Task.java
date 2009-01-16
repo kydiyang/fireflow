@@ -30,7 +30,13 @@ public class Task extends AbstractWFElement{
 	public static final String FORM = "FORM";
 	public static final String DUMMY = "DUMMY";
 	
+        /**
+         * @deprecated 
+         */
 	public static final String MANUAL = "MANUAL";
+         /**
+         * @deprecated 
+         */
 	public static final String AUTOMATIC = "AUTOMATIC";
 	
 	public static final String ASYNCHR = "ASYNCHR";
@@ -55,13 +61,15 @@ public class Task extends AbstractWFElement{
     protected SubWorkflowProcess subWorkflowProcess = null;
 
     protected String type = FORM;//任务类型
-    protected String startMode = MANUAL ;//启动模式，
+//    protected String startMode = MANUAL ;//启动模式，启动模式没有意义，application和subflow自动启动，Form一般情况下签收时启动，如果需要自动启动则在assignable接口中实现。
     protected String assignmentStrategy=ANY;//workItem分配策略，即任何一个人完成，则taskinstance算完成。
     protected String defaultView = VIEWFORM ;//缺省视图是view form
     protected int priority = 1;
     protected String execution = SYNCHR;//缺省情况下是同步执行
     
- 
+    public Task(){
+        
+    }
    public Task(Activity activity,String name){
      super(activity, name);
    }
@@ -153,14 +161,14 @@ public class Task extends AbstractWFElement{
 	}
 
 
-	public String getStartMode() {
-		return startMode;
-	}
-
-
-	public void setStartMode(String startMode) {
-		this.startMode = startMode;
-	}
+//	public String getStartMode() {
+//		return startMode;
+//	}
+//
+//
+//	public void setStartMode(String startMode) {
+//		this.startMode = startMode;
+//	}
 
 
 	public String getAssignmentStrategy() {

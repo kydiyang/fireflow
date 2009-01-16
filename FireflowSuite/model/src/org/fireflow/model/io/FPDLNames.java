@@ -129,6 +129,10 @@ public interface FPDLNames {
     
     String SUB_WORKFLOW_PROCESS = "SubWorkflowProcess";
     String WORKFLOW_PROCESS_ID = "WorkflowProcessId";
+    
+    String EVENT_LISTENERS = "EventListeners";
+    String EVENT_LISTENER = "EventListener";
+    String CLASS_NAME = "ClassName";
 
     Namespace XSD_NS = new Namespace(XSD_NS_PREFIX, XSD_URI);
     Namespace XSI_NS = new Namespace(XSI_NS_PREFIX, XSI_URI);

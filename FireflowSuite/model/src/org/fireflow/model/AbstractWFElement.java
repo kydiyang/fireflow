@@ -19,6 +19,8 @@ package org.fireflow.model;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chennieyun
@@ -31,9 +33,13 @@ public abstract class AbstractWFElement implements IWFElement, Serializable {
     private String name;
     private String displayName;
     private String description;
+    private List<EventListener> eventListeners = new ArrayList<EventListener>();    
     private Map<String, String> extendedAttributes;
 
-    protected AbstractWFElement(IWFElement parentElement, String name) {
+    public AbstractWFElement(){
+        
+    }
+    public AbstractWFElement(IWFElement parentElement, String name) {
         this.parentElement = parentElement;
         setName(name);
     }
@@ -73,7 +79,9 @@ public abstract class AbstractWFElement implements IWFElement, Serializable {
         }
         return extendedAttributes;
     }
-
+    public List<EventListener> getEventListeners(){
+        return this.eventListeners;
+    }
     @Override
     public boolean equals(Object obj) {
         return ((obj instanceof IWFElement) &&

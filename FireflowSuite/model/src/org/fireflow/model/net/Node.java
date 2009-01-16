@@ -24,6 +24,9 @@ import org.fireflow.model.WorkflowProcess;
  *
  */
 public class Node extends AbstractWFElement {
+    public Node(){
+        
+    }
 	public Node(WorkflowProcess workflowProcess, String name) {
 		super(workflowProcess, name);
 		// TODO Auto-generated constructor stub

@@ -29,10 +29,13 @@ import java.util.Map;
 import java.util.UUID;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
+import org.dom4j.io.DOMReader;
 import org.dom4j.io.SAXReader;
 import org.fireflow.model.DataField;
 import org.fireflow.model.Duration;
+import org.fireflow.model.EventListener;
 import org.fireflow.model.IWFElement;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
@@ -50,11 +53,16 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-
 public class Dom4JFPDLParser implements IFPDLParser {
+
+    String encoding = "utf-8";
 
     /** Construct a new Dom4JFPDLParser. */
     public Dom4JFPDLParser() {
+    }
+
+    public void setEncoding(String ecd) {
+        this.encoding = ecd;
     }
 
     public WorkflowProcess parse(InputStream in) throws IOException,
@@ -71,15 +79,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
         wp.setDisplayName(workflowProcessElement.attributeValue(DISPLAY_NAME));
         wp.setResourceFile(workflowProcessElement.attributeValue(RESOURCE_FILE));
         wp.setResourceManager(workflowProcessElement.attributeValue(RESOURCE_MANAGER));
-        String version = workflowProcessElement.attributeValue(VERSION);
-        if (version != null) {
-            try {
-                wp.setVersion(Integer.parseInt(version));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-        }
 
         this.loadDataFields(wp, wp.getDataFields(), Util4Parser.child(
                 workflowProcessElement, this.DATA_FIELDS));
@@ -92,6 +92,9 @@ public class Dom4JFPDLParser implements IFPDLParser {
                 workflowProcessElement, END_NODES));
         loadTransitions(wp, Util4Parser.child(workflowProcessElement,
                 TRANSITIONS));
+
+        loadEventListeners(wp.getEventListeners(), Util4Parser.child(workflowProcessElement, EVENT_LISTENERS));
+
         Map<String, String> extAttrs = wp.getExtendedAttributes();
         loadExtendedAttributes(extAttrs, Util4Parser.child(
                 workflowProcessElement, EXTENDED_ATTRIBUTES));
@@ -101,8 +104,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
     }
 
     public WorkflowProcess parse(InputSource in) throws IOException, FPDLParserException {
+        String oldSigletonClassName = System.getProperty("org.dom4j.DocumentFactory.singleton.strategy");
         try {
-            SAXReader reader = new SAXReader();
+//            java.util.logging.LogManager.getLogManager().getLogger(Dom4JFPDLSerializer.class.getName()).log(Level.WARNING, "=======================检查是否是新版本");
+
+            System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", "org.fireflow.model.io.MySigleton4DocumentFactory");
+            SAXReader reader = new SAXReader(new DocumentFactory());
             reader.setEntityResolver(new EntityResolver() {
 
                 String emptyDtd = "";
@@ -113,6 +120,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
                     return new InputSource(bytels);
                 }
             });
+            reader.setEncoding(encoding);
             Document document = reader.read(in);
 
             WorkflowProcess wp = parse(document);
@@ -120,13 +128,21 @@ public class Dom4JFPDLParser implements IFPDLParser {
         } catch (DocumentException e) {
             e.printStackTrace();
             throw new FPDLParserException("Error parsing document.", e);
+        } finally {
+            if (oldSigletonClassName != null && !oldSigletonClassName.equals("")) {
+                System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", oldSigletonClassName);
+            }
         }
     }
 
     public WorkflowProcess parse(Reader in) throws IOException,
             FPDLParserException {
+        String oldSigletonClassName = System.getProperty("org.dom4j.DocumentFactory.singleton.strategy");
         try {
-            SAXReader reader = new SAXReader();
+//            java.util.logging.LogManager.getLogManager().getLogger(Dom4JFPDLSerializer.class.getName()).log(Level.WARNING, "=======================检查是否是新版本");
+
+            System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", "org.fireflow.model.io.MySigleton4DocumentFactory");
+            SAXReader reader = new SAXReader(new DocumentFactory());
             reader.setEntityResolver(new EntityResolver() {
 
                 String emptyDtd = "";
@@ -137,6 +153,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
                     return new InputSource(bytels);
                 }
             });
+            reader.setEncoding(encoding);
             Document document = reader.read(in);
 
             WorkflowProcess wp = parse(document);
@@ -144,8 +161,31 @@ public class Dom4JFPDLParser implements IFPDLParser {
         } catch (DocumentException e) {
             e.printStackTrace();
             throw new FPDLParserException("Error parsing document.", e);
-        }
+        } finally {
+            if (oldSigletonClassName != null && !oldSigletonClassName.equals("")) {
+                System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", oldSigletonClassName);
+            }
 
+        }
+    }
+
+    protected void loadEventListeners(List listeners, Element element) {
+        listeners.clear();
+        if (element == null) {
+            return;
+        }
+        if (element == null) {
+            return;
+        }
+        List listenerElms = Util4Parser.children(element, EVENT_LISTENER);
+        Iterator iter = listenerElms.iterator();
+        while (iter.hasNext()) {
+            Element elm = (Element) iter.next();
+            EventListener listener = new EventListener();
+            listener.setClassName(elm.attributeValue(CLASS_NAME));
+
+            listeners.add(listener);
+        }
     }
 
     protected void loadStartNode(WorkflowProcess wp, Element element)
@@ -225,7 +265,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
             activity.setDescription(Util4Parser.elementAsString(
                     activityElement, DESCRIPTION));
             activity.setCompletionStrategy(activityElement.attributeValue(COMPLETION_STRATEGY));
-
+            loadEventListeners(activity.getEventListeners(), Util4Parser.child(activityElement, EVENT_LISTENERS));
             loadExtendedAttributes(activity.getExtendedAttributes(),
                     Util4Parser.child(activityElement, EXTENDED_ATTRIBUTES));
 
@@ -250,36 +290,39 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
-    protected Task createTask(Activity activity, Element element)
+    protected Task createTask(Activity activity, Element taskElement)
             throws FPDLParserException {
-        Task task = new Task(activity, element.attributeValue(NAME));
+        Task task = new Task(activity, taskElement.attributeValue(NAME));
         task.setSn(UUID.randomUUID().toString());
-        task.setDisplayName(element.attributeValue(DISPLAY_NAME));
-        task.setDescription(Util4Parser.elementAsString(element, DESCRIPTION));
-        task.setType(element.attributeValue(TYPE));
-        String sPriority = element.attributeValue(PRIORITY);
+        task.setDisplayName(taskElement.attributeValue(DISPLAY_NAME));
+        task.setDescription(Util4Parser.elementAsString(taskElement, DESCRIPTION));
+        task.setType(taskElement.attributeValue(TYPE));
+        String sPriority = taskElement.attributeValue(PRIORITY);
         int priority = 0;
         if (sPriority != null) {
             try {
                 priority = Integer.parseInt(sPriority);
             } catch (Exception e) {
-
             }
         }
         task.setPriority(priority);
-        task.setAssignmentStrategy(element.attributeValue(COMPLETION_STRATEGY));
-        task.setDefaultView(element.attributeValue(DEFAULT_VIEW));
-        task.setStartMode(element.attributeValue(START_MODE));
+        task.setAssignmentStrategy(taskElement.attributeValue(COMPLETION_STRATEGY));
+        task.setDefaultView(taskElement.attributeValue(DEFAULT_VIEW));
+//        task.setStartMode(taskElement.attributeValue(START_MODE));
 
-        task.setPerformer(createPerformer(Util4Parser.child(element,
+        task.setPerformer(createPerformer(Util4Parser.child(taskElement,
                 PERFORMER)));
-        task.setApplication(createApplication(Util4Parser.child(element,
+        task.setApplication(createApplication(Util4Parser.child(taskElement,
                 APPLICATION)));
-        task.setEditForm(createForm(Util4Parser.child(element, EDIT_FORM)));
-        task.setViewForm(createForm(Util4Parser.child(element, VIEW_FORM)));
-        task.setListForm(createForm(Util4Parser.child(element, LIST_FORM)));
-        task.setDuration(createDuration(Util4Parser.child(element, DURATION)));
-        task.setSubWorkflowProcess(createSubWorkflowProcess(Util4Parser.child(element, SUB_WORKFLOW_PROCESS)));
+        task.setEditForm(createForm(Util4Parser.child(taskElement, EDIT_FORM)));
+        task.setViewForm(createForm(Util4Parser.child(taskElement, VIEW_FORM)));
+        task.setListForm(createForm(Util4Parser.child(taskElement, LIST_FORM)));
+        task.setDuration(createDuration(Util4Parser.child(taskElement, DURATION)));
+        task.setSubWorkflowProcess(createSubWorkflowProcess(Util4Parser.child(taskElement, SUB_WORKFLOW_PROCESS)));
+
+        loadEventListeners(task.getEventListeners(), Util4Parser.child(taskElement, EVENT_LISTENERS));
+        loadExtendedAttributes(task.getExtendedAttributes(),
+                Util4Parser.child(taskElement, EXTENDED_ATTRIBUTES));
         return task;
 
     }
@@ -464,8 +507,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
         if (element == null) {
             return null;
         }
+        String dataType = element.attributeValue(DATA_TYPE);
+        if(dataType==null)dataType = DataField.STRING;
+        
         DataField dataField = new DataField(wp, element.attributeValue(NAME),
-                element.attributeValue(DATA_TYPE));
+                dataType);
         dataField.setSn(UUID.randomUUID().toString());
 
         dataField.setDisplayName(element.attributeValue(DISPLAY_NAME));

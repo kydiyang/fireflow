@@ -28,6 +28,9 @@ import org.fireflow.model.WorkflowProcess;
 public class Synchronizer extends Node{
 	List<Transition> enteringTransitions = new ArrayList<Transition>();
 	List<Transition> leavingTransitions = new ArrayList<Transition>();
+        public Synchronizer(){
+            
+        }
 	public Synchronizer(WorkflowProcess workflowProcess, String name) {
 		super(workflowProcess, name);
 		// TODO Auto-generated constructor stub

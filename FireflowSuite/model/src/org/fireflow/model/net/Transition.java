@@ -29,7 +29,9 @@ public class Transition extends AbstractWFElement {
 	
 //        String fromSn = null;
 //        String toSn = null;
-        
+        public Transition(){
+            
+        }
 	public Transition(WorkflowProcess workflowProcess, String name) {
 		super(workflowProcess, name);
 	}

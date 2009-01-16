@@ -6,10 +6,14 @@ import org.fireflow.model.WorkflowProcess;
 
 public class StartNode extends Synchronizer{
     static final String name = "START_NODE";
+    public StartNode(){
+        
+    }
 	public StartNode(WorkflowProcess workflowProcess) {
 		super(workflowProcess, name);
 		// TODO Auto-generated constructor stub
 	}
+        
 
 	/**
 	 * 返回null值，表示无输入弧
