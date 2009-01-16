@@ -97,19 +97,24 @@ public class TransitionInstance implements ITransitionInstance, IPlugable {
     /**
      * 接受一个token，并移交给下一个节点
      */
-    public void take(IToken token) throws KenelException {
+    public boolean take(IToken token) throws KenelException {
         TransitionInstanceEvent e = new TransitionInstanceEvent(this);
         e.setToken(token);
+        e.setEventType(TransitionInstanceEvent.ON_TAKING_THE_TOKEN);
         System.out.println("====Inside TransitionInstance::listeners is null?"+this.eventListeners+";   sizi is "+this.eventListeners.size());
+        //在监听器中决定token的alive属性
         for (int i = 0; this.eventListeners != null && i < this.eventListeners.size(); i++) {
             ITransitionInstanceEventListener listener =  this.eventListeners.get(i);
             listener.onTransitionInstanceEventFired(e);
         }
         //然后将token转移给下一个节点
         INodeInstance nodeInst = this.getLeavingNodeInstance();
-//		token.setTransitionInstance(this);
         token.setValue(this.getWeight());
+        boolean alive = token.isAlive();
+        
         nodeInst.fire(token);
+        
+        return alive;
     }
 
     public Transition getTransition() {

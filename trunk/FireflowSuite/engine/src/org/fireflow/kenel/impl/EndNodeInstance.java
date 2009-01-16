@@ -137,7 +137,7 @@ public class EndNodeInstance extends AbstractNodeInstance implements
 				throw new KenelException("FireFlow引擎内核执行发生异常，同步器实例["
 						+ this.toString() + "]的token数量超过其容量");
 			}
-
+                        System.out.println("====Inside EndNodeInstance.fire(token):: value is "+value+";volume is "+volume);
 			if (value < volume) {// 如果Value小于容量则继续等待其他弧的汇聚。
 				return;
 			}
@@ -157,10 +157,6 @@ public class EndNodeInstance extends AbstractNodeInstance implements
 		event4.setToken(tk);
 		event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
 		fireNodeLeavingEvent(event4);
-
-		// 执行ProcessInstance的complete操作
-		 ProcessInstance currentProcessInstance = (ProcessInstance)tk.getProcessInstance();
-		 currentProcessInstance.complete();
 	}
 
 	/*

@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.taskinstance;
 
+import org.fireflow.engine.EngineException;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.impl.TaskInstance;
@@ -29,20 +30,18 @@ import org.fireflow.model.net.Activity;
  */
 public class BasicTaskInstanceManager extends AbstractTaskInstanceManager {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.fireflow.engine.taskinstance.AbstractTaskInstanceManager#createTaskInstance(org.fireflow.kenel.IToken,
-	 *      org.fireflow.model.task.Task)
-	 */
-	@Override
-	public ITaskInstance createTaskInstance(IToken token, Task task,Activity activity) {
-		RuntimeContext ctx = RuntimeContext.getInstance();
-		
-		TaskInstance taskInstance = new TaskInstance();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.fireflow.engine.taskinstance.AbstractTaskInstanceManager#createTaskInstance(org.fireflow.kenel.IToken,
+     *      org.fireflow.model.task.Task)
+     */
+    @Override
+    public ITaskInstance createTaskInstance(IToken token, Task task, Activity activity)throws EngineException {
 
-		return taskInstance;
+        TaskInstance taskInstance = new TaskInstance();
 
-	}
+        return taskInstance;
 
+    }
 }

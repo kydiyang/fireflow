@@ -40,11 +40,14 @@ public interface ITransitionInstance {
 	
 	public void setEnteringNodeInstance(INodeInstance nodeInst);
 	
-	
-	/**
-	 * 接受一个token，并移交给下一个节点
-	 */
-	public void take(IToken token)throws KenelException;
+
+        /**
+         * 接受一个token，并移交给下一个节点
+         * @param token
+         * @return 返回值是该transition计算出的token的alive值
+         * @throws org.fireflow.kenel.KenelException
+         */
+	public boolean take(IToken token)throws KenelException;
 	
 	public Transition getTransition();
 }

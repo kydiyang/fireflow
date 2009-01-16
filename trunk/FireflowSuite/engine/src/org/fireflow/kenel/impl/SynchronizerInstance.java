@@ -18,21 +18,16 @@ package org.fireflow.kenel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.RuntimeContext;
-import org.fireflow.engine.condition.Constant;
+import org.fireflow.engine.condition.ConditionConstant;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.kenel.IJoinPoint;
 import org.fireflow.kenel.ISynchronizerInstance;
 import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.ITransitionInstance;
 import org.fireflow.kenel.KenelException;
-import org.fireflow.kenel.condition.IConditionResolver;
 import org.fireflow.kenel.event.INodeInstanceEventListener;
 import org.fireflow.kenel.event.NodeInstanceEvent;
 //import org.fireflow.kenel.event.NodeInstanceEventType;
@@ -124,66 +119,35 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.size(); i++) {
             ITransitionInstance transInst = leavingTransitionInstances.get(i);
             String condition = transInst.getTransition().getCondition();
-            if (condition != null && condition.equals(Constant.DEFAULT)) {
+            if (condition != null && condition.equals(ConditionConstant.DEFAULT)) {
                 defaultTransInst = transInst;
                 continue;
             }
 
             Token token = new Token(); // 产生新的token
-            
-            boolean alive = determineTheAliveOfToken(tk.getProcessInstance().getProcessInstanceVariables(), joinPoint, transInst);
+            token.setAlive(joinPoint.getAlive());
+//            boolean alive = determineTheAliveOfToken(tk.getProcessInstance(), joinPoint, transInst);
+//            if (alive) {
+//                activiateDefaultCondition = false;
+//            }
+//            token.setAlive(alive);
+            // token.setRuntimeContext(tk.getRuntimeContext());
+            token.setProcessInstance(tk.getProcessInstance());
+            boolean alive = transInst.take(token);
             if (alive) {
                 activiateDefaultCondition = false;
             }
-            token.setAlive(alive);
-            // token.setRuntimeContext(tk.getRuntimeContext());
-            token.setProcessInstance(tk.getProcessInstance());
-            transInst.take(token);
+     
         }
-        if (activiateDefaultCondition && defaultTransInst != null) {
+        if (defaultTransInst != null) {
             Token token = new Token();
-            token.setAlive(true);
+            token.setAlive(activiateDefaultCondition && joinPoint.getAlive());
             token.setProcessInstance(tk.getProcessInstance());
             defaultTransInst.take(token);
         }
     }
 
-    /**
-     * 执行分支判断策略，即设置token的alive属性 首先，如果this.alive==false,则所有的token的Alive属性皆为false
-     * 然后，如果在nexttransitionList中有值，则直接执行列表中的tansition
-     * 否则，通过计算Transition的表达式来确定下一个transition,
-     * 
-     * @param transInst
-     * @return
-     */
-    private boolean determineTheAliveOfToken(Map vars, IJoinPoint joinPoint,
-            ITransitionInstance transInst) {
-        System.out.println("Inside SynchronizerInstance.DeterminTheAliveOfToken():: joinPoint.getAlive =" + joinPoint.getAlive());
-        if (!joinPoint.getAlive()) {
-            return false;
-        }
-        Set<String> nextTransitionInstanceNames = joinPoint.getAppointedTransitionNames();
-        if (nextTransitionInstanceNames.size() > 0) {
-            Iterator nextTransNamesIterator = nextTransitionInstanceNames.iterator();
-            while (nextTransNamesIterator.hasNext()) {
-                String transName = (String) nextTransNamesIterator.next();
-                if (transName.equals(transInst.getTransition().getName())) {
-                    return true;
-                }
-            }
-        }
 
-        if (transInst.getTransition().getCondition() == null || transInst.getTransition().getCondition().trim().equals("")) {
-            return true;
-        }
-
-        // TODO通过计算transition上的表达式来确定alive的值
-
-        IConditionResolver elResolver = RuntimeContext.getInstance().getConditionResolver();
-        Boolean b = elResolver.resolveBooleanExpression(vars, transInst.getTransition().getCondition());
-
-        return b;
-    }
 
     public void setVolume(int arg) {
         volume = arg;

@@ -16,12 +16,15 @@
  */
 package org.fireflow.engine.persistence.hibernate;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import java.util.Vector;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.JoinPoint;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.TaskInstance;
@@ -32,193 +35,382 @@ import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.impl.Token;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.SessionFactoryUtils;
+import org.springframework.orm.hibernate3.SessionHolder;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
+ * The hibernate implementation of persistence service
+ * 
  * @author chennieyun
- *
  */
-public class PersistenceServiceHibernateImpl implements IPersistenceService {
-//	private ProcessInstanceDAO processInstanceDAO = null;
-//	private TaskInstanceDAO taskInstanceDAO = null;
-//	private WorkItemDAO workItemDAO = null;
-//	private JoinPointDAO joinPointDAO = null;
-//	private TokenDAO tokenDAO = null;
-    /* (non-Javadoc)
-     * @see org.fireflow.engine.persistence.IPersistenceService#saveJoinPoint(org.fireflow.kenel.IJoinPoint)
+public class PersistenceServiceHibernateImpl extends HibernateDaoSupport implements IPersistenceService {
+    protected RuntimeContext rtCtx = null;
+    
+    public void setRuntimeContext(RuntimeContext ctx){
+        this.rtCtx = ctx;
+    }
+    public RuntimeContext getRuntimeContext(){
+        return this.rtCtx;
+    }     
+    /**
+     * Save processInstance
+     * @param processInstance
      */
-    public void saveJoinPoint(IJoinPoint joinPoint) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        session.save(joinPoint);
+    public void saveOrUpdateProcessInstance(IProcessInstance processInstance) {
+        Session thisSession = this.getSession();
+        System.out.println("===Inside PersistenceServiceHibernateImpl:: the session is " + thisSession.hashCode());
+        System.out.println("===Inside PersistenceServiceHibernateImpl:: the flushmodel is " + thisSession.getFlushMode());
+        System.out.println("===Inisde PersistenceServiceHibernateImpl:: is transactionnal? " + SessionFactoryUtils.isSessionTransactional(thisSession, getSessionFactory()));
+        SessionHolder sessionHolder =
+                (SessionHolder) TransactionSynchronizationManager.getResource(getSessionFactory());
+        System.out.println("===Inisde PersistenceServiceHibernateImpl:: the sessionHolder is " + sessionHolder);
+
+        this.getHibernateTemplate().saveOrUpdate(processInstance);
+
     }
 
-    /* (non-Javadoc)
-     * @see org.fireflow.engine.persistence.IPersistenceService#saveProcessInstance(org.fireflow.engine.IProcessInstance)
+    /**
+     * Save joinpoint
+     * @param joinPoint
      */
-    public void saveProcessInstance(IProcessInstance processInstance) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        session.save(processInstance);
+    public void saveOrUpdateJoinPoint(IJoinPoint joinPoint) {
+        this.getHibernateTemplate().saveOrUpdate(joinPoint);
     }
 
     /* (non-Javadoc)
      * @see org.fireflow.engine.persistence.IPersistenceService#saveTaskInstance(org.fireflow.engine.ITaskInstance)
      */
-    public void saveTaskInstance(ITaskInstance taskInstance) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        session.save(taskInstance);
+    public void saveOrUpdateTaskInstance(ITaskInstance taskInstance) {
+        this.getHibernateTemplate().saveOrUpdate(taskInstance);
     }
 //
 	/* (non-Javadoc)
      * @see org.fireflow.engine.persistence.IPersistenceService#saveWorkItem(org.fireflow.engine.IWorkItem)
      */
-    public void saveWorkItem(IWorkItem workitem) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        session.save(workitem);
+    public void saveOrUpdateWorkItem(IWorkItem workitem) {
+        this.getHibernateTemplate().saveOrUpdate(workitem);
     }
 
-    public void saveToken(IToken token) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        session.save(token);
-    }
-//
-//	public ProcessInstanceDAO getProcessInstanceDAO() {
-//		return processInstanceDAO;
-//	}
-//
-//	public void setProcessInstanceDAO(ProcessInstanceDAO processInstanceDAO) {
-//		this.processInstanceDAO = processInstanceDAO;
-//	}
-//
-//	public TaskInstanceDAO getTaskInstanceDAO() {
-//		return taskInstanceDAO;
-//	}
-//
-//	public void setTaskInstanceDAO(TaskInstanceDAO taskInstanceDAO) {
-//		this.taskInstanceDAO = taskInstanceDAO;
-//	}
-//
-//	public WorkItemDAO getWorkItemDAO() {
-//		return workItemDAO;
-//	}
-//
-//	public void setWorkItemDAO(WorkItemDAO workItemDAO) {
-//		this.workItemDAO = workItemDAO;
-//	}
-//
-//	public JoinPointDAO getJoinPointDAO() {
-//		return joinPointDAO;
-//	}
-//
-//	public void setJoinPointDAO(JoinPointDAO joinPointDAO) {
-//		this.joinPointDAO = joinPointDAO;
-//	}
-//
-//	public TokenDAO getTokenDAO() {
-//		return tokenDAO;
-//	}
-//
-//	public void setTokenDAO(TokenDAO tokenDAO) {
-//		this.tokenDAO = tokenDAO;
-//	}
-    public IJoinPoint findJoinPoint(IProcessInstance processInstance, String synchronizerId) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        Criteria criteria = session.createCriteria(JoinPoint.class);
-        criteria.add(Expression.eq("processInstance.id", processInstance.getId()));
-        criteria.add(Expression.eq("synchronizerId", synchronizerId));
-
-        return (IJoinPoint) criteria.uniqueResult();
+    public void saveOrUpdateToken(IToken token) {
+        this.getHibernateTemplate().saveOrUpdate(token);
     }
 
-    public List<ITaskInstance> findTaskInstances(IProcessInstance processInstance, String activityId) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        Criteria criteria = session.createCriteria(TaskInstance.class);
-        criteria.add(Expression.eq("processInstance.id", processInstance.getId()));
-        criteria.add(Expression.eq("activityId", activityId));
+    public List<IJoinPoint> findJoinPointsForProcessInstance(final String processInstanceId, final String synchronizerId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
 
-        return (List<ITaskInstance>) criteria.list();
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria criteria = arg0.createCriteria(JoinPoint.class);
+                criteria.add(Expression.eq("processInstance.id", processInstanceId));
+                if (synchronizerId != null && !synchronizerId.trim().equals("")) {
+                    criteria.add(Expression.eq("synchronizerId", synchronizerId));
+                }
+                return criteria.list();
+            }
+        });
+
+        return result;
+
+    }
+
+    public List<ITaskInstance> findTaskInstancesForProcessInstance(final String processInstanceId, final String activityId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+
+                Criteria criteria = arg0.createCriteria(TaskInstance.class);
+                criteria.add(Expression.eq("processInstance.id", processInstanceId));
+                if (activityId != null && !activityId.trim().equals("")) {
+                    criteria.add(Expression.eq("activityId", activityId));
+                }
+                return (List<ITaskInstance>) criteria.list();
+            }
+        });
+        return result;
     }
 
     /**
      * 
      */
-    public List<IToken> findTokens(IProcessInstance processInstance, String nodeId) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        Criteria criteria = session.createCriteria(Token.class);
+    public List<IToken> findTokensForProcessInstance(final String processInstanceId, final String nodeId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
 
-        criteria.add(Expression.eq("processInstance.id", processInstance.getId()));
-        criteria.add(Expression.eq("nodeId", nodeId));
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
 
-        return (List<IToken>) criteria.list();
+                Criteria criteria = arg0.createCriteria(Token.class);
+
+                criteria.add(Expression.eq("processInstance.id", processInstanceId));
+                if (nodeId != null && !nodeId.trim().equals("")) {
+                    criteria.add(Expression.eq("nodeId", nodeId));
+                }
+
+                return (List<IToken>) criteria.list();
+            }
+        });
+        return result;
     }
 
-    public void updateWorkItem(IWorkItem workItem) {
-        //在hibernate中，update操作无需处理？
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
+//    public void updateWorkItem(IWorkItem workItem) {
+//        //在hibernate中，update操作无需处理？
+//        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
+//
+//        session.update(workItem);
+//    }
 
-        session.update(workItem);
-    }
-
-    public void updateTaskInstance(ITaskInstance taskInstance) {
-        //在hibernate中，update操作无需处理？
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-
-        session.update(taskInstance);
-
-    }
-
+//    public void updateTaskInstance(ITaskInstance taskInstance) {
+//        //在hibernate中，update操作无需处理？
+//        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
+//
+//        session.update(taskInstance);
+//
+//    }
     public IWorkItem findWorkItemById(String id) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-
-        return (IWorkItem) session.get(WorkItem.class, id);
+        return (IWorkItem) this.getHibernateTemplate().get(WorkItem.class, id);
     }
 
     public ITaskInstance findTaskInstanceById(String id) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-
-        return (ITaskInstance) session.get(TaskInstance.class, id);
+        return (ITaskInstance) this.getHibernateTemplate().get(TaskInstance.class, id);
     }
 
-    /**
-     * 查询出属于同一个taskInstance的所有的workItem
+    public List<IWorkItem> findWorkItemsForTaskInstance(final String taskInstanceId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria criteria = arg0.createCriteria(WorkItem.class);
+                criteria.add(Expression.eq("taskInstance.id", taskInstanceId));
+                List<IWorkItem> _result = criteria.list();
+
+                return _result;
+            }
+        });
+        return result;
+
+    }
+
+    public List<IWorkItem> findWorkItemForTask(final String taskid) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria criteria = arg0.createCriteria(WorkItem.class);
+                criteria.add(Expression.eq("taskInstance.taskId", taskid));
+                List<IWorkItem> _result = criteria.list();
+
+                return _result;
+            }
+        });
+        return result;
+    }
+
+//    public List<IToken> findTokens(IProcessInstance processInstance) {
+//        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
+//        Criteria criteria = session.createCriteria(Token.class);
+//
+//        criteria.add(Expression.eq("processInstance.id", processInstance.getId()));
+//
+//        return (List<IToken>) criteria.list();
+//    }
+    public List<IProcessInstance> findProcessInstanceByProcessId(final String processId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria criteria = arg0.createCriteria(ProcessInstance.class);
+
+                criteria.add(Expression.eq("processId", processId));
+                List<IProcessInstance> _result = criteria.list();
+
+                return _result;
+            }
+        });
+        return result;
+    }
+
+    public IProcessInstance findProcessInstanceById(String id) {
+        return (IProcessInstance) this.getHibernateTemplate().get(ProcessInstance.class, id);
+    }
+
+    public IJoinPoint findJoinPointById(String id) {
+        return (IJoinPoint) this.getHibernateTemplate().get(JoinPoint.class, id);
+    }
+
+    public void saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
+        if (workflowDef.getId() == null || workflowDef.getId().equals("")) {
+            Integer latestVersion = findTheLatestVersionOfWorkflowDefinition(workflowDef.getProcessId());
+            if (latestVersion != null) {
+                workflowDef.setVersion(new Integer(latestVersion.intValue() + 1));
+            } else {
+                workflowDef.setVersion(new Integer(1));
+            }
+        }
+        this.getHibernateTemplate().saveOrUpdate(workflowDef);
+    }
+
+    public Integer findTheLatestVersionOfWorkflowDefinition(final String processId) {
+        //取得当前最大的version值
+        Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Query q = arg0.createQuery("select max(m.version) from WorkflowDefinition m");
+                Object obj = q.uniqueResult();
+                if (obj != null) {
+                    Integer latestVersion = (Integer) obj;
+                    return latestVersion;
+                } else {
+                    return null;
+                }
+            }
+        });
+        return result;
+    }
+
+    public WorkflowDefinition findWorkflowDefinitionById(String id) {
+        return (WorkflowDefinition) this.getHibernateTemplate().get(WorkflowDefinition.class, id);
+    }
+
+    public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersion(final String processId, final int version) {
+        WorkflowDefinition workflowDef = (WorkflowDefinition) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria c = arg0.createCriteria(WorkflowDefinition.class);
+                c.add(Expression.eq("processId", processId));
+                c.add(Expression.eq("version", version));
+                return (WorkflowDefinition) c.uniqueResult();
+            }
+        });
+        return workflowDef;
+    }
+
+    public WorkflowDefinition findLatestVersionOfWorkflowDefinitionByProcessId(String processId) {
+        Integer latestVersion = this.findTheLatestVersionOfWorkflowDefinition(processId);
+        return this.findWorkflowDefinitionByProcessIdAndVersion(processId, latestVersion);
+    }
+
+    public List<WorkflowDefinition> findWorkflowDefinitionByProcessId(final String processId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria c = arg0.createCriteria(WorkflowDefinition.class);
+                c.add(Expression.eq("processId", processId));
+                return c.list();
+            }
+        });
+
+        return result;
+    }
+
+    public List<WorkflowDefinition> findAllLatestVersionOfWorkflowDefinition() {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                String hql = "select distinct model.processId from WorkflowDefinition model ";
+                Query query = arg0.createQuery(hql);
+                List processIdList = query.list();
+                List _result = new Vector<WorkflowDefinition>();
+                for (int i = 0; i < processIdList.size(); i++) {
+                    WorkflowDefinition wfDef = findLatestVersionOfWorkflowDefinitionByProcessId((String) processIdList.get(i));
+                    _result.add(wfDef);
+                }
+                return _result;
+            }
+        });
+        return result;
+    }
+
+    public List<IWorkItem> findTodoWorkItems(final String actorId) {
+        if (actorId == null || actorId.equals("")) {
+            return null;
+        }
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                String hql = "From org.fireflow.engine.impl.WorkItem model where model.actorId=? and (model.state=0 or model.state=1)";
+                Query query = arg0.createQuery(hql);
+                query.setString(0, actorId);
+                return query.list();
+            }
+        });
+        return result;
+    }
+
+    public List<IWorkItem> findTodoWorkItems(final String actorId, final String processInstanceId) {
+        if (processInstanceId == null || processInstanceId.trim().equals("") || actorId == null || actorId.trim().equals("")) {
+            return null;
+        }
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                String hql = "From org.fireflow.engine.impl.WorkItem model where model.actorId=? and model.taskInstance.processInstance.id=? and (model.state=0 or model.state=1)";
+                Query query = arg0.createQuery(hql);
+                query.setString(0, actorId);
+                query.setString(1, processInstanceId);
+                return query.list();
+            }
+        });
+        return result;
+    }
+
+    public List<IWorkItem> findTodoWorkItems(final String actorId, final String processId, final String taskId) {
+        if (actorId == null || actorId.equals("")) {
+            return null;
+        }
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                String hql = "From org.fireflow.engine.impl.WorkItem model where model.actorId=:actorId  and (model.state=0 or model.state=1)";
+                if (processId != null && !processId.trim().equals("")) {
+                    hql = hql + " and model.taskInstance.processInstance.processId=:processId";
+                }
+                if (taskId != null && !taskId.trim().equals("")) {
+                    hql = hql + " and model.taskInstance.taskId=:taskId";
+                }
+                Query query = arg0.createQuery(hql);
+                query.setString("actorId", actorId);
+                if (processId != null && !processId.trim().equals("")) {
+                    query.setString("processId", processId);
+                }
+                if (taskId != null && !taskId.trim().equals("")) {
+                    query.setString("taskId", taskId);
+                }
+                return query.list();
+            }
+        });
+        return result;
+    }
+
+    public void deleteWorkItemsInInitializedState(final String taskInstanceId) {
+        this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                String hql = "delete from org.fireflow.engine.impl.WorkItem as model where model.taskInstance.id=? and model.state=0";
+                Query query = arg0.createQuery(hql);
+                query.setString(0, taskInstanceId);
+                return query.executeUpdate();
+            }
+        });
+    }
+    
+    /*
+    public List<IWorkItem> findHaveDoneWorkItems(final String processInstanceId,final String activityId){
+        if (processInstanceId==null || processInstanceId.trim().equals("")||
+                activityId==null || activityId.trim().equals("")){
+            return null;
+        }
+        Object result = this.getHibernateTemplate().execute(new HibernateCallback() {
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                String hql = " from org.fireflow.engine.impl.WorkItem as model where model.taskInstance.processInstance.id=? and model.activityId=? and model.state=2";
+                Query query = arg0.createQuery(hql);
+                query.setString(0, processInstanceId);
+                query.setString(1, activityId);
+                return query.list();
+            }
+        });
+        
+        return (List)result;
+    }
      */
-    public List<IWorkItem> findWorkItemsForTaskInstance(TaskInstance taskInstance) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-
-        Criteria criteria = session.createCriteria(WorkItem.class);
-        criteria.add(Expression.eq("taskInstance.id", taskInstance.getId()));
-        List<IWorkItem> result = criteria.list();
-
-        return result;
-    }
-
-    public List<IWorkItem> findWorkItem4Task(String taskid) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-
-        Criteria criteria = session.createCriteria(WorkItem.class);
-        criteria.add(Expression.eq("taskInstance.taskId", taskid));
-        List<IWorkItem> result = criteria.list();
-
-        return result;
-    }
-
-    public List<IToken> findTokens(IProcessInstance processInstance) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-        Criteria criteria = session.createCriteria(Token.class);
-
-        criteria.add(Expression.eq("processInstance.id", processInstance.getId()));
-
-        return (List<IToken>) criteria.list();
-    }
-
-    public List<IProcessInstance> findProcessInstanceByProcessId(String processId) {
-        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-
-        Criteria criteria = session.createCriteria(ProcessInstance.class);
-
-        criteria.add(Expression.eq("processId", processId));
-        List<IProcessInstance> result = criteria.list();
-
-        return result;
-    }
 }

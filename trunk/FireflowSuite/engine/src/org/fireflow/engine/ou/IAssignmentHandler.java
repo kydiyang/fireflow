@@ -17,11 +17,12 @@
 package org.fireflow.engine.ou;
 
 import org.fireflow.engine.EngineException;
+import org.fireflow.kenel.KenelException;
 
 /**
  * @author chennieyun
  *
  */
 public interface IAssignmentHandler {
-	public void assign(IAssignable asignable,String performerName)throws EngineException;
+	public void assign(IAssignable asignable,String performerName)throws EngineException,KenelException;
 }

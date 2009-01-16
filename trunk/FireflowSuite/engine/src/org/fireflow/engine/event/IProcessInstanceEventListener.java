@@ -14,37 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.kenel.event;
+package org.fireflow.engine.event;
 
-import org.fireflow.kenel.IToken;
-
+import org.fireflow.engine.EngineException;
 
 /**
  * @author chennieyun
  *
  */
-
-//TODO 将processInstanceEvent改称NetEvent
-public class ProcessInstanceEvent {
-	public static final int BEFORE_PROCESS_INSTANCE_RUN = 2;
-	public static final int AFTER_PROCESS_INSTANCE_COMPLETE = 7;    
-	int eventType = -1;
-	private IToken token = null;
-
-	public IToken getToken() {
-		return token;
-	}
-
-	public void setToken(IToken tk) {
-		this.token = tk;
-	}
-
-	public int getEventType() {
-		return eventType;
-	}
-
-	public void setEventType(int eventType) {
-		this.eventType = eventType;
-	}
-	
+public interface IProcessInstanceEventListener {
+	public void onProcessInstanceFired(ProcessInstanceEvent e)throws EngineException;
 }

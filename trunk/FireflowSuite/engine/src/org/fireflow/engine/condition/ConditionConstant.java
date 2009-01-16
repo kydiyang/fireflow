@@ -14,14 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.kenel.condition;
-
-import java.util.Map;
+package org.fireflow.engine.condition;
 
 /**
  * @author chennieyun
  *
  */
-public interface IConditionResolver {
-	public boolean resolveBooleanExpression(Map vars,String elExpression);
+public class ConditionConstant {
+	public static final String DEFAULT = "DEFAULT";
 }

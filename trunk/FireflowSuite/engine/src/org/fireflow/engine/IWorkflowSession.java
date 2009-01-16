@@ -16,12 +16,30 @@
  */
 package org.fireflow.engine;
 
+import java.util.List;
 import org.fireflow.kenel.KenelException;
 
 /**
  * @author chennieyun
- *
+ * 
  */
-public interface IFireflowSessionCallback {
-	public Object doInFireflowSession(RuntimeContext ctx)throws EngineException ,KenelException;
+public interface IWorkflowSession {
+        public RuntimeContext getRuntimeContext();
+
+	public Object execute(IWorkflowSessionCallback callbak)
+			throws EngineException, KenelException;
+
+
+	public IProcessInstance createProcessInstance(String workflowProcessName)
+			throws EngineException,KenelException;
+	
+	public IWorkItem findWorkItemById(String id);
+        
+        public List<IWorkItem> findMyTodoWorkItems(String actorId);
+        
+        public List<IWorkItem> findMyTodoWorkItems(String actorId,String processInstanceId);
+        
+        public List<IWorkItem> findMyTodoWorkItems(String actorId,String processId,String taskId);
+	
+	public ITaskInstance findTaskInstanceById(String id);
 }

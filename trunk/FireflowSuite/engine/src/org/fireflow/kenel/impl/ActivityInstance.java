@@ -80,15 +80,15 @@ public class ActivityInstance extends AbstractNodeInstance implements
 			
 			//如果没有task,即该activity是一个dummy activity，则直接complete
 			if (this.getActivity().getTasks().size()==0){
-				this.complete(token);
+				this.complete(token,null);
 			}
 		}
 		else{
-			this.complete(token);
+			this.complete(token,null);
 		}
 	}
 
-	public void complete(IToken token) throws KenelException {
+	public void complete(IToken token,IActivityInstance targetActivityInstance) throws KenelException {
 		if (token.isAlive()){
 			NodeInstanceEvent event = new NodeInstanceEvent(this);
 			event.setToken(token);
@@ -101,13 +101,20 @@ public class ActivityInstance extends AbstractNodeInstance implements
 		event2.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
 		fireNodeLeavingEvent(event2);		
 
-		//按照定义，activity有且只有一个输出弧，所以此处只进行一次循环。
-		for (int i = 0; leavingTransitionInstances != null
-				&& i < leavingTransitionInstances.size(); i++) {
-			ITransitionInstance transInst = leavingTransitionInstances
-					.get(i);
-			transInst.take(token);
-		}
+                if (targetActivityInstance!=null){
+                    Token newtoken = new Token();
+                    newtoken.setAlive(token.isAlive());
+                    newtoken.setProcessInstance(token.getProcessInstance());
+                    targetActivityInstance.fire(newtoken);
+                }else{
+                    //按照定义，activity有且只有一个输出弧，所以此处只进行一次循环。
+                    for (int i = 0; leavingTransitionInstances != null
+                                    && i < leavingTransitionInstances.size(); i++) {
+                            ITransitionInstance transInst = leavingTransitionInstances
+                                            .get(i);
+                            transInst.take(token);
+                    }
+                }
 	}
 	
 	public String getExtensionTargetName(){

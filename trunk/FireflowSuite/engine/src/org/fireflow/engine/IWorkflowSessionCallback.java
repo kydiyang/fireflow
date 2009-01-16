@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.kenel.event;
+package org.fireflow.engine;
 
 import org.fireflow.kenel.KenelException;
 
@@ -22,6 +22,6 @@ import org.fireflow.kenel.KenelException;
  * @author chennieyun
  *
  */
-public interface IProcessInstanceEventListener {
-	public void onProcessInstanceFired(ProcessInstanceEvent e)throws KenelException;
+public interface IWorkflowSessionCallback {
+	public Object doInWorkflowSession(RuntimeContext ctx)throws EngineException ,KenelException;
 }

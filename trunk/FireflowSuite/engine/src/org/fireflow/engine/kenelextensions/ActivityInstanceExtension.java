@@ -16,6 +16,8 @@
  */
 package org.fireflow.engine.kenelextensions;
 
+import org.fireflow.engine.EngineException;
+import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.persistence.IPersistenceService;
 /**
@@ -29,33 +31,38 @@ import org.fireflow.kenel.event.NodeInstanceEvent;
 import org.fireflow.kenel.plugin.IKenelExtension;
 import org.fireflow.kenel.impl.ActivityInstance;
 //import org.fireflow.kenel.event.NodeInstanceEventType;
-
 public class ActivityInstanceExtension implements IKenelExtension,
-		INodeInstanceEventListener {
+        INodeInstanceEventListener,IRuntimeContextAware {
+    protected RuntimeContext rtCtx = null;
+    
+    public void setRuntimeContext(RuntimeContext ctx){
+        this.rtCtx = ctx;
+    }    
+    public RuntimeContext getRuntimeContext(){
+        return this.rtCtx;
+    }    
+    public String getExtentionPointName() {
+        // TODO Auto-generated method stub
+        return ActivityInstance.Extension_Point_NodeInstanceEventListener;
+    }
 
-	public String getExtentionPointName() {
-		// TODO Auto-generated method stub
-		return ActivityInstance.Extension_Point_NodeInstanceEventListener;
-	}
+    public String getExtentionTargetName() {
+        // TODO Auto-generated method stub
+        return ActivityInstance.Extension_Target_Name;
+    }
 
-	public String getExtentionTargetName() {
-		// TODO Auto-generated method stub
-		return ActivityInstance.Extension_Target_Name;
-	}
-
-	public void onNodeInstanceEventFired(NodeInstanceEvent e)
-			throws KenelException {
-		// TODO Auto-generated method stub
-		if (e.getEventType()==NodeInstanceEvent.NODEINSTANCE_FIRED){
-			RuntimeContext ctx = RuntimeContext.getInstance();
-			IPersistenceService persistenceService = ctx.getPersistenceService();
-			persistenceService.saveToken(e.getToken());
-			ctx.getTaskInstanceManager().createTaskInstances(e.getToken(), (IActivityInstance)e.getSource());			
-		}else if (e.getEventType()==NodeInstanceEvent.NODEINSTANCE_COMPLETED){
+    public void onNodeInstanceEventFired(NodeInstanceEvent e)
+            throws KenelException,EngineException {
+        // TODO Auto-generated method stub
+        if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_FIRED) {
+            
+            IPersistenceService persistenceService = rtCtx.getPersistenceService();
+            persistenceService.saveOrUpdateToken(e.getToken());
+            rtCtx.getTaskInstanceManager().createTaskInstances(e.getToken(), (IActivityInstance) e.getSource());
+        } else if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED) {
 //			RuntimeContext.getInstance()
 //			.getTaskInstanceManager()
 //			.archiveTaskInstances((IActivityInstance)e.getSource());
-		}
-	}
-
+        }
+    }
 }

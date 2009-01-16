@@ -16,9 +16,11 @@
  */
 package org.fireflow.engine.taskinstance;
 
-
 import org.fireflow.engine.EngineException;
+import org.fireflow.engine.IProcessInstance;
+import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.engine.ITaskInstance;
+import org.fireflow.engine.IWorkflowSessionAware;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.ou.IAssignmentHandler;
 import org.fireflow.engine.persistence.IPersistenceService;
@@ -26,10 +28,15 @@ import org.fireflow.kenel.IActivityInstance;
 import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.KenelException;
 import org.fireflow.model.net.Activity;
-import org.fireflow.model.reference.Participant;
 import org.fireflow.model.Task;
 
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.calendar.ICalendarService;
+import org.fireflow.engine.impl.WorkflowSession;
+import org.fireflow.engine.ou.DynamicAssignmentHandler;
+import org.fireflow.engine.ou.IAssignable;
+import org.fireflow.model.Duration;
+import org.fireflow.model.reference.Participant;
 
 /**
  * @author chennieyun
@@ -38,14 +45,23 @@ import org.fireflow.engine.RuntimeContext;
 public abstract class AbstractTaskInstanceManager implements
         ITaskInstanceManager {
 
+    protected RuntimeContext rtCtx = null;
+
+    public void setRuntimeContext(RuntimeContext ctx) {
+        this.rtCtx = ctx;
+    }
+
+    public RuntimeContext getRuntimeContext() {
+        return this.rtCtx;
+    }
     /*
      * (non-Javadoc)
      * 
      * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#archiveTaskInstances(org.fireflow.kenel.IActivityInstance)
      */
-    public void archiveTaskInstances(IActivityInstance activityInstance) {
-    // TODO Auto-generated method stub
 
+    public void archiveTaskInstances(IActivityInstance activityInstance) {
+        // TODO Auto-generated method stub
     }
 
     /*
@@ -54,13 +70,12 @@ public abstract class AbstractTaskInstanceManager implements
      * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#createTaskInstances(org.fireflow.kenel.IActivityInstance)
      */
     public void createTaskInstances(IToken token,
-            IActivityInstance activityInstance) throws EngineException ,KenelException{
+            IActivityInstance activityInstance) throws EngineException, KenelException {
 
         // TODO Auto-generated method stub
         Activity activity = activityInstance.getActivity();
-        RuntimeContext ctx = RuntimeContext.getInstance();
-        IPersistenceService persistenceService = ctx.getPersistenceService();
-
+        IPersistenceService persistenceService = rtCtx.getPersistenceService();
+        ICalendarService calService = rtCtx.getCalendarService();
 //		Package pkg = activity.getWorkflowProcess().getPackage();
         for (int i = 0; i < activity.getTasks().size(); i++) {
             Task task = activity.getTasks().get(i);
@@ -69,32 +84,41 @@ public abstract class AbstractTaskInstanceManager implements
                     activity);
             ((TaskInstance) taskInstance).setProcessInstance(token.getProcessInstance());
             ((TaskInstance) taskInstance).setActivityId(activity.getId());
-            ((TaskInstance) taskInstance).setCompletionStrategy(task.getAssignmentStrategy());
-            ((TaskInstance) taskInstance).setCreatedTime(ctx.getSysDate());
+            ((TaskInstance) taskInstance).setAssignmentStrategy(task.getAssignmentStrategy());
+            ((TaskInstance) taskInstance).setCreatedTime(calService.getSysDate());
             ((TaskInstance) taskInstance).setDisplayName(task.getDisplayName());
             ((TaskInstance) taskInstance).setName(task.getName());
-            if (task.getStartMode().equals(Task.AUTOMATIC)) {
-                ((TaskInstance) taskInstance).setState(TaskInstance.STARTED);
-            } else {
-                ((TaskInstance) taskInstance).setState(TaskInstance.INITIALIZED);
-            }
+
+            ((TaskInstance) taskInstance).setState(TaskInstance.INITIALIZED);
+
             ((TaskInstance) taskInstance).setTaskId(task.getId());
             ((TaskInstance) taskInstance).setTaskType(task.getType());
+            ((IRuntimeContextAware) taskInstance).setRuntimeContext(rtCtx);
+
+            //计算超时
+            Duration duration = task.getDuration();
+
+            if (duration != null && calService != null) {
+                ((TaskInstance) taskInstance).setExpiredTime(calService.dateAfter(calService.getSysDate(), duration));
+            }
 
             // 2、保存实例
-            persistenceService.saveTaskInstance(taskInstance);
+            persistenceService.saveOrUpdateTaskInstance(taskInstance);
 //			token.getProcessInstance().getTaskInstances().add(taskInstance);
 
             // 3、分配任务
 
             if (task.getType().equals(Task.FORM)) {
+                IProcessInstance processInstance = token.getProcessInstance();
+                WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) processInstance).getCurrentWorkflowSession();
+                DynamicAssignmentHandler dynamicAssignmentHandler = workflowSession.consumeCurrentDynamicAssignmentHandler();
                 // performer(id,name,type,handler)
                 Participant performer = task.getPerformer();
                 if (performer == null || performer.getAssignmentHandler().trim().equals("")) {
                     throw new EngineException(
                             "流程定义错误，Form类型的 task必须指定performer及其AssignmentHandler");
                 }
-                assign(taskInstance, performer);
+                assign(taskInstance, performer, dynamicAssignmentHandler);
             }
 
             // 4、如果startmode=auto，则启动任务,仅对subflow和Tool类型的task有效
@@ -102,7 +126,7 @@ public abstract class AbstractTaskInstanceManager implements
             // startMode是否可以去掉？没有什么意义。mual类型的task的自动起动可以通过workitem的eventhandler实现
 
             if (Task.SUBFLOW.equals(task.getType()) || Task.TOOL.equals(task.getType())) {
-                taskInstance.start();
+                ((TaskInstance) taskInstance).start();
 //                task.get
             }
 
@@ -110,15 +134,20 @@ public abstract class AbstractTaskInstanceManager implements
     }
 
     public abstract ITaskInstance createTaskInstance(IToken token, Task task,
-            Activity activity);
+            Activity activity) throws EngineException;
 
     // TODO asignmentHandler是否可以缓存？
-    protected void assign(ITaskInstance taskInstance, Participant part) {
-        String asignmentHandlerClassName = part.getAssignmentHandler();
+    protected void assign(ITaskInstance taskInstance, Participant part, DynamicAssignmentHandler dynamicAssignmentHandler) {
+
         try {
-            Class clz = Class.forName(asignmentHandlerClassName);
-            Object assignmentHandler = clz.newInstance();
-            ((IAssignmentHandler) assignmentHandler).assign(taskInstance, part.getName());
+            if (dynamicAssignmentHandler != null) {
+                dynamicAssignmentHandler.assign((IAssignable) taskInstance, part.getName());
+            } else {
+                String asignmentHandlerClassName = part.getAssignmentHandler();
+                Class clz = Class.forName(asignmentHandlerClassName);
+                Object assignmentHandler = clz.newInstance();
+                ((IAssignmentHandler) assignmentHandler).assign((IAssignable) taskInstance, part.getName());
+            }
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         } catch (InstantiationException e) {
@@ -129,6 +158,8 @@ public abstract class AbstractTaskInstanceManager implements
             e.printStackTrace();
         } catch (EngineException e) {
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (KenelException e) {
             e.printStackTrace();
         }
 

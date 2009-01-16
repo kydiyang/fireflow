@@ -16,6 +16,10 @@
  */
 package org.fireflow.engine.kenelextensions;
 
+import org.fireflow.engine.impl.ProcessInstance;
+import org.fireflow.kenel.IToken;
+import org.fireflow.kenel.KenelException;
+import org.fireflow.kenel.event.NodeInstanceEvent;
 import org.fireflow.kenel.impl.EndNodeInstance;
 
 /**
@@ -23,16 +27,30 @@ import org.fireflow.kenel.impl.EndNodeInstance;
  *
  */
 public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
-	public String getExtentionPointName() {
-		// TODO Auto-generated method stub
-		return EndNodeInstance.Extension_Point_NodeInstanceEventListener;
-	}
+  
+    public String getExtentionPointName() {
+        // TODO Auto-generated method stub
+        return EndNodeInstance.Extension_Point_NodeInstanceEventListener;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
-	 */
-	public String getExtentionTargetName() {
-		// TODO Auto-generated method stub
-		return EndNodeInstance.Extension_Target_Name;
-	}
+    /* (non-Javadoc)
+     * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
+     */
+    public String getExtentionTargetName() {
+        // TODO Auto-generated method stub
+        return EndNodeInstance.Extension_Target_Name;
+    }
+
+    public void onNodeInstanceEventFired(NodeInstanceEvent e)
+            throws KenelException {
+        super.onNodeInstanceEventFired(e);
+        System.out.println("=====Inside EndNodeInstanceExtension.onNodeInstanceEventFired()::e.getEventType is "+e.getEventType());
+        if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED) {
+            // 执行ProcessInstance的complete操作
+            
+            IToken tk = e.getToken();
+            ProcessInstance currentProcessInstance = (ProcessInstance) tk.getProcessInstance();
+            currentProcessInstance.complete();
+        }
+    }
 }

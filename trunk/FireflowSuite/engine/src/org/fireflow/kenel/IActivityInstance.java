@@ -24,6 +24,6 @@ import org.fireflow.model.net.Activity;
  *
  */
 public interface IActivityInstance extends INodeInstance {
-	public void complete(IToken token)throws KenelException;
+	public void complete(IToken token,IActivityInstance targetActivityInstance)throws KenelException;
 	public Activity getActivity();
 }

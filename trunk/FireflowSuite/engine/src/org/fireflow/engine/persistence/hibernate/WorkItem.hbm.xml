@@ -1,39 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class name="org.fireflow.engine.impl.WorkItem" table="T_FF_RT_WORKITEM" dynamic-update="true">
-        <id name="id" type="java.lang.String">
-            <column name="ID" length="50" />
-            <generator class="uuid.hex"></generator>
-        </id>
-        <property name="state" type="java.lang.Integer">
-        	<column name="STATE" length="1"  not-null="true"/>
-        </property>
-        <property name="createdTime" type="java.util.Date" update="false">
-        	<column name="CREATED_TIME" length="7"  not-null="true"/>
-        </property>
-        <property name="acceptedTime" type="java.util.Date">
-        	<column name="ACCEPTED_TIME" length="7"/>
-        </property>
-        <property name="endTime" type="java.util.Date">
-        	<column name="END_TIME" length="7"/>
-        </property>
-        <property name="actorId" type="java.lang.String">
-        	<column name="ACTOR_ID" length="50"/>
-        </property>        
-        <property name="comments" type="java.lang.String">
-        	<column name="COMMENTS" length="1024"/>
-        </property>
-
-        <many-to-one 
-        	name="taskInstance"
-        	column="TASKINSTANCE_ID"
-        	class="org.fireflow.engine.impl.TaskInstance"
-        	update="false"
-        	not-null="true"
-        	lazy="false"
-        	fetch="join"
-        	cascade="none"/>
-	</class>
+  <class dynamic-update="true" name="org.fireflow.engine.impl.WorkItem" table="T_FF_RT_WORKITEM">
+    <id name="id" type="java.lang.String">
+      <column length="50" name="ID"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="state" type="java.lang.Integer">
+      <column length="1" name="STATE" not-null="true"/>
+    </property>
+    <property name="createdTime" type="java.util.Date" update="false">
+      <column length="7" name="CREATED_TIME" not-null="true"/>
+    </property>
+    <property name="signedTime" type="java.util.Date">
+      <column length="7" name="SIGNED_TIME"/>
+    </property>
+    <property name="endTime" type="java.util.Date">
+      <column length="7" name="END_TIME"/>
+    </property>
+    <property name="actorId" type="java.lang.String">
+      <column length="50" name="ACTOR_ID"/>
+    </property>
+    <property name="comments" type="java.lang.String">
+      <column length="1024" name="COMMENTS"/>
+    </property>
+    <many-to-one cascade="none" class="org.fireflow.engine.impl.TaskInstance" column="TASKINSTANCE_ID" fetch="join" lazy="false" name="taskInstance" not-null="true" update="false"/>
+  </class>
 </hibernate-mapping>

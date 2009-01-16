@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine.condition;
+package org.fireflow.engine.taskinstance;
+
+import org.fireflow.engine.ITaskInstance;
 
 /**
  * @author chennieyun
  *
  */
-public class Constant {
-	public static final String DEFAULT = "DEFAULT";
+public interface IApplicationHandler {
+    public void execute(ITaskInstance taskInstance);
 }

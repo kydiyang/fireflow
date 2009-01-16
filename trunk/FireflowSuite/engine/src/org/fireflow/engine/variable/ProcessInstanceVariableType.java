@@ -130,9 +130,14 @@ public class ProcessInstanceVariableType implements UserType {
 		}
 		if (type.equals(Integer.class.getName())){
 			return new Integer(strValue);
-		}else if (type.equals(Float.class.getName())){
+		}else if (type.equals(Long.class.getName())){
+                    return new Long(strValue);
+                }
+                else if (type.equals(Float.class.getName())){
 			return new Float(strValue);
-		}
+		}else if (type.equals(Double.class.getName())){
+                    return new Double(strValue);
+                }
 		else if (type.equals(Boolean.class.getName())){
 			return new Boolean(strValue);
 		}
@@ -171,9 +176,9 @@ public class ProcessInstanceVariableType implements UserType {
 		if (type.equals(String.class.getName())){
 			arg0.setString(arg2, type+"#"+arg1);
 		}
-		else if (type.equals(Integer.class.getName())){
+		else if (type.equals(Integer.class.getName()) || type.equals(Long.class.getName())){
 			arg0.setString(arg2, type+"#"+arg1);
-		}else if (type.equals(Float.class.getName())){
+		}else if (type.equals(Float.class.getName()) || type.equals(Double.class.getName())){
 			arg0.setString(arg2, type+"#"+arg1);
 		}
 		else if (type.equals(Boolean.class.getName())){

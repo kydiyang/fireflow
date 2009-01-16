@@ -1,56 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class name="org.fireflow.engine.impl.TaskInstance" table="T_FF_RT_TASKINSTANCE" dynamic-update="true">
-		<id name="id" type="java.lang.String">
-			<column name="ID" length="50"/>
-			<generator class="uuid.hex"/>
-		</id>
-		<property name="taskId" type="java.lang.String" update="false">
-			<column name="TASK_ID" length="50" not-null="true" />
-		</property>
-		<property name="activityId" type="java.lang.String" update="false">
-			<column name="ACTIVITY_ID" length="50" not-null="true"/>
-		</property>		
-		<property name="name" type="java.lang.String" update="false">
-			<column name="NAME" length="50" not-null="true" ></column>
-		</property>
-		<property name="displayName" type="java.lang.String">
-			<column name="DISPLAY_NAME" length="128"></column>
-		</property>
-		<property name="state" type="java.lang.Integer">
-			<column name="STATE" length="1"/>
-		</property>
-		<property name="taskType" type="java.lang.String">
-			<column name="TASK_TYPE" length="15"/>
-		</property>		
-		<property name="createdTime" type="java.util.Date"  update="false">
-			<column name="CREATED_TIME" not-null="true"/>
-		</property>
-		<property name="startedTime" type="java.util.Date" >
-			<column name="STARTED_TIME"></column>
-		</property>
-		<property name="expiredTime" type="java.util.Date" >
-			<column name="EXPIRED_TIME"></column>
-		</property>
-		<property name="endTime" type="java.util.Date">
-			<column name="END_TIME"></column>
-		</property>
-		<property name="completionStrategy" type="java.lang.String" update="false">
-			<column name="COMPLETION_STRATEGY"  not-null="true"/>
-		</property>
-		
-		<many-to-one name="processInstance"
-			class="org.fireflow.engine.impl.ProcessInstance"
-			column="PROCESSINSTANCE_ID"
-			update="false"
-			not-null="true"
-			lazy="false"
-			fetch="join"
-			cascade="none"/>
-		
-		<!-- 
+  <class dynamic-update="true" name="org.fireflow.engine.impl.TaskInstance" table="T_FF_RT_TASKINSTANCE">
+    <id name="id" type="java.lang.String">
+      <column length="50" name="ID"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator column="BIZ_TYPE" length="50" type="java.lang.String"/>
+    <property name="taskId" type="java.lang.String" update="false">
+      <column length="50" name="TASK_ID" not-null="true"/>
+    </property>
+    <property name="activityId" type="java.lang.String" update="false">
+      <column length="50" name="ACTIVITY_ID" not-null="true"/>
+    </property>
+    <property name="name" type="java.lang.String" update="false">
+      <column length="50" name="NAME" not-null="true"/>
+    </property>
+    <property name="displayName" type="java.lang.String">
+      <column length="128" name="DISPLAY_NAME"/>
+    </property>
+    <property name="state" type="java.lang.Integer">
+      <column length="1" name="STATE"/>
+    </property>
+    <property name="taskType" type="java.lang.String">
+      <column length="15" name="TASK_TYPE"/>
+    </property>
+    <property name="createdTime" type="java.util.Date" update="false">
+      <column name="CREATED_TIME" not-null="true"/>
+    </property>
+    <property name="startedTime" type="java.util.Date">
+      <column name="STARTED_TIME"/>
+    </property>
+    <property name="expiredTime" type="java.util.Date">
+      <column name="EXPIRED_TIME"/>
+    </property>
+    <property name="endTime" type="java.util.Date">
+      <column name="END_TIME"/>
+    </property>
+    <property name="assignmentStrategy" type="java.lang.String" update="false">
+      <column name="ASSIGNMENT_STRATEGY" not-null="true"/>
+    </property>
+    <many-to-one cascade="none" class="org.fireflow.engine.impl.ProcessInstance" column="PROCESSINSTANCE_ID" fetch="join" lazy="false" name="processInstance" not-null="true" update="false"/>
+    <!-- 
 		<set name="workItems"
 			 cascade="save-update,delete,all-delete-orphan"
 			inverse="true"
@@ -60,5 +51,5 @@
 			<one-to-many class="org.fireflow.engine.impl.WorkItem"/>
 		</set>
 		 -->
-	</class>
+  </class>
 </hibernate-mapping>

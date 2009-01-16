@@ -16,6 +16,7 @@
  */
 package org.fireflow.kenel.event;
 
+import org.fireflow.engine.EngineException;
 import org.fireflow.kenel.KenelException;
 /**
  * @author chennieyun

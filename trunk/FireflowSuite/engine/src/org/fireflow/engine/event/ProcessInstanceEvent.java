@@ -14,30 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine;
+package org.fireflow.engine.event;
 
-import org.fireflow.kenel.KenelException;
+import org.fireflow.engine.IProcessInstance;
 
 /**
  * @author chennieyun
- * 
+ *
  */
-public interface IFireflowSession {
-	public void setRuntimeContext(RuntimeContext ctx);
-        
-        public RuntimeContext getRuntimeContext();
-	
-	public void begin(Object dbsession);
-	public void end();
+public class ProcessInstanceEvent {
 
-	public Object execute(IFireflowSessionCallback callbak)
-			throws EngineException, KenelException;
+    public static final int BEFORE_PROCESS_INSTANCE_RUN = 2;
+    public static final int AFTER_PROCESS_INSTANCE_COMPLETE = 7;
+    int eventType = -1;
+    IProcessInstance source = null;
 
+    public IProcessInstance getSource() {
+        return source;
+    }
 
-	public IProcessInstance createProcessInstance(String workflowProcessName)
-			throws EngineException,KenelException;
-	
-	public IWorkItem findWorkItemById(String id);
-	
-	public ITaskInstance findTaskInstanceById(String id);
+    public void setSource(IProcessInstance source) {
+        this.source = source;
+    }
+
+    public int getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(int eventType) {
+        this.eventType = eventType;
+    }
 }

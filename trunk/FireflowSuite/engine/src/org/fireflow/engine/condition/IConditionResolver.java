@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine.eai;
+package org.fireflow.engine.condition;
+
+import java.util.Map;
 
 /**
  * @author chennieyun
  *
  */
-public interface IApplicationHandler {
-
+public interface IConditionResolver {
+	public boolean resolveBooleanExpression(Map vars,String elExpression);
 }
