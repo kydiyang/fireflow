@@ -7,19 +7,19 @@
       <generator class="uuid.hex"/>
     </id>
     <property name="processId" type="java.lang.String" update="false">
-      <column length="50" name="PROCESS_ID" not-null="true"/>
+      <column length="100" name="PROCESS_ID" not-null="true"/>
     </property>
     <property name="version" type="java.lang.Integer" update="false">
-      <column name="VERSION" not-null="true"/>
+      <column length="4" name="VERSION" not-null="true"/>
     </property>
     <property name="name" type="java.lang.String" update="false">
       <column length="100" name="NAME"/>
     </property>
-    <property name="displayName" type="java.lang.String">
+    <property name="displayName" type="java.lang.String"  update="false">
       <column length="128" name="DISPLAY_NAME"/>
     </property>
     <property name="state" type="java.lang.Integer">
-      <column name="STATE"/>
+      <column length="1" name="STATE"/>
     </property>
     <property name="createdTime" type="java.util.Date">
       <column name="CREATED_TIME"/>
@@ -33,11 +33,11 @@
     <property name="endTime" type="java.util.Date">
       <column name="END_TIME"/>
     </property>
-    <property name="parentProcessInstanceId" type="java.lang.String">
-      <column name="PARENT_PROCESSINSTANCE_ID"/>
+    <property name="parentProcessInstanceId" type="java.lang.String"  update="false">
+      <column length="50" name="PARENT_PROCESSINSTANCE_ID"/>
     </property>
-    <property name="parentTaskInstanceId" type="java.lang.String">
-      <column name="PARENT_TASKINSTANCE_ID"/>
+    <property name="parentTaskInstanceId" type="java.lang.String"  update="false">
+      <column length="50" name="PARENT_TASKINSTANCE_ID"/>
     </property>
     <!-- 
 		<many-to-one name="parentProcessInstance"
@@ -70,9 +70,10 @@
 			<one-to-many class="org.fireflow.kenel.impl.Token"/>
 		</set>		
 		 -->
-    <map lazy="true" name="processInstanceVariables" table="T_FF_RT_PROCINST_VAR">
+    <map lazy="true" name="processInstanceVariables" table="T_FF_RT_PROCINST_VAR" 
+    optimistic-lock="false" >
       <key column="PROCESSINSTANCE_ID"/>
-      <index column="NAME" type="java.lang.String"/>
+      <map-key column="NAME" type="java.lang.String"/>
       <element column="VALUE" type="org.fireflow.engine.variable.ProcessInstanceVariableType"/>
     </map>
   </class>

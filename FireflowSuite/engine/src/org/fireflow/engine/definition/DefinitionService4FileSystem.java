@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -26,12 +26,13 @@ import org.fireflow.engine.EngineException;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.io.FPDLParserException;
 import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.io.JAXP_FPDL_Parser;
+import org.fireflow.model.io.Dom4JFPDLParser;
 
 /**
+ * 从文件系统读取流程定义文件，该类忽略流程定义文件的版本，主要用于开发阶段<br>
  * When the workflow process is stored in the file system ,use this implementation.
  * 
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  * 
  */
 public class DefinitionService4FileSystem implements IDefinitionService {
@@ -62,8 +63,8 @@ public class DefinitionService4FileSystem implements IDefinitionService {
     public void setDefinitionFiles(List<String> workflowProcessFileNames)
             throws IOException, FPDLParserException,EngineException {
         if (workflowProcessFileNames != null) {
-//            Dom4JFPDLParser parser = new Dom4JFPDLParser();
-            JAXP_FPDL_Parser parser = new JAXP_FPDL_Parser();
+            Dom4JFPDLParser parser = new Dom4JFPDLParser();
+//            JAXP_FPDL_Parser parser = new JAXP_FPDL_Parser();
             for (int i = 0; i < workflowProcessFileNames.size(); i++) {
                 InputStream inStream = this.getClass().getResourceAsStream(
                         workflowProcessFileNames.get(i).trim());

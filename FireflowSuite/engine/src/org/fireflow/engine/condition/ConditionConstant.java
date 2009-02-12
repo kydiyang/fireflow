@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,13 @@
 package org.fireflow.engine.condition;
 
 /**
- * @author chennieyun
+ * 条件表达式相关的常量
+ * @author 非也，nychen2000@163.com
  *
  */
 public class ConditionConstant {
-	public static final String DEFAULT = "DEFAULT";
+    /**
+     * 如果某个条件表达式是DEFAUT,则表示：如果他的兄弟的转移条件计算结果都是false，则执行本转移
+     */
+    public static final String DEFAULT = "DEFAULT";
 }

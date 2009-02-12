@@ -8,7 +8,7 @@
             </generator>
     </id>
     <property name="processId" type="java.lang.String">
-      <column length="50" name="PROCESS_ID" not-null="true"/>
+      <column length="100" name="PROCESS_ID" not-null="true"/>
     </property>
     <property name="name" type="java.lang.String">
       <column length="100" name="NAME" not-null="true"/>

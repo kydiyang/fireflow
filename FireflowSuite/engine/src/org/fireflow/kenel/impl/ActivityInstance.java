@@ -22,10 +22,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.fireflow.engine.IWorkflowSessionAware;
 import org.fireflow.kenel.impl.AbstractNodeInstance;
 import org.fireflow.kenel.plugin.IKenelExtension;
 import org.fireflow.kenel.IActivityInstance;
-import org.fireflow.kenel.INodeInstance;
 import org.fireflow.kenel.IToken;
 import org.fireflow.kenel.ITransitionInstance;
 import org.fireflow.kenel.KenelException;
@@ -65,13 +65,15 @@ public class ActivityInstance extends AbstractNodeInstance implements
 		log.debug("The weight of the Entering TransitionInstance is "+tk.getValue());
 		IToken token  = tk;
 		token.setNodeId(this.getActivity().getId());
-
+                
 		//触发TokenEntered事件
 		NodeInstanceEvent event1 = new NodeInstanceEvent(this);
 		event1.setToken(tk);
 		event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-		fireNodeLeavingEvent(event1);
-		
+		fireNodeEnteredEvent(event1);
+//		System.out.println("====Inside activityinstance.fire(tk):: token is "+tk.hashCode());
+//                System.out.println("====Inside activityInstance.fire(tk):: processinstance is "+tk.getProcessInstance().hashCode());
+//                System.out.println("====Inside activityInstance.fire(tk):: workflowsession is "+((IWorkflowSessionAware)tk.getProcessInstance()).getCurrentWorkflowSession().hashCode());
 		if(token.isAlive()){
 			NodeInstanceEvent event = new NodeInstanceEvent(this);
 			event.setToken(token);
@@ -89,6 +91,10 @@ public class ActivityInstance extends AbstractNodeInstance implements
 	}
 
 	public void complete(IToken token,IActivityInstance targetActivityInstance) throws KenelException {
+//            	System.out.println("====Inside activityinstance.complete(tk)-1:: token is "+token.hashCode());
+//                System.out.println("====Inside activityInstance.complete(tk)-1:: processinstance is "+token.getProcessInstance().hashCode());
+//                System.out.println("====Inside activityInstance.complete(tk)-1:: workflowsession is "+((IWorkflowSessionAware)token.getProcessInstance()).getCurrentWorkflowSession().hashCode());                    
+                    
 		if (token.isAlive()){
 			NodeInstanceEvent event = new NodeInstanceEvent(this);
 			event.setToken(token);
@@ -102,10 +108,17 @@ public class ActivityInstance extends AbstractNodeInstance implements
 		fireNodeLeavingEvent(event2);		
 
                 if (targetActivityInstance!=null){
+                    /*为什么要新建一个Token?似乎没有必要。20090122
                     Token newtoken = new Token();
                     newtoken.setAlive(token.isAlive());
                     newtoken.setProcessInstance(token.getProcessInstance());
                     targetActivityInstance.fire(newtoken);
+                     */
+                    
+//		System.out.println("====Inside activityinstance.complete(tk):: token is "+token.hashCode());
+//                System.out.println("====Inside activityInstance.complete(tk):: processinstance is "+token.getProcessInstance().hashCode());
+//                System.out.println("====Inside activityInstance.complete(tk):: workflowsession is "+((IWorkflowSessionAware)token.getProcessInstance()).getCurrentWorkflowSession().hashCode());                    
+                    targetActivityInstance.fire(token);
                 }else{
                     //按照定义，activity有且只有一个输出弧，所以此处只进行一次循环。
                     for (int i = 0; leavingTransitionInstances != null

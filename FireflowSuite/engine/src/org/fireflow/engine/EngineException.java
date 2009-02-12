@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,16 @@ package org.fireflow.engine.condition;
 import java.util.Map;
 
 /**
- * @author chennieyun
+ * 转移条件表达式解析器
+ * @author 非也，nychen2000@163.com
  *
  */
 public interface IConditionResolver {
-	public boolean resolveBooleanExpression(Map vars,String elExpression);
+    /**
+     * 解析条件表达式。条件表达是必须是一个值为boolean类型的EL表达式
+     * @param vars 变量列表
+     * @param elExpression 条件表达式 
+     * @return
+     */
+    public boolean resolveBooleanExpression(Map vars, String elExpression);
 }

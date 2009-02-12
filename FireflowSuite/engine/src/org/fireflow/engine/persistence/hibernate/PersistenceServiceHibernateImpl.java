@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -38,17 +38,16 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * The hibernate implementation of persistence service
  * 
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  */
 public class PersistenceServiceHibernateImpl extends HibernateDaoSupport implements IPersistenceService {
     protected RuntimeContext rtCtx = null;
@@ -64,16 +63,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
      * @param processInstance
      */
     public void saveOrUpdateProcessInstance(IProcessInstance processInstance) {
-        Session thisSession = this.getSession();
-        System.out.println("===Inside PersistenceServiceHibernateImpl:: the session is " + thisSession.hashCode());
-        System.out.println("===Inside PersistenceServiceHibernateImpl:: the flushmodel is " + thisSession.getFlushMode());
-        System.out.println("===Inisde PersistenceServiceHibernateImpl:: is transactionnal? " + SessionFactoryUtils.isSessionTransactional(thisSession, getSessionFactory()));
-        SessionHolder sessionHolder =
-                (SessionHolder) TransactionSynchronizationManager.getResource(getSessionFactory());
-        System.out.println("===Inisde PersistenceServiceHibernateImpl:: the sessionHolder is " + sessionHolder);
-
         this.getHibernateTemplate().saveOrUpdate(processInstance);
-
     }
 
     /**
@@ -107,7 +97,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(JoinPoint.class);
-                criteria.add(Expression.eq("processInstance.id", processInstanceId));
+                criteria.add(Expression.eq("processInstanceId", processInstanceId));
                 if (synchronizerId != null && !synchronizerId.trim().equals("")) {
                     criteria.add(Expression.eq("synchronizerId", synchronizerId));
                 }
@@ -125,7 +115,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
 
                 Criteria criteria = arg0.createCriteria(TaskInstance.class);
-                criteria.add(Expression.eq("processInstance.id", processInstanceId));
+                criteria.add(Expression.eq("processInstanceId", processInstanceId));
                 if (activityId != null && !activityId.trim().equals("")) {
                     criteria.add(Expression.eq("activityId", activityId));
                 }
@@ -145,7 +135,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 
                 Criteria criteria = arg0.createCriteria(Token.class);
 
-                criteria.add(Expression.eq("processInstance.id", processInstanceId));
+                criteria.add(Expression.eq("processInstanceId", processInstanceId));
                 if (nodeId != null && !nodeId.trim().equals("")) {
                     criteria.add(Expression.eq("nodeId", nodeId));
                 }
@@ -322,66 +312,143 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
     }
 
     public List<IWorkItem> findTodoWorkItems(final String actorId) {
-        if (actorId == null || actorId.equals("")) {
-            return null;
-        }
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
-
-            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "From org.fireflow.engine.impl.WorkItem model where model.actorId=? and (model.state=0 or model.state=1)";
-                Query query = arg0.createQuery(hql);
-                query.setString(0, actorId);
-                return query.list();
-            }
-        });
-        return result;
+        return findTodoWorkItems(actorId,null);
     }
 
     public List<IWorkItem> findTodoWorkItems(final String actorId, final String processInstanceId) {
-        if (processInstanceId == null || processInstanceId.trim().equals("") || actorId == null || actorId.trim().equals("")) {
-            return null;
-        }
+
         List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
 
-            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "From org.fireflow.engine.impl.WorkItem model where model.actorId=? and model.taskInstance.processInstance.id=? and (model.state=0 or model.state=1)";
-                Query query = arg0.createQuery(hql);
-                query.setString(0, actorId);
-                query.setString(1, processInstanceId);
-                return query.list();
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {       
+                Criteria criteria = arg0.createCriteria(WorkItem.class);
+
+                Criterion cri1 = Expression.eq("state", new Integer(0));
+                Criterion cri2 = Expression.eq("state", new Integer(1));
+                Criterion cri_or = Expression.or(cri1, cri2);
+                
+                if (actorId!=null && !actorId.trim().equals("")){
+                    Criterion cri0 = Expression.eq("actorId", actorId);
+                    Criterion cri_and = Expression.and(cri0, cri_or);
+                    criteria.add(cri_and);
+                }else{
+                    criteria.add(cri_or);
+                }
+                
+                criteria.createAlias("taskInstance", "taskInstance");
+                if (processInstanceId != null && !processInstanceId.trim().equals("")) {
+                    criteria .add(Expression.eq("taskInstance.processInstanceId",processInstanceId));
+                }
+
+                return criteria.list();    
             }
         });
         return result;
     }
 
     public List<IWorkItem> findTodoWorkItems(final String actorId, final String processId, final String taskId) {
-        if (actorId == null || actorId.equals("")) {
-            return null;
-        }
         List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "From org.fireflow.engine.impl.WorkItem model where model.actorId=:actorId  and (model.state=0 or model.state=1)";
+                Criteria criteria = arg0.createCriteria(WorkItem.class);
+
+                
+                Criterion cri1 = Expression.eq("state", new Integer(0));
+                Criterion cri2 = Expression.eq("state", new Integer(1));
+                Criterion cri_or = Expression.or(cri1, cri2);
+                
+                if (actorId!=null && !actorId.trim().equals("")){
+                    Criterion cri0 = Expression.eq("actorId", actorId);
+                    Criterion cri_and = Expression.and(cri0, cri_or);
+                    criteria.add(cri_and);
+                }else{
+                    criteria.add(cri_or);
+                }
+                
+                criteria.createAlias("taskInstance", "taskInstance");
                 if (processId != null && !processId.trim().equals("")) {
-                    hql = hql + " and model.taskInstance.processInstance.processId=:processId";
+                    criteria .add(Expression.eq("taskInstance.processId",processId));
                 }
+                
                 if (taskId != null && !taskId.trim().equals("")) {
-                    hql = hql + " and model.taskInstance.taskId=:taskId";
+                    criteria.add(Expression.eq("taskInstance.taskId", taskId));
                 }
-                Query query = arg0.createQuery(hql);
-                query.setString("actorId", actorId);
-                if (processId != null && !processId.trim().equals("")) {
-                    query.setString("processId", processId);
-                }
-                if (taskId != null && !taskId.trim().equals("")) {
-                    query.setString("taskId", taskId);
-                }
-                return query.list();
+                return criteria.list();                      
+                
+                
             }
         });
         return result;
     }
 
+    public List<IWorkItem> findHaveDoneWorkItems(final String actorId) {
+        return findHaveDoneWorkItems(actorId,null);
+    }
+
+    public List<IWorkItem> findHaveDoneWorkItems(final String actorId, final String processInstanceId) {
+
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {       
+                Criteria criteria = arg0.createCriteria(WorkItem.class);
+
+                Criterion cri1 = Expression.eq("state", new Integer(2));
+                Criterion cri2 = Expression.eq("state", new Integer(-1));
+                Criterion cri_or = Expression.or(cri1, cri2);
+                
+                if (actorId!=null && !actorId.trim().equals("")){
+                    Criterion cri0 = Expression.eq("actorId", actorId);
+                    Criterion cri_and = Expression.and(cri0, cri_or);
+                    criteria.add(cri_and);
+                }else{
+                    criteria.add(cri_or);
+                }
+                
+                criteria.createAlias("taskInstance", "taskInstance");
+                if (processInstanceId != null && !processInstanceId.trim().equals("")) {
+                    criteria .add(Expression.eq("taskInstance.processInstanceId",processInstanceId));
+                }
+
+                return criteria.list();    
+            }
+        });
+        return result;
+    }
+
+    public List<IWorkItem> findHaveDoneWorkItems(final String actorId, final String processId, final String taskId) {
+        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+                Criteria criteria = arg0.createCriteria(WorkItem.class);
+
+                
+                Criterion cri1 = Expression.eq("state", new Integer(2));
+                Criterion cri2 = Expression.eq("state", new Integer(-1));
+                Criterion cri_or = Expression.or(cri1, cri2);
+                
+                if (actorId!=null && !actorId.trim().equals("")){
+                    Criterion cri0 = Expression.eq("actorId", actorId);
+                    Criterion cri_and = Expression.and(cri0, cri_or);
+                    criteria.add(cri_and);
+                }else{
+                    criteria.add(cri_or);
+                }
+                
+                criteria.createAlias("taskInstance", "taskInstance");
+                if (processId != null && !processId.trim().equals("")) {
+                    criteria .add(Expression.eq("taskInstance.processId",processId));
+                }
+                
+                if (taskId != null && !taskId.trim().equals("")) {
+                    criteria.add(Expression.eq("taskInstance.taskId", taskId));
+                }
+                return criteria.list();                      
+                
+                
+            }
+        });
+        return result;
+    }    
+    
     public void deleteWorkItemsInInitializedState(final String taskInstanceId) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 

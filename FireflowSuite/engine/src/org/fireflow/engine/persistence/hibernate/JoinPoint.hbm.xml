@@ -7,7 +7,7 @@
       <generator class="uuid.hex"/>
     </id>
     <property name="synchronizerId" type="java.lang.String" update="false">
-      <column length="50" name="SYNCHRONIZER_ID" not-null="true"/>
+      <column length="200" name="SYNCHRONIZER_ID" not-null="true"/>
     </property>
     <property name="value" type="java.lang.Integer">
       <column name="VALUE"/>
@@ -15,10 +15,8 @@
     <property name="alive" type="java.lang.Boolean">
       <column name="ALIVE"/>
     </property>
-    <set lazy="false" name="appointedTransitionNames" table="T_FF_RT_APPOINTED_TRANS_NAME">
-      <key column="JOINPOINT_ID"/>
-      <element column="TRANSITION_NAME" not-null="true" type="java.lang.String"/>
-    </set>
-    <many-to-one cascade="none" class="org.fireflow.engine.impl.ProcessInstance" column="PROCESSINSTANCE_ID" lazy="false" name="processInstance" not-null="true" update="false"/>
+    <property name="processInstanceId" type="java.lang.String">
+      <column length="50" name="PROCESSINSTANCE_ID"  not-null="true"/>
+    </property>
   </class>
 </hibernate-mapping>

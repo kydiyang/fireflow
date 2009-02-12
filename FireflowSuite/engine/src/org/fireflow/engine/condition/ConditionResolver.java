@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,8 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
 import org.fireflow.engine.IRuntimeContextAware;
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
+ * 
  *
  */
 public class ConditionResolver implements IConditionResolver,IRuntimeContextAware {

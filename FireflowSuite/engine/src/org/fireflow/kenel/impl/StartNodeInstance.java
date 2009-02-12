@@ -109,7 +109,7 @@ public class StartNodeInstance extends AbstractNodeInstance implements
 
 			Token token = new Token();
 			token.setAlive(determineTheAliveOfToken(transInst));
-
+//                        System.out.println("===Inside StartNodeInstance.fire():: tk.getProcessInstance is "+tk.getProcessInstance());
 			token.setProcessInstance(tk.getProcessInstance());
 
 			transInst.take(token);

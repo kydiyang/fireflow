@@ -1,9 +1,9 @@
 /**
- * Copyright 2003-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation。
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,26 +30,74 @@ import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.Duration;
 
 /**
- * 
- * @author chennieyun
+ * 缺省的日历服务实现类。请在业务系统中扩展该类。
+ * @author 非也，nychen2000@163.com
  */
 public class DefaultCalendarService implements ICalendarService {
 
+    /**
+     * 时间格式,如HH:mm。
+     */
     public static final String hour_format = "hour_format";
+    
+    /**
+     * 日期格式，如yyyy-MM-dd
+     */
     public static final String day_format = "day_format";
 //    public static final String business_time_format = "business_time_format";
+    /**
+     * 一天的工作时段，例如8:30-12:00 & 13:30-17:30 表示早上8点半到中午12点和下午1点半到5点半
+     * 
+     */
     public static final String business_time = "business_time";
-    public static final String business_time_monday = "business_time.monday";
-    public static final String business_time_tuesday = "business_time.tuesday";
-    public static final String business_time_wednesday = "business_time.wednesday";
-    public static final String business_time_thursday = "business_time.thursday";
-    public static final String business_time_friday = "business_time.friday";
-    public static final String business_time_saturday = "business_time.saturday";
-    public static final String business_time_sunday = "business_time.sunday";
+    
+    /**
+     * 每天的工作时间，例如：如果business_time="8:30-12:00 & 13:30-17:30"，则每天的工作时间长度是7个半小时，
+     * 则hours_of_business_day只能等于7.5。因此business_time和hours_of_business_day要相匹配。
+     */
     public static final String hours_of_business_day = "hours_of_business_day";
+    
+    /**
+     * 预览版保留
+     */
+    public static final String business_time_monday = "business_time.monday";
+    
+    /**
+     * 预览版保留
+     */
+    public static final String business_time_tuesday = "business_time.tuesday";
+    
+    /**
+     * 预览版保留
+     */    
+    public static final String business_time_wednesday = "business_time.wednesday";
+    
+    /**
+     * 预览版保留
+     */    
+    public static final String business_time_thursday = "business_time.thursday";
+    
+    /**
+     * 预览版保留
+     */    
+    public static final String business_time_friday = "business_time.friday";
+    
+    /**
+     * 预览版保留
+     */    
+    public static final String business_time_saturday = "business_time.saturday";
+    
+    /**
+     * 预览版保留
+     */    
+    public static final String business_time_sunday = "business_time.sunday";
+
 //    public static final String hours_of_business_week = "hours_of_business_week";
 
-    //用于日历换算的属性
+    /**
+     * 用于日历换算的属性。
+     * 缺省实现类在构造函数中设置了日历的相关属性，你可以扩展这种实现方式，将日历属性放在配置文件中
+     */
     private Properties businessCalendarProperties = new Properties();
     
     protected RuntimeContext rtCtx = null;
@@ -359,13 +407,7 @@ public class DefaultCalendarService implements ICalendarService {
 
     }
 //    private int getDurationInMilliseconds
-    /**
-     * 缺省实现，周六周日都是非工作日，其他的都为工作日。
-     * 实际应用中，可以在数据库中建立一张非工作日表，将周末以及法定节假日录入其中，
-     * 然后在该方法中读该表的数据来判断工作日和非工作日。
-     * @param d
-     * @return
-     */
+
     public boolean isBusinessDay(Date d) {
         if (d == null) {
             return false;
@@ -381,12 +423,18 @@ public class DefaultCalendarService implements ICalendarService {
         return true;
     }
 
+    /**
+     * 返回日历属性
+     * @return
+     */
     public Properties getBusinessCalendarProperties() {
         return businessCalendarProperties;
     }
 
     /**
-     * 在外部定义的属性被合并到缺省定义中，这样的话外部之需要修改部分属性即可。
+     * 设置日历属性。该设置不是一个替换操作，而是一个覆盖操作，代码如下<br>
+     * this.businessCalendarProperties.putAll(props);<br>
+     * 即方法参数中提供的属性被合并到缺省定义中。如果参数中提供的属性和缺省属性同名，则缺省属性被覆盖，否则缺省属性被保留。
      * @param props
      */
     public void setBusinessCalendarProperties(Properties props) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -36,8 +36,9 @@ import org.fireflow.model.net.Activity;
 import org.fireflow.model.net.Transition;
 
 /**
- *
- * @author chennieyun
+ * 流程定义对象，
+ * 映射到表T_FF_DF_WORKFLOWDEF
+ * @author 非也,nychen2000@163.com
  */
 public class WorkflowDefinition {
 

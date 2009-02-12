@@ -76,13 +76,26 @@ public abstract class AbstractTaskInstanceManager implements
         Activity activity = activityInstance.getActivity();
         IPersistenceService persistenceService = rtCtx.getPersistenceService();
         ICalendarService calService = rtCtx.getCalendarService();
-//		Package pkg = activity.getWorkflowProcess().getPackage();
+        
+        IProcessInstance processInstance = token.getProcessInstance();
+        WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) processInstance).getCurrentWorkflowSession();
+//        System.out.println("====.... workflowSession of processInstance is "+workflowSession+"; hashCode is "+(workflowSession==null?0:workflowSession.hashCode()));
+//        System.out.println("====....token is "+token.hashCode());
+
+        if (workflowSession==null){
+                      throw new EngineException(
+                            "The workflow session in process instance can NOT be null");
+        }
+
         for (int i = 0; i < activity.getTasks().size(); i++) {
             Task task = activity.getTasks().get(i);
             // 1、创建Task实例，并设置工作流系统定义的属性
             ITaskInstance taskInstance = this.createTaskInstance(token, task,
                     activity);
-            ((TaskInstance) taskInstance).setProcessInstance(token.getProcessInstance());
+            
+            ((TaskInstance) taskInstance).setProcessInstanceId(processInstance.getId());
+            ((TaskInstance) taskInstance).setProcessId(processInstance.getProcessId());
+            ((TaskInstance) taskInstance).setVersion(processInstance.getVersion());
             ((TaskInstance) taskInstance).setActivityId(activity.getId());
             ((TaskInstance) taskInstance).setAssignmentStrategy(task.getAssignmentStrategy());
             ((TaskInstance) taskInstance).setCreatedTime(calService.getSysDate());
@@ -93,8 +106,9 @@ public abstract class AbstractTaskInstanceManager implements
 
             ((TaskInstance) taskInstance).setTaskId(task.getId());
             ((TaskInstance) taskInstance).setTaskType(task.getType());
+            
             ((IRuntimeContextAware) taskInstance).setRuntimeContext(rtCtx);
-
+            ((IWorkflowSessionAware)taskInstance).setCurrentWorkflowSession(workflowSession);
             //计算超时
             Duration duration = task.getDuration();
 
@@ -102,15 +116,13 @@ public abstract class AbstractTaskInstanceManager implements
                 ((TaskInstance) taskInstance).setExpiredTime(calService.dateAfter(calService.getSysDate(), duration));
             }
 
-            // 2、保存实例
+            // 2、保存实例taskInstance
             persistenceService.saveOrUpdateTaskInstance(taskInstance);
 //			token.getProcessInstance().getTaskInstances().add(taskInstance);
 
             // 3、分配任务
 
             if (task.getType().equals(Task.FORM)) {
-                IProcessInstance processInstance = token.getProcessInstance();
-                WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) processInstance).getCurrentWorkflowSession();
                 DynamicAssignmentHandler dynamicAssignmentHandler = workflowSession.consumeCurrentDynamicAssignmentHandler();
                 // performer(id,name,type,handler)
                 Participant performer = task.getPerformer();
@@ -118,6 +130,7 @@ public abstract class AbstractTaskInstanceManager implements
                     throw new EngineException(
                             "流程定义错误，Form类型的 task必须指定performer及其AssignmentHandler");
                 }
+//                System.out.println("====Inside abstractTaskInstanceManager: dynamicAssignmentHandler is "+dynamicAssignmentHandler);
                 assign(taskInstance, performer, dynamicAssignmentHandler);
             }
 

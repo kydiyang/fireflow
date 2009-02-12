@@ -7,16 +7,16 @@
       <generator class="uuid.hex"/>
     </id>
     <property name="state" type="java.lang.Integer">
-      <column length="1" name="STATE" not-null="true"/>
+      <column name="STATE" not-null="true"/>
     </property>
     <property name="createdTime" type="java.util.Date" update="false">
-      <column length="7" name="CREATED_TIME" not-null="true"/>
+      <column  name="CREATED_TIME" not-null="true"/>
     </property>
     <property name="signedTime" type="java.util.Date">
-      <column length="7" name="SIGNED_TIME"/>
+      <column  name="SIGNED_TIME"/>
     </property>
     <property name="endTime" type="java.util.Date">
-      <column length="7" name="END_TIME"/>
+      <column  name="END_TIME"/>
     </property>
     <property name="actorId" type="java.lang.String">
       <column length="50" name="ACTOR_ID"/>

@@ -13,8 +13,10 @@
       <column name="VALUE" not-null="true"/>
     </property>
     <property name="nodeId" type="java.lang.String">
-      <column name="NODE_ID" not-null="true"/>
+      <column length="200" name="NODE_ID" not-null="true"/>
     </property>
-    <many-to-one cascade="none" class="org.fireflow.engine.impl.ProcessInstance" column="PROCESSINSTANCE_ID" lazy="false" name="processInstance" not-null="true" update="false"/>
+    <property name="processInstanceId" type="java.lang.String">
+      <column length="50" name="PROCESSINSTANCE_ID" not-null="true"/>
+    </property>
   </class>
 </hibernate-mapping>

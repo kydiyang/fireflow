@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ import java.util.List;
 import org.fireflow.engine.IRuntimeContextAware;
 
 /**
- * @author chennieyun
+ * @author 非也，nychen2000@163.com
  *
  */
 public interface IDefinitionService extends IRuntimeContextAware {
@@ -28,8 +28,24 @@ public interface IDefinitionService extends IRuntimeContextAware {
 //	public void setDefinitionFiles(List<String> definitionFileNames)throws IOException,FPDLParserException;
 //	public List<WorkflowProcess> getAllWorkflowProcesses();
 //        public WorkflowProcess getWorkflowProcessById(String id);
-    
+    /**
+     * 返回所有流程的最新版本
+     * @return 
+     */
     public List<WorkflowDefinition> getAllLatestVersionOfWorkflowDefinitions();
+    
+    /**
+     * 根据流程Id和版本号查找流程定义
+     * @param processId
+     * @param version
+     * @return
+     */
     public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersion(String processId ,Integer version);
+    
+    /**
+     * 通过流程Id查找其最新版本的流程定义
+     * @param processId
+     * @return
+     */
     public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId);
 }

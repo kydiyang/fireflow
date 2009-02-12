@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,8 @@
  */
 package org.fireflow.engine.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,12 +53,12 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
     public WorkflowSession(RuntimeContext ctx) {
         this.runtimeContext = ctx;
     }
-    
-    public void setCurrentDynamicAssignmentHandler(DynamicAssignmentHandler handler){
+
+    public void setCurrentDynamicAssignmentHandler(DynamicAssignmentHandler handler) {
         this.dynamicAssignmentHandler = handler;
     }
-    
-    public DynamicAssignmentHandler consumeCurrentDynamicAssignmentHandler(){
+
+    public DynamicAssignmentHandler consumeCurrentDynamicAssignmentHandler() {
         DynamicAssignmentHandler handler = this.dynamicAssignmentHandler;
         this.dynamicAssignmentHandler = null;
         return handler;
@@ -139,6 +141,18 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
                         }
                     } else if (df.getDataType().equals(DataField.DATETIME)) {
                         //TODO 需要完善一下
+                        if (df.getInitialValue() != null && df.getDataPattern() != null) {
+                            try {
+                                SimpleDateFormat dFormat = new SimpleDateFormat(df.getDataPattern());
+                                Date dateTmp = dFormat.parse(df.getInitialValue());
+                                processInstance.setProcessInstanceVariable(df.getName(), dateTmp);
+                            } catch (Exception e) {
+                                processInstance.setProcessInstanceVariable(df.getName(), null);
+                                e.printStackTrace();
+                            }
+                        } else {
+                            processInstance.setProcessInstanceVariable(df.getName(), null);
+                        }
                     }
                 }
 

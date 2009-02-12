@@ -1,3 +1,19 @@
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ */
 package org.fireflow.engine.impl;
 
 // Generated Feb 23, 2008 12:04:21 AM by Hibernate Tools 3.2.0.b9
@@ -129,10 +145,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware,I
             if (token.isAlive()) {
                 resultJoinPoint.setAlive(true);
             }
-            if (token.getAppointedTransitionNames() != null) {
-                resultJoinPoint.addAppointedTransitionNames(token.getAppointedTransitionNames());
-            }
-
+            resultJoinPoint.setProcessInstance(this);
             return resultJoinPoint;
         } else {
             // 1、首先从数据库中查询，看看是否已经存在该JoinPoint
@@ -144,6 +157,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware,I
             }
             if (joinPoint != null) {
                 resultJoinPoint = joinPoint;
+                resultJoinPoint.setProcessInstance(this);
             } else {
                 // 2、生成一个存储到数据库中的joinPoint
                 resultJoinPoint = new JoinPoint();
@@ -155,9 +169,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware,I
             if (token.isAlive()) {
                 resultJoinPoint.setAlive(true);
             }
-            if (token.getAppointedTransitionNames() != null) {
-                resultJoinPoint.addAppointedTransitionNames(token.getAppointedTransitionNames());
-            }
+
             persistenceService.saveOrUpdateJoinPoint(resultJoinPoint);
             return resultJoinPoint;
         }
@@ -189,7 +201,8 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware,I
     }
 
     public void setProcessInstanceVariables(Map vars) {
-        processInstanceVariables.putAll(vars);
+        processInstanceVariables = vars;
+//        processInstanceVariables.putAll(vars);
     }
 
     public Object getProcessInstanceVariable(String name) {
@@ -251,12 +264,13 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware,I
      * 3、然后检查parentTaskInstanceId是否为null，如果不为null则，调用父taskinstance的complete操作。
      */
     public void complete() throws EngineException, KenelException {
-        System.out.println("====Inside ProcessInstance.complete()...");
+//        System.out.println("====Inside ProcessInstance.complete()...rtCtx is "+rtCtx);
         List<IToken> tokens = rtCtx.getPersistenceService().findTokensForProcessInstance(this.getId(), null);
         boolean canBeCompleted = true;
+//        System.out.println("===Inside processInstance.complete():: processInstance is "+this.getName()+"; and tokens.size() is "+tokens.size());
         for (int i = 0; tokens != null && i < tokens.size(); i++) {
             IToken token = tokens.get(i);
-            System.out.println("====Inside ProcessInstance.complete()::" + token.getNodeId() + " is alive?" + token.isAlive());
+//            System.out.println("====Inside ProcessInstance.complete()::" + token.getNodeId() + " is alive?" + token.isAlive());
             if (token.isAlive()) {
                 canBeCompleted = false;
                 break;
@@ -276,17 +290,18 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware,I
         event.setEventType(ProcessInstanceEvent.AFTER_PROCESS_INSTANCE_COMPLETE);
         event.setSource(this);
         this.fireProcessInstanceEvent(event);
-
+//        System.out.println("this.getParentTaskInstanceId() ="+this.getParentTaskInstanceId() );
         if (this.getParentTaskInstanceId() != null && !this.getParentTaskInstanceId().trim().equals("")) {
             ITaskInstance taskInstance = rtCtx.getPersistenceService().findTaskInstanceById(this.getParentTaskInstanceId());
+//            System.out.println("TaskInstance is "+taskInstance+"; workflow session is "+workflowSession);
+            ((IRuntimeContextAware)taskInstance).setRuntimeContext(rtCtx);
+            ((IWorkflowSessionAware)taskInstance).setCurrentWorkflowSession(workflowSession);
+            
             ((TaskInstance) taskInstance).complete();
         }
     }
 
-    /**
-     * 强行中止流程实例，不管是否达到终态。
-     * @throws RuntimeException
-     */
+
     public void abort() throws EngineException {
         //TODO 待补充
     }
