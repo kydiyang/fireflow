@@ -1,5 +1,5 @@
 /**
- * Copyright 2003-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -86,11 +86,12 @@ public class JAXP_FPDL_Parser implements FPDLNames {
         }
     }
     
-    public WorkflowProcess parse(Document document) throws FPDLParserException {
+    protected WorkflowProcess parse(Document document) throws FPDLParserException {
 
         Element workflowProcessElement = document.getDocumentElement();
         
         WorkflowProcess wp = new WorkflowProcess(workflowProcessElement.getAttribute(NAME));
+        wp.setSn(UUID.randomUUID().toString());
         wp.setDescription(Util4JAXPParser.elementAsString(workflowProcessElement,
                 DESCRIPTION));
         wp.setDisplayName(workflowProcessElement.getAttribute(DISPLAY_NAME));

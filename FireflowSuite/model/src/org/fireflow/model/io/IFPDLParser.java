@@ -20,6 +20,6 @@ public interface IFPDLParser extends FPDLNames{
     */
 
     public WorkflowProcess parse(InputStream in) throws IOException, FPDLParserException;
-    public WorkflowProcess parse(Reader in) throws IOException, FPDLParserException;
+//    public WorkflowProcess parse(Reader in) throws IOException, FPDLParserException;
 
 }

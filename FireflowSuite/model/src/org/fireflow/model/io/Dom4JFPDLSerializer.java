@@ -40,9 +40,20 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
     public void serialize(WorkflowProcess workflowProcess, OutputStream out)
             throws IOException, FPDLSerializerException {
 
-        serialize(workflowProcess, new OutputStreamWriter(out));
+//        serialize(workflowProcess, new OutputStreamWriter(out));
+       Document document = workflowProcessToDom(workflowProcess);
+
+        // write the document to the output stream
+        OutputFormat format = new OutputFormat("    ", true);
+        format.setEncoding("UTF-8");
+        
+        XMLWriter writer = new XMLWriter(out, format);
+        
+        writer.write(document);
+        out.flush();
     }
 
+    /*
     public void serialize(WorkflowProcess workflowProcess, Writer out)
             throws IOException, FPDLSerializerException {
         // create the Document object
@@ -51,10 +62,13 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         // write the document to the output stream
         OutputFormat format = new OutputFormat("    ", true);
         format.setEncoding("utf-8");
+        
         XMLWriter writer = new XMLWriter(out, format);
+        
         writer.write(document);
         out.flush();
     }
+     */
 
     public Document workflowProcessToDom(WorkflowProcess workflowProcess)
             throws FPDLSerializerException {

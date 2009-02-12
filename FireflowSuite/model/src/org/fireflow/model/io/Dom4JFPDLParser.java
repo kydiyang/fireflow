@@ -1,5 +1,5 @@
 /**
- * Copyright 2003-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -55,25 +55,49 @@ import org.xml.sax.SAXException;
 
 public class Dom4JFPDLParser implements IFPDLParser {
 
-    String encoding = "utf-8";
+//    String encoding = "utf-8";
 
     /** Construct a new Dom4JFPDLParser. */
-    public Dom4JFPDLParser() {
-    }
-
-    public void setEncoding(String ecd) {
-        this.encoding = ecd;
-    }
+//    public Dom4JFPDLParser() {
+//    }
+//
+//    public void setEncoding(String ecd) {
+//        this.encoding = ecd;
+//    }
 
     public WorkflowProcess parse(InputStream in) throws IOException,
             FPDLParserException {
-        return parse(new InputStreamReader(in));
+        try {
+            SAXReader reader = new SAXReader(new DocumentFactory());
+            reader.setEntityResolver(new EntityResolver() {
+
+                String emptyDtd = "";
+                ByteArrayInputStream bytels = new ByteArrayInputStream(emptyDtd.getBytes());
+
+                public InputSource resolveEntity(String publicId,
+                        String systemId) throws SAXException, IOException {
+                    return new InputSource(bytels);
+                }
+            });
+            Document document = reader.read(in);
+
+            WorkflowProcess wp = parse(document);
+            return wp;
+        } catch (DocumentException e) {
+            e.printStackTrace();
+            throw new FPDLParserException("Error parsing document.", e);
+        } finally {
+
+
+        }        
+//        return parse(new InputStreamReader(in));
     }
 
-    public WorkflowProcess parse(Document document) throws FPDLParserException {
+    protected WorkflowProcess parse(Document document) throws FPDLParserException {
         Element workflowProcessElement = document.getRootElement();
 
         WorkflowProcess wp = new WorkflowProcess(workflowProcessElement.attributeValue(NAME));
+        wp.setSn(UUID.randomUUID().toString());
         wp.setDescription(Util4Parser.elementAsString(workflowProcessElement,
                 DESCRIPTION));
         wp.setDisplayName(workflowProcessElement.attributeValue(DISPLAY_NAME));
@@ -103,6 +127,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
 
     }
 
+    /*
     public WorkflowProcess parse(InputSource in) throws IOException, FPDLParserException {
         String oldSigletonClassName = System.getProperty("org.dom4j.DocumentFactory.singleton.strategy");
         try {
@@ -134,7 +159,9 @@ public class Dom4JFPDLParser implements IFPDLParser {
             }
         }
     }
+     */
 
+    /*
     public WorkflowProcess parse(Reader in) throws IOException,
             FPDLParserException {
         String oldSigletonClassName = System.getProperty("org.dom4j.DocumentFactory.singleton.strategy");
@@ -168,7 +195,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
 
         }
     }
-
+*/
     protected void loadEventListeners(List listeners, Element element) {
         listeners.clear();
         if (element == null) {

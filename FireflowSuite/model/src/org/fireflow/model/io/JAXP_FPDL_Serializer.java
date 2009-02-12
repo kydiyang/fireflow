@@ -62,7 +62,7 @@ public class JAXP_FPDL_Serializer implements FPDLNames {
 
     String encoding = "UTF-8";
 
-    public void serialize(WorkflowProcess workflowProcess, Writer out)
+    protected void serialize(WorkflowProcess workflowProcess, Writer out)
             throws IOException, FPDLSerializerException {
         try {
             Document document = workflowProcessToDom(workflowProcess);
@@ -94,7 +94,7 @@ public class JAXP_FPDL_Serializer implements FPDLNames {
 
     public void serialize(WorkflowProcess workflowProcess, OutputStream out)
             throws IOException, FPDLSerializerException {
-        serialize(workflowProcess,new OutputStreamWriter(out));
+        serialize(workflowProcess,new OutputStreamWriter(out,encoding));
         /*
         try {
             Document document = workflowProcessToDom(workflowProcess);

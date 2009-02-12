@@ -1,5 +1,25 @@
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ */
 package org.fireflow.model;
 
+/**
+ * Fire workflow保留的扩展属性的名称，工作流自定义的扩展属性不要使用这些名字
+ * @author 非也,nychen2000@163.com
+ */
 public interface ExtendedAttributeNames {
 
 	public static final String BOUNDS_X = "FIRE_FLOW.bounds.x";
@@ -12,17 +32,6 @@ public interface ExtendedAttributeNames {
 
 	public static final String ACTIVITY_LOCATION = "FIRE_FLOW.activityLocation";
 
-	// public static final String PROCESSINSTANCE_EVENT_LISTENER =
-	// "FIRE_FLOW.processInstanceEventListener";
-	//
-	// public static final String ACTIVITYINSTANCE_EVENTLISTENER_PREFIX =
-	// "FIRE_FLOW.activityInstanceEventListener_";
-	// public static final String WORKITEM_EVENTLISTENER_PREFIX =
-	// "FIRE_FLOW.workitemEventListener_";
-	//
-	// public static final String COPYTO = "FIRE_FLOW.copyto";
-	//
-	// public static final String
-	// BUSINESS_FUNCTION_UNIT_SET="FIRE_FLOW.businessFunctionUnitSet";
+
 
 }

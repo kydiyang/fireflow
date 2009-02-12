@@ -9,7 +9,8 @@ import org.fireflow.model.WorkflowProcess;
 public interface IFPDLSerializer extends FPDLNames {
 	public void serialize(WorkflowProcess workflowProcess, OutputStream out)
 			throws IOException, FPDLSerializerException;
-
+        /*
 	public void serialize(WorkflowProcess workflowProcess, Writer out)
 			throws IOException, FPDLSerializerException;
+         */
 }
