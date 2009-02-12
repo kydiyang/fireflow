@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import org.fireflow.kenel.plugin.IKenelExtension;
 import org.fireflow.model.net.EndNode;
 import org.fireflow.model.net.Synchronizer;
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  * 
  */
 public class EndNodeInstance extends AbstractNodeInstance implements
@@ -137,7 +137,7 @@ public class EndNodeInstance extends AbstractNodeInstance implements
 				throw new KenelException("FireFlow引擎内核执行发生异常，同步器实例["
 						+ this.toString() + "]的token数量超过其容量");
 			}
-                        System.out.println("====Inside EndNodeInstance.fire(token):: value is "+value+";volume is "+volume);
+//                        System.out.println("====Inside EndNodeInstance.fire(token):: value is "+value+";volume is "+volume);
 			if (value < volume) {// 如果Value小于容量则继续等待其他弧的汇聚。
 				return;
 			}

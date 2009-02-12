@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import org.fireflow.kenel.event.NodeInstanceEvent;
 import org.fireflow.kenel.impl.EndNodeInstance;
 
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  *
  */
 public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
@@ -44,7 +44,7 @@ public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KenelException {
         super.onNodeInstanceEventFired(e);
-        System.out.println("=====Inside EndNodeInstanceExtension.onNodeInstanceEventFired()::e.getEventType is "+e.getEventType());
+//        System.out.println("=====Inside EndNodeInstanceExtension.onNodeInstanceEventFired()::e.getEventType is "+e.getEventType());
         if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED) {
             // 执行ProcessInstance的complete操作
             

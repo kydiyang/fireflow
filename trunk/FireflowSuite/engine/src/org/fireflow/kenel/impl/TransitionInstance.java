@@ -101,7 +101,7 @@ public class TransitionInstance implements ITransitionInstance, IPlugable {
         TransitionInstanceEvent e = new TransitionInstanceEvent(this);
         e.setToken(token);
         e.setEventType(TransitionInstanceEvent.ON_TAKING_THE_TOKEN);
-        System.out.println("====Inside TransitionInstance::listeners is null?"+this.eventListeners+";   sizi is "+this.eventListeners.size());
+//        System.out.println("====Inside TransitionInstance::listeners is null?"+this.eventListeners+";   sizi is "+this.eventListeners.size());
         //在监听器中决定token的alive属性
         for (int i = 0; this.eventListeners != null && i < this.eventListeners.size(); i++) {
             ITransitionInstanceEventListener listener =  this.eventListeners.get(i);

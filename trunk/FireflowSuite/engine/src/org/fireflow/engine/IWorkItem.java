@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import java.util.List;
 import org.fireflow.kenel.KenelException;
 
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  *
  */
 public interface IWorkItem{
@@ -32,24 +32,66 @@ public interface IWorkItem{
     public static final int COMPLETED = 2;
     public static final int CANCELED = -1;
 
+    /**
+     * 返回工单的Id
+     * @return
+     */
     public String getId();
 
+    /**
+     * 返回工单的状态
+     * @return
+     */
     public Integer getState();
 
+    /**
+     * 设置备注信息
+     * @param s
+     */
     public void setComments(String s);
-
+    
+    /**
+     * 返回备注信息
+     * @return
+     */
     public String getComments();
 
+    /**
+     * 返回创建时间
+     * @return
+     */
     public Date getCreatedTime();
 
+    /**
+     * 返回签收时间
+     * @return
+     */
     public Date getSignedTime();
 
+    /**
+     * 返回结束时间
+     * @return
+     */
     public Date getEndTime();
 
+    /**
+     * 返回操作员的Id
+     * @return
+     */
     public String getActorId();
 
+    /**
+     * 返回任务实例
+     * @return
+     */
     public ITaskInstance getTaskInstance();
 
+    /**
+     * 签收工单。如果任务实例的分配模式是ANY，则同一个任务实例的其他工单将被删除。
+     * 如果任务是里的分配模式是ALL，则此操作不影响同一个任务实例的其他工单的状态。
+     * @throws org.fireflow.engine.EngineException
+     * @throws org.fireflow.kenel.KenelException
+     */
     public void sign() throws EngineException, KenelException;
     
     /**
@@ -149,5 +191,16 @@ public interface IWorkItem{
      */
     public void loopTo(String activityId) throws EngineException, KenelException;
     
+    /**
+     * 将工单委派给其他人，自己的工单变成CANCELED状态
+     * @param actorId 接受任务的操作员Id
+     */    
     public void reasignTo(String actorId);
+    
+    /**
+     * 将工单委派给其他人，自己的工单变成CANCELED状态
+     * @param actorId 接受任务的操作员Id
+     * @param comments 相关的备注信息
+     */    
+    public void reasignTo(String actorId,String comments);
 }

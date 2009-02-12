@@ -31,14 +31,16 @@ import org.fireflow.kenel.ITransitionInstance;
  *
  */
 public class Token implements IToken {
-	private INodeInstance currentNodeInstance;
-	private INetInstance currentProcessInstance;
+//	private INodeInstance currentNodeInstance;
+//	private INetInstance currentProcessInstance;
 //	private ITransitionInstance transitionInstance;
 	private Boolean alive = null;
 	private Integer value = null;
 	private String nodeId = null;
-	private String id = null;
-	private IProcessInstance processInstance = null;
+	private String id = null;        
+        private String processInstanceId  = null;
+        
+        private transient IProcessInstance processInstance = null;
 	/* (non-Javadoc)
 	 * @see org.fireflow.kenel.IToken#getCurrentNodeInstance()
 	 */
@@ -112,15 +114,20 @@ public class Token implements IToken {
 	
 	public void setProcessInstance(IProcessInstance inst){
 		processInstance = inst;
+                if (this.processInstance!=null){
+                    this.processInstanceId = inst.getId();
+                }else{
+                    this.processInstanceId = null;
+                }
 	}
 	
-	public void setAppointedTransitionNames(Set<String> appointedTransitionNames){
-		
-	}
-	
-	public Set<String> getAppointedTransitionNames(){
-		return null;
-	}
+//	public void setAppointedTransitionNames(Set<String> appointedTransitionNames){
+//		
+//	}
+//	
+//	public Set<String> getAppointedTransitionNames(){
+//		return null;
+//	}
 	
 	public void setValue(Integer v){
 		value = v;
@@ -140,4 +147,11 @@ public class Token implements IToken {
 	public void setId(String id){
 		this.id = id;
 	}
+        
+        public void setProcessInstanceId(String id){
+            this.processInstanceId = id;
+        }
+        public String getProcessInstanceId(){
+            return this.processInstanceId;
+        }
 }

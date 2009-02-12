@@ -1,3 +1,19 @@
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ */
 package org.fireflow.engine;
 
 import java.util.HashMap;
@@ -17,7 +33,7 @@ import org.fireflow.engine.condition.IConditionResolver;
 
 /**
  * RuntimeContext提供所有流程实例运行环境
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  *
  */
 public class RuntimeContext {
@@ -87,11 +103,18 @@ public class RuntimeContext {
 //    public Object getCurrentDBSession() {
 //        return currentDBSession.get();
 //    }
-    
+    /**
+     * 返回条件解析器
+     * @return
+     */
     public IConditionResolver getConditionResolver() {
         return conditionResolver;
     }
 
+    /**
+     * 设置条件解析器
+     * @param resolver
+     */
     public void setConditionResolver(IConditionResolver resolver) {
         this.conditionResolver = resolver;
         if (this.conditionResolver instanceof IRuntimeContextAware){
@@ -99,6 +122,10 @@ public class RuntimeContext {
         }
     }
 
+    /**
+     * 返回任务管理器
+     * @return
+     */
     public ITaskInstanceManager getTaskInstanceManager() {
         return taskInstanceManager;
     }

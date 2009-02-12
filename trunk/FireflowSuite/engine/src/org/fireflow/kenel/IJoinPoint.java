@@ -27,12 +27,12 @@ import org.fireflow.engine.IProcessInstance;
 public interface IJoinPoint {
 	public IProcessInstance getProcessInstance();
 	public void setProcessInstance(IProcessInstance processInstance);
+        public String getProcessInstanceId();
+        public void setProcessInstanceId(String id);
 	public Integer getValue();
 	public void addValue(Integer v);
 	public Boolean getAlive();
 	public void setAlive(Boolean alive);
-	public Set<String> getAppointedTransitionNames();
-	public void addAppointedTransitionNames(Set<String> appointedTransitionNames);
 	public String getSynchronizerId() ;
 
 	public void setSynchronizerId(String synchronizerId) ;

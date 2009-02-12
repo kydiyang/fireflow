@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,9 @@ import org.fireflow.kenel.IJoinPoint;
 import org.fireflow.kenel.IToken;
 
 /**
- * @author chennieyun
+ * 数据存储接口，<br>
+ * (目前该接口的方法还不够，下一步增加方法，把hibernate的QBC和QBE直接集成进来。)
+ * @author 非也,nychen2000@163.com
  *
  */
 public interface IPersistenceService extends IRuntimeContextAware{
@@ -113,15 +115,70 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public List<IWorkItem> findWorkItemsForTaskInstance(String taskInstanceId);
     
-    
+    /**
+     * 根据操作员的Id返回其待办工单。如果actorId==null，则返回系统所有的待办任务
+     * 待办工单是指状态等于INITIALIZED或STARTED工单
+     * @param actorId
+     * @return
+     */
     public List<IWorkItem> findTodoWorkItems(String actorId);
     
+    /**
+     * 查找操作员在某个流程实例中的待办工单。
+     * 如果processInstanceId为空，则等价于调用findTodoWorkItems(String actorId)
+     * 待办工单是指状态等于INITIALIZED或STARTED工单
+     * @param actorId
+     * @param processInstanceId
+     * @return
+     */
     public List<IWorkItem> findTodoWorkItems(String actorId,String processInstanceId);
     
+    /**
+     * 查找操作员在某个流程某个任务上的待办工单。
+     * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+     * 待办工单是指状态等于INITIALIZED或STARTED工单
+     * @param actorId
+     * @param processId
+     * @param taskId
+     * @return
+     */
     public List<IWorkItem> findTodoWorkItems(String actorId,String processId,String taskId);
     
+    /**
+     * 根据操作员的Id返回其已办工单。如果actorId==null，则返回系统所有的已办任务
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单
+     * @param actorId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId);
     
+    /**
+     * 查找操作员在某个流程实例中的已办工单。
+     * 如果processInstanceId为空，则等价于调用findHaveDoneWorkItems(String actorId)
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单
+     * @param actorId
+     * @param processInstanceId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId,String processInstanceId);
+    
+    /**
+     * 查找操作员在某个流程某个任务上的已办工单。
+     * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单
+     * @param actorId
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId,String processId,String taskId);
+        
 
+    /**
+     * 删除处于初始化状态的workitem,
+     * 此方法用于签收Workitem时，删除其他Actor的WorkItem
+     * @param taskInstanceId
+     */
     public void deleteWorkItemsInInitializedState(String taskInstanceId);
     /*************************Persistence methods for joinpoint*********************/
     /**

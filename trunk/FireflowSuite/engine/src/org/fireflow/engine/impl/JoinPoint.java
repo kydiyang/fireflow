@@ -1,9 +1,23 @@
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ */
 package org.fireflow.engine.impl;
 
 // Generated Feb 23, 2008 12:04:21 AM by Hibernate Tools 3.2.0.b9
 
-import java.util.HashSet;
-import java.util.Set;
 
 import org.fireflow.engine.IProcessInstance;
 
@@ -16,8 +30,9 @@ public class JoinPoint implements org.fireflow.kenel.IJoinPoint, java.io.Seriali
 	private String synchronizerId;
 	private Integer value;
 	private Boolean alive = Boolean.FALSE;
-	private Set<String> appointedTransitionNames = new HashSet<String>(0);
-	private IProcessInstance processInstance;
+        private String processInstanceId = null;
+//	private Set<String> appointedTransitionNames = new HashSet<String>(0);
+	private transient IProcessInstance processInstance;
 
 	public JoinPoint() {
 	}
@@ -26,14 +41,16 @@ public class JoinPoint implements org.fireflow.kenel.IJoinPoint, java.io.Seriali
 		this.processInstance = processInstance;
 	}
 
+        /*
 	public JoinPoint(String synchronizerID, Integer value, Boolean alive,
 			Set<String> appointedTransitionNames, ProcessInstance processInstance) {
 		this.synchronizerId = synchronizerID;
 		this.value = value;
 		this.alive = alive;
-		this.appointedTransitionNames = appointedTransitionNames;
+//		this.appointedTransitionNames = appointedTransitionNames;
 		this.processInstance = processInstance;
 	}
+         */
 	public String getId() {
 		return this.id;
 	}
@@ -73,13 +90,13 @@ public class JoinPoint implements org.fireflow.kenel.IJoinPoint, java.io.Seriali
 		this.alive = alive;
 	}
 
-	public Set<String> getAppointedTransitionNames() {
-		return this.appointedTransitionNames;
-	}
-
-	public void setAppointedTransitionNames(Set<String> appointedTransitionNames) {
-		this.appointedTransitionNames = appointedTransitionNames;
-	}
+//	public Set<String> getAppointedTransitionNames() {
+//		return this.appointedTransitionNames;
+//	}
+//
+//	public void setAppointedTransitionNames(Set<String> appointedTransitionNames) {
+//		this.appointedTransitionNames = appointedTransitionNames;
+//	}
 
 	public IProcessInstance getProcessInstance() {
 		return this.processInstance;
@@ -87,9 +104,21 @@ public class JoinPoint implements org.fireflow.kenel.IJoinPoint, java.io.Seriali
 
 	public void setProcessInstance(IProcessInstance processInstance) {
 		this.processInstance = processInstance;
+                if(this.processInstance!=null){
+                    this.processInstanceId = processInstance.getId();
+                }else{
+                    this.processInstanceId = null;
+                }
 	}
 
-	public void addAppointedTransitionNames(Set<String> arg){
-		appointedTransitionNames.addAll(arg);
-	}
+        public String getProcessInstanceId(){
+            return this.processInstanceId;
+        }
+        
+        public void setProcessInstanceId(String id){
+            this.processInstanceId = id;
+        }
+//	public void addAppointedTransitionNames(Set<String> arg){
+//		appointedTransitionNames.addAll(arg);
+//	}
 }

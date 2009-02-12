@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,8 @@ package org.fireflow.engine.event;
 import org.fireflow.engine.EngineException;
 
 /**
- * @author chennieyun
+ * 流程实例事件监听接口
+ * @author 非也,nychen2000@163.com
  *
  */
 public interface IProcessInstanceEventListener {

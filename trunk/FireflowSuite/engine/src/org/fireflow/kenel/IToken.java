@@ -34,6 +34,9 @@ public interface IToken {
 	
 	public IProcessInstance getProcessInstance();
 	public void setProcessInstance(IProcessInstance inst);
+        
+        public void setProcessInstanceId(String id);
+        public String getProcessInstanceId();
 	
 //	public INetInstance getNetInstance();
 //	public void setNetInstance(INetInstance netInst); 
@@ -56,9 +59,9 @@ public interface IToken {
 	
 	public void setAlive(Boolean b);
 	
-	public void setAppointedTransitionNames(Set<String> appointedTransitionNames);
-	
-	public Set<String> getAppointedTransitionNames();
+//	public void setAppointedTransitionNames(Set<String> appointedTransitionNames);
+//	
+//	public Set<String> getAppointedTransitionNames();
 	
 	public String getId();
 	public void setId(String id);
