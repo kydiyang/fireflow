@@ -1,5 +1,5 @@
 /**
- * Copyright 2003-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import org.fireflow.model.net.Synchronizer;
 import org.fireflow.model.net.Transition;
 
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  *
  */
 public class WorkflowProcess extends AbstractWFElement {
@@ -56,14 +56,26 @@ public class WorkflowProcess extends AbstractWFElement {
 //    public List getFormalParameters() {
 //        return formalParameters;
 //    }
+    /**
+     * 返回所有的流程变量
+     * @return
+     */
     public List<DataField> getDataFields() {
         return dataFields;
     }
 
+    /**
+     * 返回所有的环节
+     * @return
+     */
     public List<Activity> getActivities() {
         return activities;
     }
 
+    /**
+     * 返回所有的转移
+     * @return
+     */
     public List<Transition> getTransitions() {
         return transitions;
     }
@@ -75,6 +87,11 @@ public class WorkflowProcess extends AbstractWFElement {
 //    public void setVersion(int version) {
 //        this.version = version;
 //    }
+    
+    /**
+     * 返回开始节点
+     * @return
+     */
     public StartNode getStartNode() {
         return startNode;
     }
@@ -83,30 +100,57 @@ public class WorkflowProcess extends AbstractWFElement {
         this.startNode = startNode;
     }
 
+    /**
+     * 返回所有的结束节点
+     * @return
+     */
     public List<EndNode> getEndNodes() {
         return endNodes;
     }
 
+    /**
+     * 返回所有的同步器
+     * @return
+     */
     public List<Synchronizer> getSynchronizers() {
         return synchronizers;
     }
 
+    /**
+     * 保留
+     * @return
+     */
     public String getResourceFile() {
         return resourceFile;
     }
 
+    /**
+     * 保留
+     * @return
+     */
     public void setResourceFile(String resourceFile) {
         this.resourceFile = resourceFile;
     }
-
+    /**
+     * 保留
+     * @return
+     */
     public String getResourceManager() {
         return resourceManager;
     }
-
+    /**
+     * 保留
+     * @return
+     */
     public void setResourceManager(String resourceMgr) {
         this.resourceManager = resourceMgr;
     }
 
+    /**
+     * 通过ID查找该流程中的任意元素
+     * @param id
+     * @return
+     */
     public IWFElement findWFElementById(String id) {
         if (this.getId().equals(id)) {
             return this;
@@ -163,6 +207,11 @@ public class WorkflowProcess extends AbstractWFElement {
         return null;
     }
 
+    /**
+     * 通过Id查找任意元素的序列号
+     * @param id
+     * @return
+     */
     public String findSnById(String id) {
         IWFElement elem = this.findWFElementById(id);
         if (elem != null) {
@@ -176,7 +225,7 @@ public class WorkflowProcess extends AbstractWFElement {
      * @return null表示流程正确；否则表示流程错误，返回值是错误原因
      */
     public String validate() {
-        String errHead = "Workflow Process Validate Error：";
+        String errHead = "Workflow process is invalid：";
         if (this.getStartNode() == null) {
             return errHead + "must have one start node";
         }
@@ -203,15 +252,15 @@ public class WorkflowProcess extends AbstractWFElement {
                     return errHead + "task[" + task.getId() + "]'s taskType can Not be null.";
                 } else if (task.getType().equals(Task.FORM)) {
                     if (task.getPerformer() == null) {
-                        return errHead + "FORM task[" + task.getId() + "] must has a performer.";
+                        return errHead + "FORM-task[id=" + task.getId() + "] must has a performer.";
                     }
                 } else if (task.getType().equals(Task.TOOL)) {
                     if (task.getApplication() == null) {
-                        return errHead + "TOOL task[" + task.getId() + "] must has a application.";
+                        return errHead + "TOOL-task[id=" + task.getId() + "] must has a application.";
                     }
                 } else if (task.getType().equals(Task.SUBFLOW)) {
                     if (task.getSubWorkflowProcess() == null) {
-                        return errHead + "SUBFLOW task[" + task.getId() + "] must has a subflow.";
+                        return errHead + "SUBFLOW-task[id=" + task.getId() + "] must has a subflow.";
                     }
                 } else {
                     return errHead + " unknown task type of task[" + task.getId() + "]";
@@ -281,13 +330,29 @@ public class WorkflowProcess extends AbstractWFElement {
         connectableNodes4Activity1.addAll(getEnterableNodes(activityId1));
         
         List connectableNodes4Activity2 = new ArrayList();
-        connectableNodes4Activity1.add(node2);
-        connectableNodes4Activity1.addAll(getReachableNodes(activityId2));
-        connectableNodes4Activity1.addAll(getEnterableNodes(activityId2));
+        connectableNodes4Activity2.add(node2);
+        connectableNodes4Activity2.addAll(getReachableNodes(activityId2));
+        connectableNodes4Activity2.addAll(getEnterableNodes(activityId2));
+        /*
+        System.out.println("===Inside WorkflowProcess.isInSameLine()::connectableNodes4Activity1.size()="+connectableNodes4Activity1.size());
+        System.out.println("===Inside WorkflowProcess.isInSameLine()::connectableNodes4Activity2.size()="+connectableNodes4Activity2.size());
+        System.out.println("-----------------------activity1--------------");
+        for (int i=0;i<connectableNodes4Activity1.size();i++){
+            Node node = (Node)connectableNodes4Activity1.get(i);
+            System.out.println("node.id of act1 is "+node.getId());
+        }
+        
+        System.out.println("---------------------activity2--------------------");
+        for (int i=0;i<connectableNodes4Activity2.size();i++){
+            Node node = (Node)connectableNodes4Activity2.get(i);
+            System.out.println("node.id of act2 is "+node.getId());
+        }
+         */ 
         
         if (connectableNodes4Activity1.size()!=connectableNodes4Activity2.size()){
             return false;
         }
+
         
         for (int i=0;i<connectableNodes4Activity1.size();i++){
             Node node = (Node)connectableNodes4Activity1.get(i);
@@ -332,6 +397,24 @@ public class WorkflowProcess extends AbstractWFElement {
                 }
             }
         }
+        
+        List tmp = new ArrayList();
+        boolean alreadyInTheList = false;
+        for (int i=0;i<reachableNodesList.size();i++){
+            Node nodeTmp = (Node)reachableNodesList.get(i);
+            alreadyInTheList = false;
+            for (int j=0;j<tmp.size();j++){
+                Node nodeTmp2 = (Node)tmp.get(j);
+                if (nodeTmp2.getId().equals(nodeTmp.getId())){
+                    alreadyInTheList = true;
+                    break;
+                }
+            }
+            if (!alreadyInTheList){
+                tmp.add(nodeTmp);
+            }
+        }
+        reachableNodesList = tmp;
         return reachableNodesList;
     }
     
@@ -363,6 +446,24 @@ public class WorkflowProcess extends AbstractWFElement {
                 }
             }
         }
+        
+        List tmp = new ArrayList();
+        boolean alreadyInTheList = false;
+        for (int i=0;i<enterableNodesList.size();i++){
+            Node nodeTmp = (Node)enterableNodesList.get(i);
+            alreadyInTheList = false;
+            for (int j=0;j<tmp.size();j++){
+                Node nodeTmp2 = (Node)tmp.get(j);
+                if (nodeTmp2.getId().equals(nodeTmp.getId())){
+                    alreadyInTheList = true;
+                    break;
+                }
+            }
+            if (!alreadyInTheList){
+                tmp.add(nodeTmp);
+            }
+        }
+        enterableNodesList = tmp;        
         return enterableNodesList;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2007-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
 
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  *
  */
 public class Activity extends Node {
@@ -42,10 +42,21 @@ public class Activity extends Node {
         super(workflowProcess, name);
     }
 
+    /**
+     * 返回该环节所有的任务
+     * @return
+     */
     public List<Task> getTasks() {
         return tasks;
     }
 
+    /**
+     * 返回环节的结束策略，取值为ALL或者ANY，缺省值为ALL<br>
+     * 如果取值为ALL,则只有其所有任务实例结束了，环节实例才可以结束。<br>
+     * 如果取值为ANY，则只要任何一个任务实例结束后，环节实例就可以结束。
+     * 环节实例的结束操作仅执行一遍，因此后续任务实例的结束不会触发环节实例的结束操作再次执行。
+     * @return
+     */
     public String getCompletionStrategy() {
         return completionStrategy;
     }
@@ -54,6 +65,10 @@ public class Activity extends Node {
         this.completionStrategy = strategy;
     }
 
+    /**
+     * 返回环节的输入Transition。一个环节有且只有一个输入Transition
+     * @return 转移
+     */
     public Transition getEnteringTransition() {
         return enteringTransition;
     }
@@ -62,6 +77,10 @@ public class Activity extends Node {
         this.enteringTransition = enteringTransition;
     }
 
+    /**
+     * 返回环节的输出Transition。一个环节有且只有一个输出Transition
+     * @return
+     */
     public Transition getLeavingTransition() {
         return leavingTransition;
     }

@@ -1,8 +1,29 @@
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ */
 package org.fireflow.model;
 
 import java.io.Serializable;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+
+/**
+ * 时间间隔
+ * @author 非也,nychen2000@163.com
+ */
 public class Duration implements Serializable {
 
     public static final String DAY = "DAY";
@@ -16,12 +37,10 @@ public class Duration implements Serializable {
     private String unit;
     private boolean isBusinessTime = true;
 
-    /** Construct a new Duration.  A value of 0 signals an unlimited duration.
-    The duration unit may be null to specify that the default should be used.
-    The default is determined at runtime. 
-    
-    @param value The duration value
-    @param unit The unit of measurement
+    /**
+     * 创建时间间隔对象
+     * @param value 时间值
+     * @param unit 时间单位
      */
     public Duration(int value, String unit) {
         this.value = value;
@@ -29,20 +48,10 @@ public class Duration implements Serializable {
 
 //        log.debug("Duration(" + value + ", " + unit + ")");
     }
-
-    /** Construct a new Duration.
     
-    @param durationString The duration value
-    @throws NumberFormatException
-     *///    public Duration(String durationString) throws NumberFormatException {
-//        Duration d = Duration.parse(durationString);
-//
-//        this.value = d.getValue();
-//        this.unit = d.getUnit();
-//    }
-    /** The duration value.
-    
-    @return The duration value
+    /**
+     * 获取时间值
+     * @return
      */
     public int getValue() {
         return value;
@@ -52,24 +61,26 @@ public class Duration implements Serializable {
         value = v;
     }
 
-    /** Return this duration's unit.  This method may return null if the
-    unit is not specified.
-    
-    @return The duration unit or null
+    /**
+     * 获取时间单位
+     * @return
      */
     public String getUnit() {
         return unit;
     }
 
+    /**
+     * 设置时间单位
+     * @param u
+     */
     public void setUnit(String u) {
         unit = u;
     }
 
-    /** Get the duration's unit.  The specified default duration unit is
-    used if this duration has no specified duration unit.
-    
-    @param defaultUnit The default unit if no unit specified
-    @return The duration unit
+    /**
+     * 获取时间单位，如果时间单位为null，则返回defaultUnit
+     * @param defaultUnit
+     * @return
      */
     public String getUnit(String defaultUnit) {
         if (unit == null) {
@@ -79,11 +90,10 @@ public class Duration implements Serializable {
         }
     }
 
-    /** Get the duration represented as millseconds.  The specified default
-    duration unit is used this duration has no specified duration unit.
-    
-    @param defaultUnit The default unit if no unit specified
-    @return The number of milliseconds for this duration
+    /**
+     * 获取换算成毫秒的时间间隔值
+     * @param defaultUnit
+     * @return
      */
     public int getDurationInMilliseconds(String defaultUnit) {
         int value = getValue();
@@ -124,10 +134,7 @@ public class Duration implements Serializable {
         }
     }
 
-    /** Return a String representation of the Duration.
-    
-    @return A string
-     */
+
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append(value);
@@ -137,10 +144,18 @@ public class Duration implements Serializable {
         return buffer.toString();
     }
 
+    /**
+     * 时间间隔是否指工作时间
+     * @return
+     */
     public boolean isBusinessTime() {
         return isBusinessTime;
     }
 
+    /**
+     * 设置时间间隔的属性，isBusinessTime==true表示时间间隔指工作时间
+     * @param isBusinessTime
+     */
     public void setBusinessTime(boolean isBusinessTime) {
         this.isBusinessTime = isBusinessTime;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2004-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2004-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20,15 +20,16 @@ import org.fireflow.model.AbstractWFElement;
 import org.fireflow.model.WorkflowProcess;
 
 /**
- * @author chennieyun
+ * @author 非也,nychen2000@163.com
  *
  */
 public class Node extends AbstractWFElement {
-    public Node(){
-        
+
+    public Node() {
     }
-	public Node(WorkflowProcess workflowProcess, String name) {
-		super(workflowProcess, name);
-		// TODO Auto-generated constructor stub
-	}
+
+    public Node(WorkflowProcess workflowProcess, String name) {
+        super(workflowProcess, name);
+    // TODO Auto-generated constructor stub
+    }
 }

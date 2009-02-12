@@ -1,5 +1,5 @@
 /**
- * Copyright 2003-2008,Chen Nieyun
+ * Copyright 2003-2008,非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20,28 +20,75 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author chennieyun
- *
+ * 工作流元素的抽象接口，工作流元素主要包括:<br/>
+ * 1)业务流程 WorkflowProcess，这是顶层元素<br/>
+ * 2)环节(Activity)和任务(Task)<br/>
+ * 3)开始节点(StartNode)、结束节点(EndNode)、同步器(Synchronizer)<br/>
+ * 4)转移(Transition)<br/>
+ * 5)流程变量(DataField)<br/>
+ * 
+ * @author 非也,nychen2000@163.com
+ * 
  */
 public interface IWFElement {
-        public String getSn();
-        public void setSn(String s);
-    
-	public String getId() ;
-	
-	public String getName() ;
-	public void setName(String name);
-	
-	public String getDisplayName();
-	public void setDisplayName(String displayName);
-	
-	public String getDescription();
-	public void setDescription(String description);
-	
-	public IWFElement getParent();
+    /**
+     * 返回元素的序列号，
+     * 业务系统无须关心该序列号。
+     * @return 元素序列号
+     */
+    public String getSn();
 
-	public void setParent(IWFElement parent) ;
-	
-        public List<EventListener> getEventListeners() ;
-	public Map<String,String> getExtendedAttributes() ;
+    public void setSn(String s);
+
+    /**
+     * 返回工作流元素的Id
+     * 工作流元素的Id采用“父Id.自身Name”的方式组织。
+     * @return 元素Id
+     */
+    public String getId();
+
+    /**
+     * 返回工作流元素的名称
+     * @return 元素名称
+     */
+    public String getName();
+
+    
+    public void setName(String name);
+
+    /**
+     * 返回工作流元素的显示名
+     * @return 显示名
+     */
+    public String getDisplayName();
+
+    public void setDisplayName(String displayName);
+
+    /**
+     * 返回流程元素的描述
+     * @return 流程元素描述
+     */
+    public String getDescription();
+
+    public void setDescription(String description);
+
+    /**
+     * 返回父元素
+     * @return 父元素
+     */
+    public IWFElement getParent();
+
+    public void setParent(IWFElement parent);
+
+    /**
+     * 返回事件监听器列表
+     * @return 事件监听器列表
+     */
+    public List<EventListener> getEventListeners();
+
+    /**
+     * 返回扩展属性Map
+     * @return
+     */
+    public Map<String, String> getExtendedAttributes();
 }

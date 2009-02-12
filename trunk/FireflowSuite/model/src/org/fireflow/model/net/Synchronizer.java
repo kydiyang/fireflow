@@ -1,5 +1,5 @@
 /**
- * Copyright 2004-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2004-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,8 @@ import java.util.List;
 import org.fireflow.model.WorkflowProcess;
 
 /**
- * @author chennieyun
+ * 同步器
+ * @author 非也,nychen2000@163.com
  *
  */
 public class Synchronizer extends Node{
@@ -36,9 +37,18 @@ public class Synchronizer extends Node{
 		// TODO Auto-generated constructor stub
 	}
 
+        /**
+         * 返回输入Transition集合
+         * @return
+         */
 	public List<Transition> getEnteringTransitions() {
 		return enteringTransitions;
 	}
+        
+        /**
+         * 返回输出transition集合
+         * @return
+         */
 	public List<Transition> getLeavingTransitions() {
 		return leavingTransitions;
 	}

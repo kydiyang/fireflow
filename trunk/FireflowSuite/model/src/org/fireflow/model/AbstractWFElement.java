@@ -1,5 +1,5 @@
 /**
- * Copyright 2003-2008 陈乜云（非也,Chen Nieyun）
+ * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author chennieyun
+ * 流程元素抽象类
+ * @author 非也,nychen2000@163.com
  *
  */
 public abstract class AbstractWFElement implements IWFElement, Serializable {
@@ -39,6 +40,12 @@ public abstract class AbstractWFElement implements IWFElement, Serializable {
     public AbstractWFElement(){
         
     }
+    
+    /**
+     * 
+     * @param parentElement 父流程元素
+     * @param name 本流程元素的名称
+     */
     public AbstractWFElement(IWFElement parentElement, String name) {
         this.parentElement = parentElement;
         setName(name);
