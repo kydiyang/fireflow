@@ -1,0 +1,18 @@
+alter table T_FF_RT_PROCINST_VAR drop foreign key FKD79C420D7AF471D8;
+alter table T_FF_RT_WORKITEM drop foreign key FK4131554DE2527DDC;
+drop table if exists T_FF_DF_WORKFLOWDEF;
+drop table if exists T_FF_RT_JOINPOINT;
+drop table if exists T_FF_RT_PROCESSINSTANCE;
+drop table if exists T_FF_RT_PROCINST_VAR;
+drop table if exists T_FF_RT_TASKINSTANCE;
+drop table if exists T_FF_RT_TOKEN;
+drop table if exists T_FF_RT_WORKITEM;
+create table T_FF_DF_WORKFLOWDEF (ID varchar(50) not null, PROCESS_ID varchar(100) not null, NAME varchar(100) not null, DISPLAY_NAME varchar(128), DESCRIPTION text, VERSION integer not null, PROCESS_CONTENT text, PUBLISHED bit, PUBLISHER varchar(50), PUBLISH_TIME datetime, primary key (ID));
+create table T_FF_RT_JOINPOINT (ID varchar(50) not null, SYNCHRONIZER_ID varchar(200) not null, VALUE integer, ALIVE bit, PROCESSINSTANCE_ID varchar(50) not null, primary key (ID));
+create table T_FF_RT_PROCESSINSTANCE (ID varchar(50) not null, PROCESS_ID varchar(100) not null, VERSION integer not null, NAME varchar(100), DISPLAY_NAME varchar(128), STATE integer, CREATED_TIME datetime, STARTED_TIME datetime, EXPIRED_TIME datetime, END_TIME datetime, PARENT_PROCESSINSTANCE_ID varchar(50), PARENT_TASKINSTANCE_ID varchar(50), primary key (ID));
+create table T_FF_RT_PROCINST_VAR (PROCESSINSTANCE_ID varchar(50) not null, VALUE varchar(255), NAME varchar(255) not null, primary key (PROCESSINSTANCE_ID, NAME));
+create table T_FF_RT_TASKINSTANCE (ID varchar(50) not null, BIZ_TYPE varchar(250) not null, TASK_ID text not null, ACTIVITY_ID varchar(200) not null, NAME varchar(100) not null, DISPLAY_NAME varchar(128), STATE integer, TASK_TYPE varchar(10), CREATED_TIME datetime not null, STARTED_TIME datetime, EXPIRED_TIME datetime, END_TIME datetime, ASSIGNMENT_STRATEGY varchar(10) not null, PROCESSINSTANCE_ID varchar(50) not null, PROCESS_ID varchar(100) not null, VERSION integer not null, primary key (ID));
+create table T_FF_RT_TOKEN (ID varchar(50) not null, ALIVE bit not null, VALUE integer not null, NODE_ID varchar(200) not null, PROCESSINSTANCE_ID varchar(50) not null, primary key (ID));
+create table T_FF_RT_WORKITEM (ID varchar(50) not null, STATE integer not null, CREATED_TIME datetime not null, SIGNED_TIME datetime, END_TIME datetime, ACTOR_ID varchar(50), COMMENTS text, TASKINSTANCE_ID varchar(50) not null, primary key (ID));
+alter table T_FF_RT_PROCINST_VAR add index FKD79C420D7AF471D8 (PROCESSINSTANCE_ID), add constraint FKD79C420D7AF471D8 foreign key (PROCESSINSTANCE_ID) references T_FF_RT_PROCESSINSTANCE (ID);
+alter table T_FF_RT_WORKITEM add index FK4131554DE2527DDC (TASKINSTANCE_ID), add constraint FK4131554DE2527DDC foreign key (TASKINSTANCE_ID) references T_FF_RT_TASKINSTANCE (ID);

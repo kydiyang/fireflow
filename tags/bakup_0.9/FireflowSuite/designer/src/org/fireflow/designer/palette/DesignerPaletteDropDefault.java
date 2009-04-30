@@ -1,0 +1,14 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.fireflow.designer.palette;
+
+/**
+ *
+ * @author chennieyun
+ */
+public class DesignerPaletteDropDefault {
+
+}

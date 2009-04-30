@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE WorkflowProcess PUBLIC "-//Nieyun Chen//ProcessDefinition//CN" "FireFlow_Process_Definition_Language.dtd">
+
+<fpdl:WorkflowProcess
+    xmlns:fpdl="http://www.fireflow.org/Fireflow_Process_Definition_Language" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    Id="${name}" Name="${name}" DisplayName="${name}" 
+    ResourceFile="">
+    <fpdl:StartNode Id="${name}.START_NODE" Name="START_NODE" DisplayName="">
+
+    </fpdl:StartNode>        
+</fpdl:WorkflowProcess>

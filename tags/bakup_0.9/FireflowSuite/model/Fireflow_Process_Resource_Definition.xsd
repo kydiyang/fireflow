@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ targetNamespace="http://www.fireflow.org/Fireflow_Resource_Definition_Language"
+ xmlns="http://www.fireflow.org/Fireflow_Resource_Definition_Language" elementFormDefault="qualified">
+	<xsd:element name="Resource">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Participants" minOccurs="0" />
+				<xsd:element ref="Applications" minOccurs="0" />
+				<xsd:element ref="Forms" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>	
+	 
+	<xsd:element name="Forms">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Form" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>	 
+	<xsd:element name="Form">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Description" minOccurs="0" />
+				<xsd:element name="uri" type="xsd:string"/>
+			</xsd:sequence>
+			<xsd:attribute name="Name" type="xsd:string" use="required" />
+			<xsd:attribute name="DisplayName" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+		 
+	<xsd:element name="Applications">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Application" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>	 
+	<xsd:element name="Application">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Description" minOccurs="0" />
+				<xsd:element name="handler" type="xsd:string"/>
+			</xsd:sequence>
+			<xsd:attribute name="Name" type="xsd:string" use="required" />
+			<xsd:attribute name="DisplayName" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="Participants">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Participant" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="Participant">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Description" minOccurs="0" />		
+				<xsd:element name="AssignmentHandler" type="xsd:string"/>
+			</xsd:sequence>
+			<xsd:attribute name="Name" type="xsd:string" />
+			<xsd:attribute name="DisplayName" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="Description" type="xsd:string" />	
+</xsd:schema>
