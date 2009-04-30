@@ -1,0 +1,427 @@
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ */
+package org.fireflow.engine.persistence;
+
+import java.util.List;
+
+import org.fireflow.engine.IProcessInstance;
+import org.fireflow.engine.IRuntimeContextAware;
+import org.fireflow.engine.ITaskInstance;
+import org.fireflow.engine.IWorkItem;
+import org.fireflow.engine.definition.WorkflowDefinition;
+import org.fireflow.engine.impl.ProcessInstance;
+import org.fireflow.engine.impl.ProcessInstanceTrace;
+import org.fireflow.engine.impl.TaskInstance;
+import org.fireflow.kernel.IToken;
+
+/**
+ * 数据存储接口，<br>
+ * (目前该接口的方法还不够，下一步增加方法，把hibernate的QBC和QBE直接集成进来。)<br/>
+ * 约定：以下划线开头的方法只提供给引擎本身使用，这些方法都经过特定优化。
+ * 例如增加分区查询条件。
+ * @author 非也,nychen2000@163.com
+ *
+ */
+public interface IPersistenceService extends IRuntimeContextAware{
+    /********************Persistence methodes for ProcessInstance ***********************/
+    /**
+     * Save or update processinstance. 
+     * If the processInstance.id is null then insert a new process instance record
+     * and genarate a new id for it (save operation);
+     * otherwise update the existent one.
+     * 
+     * @param processInstance
+     */
+    public void saveOrUpdateProcessInstance(IProcessInstance processInstance);
+    
+
+    /**
+     * 通过ID获得“活的”ProcessInstance对象。<br>
+     * “活的”是指ProcessInstance.state=INITIALIZED Or ProcessInstance.state=STARTED Or ProcessInstance=SUSPENDED的流程实例
+     * @param id processInstance.id
+     * @return process instance
+     */
+    public IProcessInstance findAliveProcessInstanceById(String id);
+
+
+    /**
+     * 通过ID获得ProcessInstance对象。
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param id processInstance.id
+     * @return process instance
+     */
+    public IProcessInstance findProcessInstanceById(String id);
+
+
+    /**
+     * 查找并返回同一个业务流程的所有实例
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param processId The id of the process definition.
+     * @return A list of processInstance
+     */
+    public List<IProcessInstance> findProcessInstanceByProcessId(String processId);
+    
+
+    /**
+     * 查找并返回同一个指定版本业务流程的所有实例
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param processId The id of the process definition.
+     * @return A list of processInstance
+     */
+    public List<IProcessInstance> findProcessInstanceByProcessIdAndVersion(String processId,Integer version);
+
+    /**
+     * 计算活动的子流程的数量
+     * @param taskInstanceId 父TaskInstance的Id
+     * @return
+     */
+    public Integer getAliveProcessInstanceCountForParentTaskInstance(String taskInstanceId);
+
+
+    /**
+     * 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
+     * @param processInstanceId
+     */
+    public void abortProcessInstance(ProcessInstance processInstance);
+
+    public void suspendProcessInstance(ProcessInstance processInstance);
+
+    public void restoreProcessInstance(ProcessInstance processInstance);
+
+    /*************************Persistence methods for TaskInstance ***********************/
+    /**
+     * Save or update task instance. If the taskInstance.id is null then insert a new task instance record
+     * and generate a new id for it ;
+     * otherwise update the existent one. 
+     * @param taskInstance
+     */
+    public void saveOrUpdateTaskInstance(ITaskInstance taskInstance);
+
+    /**
+     * 返回“活的”TaskInstance
+     * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED Or TaskInstance.state=SUSPENDED。
+     * @param id
+     * @return
+     */
+    public ITaskInstance findAliveTaskInstanceById(String id);
+
+    /**
+     * 获得指定的activity的“活的”TaskInstance的数量
+     * @param processInstanceId
+     * @param activityId
+     * @return
+     */
+    public Integer getAliveTaskInstanceCountForActivity(java.lang.String processInstanceId, String activityId);
+
+    public Integer getCompletedTaskInstanceCountForTask(java.lang.String processInstanceId,String taskId);
+
+    /**
+     * 获得同一个Token的所有状态为Initialized的TaskInstance
+     * @param tokenId
+     * @return
+     */
+//    public List<ITaskInstance> findInitializedTaskInstancesListForToken(String processInstanceId,String tokenId);
+
+    /**
+     * Find the task instance by id
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param id
+     * @return
+     */
+    public ITaskInstance findTaskInstanceById(String id);
+    
+    /**
+     * 查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param processInstanceId  the id of the process instance
+     * @param activityId  if the activityId is null, then return all the taskinstance of the processinstance;
+     * @return
+     */
+    public List<ITaskInstance> findTaskInstancesForProcessInstance(java.lang.String processInstanceId, String activityId);
+
+//    public List<ITaskInstance> findTaskInstancesForProcessInstanceByFromActivityId(String processInstanceId,String fromAcitivityId);
+
+    public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(String processInstanceId,Integer stepNumber);
+    
+    /*********************************Persistence methods for workitem*************************/
+    /**
+     * save or update workitem
+     * @param workitem
+     */
+    public void saveOrUpdateWorkItem(IWorkItem workitem);
+
+    /**
+     * 查询任务实例的所有"活的"WorkItem。<br>
+     * 该方法实现要求：<br>
+     * 1、该查询不关联TaskInstance，仅仅返回WorkItem对象本身。<br>
+     * 2、"活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem，
+     * 所以必须有关联条件WorkItem.state=0 Or WorkItem.state=1 Or WorkItem.state=3
+     *
+     * @param taskInstanceId 任务实例Id
+     * @return
+     */
+//    public List<IWorkItem> findAliveWorkItemsWithoutJoinForTaskInstance(String taskInstanceId);
+
+    /**
+     * 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。<br/>
+     * "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
+     * @param taskInstanceId
+     */
+    public void abortTaskInstance(TaskInstance taskInstance);
+
+    /**
+     * 返回任务实例的所有"活的"WorkItem的数量。<br>
+     * "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem。
+     * @param taskInstanceId
+     * @return
+     */
+    public Integer getAliveWorkItemCountForTaskInstance(String taskInstanceId);
+
+    /**
+     * 查询任务实例的所有"死的"WorkItem。<br>
+     * 该方法实现要求：<br>
+     * 1、该查询不关联TaskInstance，仅仅返回WorkItem对象本身。<br>
+     * 2、"死的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem，
+     * 所以必须有关联条件WorkItem.state=7 Or WorkItem.state=9
+     *
+     * @param taskInstanceId 任务实例Id
+     * @return
+     */
+    public List<IWorkItem> findDeadWorkItemsWithoutJoinForTaskInstance(String taskInstanceId);
+
+    /**
+     * 删除处于初始化状态的workitem,
+     * 此方法用于签收Workitem时，删除其他Actor的WorkItem
+     * @param taskInstanceId
+     */
+    public void deleteWorkItemsInInitializedState(String taskInstanceId);
+
+    
+    /**
+     * Find workItem by id
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param id
+     * @return
+     */
+    public IWorkItem findWorkItemById(String id);
+    
+    
+    /**
+     *
+     * Find all workitems for task
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param taskid
+     * @return
+     */
+    public List<IWorkItem> findWorkItemForTask(String taskid);    
+    
+
+    /**
+     * 根据操作员的Id返回其待办工单。如果actorId==null，则返回系统所有的待办任务<br/>
+     * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @return
+     */
+    public List<IWorkItem> findTodoWorkItems(String actorId);
+    
+    /**
+     * 查找操作员在某个流程实例中的待办工单。
+     * 如果processInstanceId为空，则等价于调用findTodoWorkItems(String actorId)
+     * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @param processInstanceId
+     * @return
+     */
+    public List<IWorkItem> findTodoWorkItems(String actorId,String processInstanceId);
+    
+    /**
+     * 查找操作员在某个流程某个任务上的待办工单。
+     * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+     * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    public List<IWorkItem> findTodoWorkItems(String actorId,String processId,String taskId);
+    
+    /**
+     * 根据操作员的Id返回其已办工单。如果actorId==null，则返回系统所有的已办任务
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId);
+    
+    /**
+     * 查找操作员在某个流程实例中的已办工单。
+     * 如果processInstanceId为空，则等价于调用findHaveDoneWorkItems(String actorId)
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @param processInstanceId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId,String processInstanceId);
+    
+    /**
+     * 查找操作员在某个流程某个任务上的已办工单。
+     * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId,String processId,String taskId);
+        
+
+
+    /*************************Persistence methods for joinpoint*********************/
+    /**
+     * Save joinpoint
+     *
+     * @param joinPoint
+     */
+//    public void saveOrUpdateJoinPoint(IJoinPoint joinPoint);
+
+    /**
+     * Find the joinpoint id
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param id
+     * @return
+     */
+//    public IJoinPoint findJoinPointById(String id);
+    
+    /**
+     * Find all the joinpoint of the process instance, and the synchronizerId of the joinpoint must equals to the seconds argument.
+     * @param processInstanceId
+     * @param synchronizerId if the synchronizerId is null ,then all the joinpoint of the process instance will be returned.
+     * @return
+     */
+//    public List<IJoinPoint> findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId);
+
+    
+    /************************Persistence methods for Token**************************;
+    /**
+     * Save token
+     * @param token
+     */
+    public void saveOrUpdateToken(IToken token);
+
+    /**
+     * 统计流程任意节点的活动Token的数量。对于Activity节点，该数量只能取值1或者0，大于1表明有流程实例出现异常。
+     * @param processInstanceId
+     * @param nodeId
+     * @return
+     */
+    public Integer getAliveTokenCountForNode(String processInstanceId, String nodeId);
+
+    /**
+     * 查找到状态为Dead的token
+     * @param id
+     * @return
+     */
+//    public IToken findDeadTokenById(String id);
+
+    /**
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param id
+     * @return
+     */
+    public IToken findTokenById(String id);
+
+    /**
+     * Find all the tokens for process instance ,and the nodeId of the token must equals to the second argument.
+     * @param processInstanceId the id of the process instance
+     * @param nodeId if the nodeId is null ,then return all the tokens of the process instance.
+     * @return
+     */
+    public List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId);
+
+    public void deleteTokensForNode(String processInstanceId,String nodeId);
+
+    public void deleteTokensForNodes(String processInstanceId,List nodeIdsList);
+
+    public void deleteToken(IToken token);
+
+    /*******************************Persistence methods for definition***************************/
+
+    /**
+     * Save or update the workflow definition. The version will be increased automatically when insert a new record.<br>
+     * 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
+     * @param workflowDef
+     */
+    public void saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef);
+     
+    /**
+     * Find the workflow definition by id .
+     * 根据纪录的ID返回流程定义
+     * @param id
+     * @return
+     */
+    public WorkflowDefinition findWorkflowDefinitionById(String id);
+    
+    /**
+     * Find workflow definition by workflow process id and version<br>
+     * 根据ProcessId和版本号返回流程定义
+     * @param processId
+     * @param version
+     * @return
+     */
+    public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String processId,int version);
+    
+    /**
+     * Find the latest version of the workflow definition.<br>
+     * 根据processId返回最新版本的流程定义
+     * @param processId the workflow process id 
+     * @return
+     */
+    public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId);
+            
+    /**
+     * Find all the workflow definitions for the workflow process id.<br>
+     * 根据ProcessId 返回所有版本的流程定义
+     * @param processId
+     * @return
+     */
+    public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String processId);
+
+    /**
+     * Find all of the latest version of workflow definitions.<br>
+     * 返回系统中所有的最新版本的流程定义
+     * @return
+     */
+    public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition();
+    
+    /**
+     * Find the latest version number <br>
+     * 返回最新版号
+     * @param processId
+     * @return the version number ,null if there is no workflow definition stored in the DB.
+     */
+    public Integer findTheLatestVersionNumber(String processId);
+
+    /********************************process instance trace info **********************/
+    public void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);
+    public List findProcessInstanceTraces(String processInstanceId);
+}
