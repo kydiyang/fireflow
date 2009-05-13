@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fpdl:WorkflowProcess PUBLIC "-//Nieyun Chen//ProcessDefinition//CN" "FireFlow_Process_Definition_Language.dtd">
+
+<fpdl:WorkflowProcess xmlns:fpdl="http://www.fireflow.org/Fireflow_Process_Definition_Language" Id="Test2" Name="Test2" DisplayName="Test2" ResourceFile="">
+    <fpdl:DataFields>
+        <fpdl:DataField Id="Test2.DataField0" Name="DataField0" DisplayName="指标类别" DataType="STRING"/>
+    </fpdl:DataFields>
+    <fpdl:StartNode Id="Test2.START_NODE" Name="START_NODE" DisplayName="">
+        <fpdl:ExtendedAttributes>
+            <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="20"/>
+            <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="96"/>
+            <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="20"/>
+            <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="22"/>
+        </fpdl:ExtendedAttributes>
+    </fpdl:StartNode>
+    <fpdl:Activities>
+        <fpdl:Activity Id="Test2.Activity1" Name="Activity1" DisplayName="填报" CompletionStrategy="ALL">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="60"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="77"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="100"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="80"/>
+            </fpdl:ExtendedAttributes>
+            <fpdl:Tasks>
+                <fpdl:Task Id="Test2.Activity1.Task1" Name="Task1" DisplayName="报表填报" Type="FORM" CompletionStrategy="ANY" DefaultView="VIEWFORM" Priority="1" Execution="SYNCHR">
+                    <fpdl:Performer Name="TianBao_Role" DisplayName="填报员">
+                        <fpdl:Description></fpdl:Description>
+                        <fpdl:AssignmentHandler>cn.firesoft.xyz.CurrentUserAssignmentHandler</fpdl:AssignmentHandler>
+                    </fpdl:Performer>
+                </fpdl:Task>
+            </fpdl:Tasks>
+        </fpdl:Activity>
+        <fpdl:Activity Id="Test2.Activity2" Name="Activity2" DisplayName="县级局长审核" CompletionStrategy="ALL">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="60"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="73"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="100"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="450"/>
+            </fpdl:ExtendedAttributes>
+            <fpdl:Tasks>
+                <fpdl:Task Id="Test2.Activity2.Task1" Name="Task1" DisplayName="报表审核" Type="FORM" CompletionStrategy="ANY" DefaultView="VIEWFORM" Priority="1" Execution="SYNCHR">
+                    <fpdl:Performer Name="ShenHe_Role" DisplayName="审核员">
+                        <fpdl:Description></fpdl:Description>
+                        <fpdl:AssignmentHandler>cn.firesoft.xyz.ShenHeRoleAssignmentHandler</fpdl:AssignmentHandler>
+                    </fpdl:Performer>
+                </fpdl:Task>
+            </fpdl:Tasks>
+        </fpdl:Activity>
+        <fpdl:Activity Id="Test2.Activity3" Name="Activity3" DisplayName="县级上报" CompletionStrategy="ALL">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="60"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="69"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="100"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="640"/>
+            </fpdl:ExtendedAttributes>
+            <fpdl:Tasks>
+                <fpdl:Task Id="Test2.Activity3.Task1" Name="Task1" DisplayName="报表上报" Type="FORM" CompletionStrategy="ANY" DefaultView="VIEWFORM" Priority="1" Execution="SYNCHR">
+                    <fpdl:Performer Name="ShangBao_Role" DisplayName="上报员">
+                        <fpdl:Description></fpdl:Description>
+                        <fpdl:AssignmentHandler>cn.firesoft.xyz.ShangBaoRoleAssignmentHandler</fpdl:AssignmentHandler>
+                    </fpdl:Performer>
+                </fpdl:Task>
+            </fpdl:Tasks>
+        </fpdl:Activity>
+        <fpdl:Activity Id="Test2.Activity4" Name="Activity4" DisplayName="审核员审核" CompletionStrategy="ALL">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="60"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="85"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="100"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="285"/>
+            </fpdl:ExtendedAttributes>
+            <fpdl:Tasks>
+                <fpdl:Task Id="Test2.Activity4.Task1" Name="Task1" Type="FORM" CompletionStrategy="ANY" DefaultView="VIEWFORM" Priority="1" Execution="SYNCHR"/>
+            </fpdl:Tasks>
+        </fpdl:Activity>
+    </fpdl:Activities>
+    <fpdl:Synchronizers>
+        <fpdl:Synchronizer Id="Test2.Synchronizer1" Name="Synchronizer1">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="97"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="224"/>
+            </fpdl:ExtendedAttributes>
+        </fpdl:Synchronizer>
+        <fpdl:Synchronizer Id="Test2.Synchronizer2" Name="Synchronizer2">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="91"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="575"/>
+            </fpdl:ExtendedAttributes>
+        </fpdl:Synchronizer>
+        <fpdl:Synchronizer Id="Test2.Synchronizer3" Name="Synchronizer3">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="103"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="411"/>
+            </fpdl:ExtendedAttributes>
+        </fpdl:Synchronizer>
+    </fpdl:Synchronizers>
+    <fpdl:EndNodes>
+        <fpdl:EndNode Id="Test2.EndNode1" Name="EndNode1">
+            <fpdl:ExtendedAttributes>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.height" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.y" Value="88"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.width" Value="20"/>
+                <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="781"/>
+            </fpdl:ExtendedAttributes>
+        </fpdl:EndNode>
+    </fpdl:EndNodes>
+    <fpdl:Transitions>
+        <fpdl:Transition Id="Test2.Transition1" From="Test2.START_NODE" To="Test2.Activity1" Name="Transition1"/>
+        <fpdl:Transition Id="Test2.Transition2" From="Test2.Activity1" To="Test2.Synchronizer1" Name="Transition2"/>
+        <fpdl:Transition Id="Test2.Transition4" From="Test2.Activity2" To="Test2.Synchronizer2" Name="Transition4"/>
+        <fpdl:Transition Id="Test2.Transition5" From="Test2.Synchronizer2" To="Test2.Activity3" Name="Transition5"/>
+        <fpdl:Transition Id="Test2.Transition6" From="Test2.Activity3" To="Test2.EndNode1" Name="Transition6"/>
+        <fpdl:Transition Id="Test2.Transition7" From="Test2.Synchronizer3" To="Test2.Activity2" Name="Transition7"/>
+    </fpdl:Transitions>
+</fpdl:WorkflowProcess>
