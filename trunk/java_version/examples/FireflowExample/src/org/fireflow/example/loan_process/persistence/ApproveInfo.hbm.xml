@@ -6,7 +6,7 @@
 	-->
 <hibernate-mapping>
 	<class name="org.fireflow.example.loan_process.persistence.ApproveInfo"
-		table="T_BIZ_LOAN_APPROVEINFO" schema="FIREFLOW">
+		table="T_BIZ_LOAN_APPROVEINFO">
 		<id name="id" type="java.lang.String">
 			<column name="ID" length="50" />
 			<generator class="uuid.hex"></generator>
