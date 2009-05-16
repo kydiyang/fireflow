@@ -19,7 +19,7 @@ public class LoanTaskInstanceCreator implements ITaskInstanceCreator {
 		taskInstance.setApplicantName((String)processInstance.getProcessInstanceVariable("applicantName"));
 		taskInstance.setLoanValue((Integer)processInstance.getProcessInstanceVariable("loanValue"));
 		taskInstance.setRiskFlag((Boolean)processInstance.getProcessInstanceVariable("RiskFlag"));
-		taskInstance.setDecision((Boolean)processInstance.getProcessInstanceVariable("decision"));
+		taskInstance.setDecision((Boolean)processInstance.getProcessInstanceVariable("Decision"));
 
 		return taskInstance;
 	}

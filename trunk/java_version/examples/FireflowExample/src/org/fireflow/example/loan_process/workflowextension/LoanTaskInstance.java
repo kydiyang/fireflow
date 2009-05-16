@@ -57,13 +57,19 @@ public class LoanTaskInstance extends TaskInstance implements IExampleTaskInstan
 
 	public String getBizInfo() {
 		String riskEvaluateState = "办理中";
-		if (this.getStepNumber()>2 && this.getRiskFlag()!=null && this.getRiskFlag()==false){
-			riskEvaluateState = "不通过";
-		}else if (this.getStepNumber()>2 && this.getRiskFlag()!=null && this.getRiskFlag()==true){
+		if (this.getStepNumber()<=2 || this.getRiskFlag()==null){
+			riskEvaluateState = "办理中";
+		}
+		else if (this.getStepNumber()>2 && this.getRiskFlag()!=null && this.getRiskFlag()==false){
 			riskEvaluateState = "通过";
+		}else if (this.getStepNumber()>2 && this.getRiskFlag()!=null && this.getRiskFlag()==true){
+			riskEvaluateState = "不通过";
 		}
 		String approveFlag = "办理中";
-		if (this.getStepNumber()>3 && this.getDecision()!=null && this.getDecision()==false){
+		if (this.getStepNumber()<=3 || this.getDecision()==null){
+			approveFlag = "办理中";
+		}
+		else if (this.getStepNumber()>3 && this.getDecision()!=null && this.getDecision()==false){
 			approveFlag="不通过";
 		}else if(this.getStepNumber()>3 && this.getDecision()!=null && this.getDecision()==true){
 			approveFlag="通过";

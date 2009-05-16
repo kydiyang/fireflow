@@ -101,8 +101,11 @@ public class MyWorkItemBean extends BasicManagedBean {
 						IWorkflowSession wflsession = workflowRuntimeContext
 								.getWorkflowSession();
 						IWorkItem wi = wflsession.findWorkItemById(workItemId);
+						
 						try {
-							wi.claim();
+							if (wi!=null){
+								wi.claim();
+							}
 						} catch (EngineException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
