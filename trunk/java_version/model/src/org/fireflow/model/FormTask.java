@@ -95,6 +95,7 @@ public class FormTask extends Task{
         this.performer = performer;
     }
 
+    
     /**
      * 返回任务的分配策略，只对FORM类型的任务有意义。取值为ALL或者ANY
      * @return 任务分配策略值

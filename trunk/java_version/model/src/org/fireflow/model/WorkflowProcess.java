@@ -301,6 +301,7 @@ public class WorkflowProcess extends AbstractWFElement {
             return errHead + "start node must have leaving transitions.";
         }
 
+        
         List<Activity> activities = this.getActivities();
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
