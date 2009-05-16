@@ -22,15 +22,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.engine.ITaskInstance;
-import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.IWorkflowSessionAware;
 import org.fireflow.engine.IWorkflowSessionCallback;
+import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.definition.IDefinitionService;
 import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.IAssignable;
@@ -210,6 +212,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         return suspended;
     }
 
+    public Boolean getSuspended(){
+    	return suspended;
+    }
     public void setSuspended(Boolean suspended) {
         this.suspended = suspended;
     }
@@ -218,26 +223,22 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     
 
     public IProcessInstance getAliveProcessInstance() {
+    	if (this.processInsatance==null){
+    		if (this.rtCtx!=null){
+    			IPersistenceService persistenceService = rtCtx.getPersistenceService();
+    			this.processInsatance = persistenceService.findAliveProcessInstanceById(this.processInstanceId);
+    		}
+    	}
         if (this.processInsatance != null) {
-            ((IWorkflowSessionAware) this.processInsatance).setCurrentWorkflowSession(this.workflowSession);
-            return this.processInsatance;
-        } else {
-            try {
-                final String procInstId = this.processInstanceId;
-                this.processInsatance = (IProcessInstance) this.workflowSession.execute(new IWorkflowSessionCallback() {
-
-                    public Object doInWorkflowSession(RuntimeContext ctx) throws EngineException, KernelException {
-                        return ctx.getPersistenceService().findAliveProcessInstanceById(procInstId);
-                    }
-                });
-            } catch (EngineException ex) {
-                Logger.getLogger(TaskInstance.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (KernelException ex) {
-                Logger.getLogger(TaskInstance.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return this.processInsatance;
-        }
-
+        	if (this.workflowSession!=null){
+        		((IWorkflowSessionAware) this.processInsatance).setCurrentWorkflowSession(this.workflowSession);
+        	}
+        	if (this.rtCtx!=null){
+        		((IRuntimeContextAware) this.processInsatance).setRuntimeContext(this.rtCtx);
+        	}
+            
+        } 
+        return this.processInsatance;
     }
 
     /*
@@ -259,7 +260,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
 //		this.workItems = workItems;
 //	}
     public IWorkItem asignToActor(String id) throws EngineException, KernelException {
-        return this.asignToActor(id, true);
+        ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
+        WorkItem wi = taskInstanceMgr.createWorkItem(this.workflowSession,this.getAliveProcessInstance(),this, id);    	
+        return wi;
     }
 
     public List<IWorkItem> asignToActors(List<String> ids) throws EngineException, KernelException {
@@ -267,7 +270,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         List<IWorkItem> workItemList = new ArrayList<IWorkItem>();
         for (int i = 0; ids != null && i < ids.size(); i++) {
             ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
-            WorkItem wi = taskInstanceMgr.createWorkItem(this, ids.get(i));
+            WorkItem wi = taskInstanceMgr.createWorkItem(this.workflowSession,this.getAliveProcessInstance(),this, ids.get(i));
             wi.setCurrentWorkflowSession(workflowSession);
             workItemList.add(wi);
         }
@@ -275,7 +278,10 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     }
 
     public Task getTask() throws EngineException {
-        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+    	if (rtCtx==null)System.out.println("====Inside taskInstance rtCtx is null");
+    	IDefinitionService definitionService = rtCtx.getDefinitionService();
+    	if (definitionService==null)System.out.println("====Inside taskInstance definitionService is null");
+        WorkflowDefinition workflowDef = definitionService.getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
         if (workflowDef == null) {
             return null;
         }
@@ -313,16 +319,16 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
 //        taskInstanceMgr.completeTaskInstance(this, targetActivityInstance);
     }
 
-
-    public IWorkItem asignToActor(String id, boolean needSign) throws EngineException, KernelException {
+/*
+    public IWorkItem asignToActor(String id, boolean needClaim) throws EngineException, KernelException {
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         WorkItem wi = taskInstanceMgr.createWorkItem(this, id);
-        if (!needSign) {
+        if (!needClaim) {
             wi.claim();
         }
         return wi;
     }
-
+*/
     public IWorkflowSession getCurrentWorkflowSession() {
         return this.workflowSession;
     }
@@ -411,7 +417,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         persistenceService.saveOrUpdateTaskInstance(this);
     }
 
-    
+  
 //    public String getTokenId() {
 //        return tokenId;
 //    }

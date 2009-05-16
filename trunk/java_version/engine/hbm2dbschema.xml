@@ -2,7 +2,7 @@
 <!-- Export hibernate mapping file to DB schema. -->
 <project name="hbm2Db" basedir="." default="schemaexport_4_mysql">
     <property name="src.dir" location="${basedir}/src" />
-    <property name="build.dir" location="${basedir}/build/classes" />
+    <property name="build.dir" location="${basedir}/bin" />
     <property name="lib.dir" location="${basedir}/libs" />
 
 

@@ -536,7 +536,7 @@ public class PersistenceServiceHibernateImplTest {
             }
         });
 
-        List list = persistenceService.findDeadWorkItemsWithoutJoinForTaskInstance(aliveTaskInstanceId);
+        List list = persistenceService.findCompletedWorkItemsForTaskInstance(aliveTaskInstanceId);
         assertNotNull(list);
         assertEquals(1, list.size());
     }
@@ -547,7 +547,7 @@ public class PersistenceServiceHibernateImplTest {
     @Test
     public void testFindWorkItemForTask() {
         System.out.println("--------findWorkItemForTask--------");
-        List list = persistenceService.findWorkItemForTask(taskId);
+        List list = persistenceService.findWorkItemsForTask(taskId);
         assertNotNull(list);
         assertEquals(2, list.size());
     }
@@ -558,7 +558,7 @@ public class PersistenceServiceHibernateImplTest {
     @Test
     public void testFindProcessInstanceByProcessId() {
         System.out.println("--------findProcessInstanceByProcessId--------");
-        List processInstanceList = persistenceService.findProcessInstanceByProcessId(this.processId);
+        List processInstanceList = persistenceService.findProcessInstancesByProcessId(this.processId);
         assertNotNull(processInstanceList);
         System.out.println("The processInstanceList size is " + processInstanceList.size());
     }
@@ -569,7 +569,7 @@ public class PersistenceServiceHibernateImplTest {
     @Test
     public void testFindProcessInstanceByProcessIdAndVersion() {
         System.out.println("--------findProcessInstanceByProcessIdAndVersion---------");
-        List processInstanceList = persistenceService.findProcessInstanceByProcessIdAndVersion(this.processId, new Integer(1));
+        List processInstanceList = persistenceService.findProcessInstancesByProcessIdAndVersion(this.processId, new Integer(1));
         assertNotNull(processInstanceList);
         System.out.println("The processInstanceList size is " + processInstanceList.size());
     }
@@ -652,6 +652,7 @@ public class PersistenceServiceHibernateImplTest {
         List workflowDefList = persistenceService.findWorkflowDefinitionsByProcessId(this.Goods_Deliver_Process_ID);
         assertNotNull(workflowDefList);
         System.out.println("There are "+workflowDefList.size()+" workflow definitions");
+        System.out.println(((WorkflowDefinition)workflowDefList.get(0)).getProcessContent());
     }
 
     /**
@@ -753,7 +754,7 @@ public class PersistenceServiceHibernateImplTest {
             }
         });
 
-        List list = persistenceService.findWorkItemForTask(taskId);
+        List list = persistenceService.findWorkItemsForTask(taskId);
         if (list != null) {
             assertEquals(1, list.size());
         } else {

@@ -34,7 +34,7 @@ public interface IAssignable {
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public IWorkItem asignToActor(String actorId, boolean needClaim) throws EngineException,KernelException;
+//    public IWorkItem asignToActor(String actorId, boolean needClaim) throws EngineException,KernelException;
 
     /**
      * 将TaskInstance分配给编号为actorId的操作员。即系统只创建一个WorkItem，并分配给编号为actorId的操作员<br>

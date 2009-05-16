@@ -37,8 +37,14 @@ import org.fireflow.kernel.IToken;
  *
  */
 public interface IPersistenceService extends IRuntimeContextAware{
-    /********************Persistence methodes for ProcessInstance ***********************/
+    /******************************************************************************/
+    /************                                                        **********/
+    /************            Process instance 相关的持久化方法            **********/    
+    /************            Persistence methods for process instance    **********/
+    /************                                                        **********/    
+    /******************************************************************************/
     /**
+     * 插入或者更新ProcessInstance 。<br/>
      * Save or update processinstance. 
      * If the processInstance.id is null then insert a new process instance record
      * and genarate a new id for it (save operation);
@@ -73,7 +79,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId The id of the process definition.
      * @return A list of processInstance
      */
-    public List<IProcessInstance> findProcessInstanceByProcessId(String processId);
+    public List<IProcessInstance> findProcessInstancesByProcessId(String processId);
     
 
     /**
@@ -82,10 +88,10 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId The id of the process definition.
      * @return A list of processInstance
      */
-    public List<IProcessInstance> findProcessInstanceByProcessIdAndVersion(String processId,Integer version);
+    public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId,Integer version);
 
     /**
-     * 计算活动的子流程的数量
+     * 计算活动的子流程实例的数量
      * @param taskInstanceId 父TaskInstance的Id
      * @return
      */
@@ -98,12 +104,30 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public void abortProcessInstance(ProcessInstance processInstance);
 
+    /**
+     * 挂起流程实例
+     * @param processInstance
+     */
     public void suspendProcessInstance(ProcessInstance processInstance);
 
+    /**
+     * 恢复流程实例
+     * @param processInstance
+     */
     public void restoreProcessInstance(ProcessInstance processInstance);
 
-    /*************************Persistence methods for TaskInstance ***********************/
+    
+    
+    
+    
+    /******************************************************************************/
+    /************                                                        **********/
+    /************            task instance 相关的持久化方法               **********/    
+    /************            Persistence methods for task instance       **********/
+    /************                                                        **********/    
+    /******************************************************************************/
     /**
+     * 插入或者更新TaskInstance。<br/>
      * Save or update task instance. If the taskInstance.id is null then insert a new task instance record
      * and generate a new id for it ;
      * otherwise update the existent one. 
@@ -112,29 +136,38 @@ public interface IPersistenceService extends IRuntimeContextAware{
     public void saveOrUpdateTaskInstance(ITaskInstance taskInstance);
 
     /**
-     * 返回“活的”TaskInstance
-     * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED Or TaskInstance.state=SUSPENDED。
+     * 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。<br/>
+     * "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
+     * @param taskInstanceId
+     */
+    public void abortTaskInstance(TaskInstance taskInstance);
+    
+    /**
+     * 返回“活的”TaskInstance。<br/>
+     * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
      * @param id
      * @return
      */
     public ITaskInstance findAliveTaskInstanceById(String id);
 
     /**
-     * 获得指定的activity的“活的”TaskInstance的数量
+     * 获得activity的“活的”TaskInstance的数量<br/>
+     * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
      * @param processInstanceId
      * @param activityId
      * @return
      */
     public Integer getAliveTaskInstanceCountForActivity(java.lang.String processInstanceId, String activityId);
 
-    public Integer getCompletedTaskInstanceCountForTask(java.lang.String processInstanceId,String taskId);
-
     /**
-     * 获得同一个Token的所有状态为Initialized的TaskInstance
-     * @param tokenId
+     * 返回某个Task已经结束的TaskInstance的数量。<br/>
+     * “已经结束”是指TaskInstance.state=COMPLETED。
+     * @param processInstanceId
+     * @param taskId
      * @return
      */
-//    public List<ITaskInstance> findInitializedTaskInstancesListForToken(String processInstanceId,String tokenId);
+    public Integer getCompletedTaskInstanceCountForTask(java.lang.String processInstanceId,String taskId);
+
 
     /**
      * Find the task instance by id
@@ -145,7 +178,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
     public ITaskInstance findTaskInstanceById(String id);
     
     /**
-     * 查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance
+     * 查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance<br/>
      * (Engine没有引用到该方法，提供给业务系统使用，20090303)
      * @param processInstanceId  the id of the process instance
      * @param activityId  if the activityId is null, then return all the taskinstance of the processinstance;
@@ -153,35 +186,40 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public List<ITaskInstance> findTaskInstancesForProcessInstance(java.lang.String processInstanceId, String activityId);
 
-//    public List<ITaskInstance> findTaskInstancesForProcessInstanceByFromActivityId(String processInstanceId,String fromAcitivityId);
 
+    /**
+     * 查询出同一个stepNumber的所有TaskInstance实例
+     * @param processInstanceId
+     * @param stepNumber
+     * @return
+     */
     public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(String processInstanceId,Integer stepNumber);
     
-    /*********************************Persistence methods for workitem*************************/
+    
     /**
+     * 调用数据库自身的机制所定TaskInstance实例。<br/>
+     * 该方法主要用于工单的签收操作，在签收之前先锁定与之对应的TaskInstance。
+     * @param taskInstanceId
+     * @return
+     */
+    public void lockTaskInstance(String taskInstanceId);
+    
+    
+    /******************************************************************************/
+    /************                                                        **********/
+    /************            workItem 相关的持久化方法                    **********/    
+    /************            Persistence methods for workitem            **********/
+    /************                                                        **********/    
+    /******************************************************************************/
+    /**
+     * 插入或者更新WorkItem<br/>
      * save or update workitem
      * @param workitem
      */
     public void saveOrUpdateWorkItem(IWorkItem workitem);
 
-    /**
-     * 查询任务实例的所有"活的"WorkItem。<br>
-     * 该方法实现要求：<br>
-     * 1、该查询不关联TaskInstance，仅仅返回WorkItem对象本身。<br>
-     * 2、"活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem，
-     * 所以必须有关联条件WorkItem.state=0 Or WorkItem.state=1 Or WorkItem.state=3
-     *
-     * @param taskInstanceId 任务实例Id
-     * @return
-     */
-//    public List<IWorkItem> findAliveWorkItemsWithoutJoinForTaskInstance(String taskInstanceId);
 
-    /**
-     * 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。<br/>
-     * "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
-     * @param taskInstanceId
-     */
-    public void abortTaskInstance(TaskInstance taskInstance);
+
 
     /**
      * 返回任务实例的所有"活的"WorkItem的数量。<br>
@@ -192,19 +230,25 @@ public interface IPersistenceService extends IRuntimeContextAware{
     public Integer getAliveWorkItemCountForTaskInstance(String taskInstanceId);
 
     /**
-     * 查询任务实例的所有"死的"WorkItem。<br>
-     * 该方法实现要求：<br>
-     * 1、该查询不关联TaskInstance，仅仅返回WorkItem对象本身。<br>
-     * 2、"死的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem，
-     * 所以必须有关联条件WorkItem.state=7 Or WorkItem.state=9
+     * 查询任务实例的所有"已经结束"WorkItem。<br>
+     * 
+     * 所以必须有关联条件WorkItem.state=IWorkItem.COMPLTED 
      *
      * @param taskInstanceId 任务实例Id
      * @return
      */
-    public List<IWorkItem> findDeadWorkItemsWithoutJoinForTaskInstance(String taskInstanceId);
+    public List<IWorkItem> findCompletedWorkItemsForTaskInstance(String taskInstanceId);
 
     /**
-     * 删除处于初始化状态的workitem,
+     * 查询某任务实例的所有WorkItem
+     * @param taskInstanceId
+     * @return
+     */
+    public List<IWorkItem> findWorkItemsForTaskInstance(String taskInstanceId);
+    
+    
+    /**
+     * 删除处于初始化状态的workitem。
      * 此方法用于签收Workitem时，删除其他Actor的WorkItem
      * @param taskInstanceId
      */
@@ -227,7 +271,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param taskid
      * @return
      */
-    public List<IWorkItem> findWorkItemForTask(String taskid);    
+    public List<IWorkItem> findWorkItemsForTask(String taskid);    
     
 
     /**
@@ -321,7 +365,12 @@ public interface IPersistenceService extends IRuntimeContextAware{
 //    public List<IJoinPoint> findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId);
 
     
-    /************************Persistence methods for Token**************************;
+    /******************************************************************************/
+    /************                                                        **********/
+    /************            token 相关的持久化方法                       **********/    
+    /************            Persistence methods for token               **********/
+    /************                                                        **********/    
+    /******************************************************************************/
     /**
      * Save token
      * @param token
@@ -358,14 +407,32 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId);
 
+    /**
+     * 删除某个节点的所有token
+     * @param processInstanceId
+     * @param nodeId
+     */
     public void deleteTokensForNode(String processInstanceId,String nodeId);
 
+    /**
+     * 删除某些节点的所有token
+     * @param processInstanceId
+     * @param nodeIdsList
+     */
     public void deleteTokensForNodes(String processInstanceId,List nodeIdsList);
 
+    /**
+     * 删除token
+     * @param token
+     */
     public void deleteToken(IToken token);
 
-    /*******************************Persistence methods for definition***************************/
-
+    /******************************************************************************/
+    /************                                                        **********/
+    /************            存取流程定义文件 相关的持久化方法             **********/    
+    /************            Persistence methods for workflow definition **********/
+    /************                                                        **********/    
+    /******************************************************************************/
     /**
      * Save or update the workflow definition. The version will be increased automatically when insert a new record.<br>
      * 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
@@ -392,7 +459,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
     
     /**
      * Find the latest version of the workflow definition.<br>
-     * 根据processId返回最新版本的流程定义
+     * 根据processId返回最新版本的有效流程定义
      * @param processId the workflow process id 
      * @return
      */
@@ -408,18 +475,27 @@ public interface IPersistenceService extends IRuntimeContextAware{
 
     /**
      * Find all of the latest version of workflow definitions.<br>
-     * 返回系统中所有的最新版本的流程定义
+     * 返回系统中所有的最新版本的有效流程定义
      * @return
      */
     public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition();
     
     /**
      * Find the latest version number <br>
-     * 返回最新版号
+     * 返回最新的有效版本号
      * @param processId
      * @return the version number ,null if there is no workflow definition stored in the DB.
      */
     public Integer findTheLatestVersionNumber(String processId);
+    
+    /**
+     * 返回最新版本号,
+     * @param processId
+     * @return
+     */
+    public Integer findTheLatestVersionNumberIgnoreState(String processId);
+    
+    
 
     /********************************process instance trace info **********************/
     public void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);

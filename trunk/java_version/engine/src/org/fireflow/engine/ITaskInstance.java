@@ -17,6 +17,8 @@
 package org.fireflow.engine;
 
 import java.util.Date;
+import java.util.List;
+
 import org.fireflow.kernel.KernelException;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
@@ -205,5 +207,7 @@ public interface ITaskInstance {
      * @throws org.fireflow.engine.EngineException
      */
     public void restore() throws EngineException;
+    
+ 
 //	public Set getWorkItems() ;	
 }

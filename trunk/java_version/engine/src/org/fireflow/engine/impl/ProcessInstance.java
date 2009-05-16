@@ -63,8 +63,8 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     private String parentProcessInstanceId = null;
     private String parentTaskInstanceId = null;
     private Map<String, Object> processInstanceVariables = new HashMap<String, Object>();
-    protected RuntimeContext rtCtx = null;
-    protected IWorkflowSession workflowSession = null;
+    protected transient RuntimeContext rtCtx = null;
+    protected transient IWorkflowSession workflowSession = null;
 
     public void setRuntimeContext(RuntimeContext ctx) {
         this.rtCtx = ctx;
@@ -425,6 +425,10 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
 
     public Boolean isSuspended() {
         return suspended;
+    }
+    
+    public Boolean getSuspended(){
+    	return suspended;
     }
 
     public void setSuspended(Boolean isSuspended) {

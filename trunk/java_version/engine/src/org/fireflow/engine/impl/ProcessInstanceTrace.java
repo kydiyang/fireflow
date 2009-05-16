@@ -17,13 +17,15 @@
 
 package org.fireflow.engine.impl;
 
+import java.io.Serializable;
+
 /**
  *
  * @author 非也
  * @version 1.0
  * Created on Apr 25, 2009
  */
-public class ProcessInstanceTrace {
+public class ProcessInstanceTrace implements Serializable{
     public static final String TRANSITION_TYPE = "Transition";
     public static final String LOOP_TYPE = "Loop";
     public static final String JUMPTO_TYPE = "JumpTo";
