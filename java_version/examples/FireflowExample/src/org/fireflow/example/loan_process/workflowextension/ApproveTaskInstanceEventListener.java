@@ -30,7 +30,7 @@ public class ApproveTaskInstanceEventListener extends
     	approveInfo.setSn((String)processInstance.getProcessInstanceVariable("sn"));
     	approveInfo.setApprover(workItem.getActorId());
     	approveInfo.setDecision(null);
-    	approveInfo.setDetail("");
+    	approveInfo.setDetail("--");
     	
     	approveInfoDAO.attachDirty(approveInfo);
     }

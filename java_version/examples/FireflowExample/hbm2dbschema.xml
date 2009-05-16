@@ -6,6 +6,7 @@
     <property name="hibernate-cfg.dir" location="${basedir}/dbscript"/>
     <property name="build.dir" location="${basedir}/build" />
     <property name="lib.dir" location="${basedir}/WebContent/WEB-INF/lib" />
+    <property name="dbscript.dir" location="${basedir}/dbscript" />
 
 
     <path  id="hibernate.schemaexport.classpath">
@@ -35,6 +36,9 @@
             <fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset>
+            <fileset dir="${dbscript.dir}">
+            	<include name="/tmp/*.hbm.xml"/>
+            </fileset>
         </schemaexport>
     </target>
     
@@ -55,6 +59,9 @@
             <fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset>
+            <fileset dir="${dbscript.dir}">
+            	<include name="/tmp/*.hbm.xml"/>
+            </fileset>            
         </schemaexport>
     </target>    
     
@@ -75,6 +82,9 @@
             <fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset>
+            <fileset dir="${dbscript.dir}">
+            	<include name="/tmp/*.hbm.xml"/>
+            </fileset>            
         </schemaexport>
     </target>      
     
@@ -95,6 +105,9 @@
             <fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset>
+            <fileset dir="${dbscript.dir}">
+            	<include name="/tmp/*.hbm.xml"/>
+            </fileset>            
         </schemaexport>
     </target>          
 
