@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jarfile" basedir="." default="jar-inner">
+    <property name="src.dir" location="${basedir}/src" />
+    <property name="build.dir" location="${basedir}/bin" />
+    <property name="lib.dir" location="${basedir}/libs" />
+	
+	<tstamp>
+		<format property="buildnumber" pattern="yyMMdd"/>
+	</tstamp>
+	
+	<target name="jar-inner">
+		<jar destfile="org-fireflow-engine-1.0.0.jar"
+			basedir="${build.dir}"></jar>
+	</target>
+	
+	<target name="jar-outer">
+		<jar destfile="org-fireflow-engine-1.0.0-build${buildnumber}-beta.jar"
+			basedir="${build.dir}"></jar>
+
+	</target>	
+</project>

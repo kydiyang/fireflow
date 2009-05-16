@@ -34,44 +34,12 @@ import org.fireflow.model.io.FPDLSerializerException;
  * 映射到表T_FF_DF_WORKFLOWDEF
  * @author 非也,nychen2000@163.com
  */
-public class WorkflowDefinition {
+public class WorkflowDefinition extends WorkflowDefinitionInfo{
 
     protected transient WorkflowProcess workflowProcess;
 
-    protected String id;
-    protected String processId;
-    protected String name;
-    protected String displayName;
-    protected String description;
-    protected Integer version;
-    protected Boolean published;//是否发布，备用
-    protected String publisher;//发布人
-    protected Date publishTime;//发布时间
     protected String processContent;
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getProcessContent() {
         return processContent;
@@ -79,54 +47,6 @@ public class WorkflowDefinition {
 
     public void setProcessContent(String processContent) {
         this.processContent = processContent;
-    }
-
-    public Date getPublishTime() {
-        return publishTime;
-    }
-
-    public void setPublishTime(Date publishTime) {
-        this.publishTime = publishTime;
-    }
-
-    public Boolean getPublished() {
-        return published;
-    }
-
-    public void setPublished(Boolean published) {
-        this.published = published;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
     }
 
     public WorkflowProcess getWorkflowProcess() throws RuntimeException{

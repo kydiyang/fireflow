@@ -16,11 +16,14 @@
  */
 package org.fireflow.engine.taskinstance;
 
-import org.fireflow.engine.taskinstance.IAssignmentHandler;
 import java.util.List;
+
 import org.fireflow.engine.EngineException;
+import org.fireflow.engine.ITaskInstance;
+import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.kernel.KernelException;
+import org.fireflow.model.FormTask;
 
 /**
  *
@@ -34,11 +37,22 @@ public class DynamicAssignmentHandler implements IAssignmentHandler{
         if (actorIdsList==null || actorIdsList.size()==0){
             TaskInstance taskInstance = (TaskInstance)asignable;
             throw new EngineException(taskInstance.getProcessInstanceId(),taskInstance.getWorkflowProcess(),
-                    taskInstance.getTaskId(),"Actor id list can not be empty");
+                    taskInstance.getTaskId(),"actorIdsList can not be empty");
         }
-        for (int i=0;i<actorIdsList.size();i++){
-            asignable.asignToActor((String)actorIdsList.get(i), needClaim);
+
+        List<IWorkItem> workItems = asignable.asignToActors(actorIdsList);
+        
+        ITaskInstance taskInst = (ITaskInstance)asignable;
+        if (!needClaim){
+	        if (FormTask.ALL.equals(taskInst.getAssignmentStrategy()) ||
+	        		(FormTask.ANY.equals(taskInst.getAssignmentStrategy()) && actorIdsList.size()==1)){
+	        	for (int i=0;i<workItems.size();i++){
+	        		IWorkItem wi = workItems.get(i);
+	        		wi.claim();
+	        	}
+	        }
         }
+        	
     }
 
     public List getActorIdsList() {

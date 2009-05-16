@@ -19,6 +19,7 @@ package org.fireflow.engine;
 import java.util.Date;
 import java.util.List;
 
+import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
 
 /**
@@ -132,28 +133,54 @@ public interface IWorkItem{
     /**
      * 签收工单。如果任务实例的分配模式是ANY，则同一个任务实例的其他工单将被删除。
      * 如果任务是里的分配模式是ALL，则此操作不影响同一个任务实例的其他工单的状态。<br/>
+     * 如果签收成功，则返回一个新的IWorkItem对象，并且更新当前WorkItem对象的状态修改成RUNNING状态，
+     * 更新ClaimedTime属性值。<br/>
+     * 如果签收失败，则返回null，且当前WorkItem的状态被修改为CANCELED<br/>
+     * 例如：同一个TaskInstance被分配给Actor_1和Actor_2，且分配模式是ANY，即便Actor_1和Actor_2同时执行
+     * 签收操作，也必然有一个人签收失败。系统对这种竞争性操作进行了同步。
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
+     * @return 如果签收成功，则返回一个新的IWorkItem对象；否则返回null
      */
-    public void claim() throws EngineException, KernelException;
+    public IWorkItem claim() throws EngineException, KernelException;
     
     
     /**
-     * 对已经结束的工单执行撤销操作<br/>
-     * 只有满足如下约束才能正确执行撤销操作：<br/>
-     * 1）当前Activity和下一个Activity在同一条执行线上<br/>
-     * 2) 下一个Activity只有Form类型的Task,没有Tool类型和Subflow类型的Task</br>
-     * 3) 下一个环节的所有WorkItem还没有被签收，都处于Initialized状态，<br/>
+     * 对已经结束的工单执行取回操作<br/>
+     * 只有满足如下约束才能正确执行取回操作：<br/>
+     * 1) 下一个Activity只有Form类型的Task,没有Tool类型和Subflow类型的Task</br>
+     * 2) 下一个环节的所有WorkItem还没有被签收，都处于Initialized状态，<br/>
      * 如果在本WorkItem成功执行了jumpTo操作或者loopTo操作，只要满足上述条件，也可以
-     * 成功执行withdraw。
+     * 成功执行withdraw。<br/>
+     * 该方法和IWorkflowSession.withdrawWorkItem(String workItemId)等价。
+     * @return 如果取回成功，则创建一个新的WorkItem 并返回该WorkItem
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
     public IWorkItem withdraw()throws EngineException, KernelException;
 
+    /**
+     * 执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。<br/>
+     * 该操作必须满足如下条件：<br/>
+     * 1、前驱环节中没有没有Tool类型和Subflow类型的Task；<br/>
+     * 2、没有合当前TaskInstance并行的其他TaskInstance；<br/>
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void reject()throws EngineException, KernelException;
 
+    /**
+     * 执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。<br/>
+     * 该操作必须满足如下条件：<br/>
+     * 1、前驱环节中没有没有Tool类型和Subflow类型的Task；<br/>
+     * 2、没有合当前TaskInstance并行的其他TaskInstance；<br/>
+     * @param comments 备注信息，将被写入workItem.comments字段。
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void reject(String comments)throws EngineException, KernelException;
+    
+    
     /**
      * 结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下<br/>
      * 1、工作流引擎首先判断该WorkItem对应的TaskInstance是否可以结束。
@@ -168,69 +195,24 @@ public interface IWorkItem{
     public void complete() throws EngineException, KernelException;
 
     public void complete(String comments)throws EngineException, KernelException;
-
-    /**
-     * 结束当前WorkItem，并启动下一个Activity及其Task，将新创建的TaskInstance分配给nextActorIds中的所有Actor。<br/>
-     * 该方法只有在如下条件下才能正确执行，否则引擎抛出EngineException，流程状态恢复到调用该方法前的状态。<br/>
-     * 1)当前Activity和下一个Activity在同一个“执行线”上<br/>
-     * 2)下一个Activity有且只有一个Form类型的Task，其他类型的Task不限定。<br/>
-     * 3)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
-     * 4)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * 
-     * 一句话，当前Acitivity和下一个Activity组成一个“简单流程”的情况下，才可以结束当前Activity，并指定下一个Activity的操作人。<br/>
-     * 该方法调用jumpToNextActivity(List<String> nextActorIds,false)实现其功能，即下一个环节的WorkItem不需要签收。
-     * @param nextActorIds 指定的下一个Activity操作者ID列表
-     * @throws org.fireflow.engine.EngineException 
-     * @throws org.fireflow.kenel.KenelException
-     */
-    public void jumpToNextActivity(List<String> nextActorIds) throws EngineException, KernelException;
     
-    public void jumpToNextActivity(List<String> nextActorIds,String comments) throws EngineException, KernelException;
-    /**
-     * 结束当前WorkItem，并启动下一个Activity及其Task，将新创建的TaskInstance分配给nextActorIds中的所有Actor。<br/>
-     * 该方法只有在如下条件下才能正确执行，否则引擎抛出EngineException，流程状态恢复到调用该方法前的状态。<br/>
-     * 1)当前Activity和下一个Activity在同一个“执行线”上<br/>
-     * 2)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
-     * 3)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * 
-     * 一句话，当前Acitivity和下一个Activity组成一个“简单流程”的情况下，才可以结束当前Activity，并指定下一个Activity的操作人。<br/>
-     * @param nextActorIds
-     * @param needClaim 是否需要签收,false表示不需要签收，下一个环节的workItem的自动变成Started状态；true表示需要签收，
-     * 下一个workItem的状态为Initialized
-     * @throws org.fireflow.engine.EngineException
-     * @throws org.fireflow.kenel.KenelException
-     */
-    public void jumpToNextActivity(List<String> nextActorIds,boolean needClaim) throws EngineException, KernelException;
+    public void complete(DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
 
-    public void jumpToNextActivity(List<String> nextActorIds,boolean needClaim,String comments) throws EngineException, KernelException;
+    
     /**
      * 结束当前WorkItem,启动指定的Activity，引擎调用流程设计时指定的AssignmentHandler分配任务。<br/>
      * 只有满足如下条件的情况下，该方法才能成功执行，否则抛出EngineException，流程状态恢复到调用该方法之前的状态。<br/>
      * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
      * 2)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
      * 3)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * @param activityId 将要被启动的ActivityId
+     * @param targetActivityId 将要被启动的ActivityId
      * @throws org.fireflow.engine.EngineException 
      * @throws org.fireflow.kenel.KenelException
      */
-    public void jumpTo(String activityId) throws EngineException, KernelException;
+    public void jumpTo(String targetActivityId) throws EngineException, KernelException;
 
-    public void jumpTo(String activityId,String comments) throws EngineException, KernelException;
+    public void jumpTo(String targetActivityId,String comments) throws EngineException, KernelException;
 
-    /**
-     * 结束当前WorkItem，启动指定的Activity，引擎将新的TaskInstance分配给nextActorIds<br/>
-     * 只有满足如下条件的情况下，该方法才能成功执行，否则抛出EngineException，流程状态恢复到调用该方法之前的状态。<br/>
-     * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
-     * 2)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
-     * 3)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * @param activityId 将要被启动的ActivityId
-     * @param nextActorIds 将新的TaskInstance分配给nextActorIds列表中的Actor
-     * @throws org.fireflow.engine.EngineException
-     * @throws org.fireflow.kenel.KenelException
-     */
-    public void jumpTo(String activityId, List<String> nextActorIds) throws EngineException, KernelException;
-
-    public void jumpTo(String activityId, List<String> nextActorIds,String comments) throws EngineException, KernelException;
 
     /**
      * 结束当前WorkItem，启动指定的Activity，引擎将新的TaskInstance分配给nextActorIds<br/>
@@ -238,34 +220,20 @@ public interface IWorkItem{
      * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
      * 2)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
      * 3)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * @param activityId
+     * @param targetActivityId
      * @param nextActorIds
      * @param needClaim 是否需要签收
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void jumpTo(String activityId, List<String> nextActorIds,boolean needClaim) throws EngineException, KernelException;
+    public void jumpTo(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
     
-    public void jumpTo(String activityId, List<String> nextActorIds,boolean needClaim,String comments) throws EngineException, KernelException;
-    
+
     /**
-     * 结束当前WorkItem，启动指定的Acitvity，引擎将新的TaskInstance分配给上一次完成该Activity的操作者。</br>
-     * 只有满足如下条件的情况下，该方法才能成功执行，否则抛出EngineException，流程状态恢复到调用该方法之前的状态。<br/>
-     * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
-     * 2）即将启动的Activity已经被执行过
-     * 3)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
-     * 4)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * @param activityId
-     * @throws org.fireflow.engine.EngineException
-     * @throws org.fireflow.kenel.KenelException
-     */
-//    public void loopTo(String activityId) throws EngineException, KernelException;
-    
-    /**
-     * 将工单委派给其他人，自己的工单变成CANCELED状态
+     * 将工单委派给其他人，自己的工单变成CANCELED状态。返回新创建的工单。
      * @param actorId 接受任务的操作员Id
      */    
-    public void reasignTo(String actorId);
+    public IWorkItem reasignTo(String actorId) throws EngineException;
     
     /**
      * 将工单委派给其他人，自己的工单变成CANCELED状态。返回新创建的工单
@@ -273,7 +241,7 @@ public interface IWorkItem{
      * @param comments 相关的备注信息
      * @return 新创建的工单
      */    
-    public IWorkItem reasignTo(String actorId,String comments);
+    public IWorkItem reasignTo(String actorId,String comments) throws EngineException;
 
 
 }

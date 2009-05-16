@@ -80,7 +80,7 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
      * @return
      * @throws org.fireflow.engine.EngineException
      */
-    public WorkItem createWorkItem(ITaskInstance taskInstance, String actorId) throws EngineException;
+    public WorkItem createWorkItem(IWorkflowSession currentSession, IProcessInstance processInstance,ITaskInstance taskInstance, String actorId) throws EngineException;
 
     /**
      * 签收WorkItem。
@@ -88,7 +88,7 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void claimWorkItem(IWorkItem workItem)throws EngineException, KernelException ;
+    public IWorkItem claimWorkItem(String workItemId,String taskInstanceId)throws EngineException, KernelException ;
 
     /**
      * 结束WorkItem
@@ -101,13 +101,13 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
     /**
      * 
      * @param workItem
-     * @param activityId
+     * @param targetActivityId
      * @param nextActorIds
      * @param needClaim
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kernel.KernelException
      */
-    public void completeWorkItemAndJumpTo(IWorkItem workItem,String activityId, List<String> nextActorIds, boolean needClaim,String comments) throws EngineException, KernelException ;
+    public void completeWorkItemAndJumpTo(IWorkItem workItem,String targetActivityId, String comments) throws EngineException, KernelException ;
 
     /**
      * 撤销刚才执行的Complete动作，系统将创建并返回一个新的Running状态的WorkItem

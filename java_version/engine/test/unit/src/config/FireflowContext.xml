@@ -56,6 +56,9 @@
         <property name="defaultSubflowTaskInstanceCompletionEvaluator">
             <ref local="defaultSubflowTaskInstanceCompletionEvaluator"/>
         </property>
+        <property name="defaultTaskInstanceEventListener">
+            <ref local="defaultTaskInstanceEventListener"/>
+        </property>           
     </bean>
     <bean id="defaultTaskInstanceCreator" class="org.fireflow.engine.taskinstance.DefaultTaskInstanceCreator">
     </bean>
@@ -73,6 +76,8 @@
     </bean>
     <bean id="defaultSubflowTaskInstanceCompletionEvaluator" class="org.fireflow.engine.taskinstance.DefaultSubflowTaskInstanceCompletionEvaluator">
     </bean>
+    <bean id="defaultTaskInstanceEventListener" class="org.fireflow.engine.taskinstance.DefaultTaskInstanceEventListener">
+    </bean>    
         <!-- ************ TaskInstance Manager End*************************** -->
 
         <!-- **************Persistence Begin******************** -->

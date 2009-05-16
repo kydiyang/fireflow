@@ -17,25 +17,29 @@
 
 package org.fireflow.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
-import org.junit.Test;
-import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
+
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
+import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
+import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
+import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import static org.junit.Assert.*;
 /**
  *
  * @author 非也
@@ -136,7 +140,10 @@ public class JumpToTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
-                    workItem1.jumpToNextActivity(actorIds,true);
+                    DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+                    dynamicAssignmentHandler.setActorIdsList(actorIds);
+                    dynamicAssignmentHandler.setNeedClaim(true);
+                    workItem1.complete(dynamicAssignmentHandler, "");
                 } catch (EngineException ex) {
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (KernelException ex) {
@@ -162,7 +169,7 @@ public class JumpToTest {
         assertEquals(2,token.getStepNumber().intValue());
 
         //JumpTo.Activity2.Task1的所有WorkItem
-        List allTodoWorkItemList4Activity2 = persistenceService.findWorkItemForTask("JumpTo.Activity2.Task1");
+        List allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
         assertNotNull(allTodoWorkItemList4Activity2);
         assertEquals(3,allTodoWorkItemList4Activity2.size());
 
@@ -268,7 +275,7 @@ public class JumpToTest {
         IToken token = (IToken)tokensList.get(0);
         assertEquals(4,token.getStepNumber().intValue());
 
-        List workItemsList = persistenceService.findWorkItemForTask("JumpTo.Activity2.Task1");
+        List workItemsList = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
         assertNotNull(workItemsList);
         assertEquals(2,workItemsList.size());
 

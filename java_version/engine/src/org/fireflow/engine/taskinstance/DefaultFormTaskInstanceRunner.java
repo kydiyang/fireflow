@@ -56,10 +56,10 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
                             taskInstance.getActivity(),
                             "流程定义错误，Form类型的 task必须指定performer及其AssignmentHandler");
                 }
-                assign(currentSession,runtimeContext,taskInstance, task, performer, dynamicAssignmentHandler);
+                assign(currentSession,processInstance,runtimeContext,taskInstance, task, performer, dynamicAssignmentHandler);
     }
 
-    protected void assign(IWorkflowSession currentSession, RuntimeContext runtimeContext,ITaskInstance taskInstance, FormTask formTask, Participant part, DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException, KernelException {
+    protected void assign(IWorkflowSession currentSession,IProcessInstance processInstance, RuntimeContext runtimeContext,ITaskInstance taskInstance, FormTask formTask, Participant part, DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException, KernelException {
         //如果有指定的Actor，则按照指定的Actor分配任务
         if (dynamicAssignmentHandler != null) {
 
@@ -88,12 +88,12 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
 
         	//如果是循环且LoopStrategy==REDO，则分配个上次完成该工作的操作员
             if (theLastCompletedTaskInstance!=null && (FormTask.REDO.equals(formTask.getLoopStrategy()) || currentSession.isInWithdrawOrRejectOperation())) {
-            	List workItemList = persistenceService.findDeadWorkItemsWithoutJoinForTaskInstance(theLastCompletedTaskInstance.getId());
+            	List workItemList = persistenceService.findCompletedWorkItemsForTaskInstance(theLastCompletedTaskInstance.getId());
             	ITaskInstanceManager taskInstanceMgr = runtimeContext.getTaskInstanceManager();
                 for (int k = 0; k < workItemList.size(); k++) {
                     IWorkItem completedWorkItem = (IWorkItem) workItemList.get(k);
 
-                    IWorkItem newFromWorkItem = taskInstanceMgr.createWorkItem(taskInstance, completedWorkItem.getActorId());
+                    IWorkItem newFromWorkItem = taskInstanceMgr.createWorkItem(currentSession,processInstance,taskInstance, completedWorkItem.getActorId());
                     newFromWorkItem.claim();
                 }
             } else {

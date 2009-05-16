@@ -27,6 +27,7 @@ import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.IWorkflowSessionAware;
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.engine.taskinstance.ITaskInstanceManager;
 import org.fireflow.kernel.IActivityInstance;
 import org.fireflow.kernel.KernelException;
@@ -51,11 +52,14 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     private Date endTime;
     private String comments;
     private ITaskInstance taskInstance;
-    protected RuntimeContext rtCtx = null;
-    protected IWorkflowSession workflowSession = null;
+    protected transient RuntimeContext rtCtx = null;
+    protected transient IWorkflowSession workflowSession = null;
 
     public void setRuntimeContext(RuntimeContext ctx) {
         this.rtCtx = ctx;
+        if (this.taskInstance!=null){
+        	((IRuntimeContextAware)taskInstance).setRuntimeContext(this.rtCtx);
+        }
     }
 
     public RuntimeContext getRuntimeContext() {
@@ -144,13 +148,6 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     }
 
     public ITaskInstance getTaskInstance() {
-        if (this.taskInstance != null) {
-            ((IRuntimeContextAware) this.taskInstance).setRuntimeContext(rtCtx);
-//            System.out.println("====Inside WorkItem.getTaskInstance() ,the workflow session is "+(this.workflowSession==null?0:this.workflowSession.hashCode()));
-            if (this.workflowSession != null) {
-                ((IWorkflowSessionAware) this.taskInstance).setCurrentWorkflowSession(this.workflowSession);
-            }
-        }
         return this.taskInstance;
     }
 
@@ -167,6 +164,16 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     }
 
     public IWorkItem withdraw() throws EngineException, KernelException {
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}    	
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         return taskInstanceMgr.withdrawWorkItem(this);
     }
@@ -177,28 +184,65 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     }
     
     public void reject(String comments) throws EngineException, KernelException {
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}    	
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         taskInstanceMgr.rejectWorkItem(this,comments);
     }
     
     public void complete() throws EngineException, KernelException {
-        complete(this.getComments());
+        complete(null,this.getComments());
     }
 
     public void complete(String comments) throws EngineException, KernelException {
         complete(null,comments);
     }
 
-    protected void complete(IActivityInstance targetActivityInstance,String comments) throws EngineException, KernelException {
+
+	@Override
+	public void complete(DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
+			throws EngineException, KernelException {
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+    	if (dynamicAssignmentHandler!=null){
+    		this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+    	}
         ITaskInstanceManager taskInstanceManager = this.rtCtx.getTaskInstanceManager();
-        taskInstanceManager.completeWorkItem(this, targetActivityInstance,comments);
+        taskInstanceManager.completeWorkItem(this, null,comments);
+	}
+	
+    public IWorkItem reasignTo(String actorId) throws EngineException{
+        return reasignTo(actorId, this.getComments());
     }
 
-    public void reasignTo(String actorId) {
-        reasignTo(actorId, comments);
-    }
-
-    public IWorkItem reasignTo(String actorId, String comments) {
+    public IWorkItem reasignTo(String actorId, String comments) throws EngineException{
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+  	
         ITaskInstanceManager manager = this.rtCtx.getTaskInstanceManager();
         return manager.reasignWorkItemTo(this, actorId, comments);
     }
@@ -217,153 +261,74 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void claim() throws EngineException, KernelException {
+    public IWorkItem claim() throws EngineException, KernelException {
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+	
+    	
         ITaskInstanceManager taskInstanceMgr = rtCtx.getTaskInstanceManager();
-        taskInstanceMgr.claimWorkItem(this);
-
+        IWorkItem newWorkItem = taskInstanceMgr.claimWorkItem(this.getId(),this.getTaskInstance().getId());
+        
+        if (newWorkItem!=null){
+        	this.state = newWorkItem.getState();
+        	this.claimedTime = newWorkItem.getClaimedTime();
+        	
+        	((IRuntimeContextAware)newWorkItem).setRuntimeContext(rtCtx);
+        	((IWorkflowSessionAware)newWorkItem).setCurrentWorkflowSession(this.workflowSession);
+        }else{
+        	this.state = IWorkItem.CANCELED;
+        }
+        
+        return newWorkItem;
     }
 
 
 
     public void jumpTo(String activityId) throws EngineException, KernelException {
-        jumpTo(activityId, null, true);
+        jumpTo(activityId, null, this.getComments());
     }
 
     public void jumpTo(String activityId, String comments) throws EngineException, KernelException {
-        jumpTo(activityId, null, true,comments);
+        jumpTo(activityId, null, comments);
     }
 
-    public void jumpTo(String activityId, List<String> nextActorIds) throws EngineException, KernelException {
-        jumpTo(activityId, nextActorIds, false);
-    }
-    public void jumpTo(String activityId, List<String> nextActorIds, String comments) throws EngineException, KernelException {
-        jumpTo(activityId, nextActorIds, false,comments);
-    }
-    public void jumpTo(String targetActivityId, List<String> nextActorIds, boolean needClaim) throws EngineException, KernelException {
-        jumpTo(targetActivityId,nextActorIds,needClaim,this.getComments());
-    }
+ 
 
-    public void jumpTo(String targetActivityId, List<String> nextActorIds, boolean needClaim, String comments) throws EngineException, KernelException {
+    public void jumpTo(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments) throws EngineException, KernelException {
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+    	if (dynamicAssignmentHandler!=null){
+    		this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+    	}
         ITaskInstanceManager taskInstanceManager = this.rtCtx.getTaskInstanceManager();
-        taskInstanceManager.completeWorkItemAndJumpTo(this, targetActivityId, nextActorIds, needClaim,comments);
-    }
-    /*
-     * 该方法废除，2009-03-23，完全可以用jumpTo来替代，
-     * 当Task有了loopStrategy后，完全可以用jumpTo替代loopTo
-     */
-    /*
-    public void loopTo(String targetActivityId) throws EngineException, KernelException {
-    //首先找到上次的执行者，如果上次操作是汇签，怎么办？？？？？
-    TaskInstance thisTaskInst = (TaskInstance) this.getTaskInstance();
-    IPersistenceService persistenceService = rtCtx.getPersistenceService();
-    Integer aliveTokenCount4TargetActivity = persistenceService.getAliveTokenCountForNode(this.getTaskInstance().getProcessInstanceId(), targetActivityId);
-    if (aliveTokenCount4TargetActivity == 1) {
-    throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-    thisTaskInst.getTaskId(), "The target activity instance is in running state.");
-    } else if (aliveTokenCount4TargetActivity > 1) {
-    throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-    thisTaskInst.getTaskId(), "FATAL ERROR!The alive token of the target activity instance greater than 1.");
+        taskInstanceManager.completeWorkItemAndJumpTo(this, targetActivityId,comments);
     }
 
-    //        List targetTaskInstanceList = persistenceService.findTaskInstancesForProcessInstance(this.getTaskInstance().getProcessInstanceId(), targetActivityId);
-    //        if (targetTaskInstanceList == null && targetTaskInstanceList.size() == 0) {
-    //        throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-    //        thisTaskInst.getTaskId(), "The target activity has NOT been fired yet.");
-    //        }
-    //        TaskInstance targetTaskInstance = (TaskInstance) targetTaskInstanceList.get(0);
-    //        if (targetTaskInstance.getState() != ITaskInstance.COMPLETED && targetTaskInstance.getState() != ITaskInstance.CANCELED) {
-    //        throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-    //        thisTaskInst.getTaskId(), "The target activity instance is in running state.");
-    //        }
-    //        for (int i = 1; i < targetTaskInstanceList.size(); i++) {
-    //
-    //        TaskInstance tmpTaskInst2 = (TaskInstance) targetTaskInstanceList.get(i);
-    //        if (tmpTaskInst2.getState() != ITaskInstance.COMPLETED && tmpTaskInst2.getState() != ITaskInstance.CANCELED) {
-    //        throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-    //        thisTaskInst.getTaskId(), "The target activity instance is in running state.");
-    //        }
-    //        if (tmpTaskInst2.getCreatedTime().after(targetTaskInstance.getCreatedTime())) {
-    //        targetTaskInstance = tmpTaskInst2;
-    //        }
-    //        }
-
-
-    List workItems = null;//暂时注释 20090309 persistenceService.findDeadWorkItemsWithoutJoinForTaskInstance(targetTaskInstance.getId());
-    if (workItems == null || workItems.size() == 0) {
-    throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-    thisTaskInst.getTaskId(), "LoopTo action refused, have-done workitems for activity[id=" + targetActivityId + "] NOT found");
-    }
-
-    List nextActorIds = new ArrayList();
-    for (int i = 0; i < workItems.size(); i++) {
-    nextActorIds.add(((IWorkItem) workItems.get(i)).getActorId());
-    }
-    this.jumpTo(targetActivityId, nextActorIds, false);
-
-    }
-     */
     public IWorkflowSession getCurrentWorkflowSession() {
         return this.workflowSession;
     }
 
     public void setCurrentWorkflowSession(IWorkflowSession session) {
         this.workflowSession = session;
-    }
-    public void jumpToNextActivity(List<String> nextActorIds) throws EngineException, KernelException {
-        jumpToNextActivity(nextActorIds, false);
-    }
-
-    public void jumpToNextActivity(List<String> nextActorIds, String comments) throws EngineException, KernelException {
-        jumpToNextActivity( nextActorIds, false, comments);
-    }
-    public void jumpToNextActivity(List<String> nextActorIds, boolean needClaim) throws EngineException, KernelException {
-        jumpToNextActivity(nextActorIds,needClaim,this.getComments());
-    }
-
-    public void jumpToNextActivity(List<String> nextActorIds, boolean needClaim, String comments) throws EngineException, KernelException {
-//        WorkflowProcess workflowProcess = this.getTaskInstance().getWorkflowProcess();
-        Activity thisActivity = this.getTaskInstance().getActivity();
-        Transition leavingTransition = thisActivity.getLeavingTransition();
-        TaskInstance thisTaskInst = (TaskInstance) this.getTaskInstance();
-        if (leavingTransition == null) {
-            throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-                    thisTaskInst.getTaskId(), "Next activity NOT found.");
+        if (this.taskInstance!=null){
+        	((IWorkflowSessionAware)taskInstance).setCurrentWorkflowSession(this.workflowSession);
         }
-        Synchronizer synchronizer = (Synchronizer) leavingTransition.getToNode();
-        if (synchronizer == null) {
-            throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-                    thisTaskInst.getTaskId(), "Next activity NOT found.");
-        }
-        List leavingTransitionList = synchronizer.getLeavingTransitions();
-
-        //只有targetActivity和sourceActiviy在同一个执行线上才允许jump
-        if (leavingTransitionList == null || leavingTransitionList.size() != 1) {
-            throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-                    thisTaskInst.getTaskId(), "Jumpto next activity refused!Because of the size of next activity is not 1");
-        }
-
-        leavingTransition = (Transition) leavingTransitionList.get(0);
-        Activity targetActivity = (Activity) leavingTransition.getToNode();
-
-        if (targetActivity == null) {
-            throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-                    thisTaskInst.getTaskId(), "Next activity NOT found.");
-        }
-
-        jumpTo(targetActivity.getId(), nextActorIds, needClaim,comments);
-    }    
-
-
-
-    protected int getFormTaskCount(Activity activity) {
-        int count = 0;
-        List tasksList = activity.getTasks();
-        for (int i = 0; i < tasksList.size(); i++) {
-            Task task = (Task) tasksList.get(i);
-            if (Task.FORM.equals(task.getType())) {
-                count = count + 1;
-            }
-        }
-        return count;
     }
+ 
 }

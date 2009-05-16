@@ -16,7 +16,10 @@
  */
 package org.fireflow.engine.event;
 
+import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
+import org.fireflow.engine.IWorkItem;
+import org.fireflow.engine.IWorkflowSession;
 
 /**
  * 任务实例事件
@@ -28,12 +31,18 @@ public class TaskInstanceEvent {
      */
     public static final int BEFORE_TASK_INSTANCE_START = 2;
     
+    
+    public static final int AFTER_WORKITEM_CREATED = 5;
+    
     /**
      * 在任务实例结束时触发的事件
      */
     public static final int AFTER_TASK_INSTANCE_COMPLETE = 7;
     int eventType = -1;
     ITaskInstance source = null;
+    IWorkflowSession workflowSession = null;
+    IProcessInstance processInstance = null;
+    IWorkItem workItem = null;
 
     /**
      * 返回事件类型，取值为BEFORE_TASK_INSTANCE_START或者AFTER_TASK_INSTANCE_COMPLETE
@@ -58,6 +67,30 @@ public class TaskInstanceEvent {
     public void setSource(ITaskInstance source) {
         this.source = source;
     }
+
+	public IWorkItem getWorkItem() {
+		return workItem;
+	}
+
+	public void setWorkItem(IWorkItem workItem) {
+		this.workItem = workItem;
+	}
+
+	public IWorkflowSession getWorkflowSession() {
+		return workflowSession;
+	}
+
+	public void setWorkflowSession(IWorkflowSession workflowSession) {
+		this.workflowSession = workflowSession;
+	}
+
+	public IProcessInstance getProcessInstance() {
+		return processInstance;
+	}
+
+	public void setProcessInstance(IProcessInstance processInstance) {
+		this.processInstance = processInstance;
+	}
     
     
 }
