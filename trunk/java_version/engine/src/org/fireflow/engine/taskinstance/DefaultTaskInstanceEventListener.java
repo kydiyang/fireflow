@@ -11,8 +11,8 @@ import org.fireflow.engine.event.TaskInstanceEvent;
 public class DefaultTaskInstanceEventListener implements
 		ITaskInstanceEventListener {
 
-	@Override
-	public void onTaskInstanceFired(TaskInstanceEvent e) throws EngineException {
+
+	public void onTaskInstanceEventFired(TaskInstanceEvent e) throws EngineException {
 		IWorkflowSession session = e.getWorkflowSession();
 		IProcessInstance proceInst = e.getProcessInstance();
 		ITaskInstance taskInst = (ITaskInstance)e.getSource();

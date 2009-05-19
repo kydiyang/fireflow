@@ -19,7 +19,6 @@ package org.fireflow.engine.beanfactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-
 /**
  * 用Spring 的IOC容器作为Fire Workflow 的BeanFactory
  * @author 非也，nychen2000@163.com
@@ -34,5 +33,4 @@ public class SpringBeanFactory implements IBeanFactory,BeanFactoryAware {
     public void setBeanFactory(BeanFactory arg0) throws BeansException {
         springBeanFactory = arg0;
     }
-
 }

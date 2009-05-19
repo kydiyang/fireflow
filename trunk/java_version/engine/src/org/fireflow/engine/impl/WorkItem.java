@@ -207,7 +207,7 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     }
 
 
-	@Override
+
 	public void complete(DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
 			throws EngineException, KernelException {
     	if (this.workflowSession==null){

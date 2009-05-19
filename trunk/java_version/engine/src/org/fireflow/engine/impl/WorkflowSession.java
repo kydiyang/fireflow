@@ -394,14 +394,14 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		this.dynamicAssignmentHandler = dynamicAssignmentHandler;
 	}
 
-	@Override
+
 	public IProcessInstance abortProcessInstance(String processInstanceId) throws EngineException {
 		IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
 		processInstance.abort();
 		return processInstance;
 	}
 
-	@Override
+
 	public IWorkItem claimWorkItem(final String workItemId, final String taskInstanceId)
 			throws EngineException, KernelException {
 		IWorkItem result = null;
@@ -425,7 +425,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return result;
 	}
 
-	@Override
+
 	public void completeWorkItem(String workItemId) throws EngineException,
 			KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
@@ -433,14 +433,14 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		
 	}
 
-	@Override
+
 	public void completeWorkItem(String workItemId, String comments)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
 		wi.complete(comments);
 	}
 
-	@Override
+
 	public void completeWorkItem(String workItemId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
 			throws EngineException, KernelException {
@@ -449,7 +449,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		
 	}
 
-	@Override
+
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId) throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
@@ -457,7 +457,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		
 	}
 
-	@Override
+
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId, String comments) throws EngineException,
 			KernelException {
@@ -465,7 +465,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.jumpTo(targetActivityId, comments);
 	}
 
-	@Override
+
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
@@ -475,7 +475,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		
 	}
 
-	@Override
+
 	public IProcessInstance findProcessInstanceById(final String id) {
 		try {
 			return (IProcessInstance) this.execute(new IWorkflowSessionCallback() {
@@ -497,7 +497,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
-	@Override
+
 	public List<IProcessInstance> findProcessInstancesByProcessId(
 			final String processId) {
 		try {
@@ -520,7 +520,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
-	@Override
+
 	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(
 			final String processId, final Integer version) {
 		try {
@@ -544,7 +544,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
-	@Override
+
 	public List<ITaskInstance> findTaskInstancesForProcessInstance(
 			final String processInstanceId, final String activityId) {
 		try {
@@ -568,7 +568,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
-	@Override
+
 	public IWorkItem reasignWorkItemTo(String workItemId, String actorId)
 			throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
@@ -576,14 +576,14 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		
 	}
 
-	@Override
+
 	public IWorkItem reasignWorkItemTo(String workItemId, String actorId,
 			String comments) throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
 		return workItem.reasignTo(actorId,comments);
 	}
 
-	@Override
+
 	public void rejectWorkItem(String workItemId) throws EngineException,
 			KernelException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
@@ -591,21 +591,21 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		
 	}
 
-	@Override
+
 	public void rejectWorkItem(String workItemId, String comments)
 			throws EngineException, KernelException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
 		workItem.reject(comments);
 	}
 
-	@Override
+
 	public IProcessInstance restoreProcessInstance(String processInstanceId)throws EngineException {
 		IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
 		processInstance.restore();
 		return processInstance;
 	}
 
-	@Override
+
 	public ITaskInstance restoreTaskInstance(String taskInstanceId)
 			throws EngineException {
 		ITaskInstance taskInst = this.findTaskInstanceById(taskInstanceId);
@@ -613,14 +613,14 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return taskInst;
 	}
 
-	@Override
+
 	public IProcessInstance suspendProcessInstance(String processInstanceId)throws EngineException {
 		IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
 		processInstance.suspend();
 		return processInstance;
 	}
 
-	@Override
+
 	public ITaskInstance suspendTaskInstance(String taskInstanceId)
 			throws EngineException {
 		ITaskInstance taskInst = this.findTaskInstanceById(taskInstanceId);
@@ -628,7 +628,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return taskInst;
 	}
 
-	@Override
+
 	public IWorkItem withdrawWorkItem(final String workItemId)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);

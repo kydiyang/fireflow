@@ -24,5 +24,5 @@ import org.fireflow.engine.EngineException;
  */
 public interface ITaskInstanceEventListener {
     
-    public void onTaskInstanceFired(TaskInstanceEvent e)throws EngineException;
+    public void onTaskInstanceEventFired(TaskInstanceEvent e)throws EngineException;
 }

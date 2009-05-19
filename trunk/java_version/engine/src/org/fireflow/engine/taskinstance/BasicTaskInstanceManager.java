@@ -226,7 +226,7 @@ public class BasicTaskInstanceManager implements
         e.setProcessInstance(processInstance);
         e.setEventType(TaskInstanceEvent.BEFORE_TASK_INSTANCE_START);
         if (defaultTaskInstanceEventListener!=null){
-        	defaultTaskInstanceEventListener.onTaskInstanceFired(e);
+        	defaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
         }
         this.fireTaskInstanceEvent(taskInstance, e);
 
@@ -397,7 +397,7 @@ public class BasicTaskInstanceManager implements
         e.setProcessInstance(processInstance);
         e.setEventType(TaskInstanceEvent.AFTER_TASK_INSTANCE_COMPLETE);
         if (this.defaultTaskInstanceEventListener!=null){
-        	this.defaultTaskInstanceEventListener.onTaskInstanceFired(e);
+        	this.defaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
         }        
         
         this.fireTaskInstanceEvent(taskInstance, e);
@@ -463,7 +463,7 @@ public class BasicTaskInstanceManager implements
             EventListener listener = (EventListener) listeners.get(i);
             Object obj = rtCtx.getBeanByName(listener.getClassName());
             if (obj != null && (obj instanceof ITaskInstanceEventListener)) {
-                ((ITaskInstanceEventListener) obj).onTaskInstanceFired(e);
+                ((ITaskInstanceEventListener) obj).onTaskInstanceEventFired(e);
             }
         }
     }
@@ -491,7 +491,7 @@ public class BasicTaskInstanceManager implements
         
         e.setEventType(TaskInstanceEvent.AFTER_WORKITEM_CREATED);
         if (this.defaultTaskInstanceEventListener!=null){
-        	this.defaultTaskInstanceEventListener.onTaskInstanceFired(e);
+        	this.defaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
         }        
         this.fireTaskInstanceEvent(taskInstance, e);
 
