@@ -387,6 +387,8 @@ public class JAXP_FPDL_Serializer implements FPDLNames {
         taskElement.setAttribute(NAME, task.getName());
         taskElement.setAttribute(DISPLAY_NAME, task.getDisplayName());
         taskElement.setAttribute(TYPE, task.getType());
+        Util4JAXPSerializer.addElement(document, taskElement, DESCRIPTION, task.getDescription());
+        
 //        taskElement.addAttribute(START_MODE, task.getStartMode());
         String type = task.getType();
         if (task instanceof FormTask) {
@@ -408,7 +410,6 @@ public class JAXP_FPDL_Serializer implements FPDLNames {
         taskElement.setAttribute(PRIORITY, Integer.toString(task.getPriority()));
 
         writeDuration(task.getDuration(), taskElement, document);
-        Util4JAXPSerializer.addElement(document, taskElement, DESCRIPTION, task.getDescription());
         if (task.getTaskInstanceCreator() != null && !task.getTaskInstanceCreator().trim().equals("")) {
             taskElement.setAttribute(TASK_INSTANCE_CREATOR, task.getTaskInstanceCreator());
         }

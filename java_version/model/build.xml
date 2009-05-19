@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="jarfile" basedir="." default="jar-inner">
+<project name="jarfile" basedir="." default="zip-file">
     <property name="src.dir" location="${basedir}/src" />
     <property name="build.dir" location="${basedir}/bin" />
     <property name="lib.dir" location="${basedir}/libs" />
@@ -14,8 +14,15 @@
 	</target>
 	
 	<target name="jar-outer">
-		<jar destfile="org-fireflow-model-1.0.0-build${buildnumber}-beta.jar"
+		<jar destfile="org-fireflow-model-1.0.0-alpha-build${buildnumber}.jar"
 			basedir="${build.dir}"></jar>
 
 	</target>	
+	
+	<target name="zip-file" depends="jar-inner,jar-outer">
+		<zip destfile="Fire_Workflow_Model.zip"
+			basedir="${basedir}"
+			includes="org-fireflow-model-1.0.0-alpha-build${buildnumber}.jar,change_logs.txt">
+		</zip>
+	</target>
 </project>

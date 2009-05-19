@@ -39,11 +39,28 @@ public class Util4JAXPParser {
      * @return
      */
     public static Element child(Element element, String name) {
-        NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(),name);
-        if (nodeList!=null && nodeList.getLength()>0){
-            return (Element)nodeList.item(0);
-        }
-        return null;
+    	NodeList childNodeList = element.getChildNodes();
+    	String parentNameSpaceURI = null;
+    	String childNameSpaceURI = null;
+    	for (int i=0;i<childNodeList.getLength();i++){
+    		Node child = childNodeList.item(i);
+    		parentNameSpaceURI = element.getNamespaceURI();
+    		if (parentNameSpaceURI==null) parentNameSpaceURI = "";
+ 
+    		childNameSpaceURI = child.getNamespaceURI();
+    		if (childNameSpaceURI==null) childNameSpaceURI = "";
+    		
+    		if (parentNameSpaceURI.equals(childNameSpaceURI) && name.equals(child.getLocalName())){
+    			return (Element)child;
+    		}
+    	}
+    	return null;
+    	//以下代码逻辑错误！20090519
+//        NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(),name);
+//        if (nodeList!=null && nodeList.getLength()>0){
+//            return (Element)nodeList.item(0);
+//        }
+//        return null;
     }
 
     /** Return the child elements with the given name.  The elements must be in
@@ -53,11 +70,28 @@ public class Util4JAXPParser {
      @return The child elements
      */
     public static List<Element> children(Element element, String name) {
-        NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(),name);
-        List result = new ArrayList();
-        for (int i=0;nodeList!=null && i<nodeList.getLength();i++){
-            result.add(nodeList.item(i));
-        }
+        List<Element> result = new ArrayList<Element>();
+        
+    	NodeList childNodeList = element.getChildNodes();
+    	String parentNameSpaceURI = null;
+    	String childNameSpaceURI = null;
+    	for (int i=0;i<childNodeList.getLength();i++){
+    		Node child = childNodeList.item(i);
+    		parentNameSpaceURI = element.getNamespaceURI();
+    		if (parentNameSpaceURI==null) parentNameSpaceURI = "";
+ 
+    		childNameSpaceURI = child.getNamespaceURI();
+    		if (childNameSpaceURI==null) childNameSpaceURI = "";
+    		
+    		if (parentNameSpaceURI.equals(childNameSpaceURI) && name.equals(child.getLocalName())){
+    			result.add((Element)child);
+    		}
+    	}        
+    	//以下代码逻辑错误！20090519
+//      NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(),name);    	
+//        for (int i=0;nodeList!=null && i<nodeList.getLength();i++){
+//            result.add(nodeList.item(i));
+//        }
         return result;
     }
 

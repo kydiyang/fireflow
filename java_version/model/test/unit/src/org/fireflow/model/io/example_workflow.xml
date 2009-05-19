@@ -11,17 +11,7 @@
             <fpdl:ExtendedAttribute Name="FIRE_FLOW.bounds.x" Value="23"/>
         </fpdl:ExtendedAttributes>
     </fpdl:StartNode>
-    <fpdl:Tasks>
-                <fpdl:Task Id="Goods_Deliver_Process.PrepareGoodsTask" Name="PrepareGoodsTask" DisplayName="备货" Type="FORM" CompletionStrategy="ANY" DefaultView="LISTFORM" Priority="1" Execution="SYNCHR">
-                    <fpdl:EditForm Name="备货操作界面" DisplayName="备货操作界面">
-                        <fpdl:Description></fpdl:Description>
-                        <fpdl:Uri>org/fireflow/example/PrepareGoods.faces</fpdl:Uri>
-                    </fpdl:EditForm>
-                    <fpdl:Performer Name="WarehouseKeeper" DisplayName="仓库管理岗">
-                        <fpdl:AssignmentHandler>org.fireflow.engine.taskinstance.AssignmentHandlerMock</fpdl:AssignmentHandler>
-                    </fpdl:Performer>
-                </fpdl:Task>
-    </fpdl:Tasks>
+
     <fpdl:Activities>
         <fpdl:Activity Id="Goods_Deliver_Process.PaymentActivity" Name="PaymentActivity" DisplayName="客户付款" CompletionStrategy="ALL">
             <fpdl:ExtendedAttributes>
@@ -89,6 +79,17 @@
             </fpdl:Tasks>
         </fpdl:Activity>
     </fpdl:Activities>
+    <fpdl:Tasks>
+                <fpdl:Task Id="Goods_Deliver_Process.PrepareGoodsTask" Name="PrepareGoodsTask" DisplayName="备货" Type="FORM" CompletionStrategy="ANY" DefaultView="LISTFORM" Priority="1" Execution="SYNCHR">
+                    <fpdl:EditForm Name="备货操作界面" DisplayName="备货操作界面">
+                        <fpdl:Description></fpdl:Description>
+                        <fpdl:Uri>org/fireflow/example/PrepareGoods.faces</fpdl:Uri>
+                    </fpdl:EditForm>
+                    <fpdl:Performer Name="WarehouseKeeper" DisplayName="仓库管理岗">
+                        <fpdl:AssignmentHandler>org.fireflow.engine.taskinstance.AssignmentHandlerMock</fpdl:AssignmentHandler>
+                    </fpdl:Performer>
+                </fpdl:Task>
+    </fpdl:Tasks>    
     <fpdl:Synchronizers>
         <fpdl:Synchronizer Id="Goods_Deliver_Process.Synchronizer8" Name="Synchronizer8">
             <fpdl:ExtendedAttributes>

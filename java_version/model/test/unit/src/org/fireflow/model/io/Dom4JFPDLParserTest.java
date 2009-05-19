@@ -4,7 +4,12 @@
  */
 package org.fireflow.model.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
+
+import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.net.Activity;
 import org.fireflow.model.net.Loop;
@@ -12,7 +17,6 @@ import org.fireflow.model.net.Synchronizer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -51,6 +55,9 @@ public class Dom4JFPDLParserTest {
         assertEquals(2, result.getSynchronizers().size());
         assertEquals(1, result.getEndNodes().size());
         assertEquals(8, result.getTransitions().size());
+        
+        Task task = result.getTasks().get(0);
+        assertEquals("Goods_Deliver_Process.PrepareGoodsTask",task.getId());
 
         Activity paymentActivity = (Activity) result.findWFElementById(PaymentActivity_ID);
         assertNotNull(paymentActivity);
