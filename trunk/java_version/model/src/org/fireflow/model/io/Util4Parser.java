@@ -80,7 +80,8 @@ public class Util4Parser {
      */
 
     public static Element child(Element element, String name) {
-        return element.element(new QName(name, element.getNamespace()));
+    	Element child = element.element(new QName(name, element.getNamespace()));
+        return child;
     }
 
     /** Return the child elements with the given name.  The elements must be in
