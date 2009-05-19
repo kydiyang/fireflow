@@ -393,7 +393,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
             EventListener listener = (EventListener) listeners.get(i);
             Object obj = rtCtx.getBeanByName(listener.getClassName());
             if (obj != null) {
-                ((IProcessInstanceEventListener) obj).onProcessInstanceFired(e);
+                ((IProcessInstanceEventListener) obj).onProcessInstanceEventFired(e);
             }
         }
     }

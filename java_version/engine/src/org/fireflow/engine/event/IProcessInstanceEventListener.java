@@ -24,5 +24,5 @@ import org.fireflow.engine.EngineException;
  *
  */
 public interface IProcessInstanceEventListener {
-	public void onProcessInstanceFired(ProcessInstanceEvent e)throws EngineException;
+	public void onProcessInstanceEventFired(ProcessInstanceEvent e)throws EngineException;
 }
