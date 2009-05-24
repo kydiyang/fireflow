@@ -44,7 +44,7 @@ public class HsqlListener implements ServletContextListener {
 		// 开始数据库服务
 		server.start();
 
-		System.out.println("数据库服务已启动");
+		System.out.println("数据hsqldb库服务已启动");
 		try {
 			Thread.sleep(800);
 		} catch (InterruptedException e) {

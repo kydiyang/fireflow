@@ -15,7 +15,8 @@ public abstract class AbstractRole implements java.io.Serializable {
 	private String code;
 	private String name;
 	private String description;
-
+	private String departmentCode;
+	private String departmentName ;
 	// Constructors
 
 	/** default constructor */
@@ -67,6 +68,22 @@ public abstract class AbstractRole implements java.io.Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getDepartmentCode() {
+		return departmentCode;
+	}
+
+	public void setDepartmentCode(String departmentCode) {
+		this.departmentCode = departmentCode;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
 
 }

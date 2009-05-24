@@ -26,13 +26,7 @@
     	<intercept-url pattern="/**/*.gif" filters="none"/>
     	<intercept-url pattern="/**/*.jpg" filters="none"/>
     	<intercept-url pattern="/**/*.pdf" filters="none"/>
-    	
-        <intercept-url pattern="/secure/extreme/**" access="ROLE_SUPERVISOR"/>
-        <intercept-url pattern="/secure/**" access="IS_AUTHENTICATED_REMEMBERED" />
-		<!-- Disable web URI authorization, as we're using <global-method-security> and have @Secured the services layer instead
-        <intercept-url pattern="/listAccounts.html" access="IS_AUTHENTICATED_REMEMBERED" />
-        <intercept-url pattern="/post.html" access="ROLE_TELLER" />
-        -->
+
         <intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 <!--
     Uncomment to enable X509 client authentication support

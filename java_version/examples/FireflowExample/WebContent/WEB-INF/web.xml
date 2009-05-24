@@ -41,6 +41,7 @@
         <param-value>/WEB-INF/classes/log4j.properties</param-value>
     </context-param>	
     	
+    <!-- hsqldb相关的配置 -->
 	<context-param>
 		<param-name>dbpath</param-name>
 		<param-value>/db/</param-value>
@@ -53,12 +54,11 @@
 		<param-name>port</param-name>
 		<param-value>9001</param-value>
 	</context-param>
-
-
 	<listener>
 		<listener-class>org.fireflow.util.HsqlListener</listener-class>
 	</listener>
 
+ 
 	<listener>
 		<listener-class>
 			org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
