@@ -6,28 +6,31 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:t="http://myfaces.apache.org/tomahawk"
 	xmlns:jsfext="http://www.fireflow.org/jsfext">
-<ui:component>
-	<t:saveState value="#{InstancesDataViewerBean.bizDataList}" />
-	<t:saveState value="#{InstancesDataViewerBean.currentObject}" />
-	<t:saveState value="#{InstancesDataViewerBean.taskInstanceList}" />
-	<t:saveState value="#{InstancesDataViewerBean.variableList}" />
-	<h:form>
-	<f:subview id="panelTabbedPane1">
-	
-		<t:panelTabbedPane bgcolor="#CCFFFF" serverSideTabSwitch="true">
+<ui:composition
+	template="/org/fireflow/mainframe/ContentPaneTemplate.xhtml">
+	<ui:define name="leftPane">
+		<t:saveState value="#{InstancesDataViewerBean.bizDataList}" />
+		<t:saveState value="#{InstancesDataViewerBean.currentObject}" />
+		<t:saveState value="#{InstancesDataViewerBean.taskInstanceList}" />
+		<t:saveState value="#{InstancesDataViewerBean.variableList}" />
+		<h:form>
 
-			<t:panelTab id="taskInstancesList" label="Task实例列表">
-				<ui:include
-					src="/org/fireflow/workflowmanagement/instances_data_viewer/TaskInstanceListViewer.xhtml" />
-			</t:panelTab>
 
-			<t:panelTab id="processInstanceAndVariable" label="流程变量">
-				<ui:include
-					src="/org/fireflow/workflowmanagement/instances_data_viewer/ProcessInstanceVariableViewer.xhtml" />
-			</t:panelTab>
+			<jsfext:panelTabbedPane serverSideTabSwitch="true" width="100%">
 
-		</t:panelTabbedPane>
-		</f:subview>
-	</h:form>
-</ui:component>
+				<t:panelTab id="taskInstancesList" label="Task实例列表">
+					<ui:include
+						src="/org/fireflow/workflowmanagement/instances_data_viewer/TaskInstanceListViewer.xhtml" />
+				</t:panelTab>
+
+				<t:panelTab id="processInstanceAndVariable" label="流程变量">
+					<ui:include
+						src="/org/fireflow/workflowmanagement/instances_data_viewer/ProcessInstanceVariableViewer.xhtml" />
+				</t:panelTab>
+
+			</jsfext:panelTabbedPane>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
 </html>

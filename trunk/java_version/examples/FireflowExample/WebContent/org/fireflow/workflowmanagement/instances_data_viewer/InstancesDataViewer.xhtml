@@ -25,7 +25,7 @@
 				</tr>
 			</table>
 		</h:form>
-		<h:form>
+		<h:form >
 			<div><t:dataTable
 				value="#{InstancesDataViewerBean.bizDataList}" var="procInst"
 				headerClass="tableHeader" rowClasses="row1, row2" style="width:100%">
@@ -38,20 +38,18 @@
 					</t:commandLink>
 				</t:column>
 				<t:column>
-					<f:facet name="header">名称</f:facet>
-					<t:outputText value="#{procInst.name}" />
-				</t:column>
-				<t:column>
-					<f:facet name="header">中文名称</f:facet>
+					<f:facet name="header">名称/中文名称</f:facet>
+					<t:outputText value="#{procInst.name}" />/<br/>
 					<t:outputText value="#{procInst.displayName}" />
 				</t:column>
+
 				<t:column>
-					<f:facet name="header">版本号</f:facet>
+					<f:facet name="header">版本</f:facet>
 					<t:outputText value="#{procInst.version}" />
 				</t:column>
 				<t:column>
 					<f:facet name="header">状态</f:facet>
-					<t:outputText value="#{procInst.state}" />
+					<t:outputText value="#{Utilities.workflowElementInstanceStates[procInst.state]}" />
 				</t:column>
 				<t:column>
 					<f:facet name="header">是否挂起</f:facet>

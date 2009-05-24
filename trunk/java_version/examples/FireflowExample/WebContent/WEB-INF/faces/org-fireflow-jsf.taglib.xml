@@ -30,4 +30,12 @@
 			<renderer-type>org.fireflow.jsf.datatable.RowActionRenderer</renderer-type>		
 		</component>
 	</tag>	
+	
+	<tag>
+		<tag-name>panelTabbedPane</tag-name>
+		<component>
+			<component-type>org.apache.myfaces.HtmlPanelTabbedPane</component-type>
+			<renderer-type>org.fireflow.jsf.tabbedpane.HtmlTabbedPaneRendererExtension</renderer-type>		
+		</component>
+	</tag>		
 </facelet-taglib>

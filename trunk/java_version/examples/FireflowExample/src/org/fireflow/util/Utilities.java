@@ -1,18 +1,26 @@
 package org.fireflow.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
 import org.fireflow.security.persistence.Department;
 import org.fireflow.security.persistence.DepartmentDAO;
-import org.fireflow.security.persistence.User;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.context.SecurityContextHolder;
 
 public class Utilities implements InitializingBean{
 	DepartmentDAO departmentDAO = null;
+	Map states = new HashMap();
+	
+	public Utilities(){
+		states.put(new Integer(0), "Initialized");
+		states.put(new Integer(1), "Running");
+		states.put(new Integer(7), "Completed");
+		states.put(new Integer(9), "Canceled");
+	}
 	
 	List departmentSelectItems = new ArrayList();
 
@@ -45,6 +53,8 @@ public class Utilities implements InitializingBean{
 	}
 	
 	
-	
+	public Map getWorkflowElementInstanceStates(){
+		return states;
+	}
 
 }
