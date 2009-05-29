@@ -7,6 +7,11 @@ import org.fireflow.engine.taskinstance.IAssignable;
 import org.fireflow.engine.taskinstance.IAssignmentHandler;
 import org.fireflow.kernel.KernelException;
 
+/**
+ * 将流程的创建者设置为当前工单的操作员。
+ * @author app
+ *
+ */
 public class ProcessInstanceCreator implements IAssignmentHandler {
 
 	public void assign(IAssignable arg0, String arg1) throws EngineException,

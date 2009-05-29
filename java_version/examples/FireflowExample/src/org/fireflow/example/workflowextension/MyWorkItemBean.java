@@ -21,6 +21,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+/**
+ * 将流程操作都集中在该bean中。
+ * 流程操作如：签收工单、结束工单等。
+ * @author app
+ *
+ */
 public class MyWorkItemBean extends BasicManagedBean {
 
 	List myTodoWorkitems = null;

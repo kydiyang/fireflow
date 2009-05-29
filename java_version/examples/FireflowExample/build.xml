@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Export hibernate mapping file to DB schema. -->
-<project name="hbm2Db" basedir="." default="war">
+<project name="hbm2Db" basedir="." default="zip-file">
     <property name="src.dir" location="${basedir}/src" />
     <property name="web.dir" location="${basedir}/WebContent" />
     <property name="hibernate-cfg.dir" location="${basedir}/dbscript"/>
@@ -13,4 +13,11 @@
     <target name="war" >
     	<war destfile="FireflowExample-1.0.0-alpha-build${buildnumber}.war" basedir="${web.dir}"/>
     </target>
+    
+	<target name="zip-file" depends="war">
+		<zip destfile="Fire_Workflow_Example.zip"
+			basedir="${basedir}"
+			includes="FireflowExample-1.0.0-alpha-build${buildnumber}.war,workflowdefinition/**,Fire-Workflow-Example.pdf">
+		</zip>
+	</target>	    
 </project>    

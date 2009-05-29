@@ -11,6 +11,11 @@ import org.fireflow.kernel.KernelException;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.persistence.UserDAO;
 
+/**
+ * 根据角色名称获得该角色的所有人员，并分配工单给这些人员。
+ * @author app
+ *
+ */
 public class RoleBasedAssignmentHandler implements IAssignmentHandler {
 	UserDAO userDAO = null;
 	
