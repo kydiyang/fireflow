@@ -7,6 +7,12 @@ import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.taskinstance.DefaultTaskInstanceEventListener;
 
+/**
+ * 用该事件监听器替换BasicTaskInstanceManager中的缺省事件监听器。实现诸如“创建工单后给操作员发送短信”之类的需求。
+ * 该事件监听器必须在/config/fireflow/FireflowContext.xml中注册，并替换原有实现。
+ * @author app
+ *
+ */
 public class TaskInstanceEventListener4All extends
 		DefaultTaskInstanceEventListener {
     protected void afterWorkItemCreated(IWorkflowSession currentSession,
