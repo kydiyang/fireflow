@@ -49,6 +49,9 @@
         <property name="mappingResources">
             <list>
                 <value>
+					org/fireflow/engine/persistence/hibernate/ProcessInstanceTrace.hbm.xml
+                </value>               
+                <value>
 					org/fireflow/engine/persistence/hibernate/ProcessInstance.hbm.xml
                 </value>
                 <value>

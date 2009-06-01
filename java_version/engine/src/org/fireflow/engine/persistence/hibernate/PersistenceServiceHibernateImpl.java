@@ -291,7 +291,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "delete from org.fireflow.kernel.impl.Token as model where model.processInstanceId=:processInstanceId and model.nodeId in (:nodeId)";
+                String hql = "delete from org.fireflow.kernel.impl.Token  where processInstanceId=:processInstanceId and nodeId in (:nodeId)";
                 Query query = arg0.createQuery(hql);
                 query.setString("processInstanceId", processInstanceId);
                 query.setParameterList("nodeId", nodeIdsList);
@@ -304,7 +304,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "delete from org.fireflow.kernel.impl.Token as model where model.processInstanceId=:processInstanceId and model.nodeId=:nodeId";
+                String hql = "delete from org.fireflow.kernel.impl.Token  where processInstanceId=:processInstanceId and nodeId=:nodeId";
                 Query query = arg0.createQuery(hql);
                 query.setString("processInstanceId", processInstanceId);
                 query.setString("nodeId", nodeId);
@@ -817,7 +817,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "delete from org.fireflow.engine.impl.WorkItem as model where model.taskInstance.id=? and model.state=0";
+                String hql = "delete from org.fireflow.engine.impl.WorkItem  where taskInstance.id=? and state=0";
                 Query query = arg0.createQuery(hql);
                 query.setString(0, taskInstanceId);
                 return query.executeUpdate();
