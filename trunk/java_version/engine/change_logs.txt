@@ -1,4 +1,11 @@
 #############################################################
+###  org-fireflow-engine-1.0.0-alpha-build090601.jar      ###
+#############################################################
+1、修正了ActivityInstance.fire(IToken tk)方法中的一个bug
+2、修改了PersistenceServiceHibernateImpl中的delete hql ，增强其健壮性
+
+
+#############################################################
 ###  org-fireflow-engine-1.0.0-alpha-build090519.jar      ###
 #############################################################
 1、将org.fireflow.engine.event.IProcessInstanceEventListener.onProcessInstanceFired(...)改名为

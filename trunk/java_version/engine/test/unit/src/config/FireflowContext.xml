@@ -27,7 +27,9 @@
         <property name="kernelManager">
             <ref local="kernelManager"/>
         </property>
-
+        <property name="enableTrace">
+        	<value>true</value>
+        </property>
     </bean>
 
         <!-- ************ TaskInstance Manager Begin*************************** -->
@@ -107,6 +109,9 @@
                 </value>
                 <value>
                     /workflowdefinition/WithdrawAndReject.xml
+                </value>
+                <value>
+                	/workflowdefinition/skip.xml
                 </value>
             </list>
         </property>

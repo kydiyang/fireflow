@@ -27,7 +27,9 @@
         <property name="kernelManager">
             <ref local="kernelManager"/>
         </property>
-
+        <property name="enableTrace">
+        	<value>true</value>
+        </property>
     </bean>
     
         <!-- ************ TaskInstance Manager Begin*************************** -->

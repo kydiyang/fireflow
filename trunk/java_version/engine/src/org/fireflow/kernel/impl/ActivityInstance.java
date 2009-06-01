@@ -77,9 +77,10 @@ public class ActivityInstance extends AbstractNodeInstance implements
             fireNodeEnteredEvent(event);
 
             //如果没有task,即该activity是一个dummy activity，则直接complete
-            if (this.getActivity().getTasks().size() == 0) {
-                this.complete(token, null);
-            }
+            //注释:2009-06-01,complete工作被移植到了BasicTaskInstanceManager.createTaskInstances(...)
+//            if (this.getActivity().getTasks().size() == 0) {
+//                this.complete(token, null);
+//            }
         } else {
             this.complete(token, null);
         }
