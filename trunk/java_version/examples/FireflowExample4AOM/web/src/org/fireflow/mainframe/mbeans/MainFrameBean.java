@@ -22,11 +22,11 @@ public class MainFrameBean {
 	public static String CONTEXT_PATH = null;
 
 	public MainFrameBean() {
-		/*if (CONTEXT_PATH == null) {
+		if (CONTEXT_PATH == null) {
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 			CONTEXT_PATH = facesContext.getExternalContext()
 					.getRequestContextPath();
-		}*/
+		}
 	}
 
 	public List getMainMenuItems() {
