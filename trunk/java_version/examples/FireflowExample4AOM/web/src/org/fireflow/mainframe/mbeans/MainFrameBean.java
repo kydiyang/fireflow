@@ -62,7 +62,7 @@ public class MainFrameBean {
 		NavigationMenuItem menuItem_workflowmanagement = getMenuNaviagtionItem("工作流后台管理", null);
 		
 		NavigationMenuItem menuItem_uploaddefinition = getMenuNaviagtionItem("上载流程定义文件到数据库",
-		"/org/fireflow/workflowmanagement/UploadWorkflowDefinition.faces");
+		"org/fireflow/workflowmanagement/UploadWorkflowDefinition.faces");
 		menuItem_workflowmanagement.add(menuItem_uploaddefinition);
 		
 		NavigationMenuItem menuItem_definitionManagement = getMenuNaviagtionItem("流程定义管理",
