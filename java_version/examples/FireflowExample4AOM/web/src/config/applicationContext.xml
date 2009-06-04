@@ -4,24 +4,20 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 
-		<import resource="fireflow/FireflowContext.xml" />
-		<import resource="fireflow/FireflowContext-beanfactory.xml" />
+	<import resource="fireflow/FireflowContext.xml" />
+	<import resource="fireflow/FireflowContext-beanfactory.xml" />
 
 
 	<import resource="security/applicationContext-security.xml" />
 	<import resource="security/applicationContext-security-dao.xml" />
-	
+
 	<import
 		resource="workflowmanagement/applicationContext-workflowmanagement.xml" />
-		
 
-		<import
+	<import
 		resource="goods_deliver_process/applicationContext-goods-deliver-process.xml" />
-		
-		<import
-		resource="loan_process/applicationContext-loan-process.xml" />
-		
 
+	<import resource="loan_process/applicationContext-loan-process.xml" />
 
 	<import resource="applicationContext-misc.xml" />
 
@@ -121,19 +117,15 @@
 				<prop key="hibernate.show_sql">true</prop>
 			</props>
 		</property>
-		
-			<property name="mappingJarLocations">
+
+		<property name="mappingJarLocations">
 			<list>
-			<value>
-			WEB-INF/lib/org-fireflow-engine-*.jar
-			</value>
+				<value>WEB-INF/lib/org-fireflow-engine-*.jar</value>
 			</list>
-			</property> 
+		</property>
 		<property name="mappingLocations">
 			<list>
-				<value>
-					WEB-INF/classes/org/fireflow/**/*.hbm.xml
-				</value>
+				<value>WEB-INF/classes/org/fireflow/**/*.hbm.xml</value>
 			</list>
 		</property>
 	</bean>
