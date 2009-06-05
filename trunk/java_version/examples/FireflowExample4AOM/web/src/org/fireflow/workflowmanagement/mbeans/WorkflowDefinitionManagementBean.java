@@ -4,11 +4,16 @@ import org.fireflow.BasicManagedBean;
 import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.operamasks.faces.annotation.Inject;
+import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
 
+@ManagedBean(scope=ManagedBeanScope.REQUEST)
 public class WorkflowDefinitionManagementBean extends BasicManagedBean {
 	String workflowName4q = null;
 	Integer version4q = null;
 	
+	@Inject(value="#{commonWorkflowDAO}")
 	CommonWorkflowDAO commonWorkflowDAO = null;
 	
 	public String getWorkflowName4q() {
