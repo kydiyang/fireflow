@@ -13,13 +13,6 @@
 			<value>#{CommonWorkflowDAO}</value>
 		</managed-property>
 	</managed-bean>
-	<managed-bean>
-		<managed-bean-name>UploadWorkflowDefinitionBean</managed-bean-name>
-		<managed-bean-class>
-			org.fireflow.workflowmanagement.mbeans.UploadWorkflowDefinitionBean
-		</managed-bean-class>
-		<managed-bean-scope>request</managed-bean-scope>
-	</managed-bean>	
 	
 	<managed-bean>
 		<managed-bean-name>InstancesDataViewerBean</managed-bean-name>
