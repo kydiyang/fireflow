@@ -13,7 +13,7 @@
 		<h:form enctype="multipart/form-data">
 			<table align="center">
 				<tr>
-					<td>流程定义文件:<t:inputFileUpload accept="*.xml"
+					<td>流程定义文件:<t:inputFileUpload accept="*.xml" 
 						value="#{UploadWorkflowDefinitionBean.upFile}" /></td>
 				</tr>
 				<tr>
@@ -22,7 +22,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td><t:commandButton value="保存"
+					<td><t:commandButton value="保存" 
 						action="#{UploadWorkflowDefinitionBean.doSaveBizData}" /></td>
 				</tr>
 			</table>
