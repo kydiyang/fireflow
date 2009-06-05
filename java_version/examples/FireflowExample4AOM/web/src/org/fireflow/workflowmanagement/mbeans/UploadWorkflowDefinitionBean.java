@@ -13,9 +13,11 @@ import org.fireflow.model.io.Dom4JFPDLParser;
 import org.fireflow.model.io.FPDLParserException;
 import org.fireflow.security.util.SecurityUtilities;
 import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
 
-@ManagedBean
+@ManagedBean(scope=ManagedBeanScope.REQUEST)
 public class UploadWorkflowDefinitionBean extends BasicManagedBean {
+	
 	private UploadedFile _upFile;
 
 	private Boolean published = Boolean.TRUE;
