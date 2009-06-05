@@ -53,7 +53,7 @@
 	-->
   <view-mapping>
     <url-pattern>*</url-pattern>
-    <model-bean>#{~view}Bean</model-bean>
+    <model-bean>#{~View}Bean</model-bean>
   </view-mapping>
 </operamasks-config>
 
