@@ -23,7 +23,7 @@
 		</managed-bean-class>
 		<managed-bean-scope>request</managed-bean-scope>
 	</managed-bean>	
-	 -->
+	 
 	
 	<managed-bean>
 		<managed-bean-name>InstancesDataViewerBean</managed-bean-name>
@@ -36,6 +36,7 @@
 			<value>#{CommonWorkflowDAO}</value>
 		</managed-property>		
 	</managed-bean>		
+	-->
 	
 	<navigation-rule>
 		<from-view-id>/org/fireflow/workflowmanagement/instances_data_viewer/InstancesDataViewer.xhtml</from-view-id>

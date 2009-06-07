@@ -16,12 +16,17 @@ import org.fireflow.example.workflowextension.IExampleTaskInstance;
 import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
+import org.operamasks.faces.annotation.ManagedProperty;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+@ManagedBean(scope=ManagedBeanScope.REQUEST)
 public class InstancesDataViewerBean extends BasicManagedBean {
 	String workflowName4q = null;
 	
+	@ManagedProperty(value="#{CommonWorkflowDAO}")
 	transient CommonWorkflowDAO  commonWorkflowDAO = null;
 	
 	List<ITaskInstance> taskInstanceList = null;

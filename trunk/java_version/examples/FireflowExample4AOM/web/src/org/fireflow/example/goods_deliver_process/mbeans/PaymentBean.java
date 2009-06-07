@@ -14,6 +14,9 @@ import org.fireflow.example.goods_deliver_process.persistence.TradeInfoDAO;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
+import org.operamasks.faces.annotation.ManagedProperty;
 
 /**
  * 收银Bean,处理收银业务 收银完成后启动业务流程。
@@ -21,6 +24,7 @@ import org.fireflow.security.util.SecurityUtilities;
  * @author chennieyun
  * 
  */
+@ManagedBean(scope=ManagedBeanScope.REQUEST)
 public class PaymentBean extends BasicManagedBean {
 	private static List goods = new ArrayList();
 
@@ -53,6 +57,8 @@ public class PaymentBean extends BasicManagedBean {
 	}
 
 	TradeInfo paymentInfo = null;
+	
+	@ManagedProperty(value="#{TradeInfoDAO}")
 	TradeInfoDAO tradeInfoDao = null;
 
 

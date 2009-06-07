@@ -4,7 +4,6 @@ import org.fireflow.BasicManagedBean;
 import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
-import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
