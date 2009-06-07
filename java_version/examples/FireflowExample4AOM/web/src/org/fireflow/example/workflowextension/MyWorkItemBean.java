@@ -16,6 +16,8 @@ import org.fireflow.model.FormTask;
 import org.fireflow.model.Task;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -27,6 +29,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
  * @author app
  *
  */
+@ManagedBean(scope=ManagedBeanScope.REQUEST)
 public class MyWorkItemBean extends BasicManagedBean {
 
 	List myTodoWorkitems = null;
