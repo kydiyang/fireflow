@@ -21,6 +21,11 @@
 
 	<import resource="applicationContext-misc.xml" />
 
+<!-- Attention: this bean is essential!
+		Making LiteBeans available in Spring container. -->
+	<bean class="org.operamasks.faces.spring.ManagedBeanConfigurer" />
+
+
 	<!-- hsqldb数据源	 -->
 	<bean id="MyDataSource"
 		class="org.apache.commons.dbcp.BasicDataSource">
