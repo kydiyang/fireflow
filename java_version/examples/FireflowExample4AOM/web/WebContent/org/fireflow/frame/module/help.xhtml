@@ -1,0 +1,32 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:w="http://www.apusic.com/jsf/widget" xmlns:layout="http://www.apusic.com/jsf/layout"
+	xmlns:ajax="http://www.apusic.com/jsf/ajax" renderKitId="AJAX"
+	xmlns:h="http://java.sun.com/jsf/html">
+	<w:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</w:head>
+	<w:page title="#{mdl.helpBean.messages.helpPageTitle}">
+
+		<layout:absoluteLayout height="390" border="false">
+			<layout:panel width="467" height="245" x="259" y="84" header="false" border="false">
+				<w:panelBox style="width:467px; height: 220px" color="white" color2="#D3E1F1" gradientExtent="170" border="1"
+					borderColor="silver" borderRadius="8" bgcolor="#FFFFFF">
+					<h3><h:outputText value="#{mdl.helpBean.messages.helpPageTitle}" /></h3>
+					<p>1. 部门管理 - 部门基础数据增删改管理</p>
+					<p>2. 培训类别 - 培训类别数据增删改管理</p>
+					<p>3. 职员管理 - 职员基础数据增删改管理</p>
+					<p>4. 培训项目 - 培训项目基础数据增删改管理</p>
+					<p>5. 用户管理 - 用户基础数据、归属角色等增删改管理</p>
+					<p>6. 职级管理 - 技术职级基础数据增删改管理</p>
+					<p>7. 模块管理 - 系统模块（例如现有的13个模块）的增删改管理，通过双击列表中的模块项可进入模块项管理</p>
+					<p>8. 角色管理 - 角色基础数据（包括模块权限等）增删改管理</p>
+					<p>9. 培训数据 - 培训基础数据增删改管理</p>
+					<p>10. 部门培训分析 - 柱状图的部门培训数据分析</p>
+					<p>11. 部门培训统计 - 列表的部门培训数据分析</p>
+					<p>12. 职级培训分析 - 柱状图的技术职级分类培训数据分析</p>
+					<p>13. 职级培训统计 - 列表的技术职级分类培训数据分析</p>
+				</w:panelBox>
+			</layout:panel>
+		</layout:absoluteLayout>
+	</w:page>
+</f:view>
