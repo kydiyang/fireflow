@@ -13,7 +13,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.MethodExpressionActionListener;
 
-import org.fireflow.mainframe.mbeans.ILocalStringsKey;
+import org.fireflow.util.ILocalStringsKey;
 import org.fireflow.util.TagPanelUtil;
 import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.ActionListener;
@@ -33,7 +33,7 @@ import org.operamasks.faces.component.widget.menu.UIMenu;
  * 主页面的托管Bean
  * @author chenhongxin
  */
-@ManagedBean(name = "mdl.indexBean", scope = ManagedBeanScope.SESSION)
+@ManagedBean(scope = ManagedBeanScope.SESSION)
 public class IndexBean extends BaseBean {
 	private static final String HELP_PAGE_URL = "help.faces";
 	private static final String HELP_ICON_URL = "../resources/images/help.png";
@@ -65,7 +65,6 @@ public class IndexBean extends BaseBean {
 
 	@BeforeRender
 	public void beforeRender(boolean isPostBack) {
-		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++");
 		initBaseResource();
 		if (!isPostBack) {
 			/*ExternalContext eContext = FacesContext.getCurrentInstance().getExternalContext();
@@ -120,7 +119,6 @@ public class IndexBean extends BaseBean {
 				toolBar.getChildren().add(refreshBtn);*/
 			FacesContext context = FacesContext.getCurrentInstance();
 			Application application = context.getApplication();
-			System.out.println("===================================================");
 			//创建菜单
 			UIMenu dailyMemu = createMenu("日常工作");
 			dailyMemu.getChildren().add(createCommandMenuItem("待办工单", "/org/fireflow/example/workflowextension/MyWorkItem.faces"));
@@ -223,6 +221,7 @@ public class IndexBean extends BaseBean {
 			UICommandMenuItem item = (UICommandMenuItem) e.getComponent();
 			Object obj = item.getValue();
 			String url = (obj instanceof String ? (String)obj : obj.toString());
+			url = TagPanelUtil.getBasePath() + url;
 			scripter = formatScript(item.getLabel(), url, item.getImage());
 		}
 	}
@@ -271,7 +270,7 @@ public class IndexBean extends BaseBean {
 		uiItem.setValue(url);
 		// 添加事件监听
 		uiItem.addActionListener(this.createMethodExpressionActionListener(
-				context, "#{mdl.indexBean.redirect}"));
+				context, "#{IndexBean.redirect}"));
 		return uiItem;
 	}
 	

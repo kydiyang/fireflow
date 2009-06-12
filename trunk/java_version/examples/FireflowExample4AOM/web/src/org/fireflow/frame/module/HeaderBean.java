@@ -12,9 +12,9 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
-import org.fireflow.mainframe.mbeans.ILocalStringsKey;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.fireflow.util.ILocalStringsKey;
 import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.BeforeRender;
 import org.operamasks.faces.annotation.Bind;
@@ -25,7 +25,7 @@ import org.operamasks.faces.annotation.ManagedBeanScope;
  * 页脚页面的托管Bean
  * @author chenhongxin
  */
-@ManagedBean(name="mdl.headerBean", scope=ManagedBeanScope.SESSION)
+@ManagedBean(scope=ManagedBeanScope.SESSION)
 public class HeaderBean extends BaseBean {
 	
 	/**

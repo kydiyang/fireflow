@@ -10,7 +10,7 @@ package org.fireflow.frame.module;
 
 import java.util.Map;
 
-import org.fireflow.mainframe.mbeans.ILocalStringsKey;
+import org.fireflow.util.ILocalStringsKey;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.LocalString;
 

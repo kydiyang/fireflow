@@ -8,7 +8,7 @@
 */
 package org.fireflow.frame.module;
 
-import org.fireflow.mainframe.mbeans.ILocalStringsKey;
+import org.fireflow.util.ILocalStringsKey;
 import org.operamasks.faces.annotation.BeforeRender;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
@@ -18,7 +18,7 @@ import org.operamasks.faces.annotation.ManagedBeanScope;
  * 页脚页面的托管Bean
  * @author chenhongxin
  */
-@ManagedBean(name="mdl.footerBean", scope=ManagedBeanScope.SESSION)
+@ManagedBean(scope=ManagedBeanScope.SESSION)
 public class FooterBean extends BaseBean {
 	
 	/**
