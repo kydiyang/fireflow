@@ -1,8 +1,8 @@
 <f:view xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:w="http://www.apusic.com/jsf/widget" xmlns:layout="http://www.apusic.com/jsf/layout"
 	xmlns:ajax="http://www.apusic.com/jsf/ajax" renderKitId="AJAX"
-	xmlns:h="http://java.sun.com/jsf/html" xmlns:om="http://www.apusic.com/jsf/misc">
-	<om:useBean value="mdl.indexBean"/>
+	xmlns:h="http://java.sun.com/jsf/html" >
+
 	<w:head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
@@ -45,7 +45,7 @@
 		//]]>
 		</script>
 	</w:head>
-	<w:page title="#{mdl.indexBean.messages.indexPageTitle}">
+	<w:page title="#{IndexBean.messages.indexPageTitle}">
 		<ajax:scripter id="scripter"></ajax:scripter>
 		<layout:borderLayout fitToBody="true">
 			<layout:panel region="north" height="80" header="false" border="false" style="text-align:right">
@@ -63,7 +63,7 @@
 					</layout:panel>
 					<layout:panel region="center" header="false" border="false">
 						<layout:tabLayout id="application" tabPosition="bottom" border="false" jsvar="tabs">
-							<layout:panel title="#{mdl.indexBean.messages.get('IndexBean.help.label')}" height="400" style="height:400px;overflow: auto;">
+							<layout:panel title="#{IndexBean.messages.get('IndexBean.help.label')}" height="400" style="height:400px;overflow: auto;">
 								<iframe style="width:100%;height:100%;" 
 									src="help.faces" border="0"
 									vspace="0" hspace="0" marginwidth="0" 
