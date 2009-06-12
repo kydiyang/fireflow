@@ -8,6 +8,7 @@ import javax.faces.context.FacesContext;
 import org.apache.myfaces.custom.navmenu.NavigationMenuItem;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.BeforeRender;
 import org.operamasks.faces.annotation.ManagedBean;
 
 /**
@@ -118,5 +119,10 @@ public class MainFrameBean {
 	
 	public User getCurrentUser(){
 		return SecurityUtilities.getCurrentUser();
+	}
+	
+	@BeforeRender
+	protected void beforeRender(boolean isPostBack) {
+		System.out.println("==============================");
 	}
 }
