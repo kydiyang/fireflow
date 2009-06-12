@@ -34,9 +34,9 @@
 -->
 
 
-        <form-login 
-        	login-page="/login.jsp"
-        	default-target-url="/org/fireflow/mainframe/MainFrame.faces"
+        <form-login
+        	login-page="/login.jsp" 
+        	default-target-url="/org/fireflow/frame/module/index.faces"
         	authentication-failure-url="/login.jsp"
         />
         <anonymous />
