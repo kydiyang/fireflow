@@ -126,8 +126,8 @@ public class WorkItemListBean extends BasicManagedBean {
 						// 如果是运行状态，返回编辑界面
 						String formUri = ((FormTask) task).getEditForm()
 								.getUri();
-
-						return formUri;
+						formUri = formUri.replace("faces","xhtml");
+						return "/"+formUri;
 					} else {
 						// 否则返回只读界面（example未实现view Form）
 						// String formUri = ((FormTask)
