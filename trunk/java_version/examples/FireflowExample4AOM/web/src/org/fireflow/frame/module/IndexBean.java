@@ -123,6 +123,7 @@ public class IndexBean extends BaseBean {
 			UIMenu dailyMemu = createMenu("日常工作");
 			dailyMemu.getChildren().add(createCommandMenuItem("待办工单", "/org/fireflow/example/workflowextension/MyWorkItem.faces"));
 			dailyMemu.getChildren().add(createCommandMenuItem("已办工单", "/org/fireflow/example/workflowextension/MyHaveDoneWorkItem.faces"));
+			dailyMemu.getChildren().add(createCommandMenuItem("待办列表", "/org/fireflow/example/workflowextension/WorkItemList.faces"));
 			toolBar.getChildren().add(dailyMemu);
 			
 			//商场送货业务
@@ -176,22 +177,6 @@ public class IndexBean extends BaseBean {
 			
 		}
 	}
-	
-	/**
-	 * 获取角色对应的合法访问模块的id集合
-	 * @param role 进行判断的角色对象
-	 * @return 角色对应的合法访问模块的id集合
-	 */
-	/*private Set<String> getValidateModuleItemIdSet() {
-		List<ModuleItem> validateItems = role.getModuleItems();
-		if(validateItems == null) return Collections.emptySet();
-		Set<String> set = new HashSet<String>();
-		for(ModuleItem item : validateItems) {
-			set.add(item.getId());
-		}
-		return set;
-		return null;
-	}*/
 	
 	/**
 	 * 绑定帮助按钮点击事件
