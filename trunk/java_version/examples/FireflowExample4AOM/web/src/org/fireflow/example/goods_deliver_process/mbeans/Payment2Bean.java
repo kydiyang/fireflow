@@ -5,25 +5,31 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import org.fireflow.BasicManagedBean;
+import org.fireflow.engine.EngineException;
+import org.fireflow.engine.IProcessInstance;
+import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.example.goods_deliver_process.persistence.TradeInfo;
+import org.fireflow.example.goods_deliver_process.persistence.TradeInfoDAO;
+import org.fireflow.kernel.KernelException;
+import org.fireflow.security.persistence.User;
+import org.fireflow.security.util.SecurityUtilities;
 import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
+import org.operamasks.faces.annotation.ManagedProperty;
 import org.operamasks.faces.annotation.Required;
 import org.operamasks.faces.annotation.SelectItems;
 import org.operamasks.faces.component.form.impl.UICombo;
 
 
 @ManagedBean(name = "Payment2Bean", scope = ManagedBeanScope.REQUEST)
-public class Payment2Bean {
+public class Payment2Bean extends BasicManagedBean{
 
 	@Bind
 	@SelectItems
 	private static List goods = new ArrayList();
-	
-	@Bind
-	TradeInfo paymentInfo = new TradeInfo();
 	
 	static {
 		SelectItem selectItem = new SelectItem();
@@ -53,6 +59,12 @@ public class Payment2Bean {
 		goods.add(selectItem);
 	}
 	
+	@Bind
+	TradeInfo paymentInfo = new TradeInfo();
+	
+	@ManagedProperty("#{TradeInfoDAO}")
+	TradeInfoDAO tradeInfoDao = null;
+	
 
 	@Bind
 	private String sn;
@@ -61,14 +73,14 @@ public class Payment2Bean {
 	private String goodsName;
 
 	@Bind
-	private Integer unitPrice = 0;
+	private int unitPrice;
 	
 	@Bind
 	@Required(message = "数量不能为空")
-	private Integer quantity = 0;
+	private int quantity = 0;
 	
 	@Bind
-	private Integer amount = 0;
+	private int amount;
 	
 	@Bind
 	@Required(message = "客户名称不能为空")
@@ -99,11 +111,78 @@ public class Payment2Bean {
 		}
 	}
 
+	@Action
+	private void quantity_onchange(){
+		amount = quantity * unitPrice;
+	}
+	
 	@Bind
 	private String response;
 
 	@Action
 	private void save() {
+		User currentUser = SecurityUtilities.getCurrentUser();
+		
+		//TODOL设置数据，暂不清楚如何与对象关联，先用此方法代替
+		paymentInfo.setGoodsName(goodsName);
+		paymentInfo.setUnitPrice((double)unitPrice);	
+		paymentInfo.setQuantity((long)quantity);
+		paymentInfo.setAmount((double)amount);
+		paymentInfo.setCustomerName(customerName);
+		paymentInfo.setCustomerMobile(customerMobile);
+		paymentInfo.setCustomerPhoneFax(customerPhoneFax);
+		
+		// 一、执行业务业务操作，保存业务数据
+		tradeInfoDao.save(paymentInfo);
+
+		// 二、开始执行流程操作
+		IWorkflowSession workflowSession = workflowRuntimeContext
+				.getWorkflowSession();
+		try {
+			// 1、创建流程实例
+			IProcessInstance procInst = workflowSession
+					.createProcessInstance("Goods_Deliver_Process",currentUser==null?"":currentUser.getLoginid());
+			// 2、设置流程变量/业务属性字段
+			procInst.setProcessInstanceVariable("sn", paymentInfo.getSn());// 设置交易顺序号
+			procInst.setProcessInstanceVariable("goodsName", paymentInfo
+					.getGoodsName());// 货物名称
+			procInst.setProcessInstanceVariable("quantity", paymentInfo
+					.getQuantity());// 数量
+			procInst.setProcessInstanceVariable("mobile", paymentInfo
+					.getCustomerMobile());// 客户电话
+			procInst.setProcessInstanceVariable("customerName", paymentInfo
+					.getCustomerName());
+
+			// 3、启动流程实例,run()方法启动实例并创建第一个环节实例、分派任务
+			procInst.run();
+
+			// 4、根据业务情况，收银环节应该立即对该环节的workitem执行complete操作
+			/*
+			 * 在org.fireflow.example.workflowextension.CurrentUserAssignmentHandler中完成
+			 * 该工作更为合理. 2009-05-03
+			 */
+			/*
+			FacesContext facesContext = FacesContext.getCurrentInstance();
+			HttpSession httpSession = (HttpSession) facesContext
+					.getExternalContext().getSession(true);
+			User currentUser = (User) httpSession.getAttribute("CURRENT_USER");
+			List workitems = workflowSession.findMyTodoWorkItems(currentUser
+					.getId(), procInst.getId());
+			if (workitems != null && workitems.size() > 0) {
+				IWorkItem wi = (IWorkItem) workitems.get(0);
+				wi.complete();
+			}
+			*/
+
+		} catch (EngineException e) {
+			response = e.getMessage();
+			e.printStackTrace();
+		} catch (KernelException e) {
+			response = e.getMessage();
+			e.printStackTrace();
+		}
+
+		paymentInfo = new TradeInfo();
 
 	}
 }
