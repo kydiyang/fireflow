@@ -128,8 +128,7 @@ public class IndexBean extends BaseBean {
 			
 			//商场送货业务
 			UIMenu goodsdeliverMemu = createMenu("商场送货业务");
-			goodsdeliverMemu.getChildren().add(createCommandMenuItem("收银", "/org/fireflow/example/goods_deliver_process/Payment.faces"));
-			goodsdeliverMemu.getChildren().add(createCommandMenuItem("收银2", "/org/fireflow/example/goods_deliver_process/Payment2.faces"));
+			goodsdeliverMemu.getChildren().add(createCommandMenuItem("收银", "/org/fireflow/example/goods_deliver_process/Payment2.faces"));
 			toolBar.getChildren().add(goodsdeliverMemu);
 			
 			//银行贷款业务
