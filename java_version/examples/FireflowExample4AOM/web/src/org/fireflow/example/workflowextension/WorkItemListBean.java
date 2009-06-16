@@ -139,16 +139,14 @@ public class WorkItemListBean extends BasicManagedBean {
 					}
 				} else {
 					// 非FormTask没有界面，直接返回当前的操作界面本身
-					//this.doQueryMyToDoWorkItems();
 					//return this.outcome;
 				}
 			} catch (EngineException e) {
 				e.printStackTrace();
-				//this.doQueryMyToDoWorkItems();
 				return this.outcome;
 			}
 		}
-		return this.outcome;
+		return null;
 	}
 
 }
