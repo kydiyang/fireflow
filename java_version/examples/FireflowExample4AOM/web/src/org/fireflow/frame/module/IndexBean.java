@@ -121,9 +121,9 @@ public class IndexBean extends BaseBean {
 			Application application = context.getApplication();
 			//创建菜单
 			UIMenu dailyMemu = createMenu("日常工作");
-			dailyMemu.getChildren().add(createCommandMenuItem("待办工单", "/org/fireflow/example/workflowextension/MyWorkItem.faces"));
+			//dailyMemu.getChildren().add(createCommandMenuItem("待办工单", "/org/fireflow/example/workflowextension/MyWorkItem.faces"));
+			dailyMemu.getChildren().add(createCommandMenuItem("待办工单", "/org/fireflow/example/workflowextension/WorkItemList.faces"));
 			dailyMemu.getChildren().add(createCommandMenuItem("已办工单", "/org/fireflow/example/workflowextension/MyHaveDoneWorkItem.faces"));
-			dailyMemu.getChildren().add(createCommandMenuItem("待办列表", "/org/fireflow/example/workflowextension/WorkItemList.faces"));
 			toolBar.getChildren().add(dailyMemu);
 			
 			//商场送货业务
