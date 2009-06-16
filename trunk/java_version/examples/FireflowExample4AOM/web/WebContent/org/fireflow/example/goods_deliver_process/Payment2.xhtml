@@ -17,33 +17,36 @@ label {
 			<h3>个人详细信息：</h3>
 			<layout:panelGrid columns="2" cellspacing="5">
 				<layout:cell colspan="1" rowspan="1">
-					<label> 流水号：<span style="color: red;">*</span>
-					</label>
+					<label> 流水号：</label>
 				</layout:cell>
-				<w:textField id="sn" width="330" readOnly="true" />
+				<w:textField id="sn" value="#{Payment2Bean.paymentInfo.sn }" width="330" readOnly="true" />
 
 				<h:outputLabel value="货品名称："></h:outputLabel>
-				<w:combo id="goodsName" width="164">
+				<w:combo id="goodsName" width="164" value="TCL 电视机" >
 					<f:selectItems id="goods" />
 				</w:combo>
 				
 				<h:outputLabel value="单价："></h:outputLabel>
-				<w:numberField id="unitPrice" width="330" readOnly="true" />
+				<w:numberField id="unitPrice" value="1399" readOnly="true" width="330" />
 				
-				<h:outputLabel value="数量："></h:outputLabel>
+				<layout:cell colspan="1" rowspan="1">
+					<label> 数量：<span style="color: red;">*</span></label>
+				</layout:cell>
 				<w:numberField id="quantity" width="330" />
 				
 				<h:outputLabel value="总价："></h:outputLabel>
 				<w:numberField id="amount" width="330" readOnly="true" />
 
-				<h:outputLabel value="客户姓名："></h:outputLabel>
-				<w:textArea id="customerName" width="330" height="50" />
+				<layout:cell colspan="1" rowspan="1">
+					<label> 客户姓名：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textField id="customerName" width="330" />
 				
 				<h:outputLabel value="手机："></h:outputLabel>
-				<w:textArea id="customerMobile" width="330" height="50" />
+				<w:textField id="customerMobile" width="330" />
 				
 				<h:outputLabel value="电话/传真:"></h:outputLabel>
-				<w:textArea id="customerPhoneFax" width="330" height="50" />
+				<w:textField id="customerPhoneFax" width="330" />
 				
 			</layout:panelGrid>
 			<w:button id="save" value="保存" width="100" />
