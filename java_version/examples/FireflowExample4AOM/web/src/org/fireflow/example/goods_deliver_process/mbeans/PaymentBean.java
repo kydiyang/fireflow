@@ -58,7 +58,7 @@ public class PaymentBean extends BasicManagedBean {
 
 	TradeInfo paymentInfo = null;
 	
-	@ManagedProperty(value="#{TradeInfoDAO}")
+	@ManagedProperty("#{TradeInfoDAO}")
 	TradeInfoDAO tradeInfoDao = null;
 
 
