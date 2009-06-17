@@ -134,6 +134,7 @@ public class IndexBean extends BaseBean {
 			//银行贷款业务
 			UIMenu loanMemu = createMenu("银行贷款业务");
 			loanMemu.getChildren().add(createCommandMenuItem("贷款申请", "/org/fireflow/example/loan_process/SubmitApplicationInfo.faces"));
+			loanMemu.getChildren().add(createCommandMenuItem("贷款申请2", "/org/fireflow/example/loan_process/SubmitApplicationInfo2.faces"));
 			toolBar.getChildren().add(loanMemu);	
 			
 			//流程后台管理
