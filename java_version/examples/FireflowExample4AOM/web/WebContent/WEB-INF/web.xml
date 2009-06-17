@@ -10,8 +10,6 @@
 		<param-value>
 			/WEB-INF/faces/faces-config.xml,
 			/WEB-INF/faces/faces-config-workflowmanagement.xml,
-			/WEB-INF/faces/faces-config-goodsdeliverprocess.xml,
-			/WEB-INF/faces/faces-config-example.xml,
 			/WEB-INF/faces/faces-config-loanprocess.xml
 		</param-value>
 	</context-param>
