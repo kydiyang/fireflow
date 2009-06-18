@@ -15,6 +15,7 @@ import javax.faces.context.FacesContext;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
 import org.fireflow.util.ILocalStringsKey;
+import org.fireflow.util.TagPanelUtil;
 import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.BeforeRender;
 import org.operamasks.faces.annotation.Bind;
@@ -63,6 +64,6 @@ public class HeaderBean extends BaseBean {
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, Object> session = context.getExternalContext().getSessionMap();
 		//session.put(IUserConstants.USER_BEAN, null);//清空Session的USER_BEAN记录
-		headerScripter = "location.href='../login.faces'";//使用js脚本回调执行页面跳转
+		headerScripter = "location.href='"+TagPanelUtil.getBasePath()+"login.jsp'";//使用js脚本回调执行页面跳转
 	}
 }
