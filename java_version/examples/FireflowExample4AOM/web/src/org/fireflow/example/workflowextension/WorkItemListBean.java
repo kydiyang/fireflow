@@ -12,6 +12,7 @@ import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.example.goods_deliver_process.workflowextension.GoodsDeliverTaskInstance;
+import org.fireflow.example.loan_process.workflowextension.LoanTaskInstance;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.model.FormTask;
 import org.fireflow.model.Task;
@@ -30,6 +31,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 @SuppressWarnings( { "unused", "serial" })
 public class WorkItemListBean extends BasicManagedBean {
 
+	private String selectWorkItemId;
+	
 	@SuppressWarnings("unchecked")
 	@Bind(id = "grid", attribute = "value")
 	private List data = (List) this.transactionTemplate
@@ -50,13 +53,25 @@ public class WorkItemListBean extends BasicManagedBean {
 
 						map.put("id", w.getId());
 						map.put("state", w.getState() == 0 ? "待签收" : "待处理");
-						GoodsDeliverTaskInstance task = (GoodsDeliverTaskInstance) w
-								.getTaskInstance();
-						map.put("displayName", task.getDisplayName());
-						map.put("goodsName", task.getGoodsName());
-						map.put("sn", task.getSn());
-						map.put("quantity", task.getQuantity());
-						map.put("customerName", task.getCustomerName());
+						if(w.getTaskInstance() instanceof GoodsDeliverTaskInstance){
+							GoodsDeliverTaskInstance task = (GoodsDeliverTaskInstance) w
+							.getTaskInstance();
+							map.put("displayName", task.getDisplayName());
+							map.put("goodsName", task.getGoodsName());
+							map.put("sn", task.getSn());
+							map.put("quantity", task.getQuantity());
+							map.put("customerName", task.getCustomerName());
+						}
+						if(w.getTaskInstance() instanceof LoanTaskInstance){
+							LoanTaskInstance task = (LoanTaskInstance)w.getTaskInstance();
+							map.put("displayName", task.getDisplayName());
+							map.put("goodsName", task.getName());
+							map.put("sn", task.getSn());
+							map.put("quantity", task.getLoanValue());
+							map.put("customerName", task.getApplicantName());
+							map.put("endTime", w.getEndTime());
+							map.put("actorId",w.getActorId() );
+						}
 						datas.add(map);
 					}
 					return datas;
@@ -115,6 +130,7 @@ public class WorkItemListBean extends BasicManagedBean {
 			try {
 				Map<String, Object> map = (Map<String, Object>) os[0];
 				final String workItemId = (String) map.get("id");
+				selectWorkItemId = workItemId;
 				IWorkflowSession wflsession = workflowRuntimeContext
 						.getWorkflowSession();
 				IWorkItem wi = wflsession.findWorkItemById(workItemId);
@@ -147,6 +163,48 @@ public class WorkItemListBean extends BasicManagedBean {
 			}
 		}
 		return null;
+	}
+
+
+	/**
+	 * 结束当前的workitem
+	 * 
+	 * @return
+	 */
+	public String completeWorkItem() {
+		final String workItemId = selectWorkItemId;
+		this.transactionTemplate
+				.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(
+							TransactionStatus arg0) {
+						if (workItemId != null) {
+							try {
+								IWorkflowSession wflSession = workflowRuntimeContext
+										.getWorkflowSession();
+								IWorkItem wi = wflSession
+										.findWorkItemById(workItemId);
+								wi.complete();
+							} catch (EngineException e) {
+								e.printStackTrace();
+								arg0.setRollbackOnly();
+							} catch (KernelException e) {
+								e.printStackTrace();
+								arg0.setRollbackOnly();
+							}
+						}
+					}
+				});
+		return "/org/fireflow/example/workflowextension/WorkItemList.xhtml";
+	}
+	
+	
+	public String getSelectWorkItemId() {
+		return selectWorkItemId;
+	}
+
+	public void setSelectWorkItemId(String selectWorkItemId) {
+		this.selectWorkItemId = selectWorkItemId;
 	}
 
 }

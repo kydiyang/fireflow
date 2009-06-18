@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
-
 import org.fireflow.BasicManagedBean;
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IWorkItem;
@@ -15,20 +13,14 @@ import org.fireflow.engine.IWorkflowSessionCallback;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.example.goods_deliver_process.workflowextension.GoodsDeliverTaskInstance;
+import org.fireflow.example.loan_process.workflowextension.LoanTaskInstance;
 import org.fireflow.kernel.KernelException;
-import org.fireflow.model.FormTask;
-import org.fireflow.model.Task;
 import org.fireflow.security.persistence.User;
-import org.fireflow.security.util.SecurityUtilities;
-import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.component.grid.impl.UIEditDataGrid;
 import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @ManagedBean(scope = ManagedBeanScope.REQUEST)
 @SuppressWarnings( { "unused", "serial" })
@@ -67,15 +59,29 @@ public class MyHaveDoneWorkItemBean extends BasicManagedBean {
 
 				map.put("id", w.getId());
 				map.put("state", w.getState() == 7 ? "已处理" : "已取消");
-				GoodsDeliverTaskInstance task = (GoodsDeliverTaskInstance) w
-						.getTaskInstance();
-				map.put("displayName", task.getDisplayName());
-				map.put("goodsName", task.getGoodsName());
-				map.put("sn", task.getSn());
-				map.put("quantity", task.getQuantity());
-				map.put("customerName", task.getCustomerName());
-				map.put("endTime", w.getEndTime());
-				map.put("actorId",w.getActorId() );
+				
+				if(w.getTaskInstance() instanceof GoodsDeliverTaskInstance){
+					
+					GoodsDeliverTaskInstance task = (GoodsDeliverTaskInstance) w
+					.getTaskInstance();
+					map.put("displayName", task.getDisplayName());
+					map.put("goodsName", task.getGoodsName());
+					map.put("sn", task.getSn());
+					map.put("quantity", task.getQuantity());
+					map.put("customerName", task.getCustomerName());
+					map.put("endTime", w.getEndTime());
+					map.put("actorId",w.getActorId() );
+				}
+				if(w.getTaskInstance() instanceof LoanTaskInstance){
+					LoanTaskInstance task = (LoanTaskInstance)w.getTaskInstance();
+					map.put("displayName", task.getDisplayName());
+					map.put("goodsName", task.getName());
+					map.put("sn", task.getSn());
+					map.put("quantity", task.getLoanValue());
+					map.put("customerName", task.getApplicantName());
+					map.put("endTime", w.getEndTime());
+					map.put("actorId",w.getActorId() );
+				}
 				datas.add(map);
 			}
 		} catch (EngineException e) {
