@@ -11,6 +11,7 @@ import org.fireflow.example.loan_process.persistence.LoanInfoDAO;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
@@ -25,6 +26,7 @@ public class SubmitApplicationInfo2Bean extends BasicManagedBean {
 	@Bind
 	LoanInfo loanInfo = this.initLoanInfo();
 	
+	@Action(id="save")
 	protected String executeSaveBizData(){
 		String errmsg = null;
 		User currentUser = SecurityUtilities.getCurrentUser();
