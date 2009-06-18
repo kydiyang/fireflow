@@ -11,7 +11,7 @@
 		<t:saveState value="#{RiskEvaluateInfoBean.loanInfo}" />
 		<t:saveState value="#{RiskEvaluateInfoBean.currentProcessInstanceId}" />
 		<h:form>
-			<t:inputHidden value="#{MyWorkItemBean.selectedWorkItemId}" />
+			<t:inputHidden value="#{WorkItemListBean.selectWorkItemId}" />
 			<div align="center"><span
 				style="font-size: 16pt; font-weight: bold">某银行贷款审批表</span></div>
 			<div style="border: 1px solid blue" align="center"><ui:include
@@ -22,7 +22,7 @@
 			
 			<div align="center"><t:commandButton value="保存"
 				action="#{RiskEvaluateInfoBean.doSaveBizData}" /> <t:commandButton
-				value="结束工单" action="#{MyWorkItemBean.completeWorkItem}" /></div>
+				value="结束工单" action="#{WorkItemListBean.completeWorkItem}" /></div>
 		</h:form>
 	</ui:define>
 </ui:composition>
