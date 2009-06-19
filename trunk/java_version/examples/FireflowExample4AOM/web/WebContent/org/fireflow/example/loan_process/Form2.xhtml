@@ -46,6 +46,100 @@
 				</layout:cell>
 				<w:textField id="appInfoInputDate" value="#{LoanInfo.appInfoInputDate }" width="330" />
 				
+				<layout:cell colspan="2" rowspan="1" >
+					<span style="font-size: 12pt; font-weight: bold">风险评估信息</span>
+				</layout:cell>
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 收入状况是否属实：</label>
+				</layout:cell>
+				<w:combo id="salaryIsReal"  width="164" value="#{LoanInfo.salaryIsReal }" >
+					<f:selectItem itemLabel="属实" itemValue="#{true}"/>
+					<f:selectItem itemLabel="不属实" itemValue="#{false}"/>
+				</w:combo>
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 信用状况是否合格：</label>
+				</layout:cell>
+				<w:combo id="creditStatus"  width="164" value="#{LoanInfo.creditStatus }" >
+					<f:selectItem itemLabel="合格" itemValue="#{true}"/>
+					<f:selectItem itemLabel="不合格" itemValue="#{false}"/>	
+				</w:combo>
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 评估人：</label>
+				</layout:cell>
+				<w:textField id="riskEvaluator" value="#{LoanInfo.riskEvaluator }" width="330" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 评估信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textField id="riskInfoInputDate" value="#{LoanInfo.riskInfoInputDate }" width="330" />
+				
+				<layout:cell colspan="2" rowspan="1" >
+					<span style="font-size: 12pt; font-weight: bold">审批信息</span>
+				</layout:cell>
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 审批结论：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textField id="decision" value="#{LoanInfo.decision }" width="330" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 当前审批员：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textArea id="examinerList" value="#{LoanInfo.examinerList}" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 当前同意贷款的审批员：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textArea id="approverList" value="#{LoanInfo.approverList}" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 当前不同意贷款的审批员：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textArea id="opponentList" value="#{LoanInfo.opponentList}" />
+				
+				<layout:cell colspan="2" rowspan="1" >
+					<span style="font-size: 12pt; font-weight: bold">放款信息</span>
+				</layout:cell>
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 放款纪录：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textArea id="lendMoneyInfo" value="#{LoanInfo.lendMoneyInfo}" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 放款操作人：</label>
+				</layout:cell>
+				<w:textField id="lendMoneyOfficer" value="#{LoanInfo.lendMoneyOfficer }" width="330" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 放款信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textField id="riskInfoInputDate" value="#{LoanInfo.riskInfoInputDate }" width="330" />
+				
+				<layout:cell colspan="2" rowspan="1" >
+					<span style="font-size: 12pt; font-weight: bold">拒绝贷款信息</span>
+				</layout:cell>
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 拒绝贷款备注：<span style="color: red;">*</span></label>
+				</layout:cell>
+				<w:textArea id="rejectInfo" value="#{LoanInfo.rejectInfo}" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 信贷员：</label>
+				</layout:cell>
+				<w:textField id="loanteller2" value="#{LoanInfo.loanteller }" width="330" />
+				
+				<layout:cell colspan="1" rowspan="1">
+					<label> 拒绝贷款信息录入时间：</label>
+				</layout:cell>
+				<w:textField id="rejectInfoInputTime" value="#{LoanInfo.rejectInfoInputTime }" width="330" />
+				
+				
+				
 			</layout:panelGrid>
 </ui:component>
 </f:view>
