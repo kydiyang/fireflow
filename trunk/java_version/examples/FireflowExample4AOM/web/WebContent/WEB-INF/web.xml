@@ -9,8 +9,7 @@
 		<param-name>javax.faces.CONFIG_FILES</param-name>
 		<param-value>
 			/WEB-INF/faces/faces-config.xml,
-			/WEB-INF/faces/faces-config-workflowmanagement.xml,
-			/WEB-INF/faces/faces-config-loanprocess.xml
+			/WEB-INF/faces/faces-config-workflowmanagement.xml
 		</param-value>
 	</context-param>
 	<context-param>
