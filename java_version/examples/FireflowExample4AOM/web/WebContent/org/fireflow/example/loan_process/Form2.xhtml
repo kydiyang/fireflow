@@ -3,6 +3,7 @@
 	xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" renderKitId="AJAX">
 	
 <ui:component>
+
 			<span
 			style="font-size: 12pt; font-weight: bold">申请信息</span>
 			<layout:panelGrid columns="2" cellspacing="5">
@@ -45,12 +46,14 @@
 					<label> 信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
 				</layout:cell>
 				<w:textField id="appInfoInputDate" value="#{LoanInfo.appInfoInputDate }" width="330" />
-				
+			</layout:panelGrid>
+			
+			<layout:panelGrid style="display: #{(section >= 2)?'':'none'}" columns="2" cellspacing="5">
 				<layout:cell colspan="2" rowspan="1" >
 					<span style="font-size: 12pt; font-weight: bold">风险评估信息</span>
 				</layout:cell>
-				
-				<layout:cell colspan="1" rowspan="1">
+								
+				<layout:cell rowspan="1">
 					<label> 收入状况是否属实：</label>
 				</layout:cell>
 				<w:combo id="salaryIsReal"  width="164" value="#{LoanInfo.salaryIsReal }" >
@@ -75,7 +78,9 @@
 					<label> 评估信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
 				</layout:cell>
 				<w:textField id="riskInfoInputDate" value="#{LoanInfo.riskInfoInputDate }" width="330" />
-				
+			</layout:panelGrid>
+			
+			<layout:panelGrid style="display: #{(section >=4)?'':'none'}" columns="2" cellspacing="5">
 				<layout:cell colspan="2" rowspan="1" >
 					<span style="font-size: 12pt; font-weight: bold">审批信息</span>
 				</layout:cell>
@@ -99,7 +104,9 @@
 					<label> 当前不同意贷款的审批员：<span style="color: red;">*</span></label>
 				</layout:cell>
 				<w:textArea id="opponentList" value="#{LoanInfo.opponentList}" />
-				
+			</layout:panelGrid>
+			
+			<layout:panelGrid style="display: #{(section ==6)?'':'none'}" columns="2" cellspacing="5">
 				<layout:cell colspan="2" rowspan="1" >
 					<span style="font-size: 12pt; font-weight: bold">放款信息</span>
 				</layout:cell>
@@ -117,8 +124,10 @@
 				<layout:cell colspan="1" rowspan="1">
 					<label> 放款信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
 				</layout:cell>
-				<w:textField id="riskInfoInputDate" value="#{LoanInfo.riskInfoInputDate }" width="330" />
-				
+				<w:textField id="lendMoneyInfoInputTime" value="#{LoanInfo.lendMoneyInfoInputTime }" width="330" />
+			</layout:panelGrid>
+			
+			<layout:panelGrid style="display: #{(section ==7)?'':'none'}" columns="2" cellspacing="5">
 				<layout:cell colspan="2" rowspan="1" >
 					<span style="font-size: 12pt; font-weight: bold">拒绝贷款信息</span>
 				</layout:cell>
@@ -137,9 +146,6 @@
 					<label> 拒绝贷款信息录入时间：</label>
 				</layout:cell>
 				<w:textField id="rejectInfoInputTime" value="#{LoanInfo.rejectInfoInputTime }" width="330" />
-				
-				
-				
 			</layout:panelGrid>
 </ui:component>
 </f:view>
