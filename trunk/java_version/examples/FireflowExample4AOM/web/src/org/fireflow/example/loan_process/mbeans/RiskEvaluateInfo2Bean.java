@@ -47,24 +47,7 @@ public class RiskEvaluateInfo2Bean extends BasicManagedBean {
 		
 		return loanInfo;
 	}
-	/*public void setLoanInfo(LoanInfo loanInfo) {
-		this.loanInfo = loanInfo;
-	}*/
 	
-		/*	public String getCurrentSn() {
-		return currentSn;
-	}
-	public void setCurrentSn(String currentSn) {
-		this.currentSn = currentSn;
-	}
-	
-	
-	public String getCurrentProcessInstanceId() {
-		return currentProcessInstanceId;
-	}
-	public void setCurrentProcessInstanceId(String currentProcessInstanceId) {
-		this.currentProcessInstanceId = currentProcessInstanceId;
-	}*/
 	
 	/**
 	 * 保存风险核查信息
