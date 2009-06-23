@@ -19,6 +19,7 @@ import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
+import org.operamasks.faces.annotation.SaveState;
 
 @ManagedBean(name = "RiskEvaluateInfoBean", scope = ManagedBeanScope.REQUEST)
 public class RiskEvaluateInfo2Bean extends BasicManagedBean {
@@ -29,11 +30,13 @@ public class RiskEvaluateInfo2Bean extends BasicManagedBean {
 	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.sn}")
 	private String currentSn = null;
 	
+	@SaveState
 	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.processInstanceId}")
 	private String currentProcessInstanceId = null;
 	
-	@Bind(id="LoanInfo")
-	private LoanInfo loanInfo;
+	@SaveState
+	@Bind
+	LoanInfo loanInfo;
 	
 	public LoanInfo getLoanInfo() {
 		if (loanInfo==null && currentSn!=null){
