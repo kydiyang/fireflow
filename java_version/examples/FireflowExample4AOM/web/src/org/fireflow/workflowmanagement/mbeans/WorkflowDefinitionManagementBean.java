@@ -1,9 +1,12 @@
 package org.fireflow.workflowmanagement.mbeans;
 
+import java.util.List;
+
 import org.fireflow.BasicManagedBean;
 import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
@@ -14,7 +17,10 @@ public class WorkflowDefinitionManagementBean extends BasicManagedBean {
 	Integer version4q = null;
 	
 	@ManagedProperty(value="#{CommonWorkflowDAO}")
-	CommonWorkflowDAO commonWorkflowDAO = null;
+	CommonWorkflowDAO commonWorkflowDAO;
+	
+	@Bind(id = "grid", attribute = "value")
+	private List data;
 	
 	public String getWorkflowName4q() {
 		return workflowName4q;
@@ -45,6 +51,11 @@ public class WorkflowDefinitionManagementBean extends BasicManagedBean {
 		
 		this.bizDataList = commonWorkflowDAO.findWorkflowDefinitionInfoByCriteria(exp3);
 		return null;
+	}
+	
+	public List getData() {
+		this.data = commonWorkflowDAO.findWorkflowDefinitionInfoByCriteria(Expression.sql("1=1"));
+		return data;
 	}
 	
 
