@@ -1,34 +1,20 @@
 package org.fireflow.workflowmanagement.mbeans;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
-import org.apache.myfaces.custom.fileupload.UploadedFile;
 import org.fireflow.BasicManagedBean;
-import org.fireflow.engine.definition.WorkflowDefinition;
-import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.io.Dom4JFPDLParser;
-import org.fireflow.model.io.FPDLParserException;
-import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
+import org.operamasks.faces.component.widget.UIFileUpload;
+import org.operamasks.faces.component.widget.fileupload.FileUploadItem;
 
 @ManagedBean(scope=ManagedBeanScope.REQUEST)
 public class UploadWorkflowDefinitionBean extends BasicManagedBean {
 	
-	private UploadedFile _upFile;
+	private UIFileUpload  upFile;
 
 	private Boolean published = Boolean.TRUE;
-
-	public UploadedFile getUpFile() {
-		return _upFile;
-	}
-
-	public void setUpFile(UploadedFile file) {
-		_upFile = file;
-	}
 
 	public Boolean getPublished() {
 		return published;
@@ -38,11 +24,12 @@ public class UploadWorkflowDefinitionBean extends BasicManagedBean {
 		this.published = published;
 	}
 
-	protected String executeSaveBizData() {
+	public void processUpload(FileUploadItem fileUploadItem) {
 		InputStream processbyte;
 		String errMsg = null;
-		try {
-			processbyte = _upFile.getInputStream();
+		System.out.println("--------------------------------------");
+		/*try {
+			processbyte = fileUploadItem.openStream();
 
 			Dom4JFPDLParser parser = new Dom4JFPDLParser();
 
@@ -76,8 +63,20 @@ public class UploadWorkflowDefinitionBean extends BasicManagedBean {
 		} catch (FPDLParserException e) {
 			errMsg = e.getMessage();
 			e.printStackTrace();
-		}
-		return errMsg;
+		}*/
 	}
 
+	@Action
+	public void save(){
+		System.out.println("==========================================");
+		
+	}
+
+	public UIFileUpload getUpFile() {
+		return upFile;
+	}
+
+	public void setUpFile(UIFileUpload upFile) {
+		this.upFile = upFile;
+	}
 }
