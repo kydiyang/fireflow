@@ -1,5 +1,6 @@
 <f:view xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:w="http://www.apusic.com/jsf/widget" xmlns:layout="http://www.apusic.com/jsf/layout"
+	xmlns:om="http://www.apusic.com/jsf/misc"
 	xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" renderKitId="AJAX">
 	<w:head>
 		<w:stylesheet src="/common/resources/examples.css" />
@@ -9,6 +10,7 @@ label {
 }
 </style>
 	</w:head>
+	<om:useBean value="RiskEvaluateInfoBean"/>
 	<w:page>
 		<div align="center"><span
 				style="font-size: 16pt; font-weight: bold">某银行贷款审批表</span></div>
