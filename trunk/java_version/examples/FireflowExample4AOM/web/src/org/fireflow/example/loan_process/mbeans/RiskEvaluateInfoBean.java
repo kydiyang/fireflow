@@ -14,12 +14,29 @@ import org.fireflow.example.loan_process.persistence.LoanInfo;
 import org.fireflow.example.loan_process.persistence.LoanInfoDAO;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.Action;
+import org.operamasks.faces.annotation.Bind;
+import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
+import org.operamasks.faces.annotation.ManagedProperty;
+import org.operamasks.faces.annotation.SaveState;
 
+@ManagedBean(name = "RiskEvaluateInfoBean", scope = ManagedBeanScope.REQUEST)
 public class RiskEvaluateInfoBean extends BasicManagedBean {
-	LoanInfo loanInfo = null;
-	LoanInfoDAO loanInfoDAO = null;
-	String currentSn = null;
-	String currentProcessInstanceId = null;
+	
+	@ManagedProperty("#{LoanInfoDAO}")
+	private LoanInfoDAO loanInfoDAO = null;
+	
+	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.sn}")
+	private String currentSn = null;
+	
+	@SaveState
+	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.processInstanceId}")
+	private String currentProcessInstanceId = null;
+	
+	@SaveState
+	@Bind
+	LoanInfo loanInfo;
 	
 	public LoanInfo getLoanInfo() {
 		if (loanInfo==null && currentSn!=null){
@@ -33,36 +50,12 @@ public class RiskEvaluateInfoBean extends BasicManagedBean {
 		
 		return loanInfo;
 	}
-	public void setLoanInfo(LoanInfo loanInfo) {
-		this.loanInfo = loanInfo;
-	}
-	public LoanInfoDAO getLoanInfoDAO() {
-		return loanInfoDAO;
-	}
-	public void setLoanInfoDAO(LoanInfoDAO loanInfoDAO) {
-		this.loanInfoDAO = loanInfoDAO;
-	}
 	
-	
-	
-	public String getCurrentSn() {
-		return currentSn;
-	}
-	public void setCurrentSn(String currentSn) {
-		this.currentSn = currentSn;
-	}
-	
-	
-	public String getCurrentProcessInstanceId() {
-		return currentProcessInstanceId;
-	}
-	public void setCurrentProcessInstanceId(String currentProcessInstanceId) {
-		this.currentProcessInstanceId = currentProcessInstanceId;
-	}
 	
 	/**
 	 * 保存风险核查信息
 	 */
+	@Action(id="save")
 	protected String executeSaveBizData(){
 		//1、首先通过"收入状况是否属实"和"信用状况是否合格"这两项指标来设置RiskFlag流程变量
 		if (loanInfo.getSalaryIsReal() && loanInfo.getCreditStatus()){
