@@ -10,35 +10,13 @@ import org.fireflow.example.loan_process.persistence.LoanInfo;
 import org.fireflow.example.loan_process.persistence.LoanInfoDAO;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
-import org.operamasks.faces.annotation.Action;
-import org.operamasks.faces.annotation.Bind;
-import org.operamasks.faces.annotation.ManagedBean;
-import org.operamasks.faces.annotation.ManagedBeanScope;
-import org.operamasks.faces.annotation.ManagedProperty;
-import org.operamasks.faces.annotation.SaveState;
 
-@ManagedBean(scope = ManagedBeanScope.REQUEST)
-public class ApproveInfoBean extends BasicManagedBean{
-	
-	
-	@SaveState
-	@Bind
-	private LoanInfo loanInfo = this.getLoanInfo();
-	
-	@SaveState
-	@Bind
-	private ApproveInfo approveInfo = this.getApproveInfo();
-	
-	@ManagedProperty("#{LoanInfoDAO}")
-	private LoanInfoDAO loanInfoDAO = null;
-	
-	@ManagedProperty("#{ApproveInfoDAO}")
-	private ApproveInfoDAO approveInfoDAO = null;
-	
-	@SaveState
-	@Bind
-	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.sn}")
-	private String currentSn = null;
+public class ApproveInfoBeanbak extends BasicManagedBean{
+	LoanInfo loanInfo = null;
+	ApproveInfo approveInfo = null;
+	LoanInfoDAO loanInfoDAO = null;
+	ApproveInfoDAO approveInfoDAO = null;
+	String currentSn = null;
 	
 	public LoanInfo getLoanInfo() {
 		if (loanInfo==null && currentSn!=null){
@@ -52,6 +30,22 @@ public class ApproveInfoBean extends BasicManagedBean{
 		
 		return loanInfo;
 	}
+	
+	public void setLoanInfo(LoanInfo loanInfo) {
+		this.loanInfo = loanInfo;
+	}
+	public LoanInfoDAO getLoanInfoDAO() {
+		return loanInfoDAO;
+	}
+	public void setLoanInfoDAO(LoanInfoDAO loanInfoDAO) {
+		this.loanInfoDAO = loanInfoDAO;
+	}
+	public String getCurrentSn() {
+		return currentSn;
+	}
+	public void setCurrentSn(String currentSn) {
+		this.currentSn = currentSn;
+	}
 
 	public ApproveInfo getApproveInfo() {
 		if (approveInfo==null && currentSn!=null){
@@ -63,11 +57,21 @@ public class ApproveInfoBean extends BasicManagedBean{
 		return approveInfo;
 	}
 
+	public void setApproveInfo(ApproveInfo approveInfo) {
+		this.approveInfo = approveInfo;
+	}
+
+	public ApproveInfoDAO getApproveInfoDAO() {
+		return approveInfoDAO;
+	}
+
+	public void setApproveInfoDAO(ApproveInfoDAO approveInfoDAO) {
+		this.approveInfoDAO = approveInfoDAO;
+	}
 	
 	/**
 	 * 保存审批信息
 	 */
-	@Action(id="save")
 	protected String executeSaveBizData(){
 		approveInfoDAO.attachDirty(approveInfo);
 		return null;

@@ -16,16 +16,14 @@ import org.fireflow.example.workflowextension.IExampleTaskInstance;
 import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
-import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
-import org.operamasks.faces.component.grid.impl.UIEditDataGrid;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 @ManagedBean(scope=ManagedBeanScope.REQUEST)
-public class InstancesDataViewerBean extends BasicManagedBean {
+public class InstancesDataViewerBeanbak extends BasicManagedBean {
 	String workflowName4q = null;
 	
 	@ManagedProperty(value="#{CommonWorkflowDAO}")
@@ -35,12 +33,6 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	List<IWorkItem> workItemsList = null;
 	
 	List<Object[]> variableList = new ArrayList();
-	
-	@Bind(id = "grid", attribute = "value")
-	private List data ;
-	
-	@Bind(id = "grid")
-	private UIEditDataGrid grid;
 	
 	public String getWorkflowName4q() {
 		return workflowName4q;
@@ -99,9 +91,6 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	}
 	
 	protected String fireBizDataSelected() {
-		Object[] os = grid.getSelectedValues();
-		if (os == null || os.length <= 0) 
-			return null;
 		super.fireBizDataSelected();
 		
 		IProcessInstance processInstance = (IProcessInstance)this.currentObject;
@@ -192,13 +181,5 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			
 		});
 		return this.SELF_VIEW;
-	}
-
-	public List getData() {
-		if(data == null){
-			Criterion c = Expression.sql("1=1");
-			data = commonWorkflowDAO.findProcessInstanceByCriteria(c);
-		}
-		return data;
 	}	
 }

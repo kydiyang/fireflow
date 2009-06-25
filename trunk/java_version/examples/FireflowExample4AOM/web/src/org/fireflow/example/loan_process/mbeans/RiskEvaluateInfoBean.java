@@ -21,22 +21,24 @@ import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
 import org.operamasks.faces.annotation.SaveState;
 
-@ManagedBean(name = "RiskEvaluateInfoBean", scope = ManagedBeanScope.REQUEST)
+@ManagedBean(scope = ManagedBeanScope.REQUEST)
 public class RiskEvaluateInfoBean extends BasicManagedBean {
 	
 	@ManagedProperty("#{LoanInfoDAO}")
 	private LoanInfoDAO loanInfoDAO = null;
 	
+	@Bind
 	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.sn}")
 	private String currentSn = null;
 	
+	@Bind
 	@SaveState
 	@ManagedProperty("#{requestScope.CURRENT_WORKITEM.taskInstance.processInstanceId}")
 	private String currentProcessInstanceId = null;
 	
 	@SaveState
 	@Bind
-	LoanInfo loanInfo;
+	private LoanInfo loanInfo = this.getLoanInfo();
 	
 	public LoanInfo getLoanInfo() {
 		if (loanInfo==null && currentSn!=null){

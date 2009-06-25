@@ -10,11 +10,13 @@ label {
 }
 </style>
 	</w:head>
-	<om:useBean value="RiskEvaluateInfoBean"/>
 	<w:page>
 		<div align="center"><span
 				style="font-size: 16pt; font-weight: bold">某银行贷款审批表</span></div>
 		<w:form>
+			<h:inputHidden id="currentSn" />
+			<h:inputHidden id="currentProcessInstanceId" />
+			<h:inputHidden id="selectWorkItemId" value="#{WorkItemListBean.selectWorkItemId}" />
 			<div style="border: 1px solid blue" align="center">
 						<span
 			style="font-size: 12pt; font-weight: bold">申请信息</span>
@@ -57,7 +59,7 @@ label {
 				<layout:cell colspan="1" rowspan="1">
 					<label> 信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
 				</layout:cell>
-				<w:textField id="appInfoInputDate" value="#{RiskEvaluateInfoBean.loanInfo.appInfoInputDate }" width="330" />
+				<w:dateField id="appInfoInputDate" value="#{RiskEvaluateInfoBean.loanInfo.appInfoInputDate }" width="330" />
 			</layout:panelGrid>
 			
 			<layout:panelGrid columns="2" cellspacing="5">
@@ -89,7 +91,7 @@ label {
 				<layout:cell colspan="1" rowspan="1">
 					<label> 评估信息录入时间(yyyyMMdd)：<span style="color: red;">*</span></label>
 				</layout:cell>
-				<w:textField id="riskInfoInputDate" value="#{RiskEvaluateInfoBean.loanInfo.riskInfoInputDate }" width="330" />
+				<w:dateField id="riskInfoInputDate" value="#{RiskEvaluateInfoBean.loanInfo.riskInfoInputDate }" width="330" />
 			</layout:panelGrid>
 			
 			</div>

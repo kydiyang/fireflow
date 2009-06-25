@@ -4,25 +4,20 @@ import java.io.InputStream;
 
 import org.fireflow.BasicManagedBean;
 import org.operamasks.faces.annotation.Action;
+import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.component.widget.UIFileUpload;
 import org.operamasks.faces.component.widget.fileupload.FileUploadItem;
 
-@ManagedBean(scope=ManagedBeanScope.REQUEST)
+@ManagedBean(name="UploadWorkflowDefinitionBean", scope=ManagedBeanScope.REQUEST)
 public class UploadWorkflowDefinitionBean extends BasicManagedBean {
 	
+	@Bind
 	private UIFileUpload  upFile;
 
+	@Bind
 	private Boolean published = Boolean.TRUE;
-
-	public Boolean getPublished() {
-		return published;
-	}
-
-	public void setPublished(Boolean published) {
-		this.published = published;
-	}
 
 	public void processUpload(FileUploadItem fileUploadItem) {
 		InputStream processbyte;
@@ -79,4 +74,13 @@ public class UploadWorkflowDefinitionBean extends BasicManagedBean {
 	public void setUpFile(UIFileUpload upFile) {
 		this.upFile = upFile;
 	}
+
+	public Boolean getPublished() {
+		return published;
+	}
+
+	public void setPublished(Boolean published) {
+		this.published = published;
+	}
+
 }
