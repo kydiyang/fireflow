@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:t="http://myfaces.apache.org/tomahawk">
-<ui:composition
-	template="/org/fireflow/mainframe/ContentPaneTemplate.xhtml">
-	<ui:define name="rightPane">
-		<t:saveState value="#{SubmitApplicationInfoBean.loanInfo}" />
-		<h:form>
-			<div align="center"><span
+<f:view xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:w="http://www.apusic.com/jsf/widget" xmlns:layout="http://www.apusic.com/jsf/layout"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" renderKitId="AJAX">
+	<w:head>
+		<w:stylesheet src="/common/resources/examples.css" />
+		<style>
+label {
+	font-size: 13px;
+}
+</style>
+	</w:head>
+	<w:page>
+		<div align="center"><span
 				style="font-size: 16pt; font-weight: bold">某银行贷款审批表</span></div>
+		<w:form>
 			<div style="border: 1px solid blue" align="center"><ui:include
 				src="/org/fireflow/example/loan_process/Form.xhtml">
 				<ui:param name="LoanInfo"
 					value="#{SubmitApplicationInfoBean.loanInfo}" />
 				<ui:param name="section" value="1" />
 			</ui:include></div>
-			<div align="center"><t:commandButton value="保存"
-				action="#{SubmitApplicationInfoBean.doSaveBizData}" /></div>
+			<w:button id="save" value="保存" width="100" />
+			<h:messages></h:messages>
+			<br />
+			<h:outputText id="response" escape="false"></h:outputText>
+		</w:form>
+	</w:page>
+</f:view>
 
-
-		</h:form>
-
-	</ui:define>
-</ui:composition>
-</html>

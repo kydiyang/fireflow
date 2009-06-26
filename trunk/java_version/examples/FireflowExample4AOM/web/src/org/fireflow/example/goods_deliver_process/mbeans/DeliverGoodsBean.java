@@ -1,28 +1,11 @@
 package org.fireflow.example.goods_deliver_process.mbeans;
 
-import org.fireflow.BasicManagedBean;
-import org.fireflow.example.goods_deliver_process.persistence.TradeInfoDAO;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.operamasks.faces.annotation.Action;
+import org.operamasks.faces.annotation.ManagedBean;
+import org.operamasks.faces.annotation.ManagedBeanScope;
 
-public class DeliverGoodsBean extends BasicManagedBean{
-
-	TradeInfoDAO tradeInfoDao = null;
-
-
-	public DeliverGoodsBean() {
-
-	}
-
-
-
-	public TradeInfoDAO getTradeInfoDao() {
-		return tradeInfoDao;
-	}
-
-	public void setTradeInfoDao(TradeInfoDAO demoDao) {
-		this.tradeInfoDao = demoDao;
-	}
+@ManagedBean( scope = ManagedBeanScope.REQUEST)
+public class DeliverGoodsBean {
 
 	/**
 	 * 保存业务数据。 在设个demo中，备货操作实际上没有什么数据需要保存，所以没有具体的逻辑代码。
@@ -30,6 +13,7 @@ public class DeliverGoodsBean extends BasicManagedBean{
 	 * 
 	 * @return
 	 */
+	@Action
 	public String save() {
 		return "SELF";
 	}
