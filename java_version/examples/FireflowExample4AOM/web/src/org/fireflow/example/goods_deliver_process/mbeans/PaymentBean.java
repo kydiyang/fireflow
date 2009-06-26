@@ -14,20 +14,23 @@ import org.fireflow.example.goods_deliver_process.persistence.TradeInfoDAO;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.operamasks.faces.annotation.Action;
+import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
+import org.operamasks.faces.annotation.Required;
+import org.operamasks.faces.annotation.SelectItems;
+import org.operamasks.faces.component.form.impl.UICombo;
 
-/**
- * 收银Bean,处理收银业务 收银完成后启动业务流程。
- * 
- * @author chennieyun
- * 
- */
-@ManagedBean(scope=ManagedBeanScope.REQUEST)
-public class PaymentBean extends BasicManagedBean {
+
+@ManagedBean( scope = ManagedBeanScope.REQUEST)
+public class PaymentBean extends BasicManagedBean{
+
+	@Bind
+	@SelectItems
 	private static List goods = new ArrayList();
-
+	
 	static {
 		SelectItem selectItem = new SelectItem();
 
@@ -55,45 +58,80 @@ public class PaymentBean extends BasicManagedBean {
 		selectItem.setLabel("海尔 洗衣机");
 		goods.add(selectItem);
 	}
-
-	TradeInfo paymentInfo = null;
+	
+	@Bind
+	TradeInfo paymentInfo = new TradeInfo();
 	
 	@ManagedProperty("#{TradeInfoDAO}")
 	TradeInfoDAO tradeInfoDao = null;
+	
 
+	@Bind
+	private String sn;
+	
+	@Bind
+	private String goodsName;
 
-	public PaymentBean() {
-		paymentInfo = new TradeInfo();
+	@Bind
+	private int unitPrice;
+	
+	@Bind
+	@Required(message = "数量不能为空")
+	private int quantity = 0;
+	
+	@Bind
+	private int amount;
+	
+	@Bind
+	@Required(message = "客户名称不能为空")
+	private String customerName = "";
+
+	@Bind
+	private String customerMobile;
+
+	@Bind
+	private String customerPhoneFax;
+	
+	@Bind(id = "goodsName")
+	private UICombo goods_comboBox;
+
+	@Action(immediate = true)
+	private void goodsName_onselect() {
+		goodsName = goods_comboBox.getSubmittedValue().toString();
+		if ("TCL 电视机".equals(goodsName)){
+			unitPrice=1399;
+		}else if ("长虹 电视机".equals(goodsName)){
+			unitPrice=1378;
+		}else if ("万和 热水器".equals(goodsName)){
+			unitPrice=899;
+		}else if ("方太 抽油烟机".equals(goodsName)){
+			unitPrice=2350;
+		}else{
+			unitPrice=1620;
+		}
 	}
 
-	public List getGoods() {
-		return goods;
+	@Action
+	private void quantity_onchange(){
+		amount = quantity * unitPrice;
 	}
+	
+	@Bind
+	private String response;
 
-	public TradeInfo getPaymentInfo() {
-		return paymentInfo;
-	}
-
-	public void setPaymentInfo(TradeInfo demoPOJO) {
-		this.paymentInfo = demoPOJO;
-	}
-
-	public TradeInfoDAO getTradeInfoDao() {
-		return tradeInfoDao;
-	}
-
-	public void setTradeInfoDao(TradeInfoDAO demoDao) {
-		this.tradeInfoDao = demoDao;
-	}
-
-	/**
-	 * 保存交易信息，启动流程
-	 * 
-	 * @return
-	 */
-	public String executeSaveBizData() {
+	@Action
+	private void save() {
 		User currentUser = SecurityUtilities.getCurrentUser();
-		String errmsg = null;
+		
+		//TODOL设置数据，暂不清楚如何与对象关联，先用此方法代替
+		paymentInfo.setGoodsName(goodsName);
+		paymentInfo.setUnitPrice((double)unitPrice);	
+		paymentInfo.setQuantity((long)quantity);
+		paymentInfo.setAmount((double)amount);
+		paymentInfo.setCustomerName(customerName);
+		paymentInfo.setCustomerMobile(customerMobile);
+		paymentInfo.setCustomerPhoneFax(customerPhoneFax);
+		
 		// 一、执行业务业务操作，保存业务数据
 		tradeInfoDao.save(paymentInfo);
 
@@ -137,16 +175,14 @@ public class PaymentBean extends BasicManagedBean {
 			*/
 
 		} catch (EngineException e) {
-			errmsg = e.getMessage();
+			response = e.getMessage();
 			e.printStackTrace();
 		} catch (KernelException e) {
-			errmsg = e.getMessage();
+			response = e.getMessage();
 			e.printStackTrace();
 		}
 
 		paymentInfo = new TradeInfo();
 
-		return errmsg;
 	}
-
 }

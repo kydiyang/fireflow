@@ -5,13 +5,7 @@
 	version="2.5">
 	<description>FireflowExample4AOM</description>
 	<display-name>FireflowExample4AOM</display-name>
-	<context-param>
-		<param-name>javax.faces.CONFIG_FILES</param-name>
-		<param-value>
-			/WEB-INF/faces/faces-config.xml,
-			/WEB-INF/faces/faces-config-workflowmanagement.xml
-		</param-value>
-	</context-param>
+	
 	<context-param>
 		<param-name>
 			org.operamasks.faces.IMPLICIT_NAVIGATION
