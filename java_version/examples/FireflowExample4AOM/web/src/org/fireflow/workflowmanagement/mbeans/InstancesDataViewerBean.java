@@ -1,6 +1,7 @@
 package org.fireflow.workflowmanagement.mbeans;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,11 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	@ManagedProperty(value="#{CommonWorkflowDAO}")
 	transient CommonWorkflowDAO  commonWorkflowDAO = null;
 	
-	@Bind( id = "taskGrid", attribute = "value")
+	
 	private List<ITaskInstance> taskInstanceList;
+	
+	@Bind( id = "taskgrid", attribute = "value")
+	private List taskdata;
 	
 	List<IWorkItem> workItemsList = null;
 	
@@ -46,8 +50,8 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	@Bind(id = "grid")
 	private UIDataGrid grid;
 	
-	@Bind(id = "taskGrid")
-	private UIDataGrid taskGrid;
+	@Bind(id = "taskgrid")
+	private UIDataGrid taskgrid;
 	
 	@Bind
 	private UIWindow dialog;
@@ -109,12 +113,10 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	 * 打开对话框
 	 */
 	@Action
-    public void showDialog() {
-		//this.initObject();
+	public void grid_ondblclick() {
 		fireBizDataSelected();
 		dialog.show();
-		//taskGrid.reload();
-    }
+	}
 	
 	/**
 	 * 暂停
@@ -139,7 +141,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			}
 			
 		});
-		return this.SELF_VIEW;
+		return SELF_VIEW;
 	}
 	
 	/**
@@ -166,7 +168,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			}
 			
 		});
-		return this.SELF_VIEW;
+		return SELF_VIEW;
 	}
 	
 	/**
@@ -192,7 +194,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			}
 			
 		});
-		return this.SELF_VIEW;
+		return SELF_VIEW;
 	}
 
 	public List getData() {
@@ -207,6 +209,25 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 		if(taskInstanceList==null)
 			fireBizDataSelected();
 		return taskInstanceList;
+	}
+
+	public List getTaskdata() {
+		taskdata = new ArrayList();
+		for(ITaskInstance t : this.getTaskInstanceList()){
+			for(int i=0 ;i<5;i++){
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("stepNumber", t.getStepNumber());
+				map.put("displayName", t.getDisplayName());
+				map.put("state", t.getState());
+				map.put("suspended", t.getCreatedTime());
+				map.put("bizInfo", t.getEndTime());
+				taskdata.add(map);
+				
+			}
+			
+		}
+		
+		return taskdata;
 	}
 
 }
