@@ -14,7 +14,6 @@
                 <br />
                 <w:form style="width:80%;height:80%">
                         <w:dataGrid id="grid" paged="true" var="procInst" trackMouseOver="true" singleSelect="true" rows="10" toolBarPosition="top">
-                        	<ajax:action  event="ondblclick" id="showDialog" />
                         	
                         	<w:idColumn  header="实例Id" id="id" />
                         	<w:outputColumn header="名称" id="name" />
@@ -34,11 +33,29 @@
 	                            </w:menu>
                             </w:pagingToolbar>
                         </w:dataGrid>
-                </w:form>
-                <layout:window id="dialog" width="800" height="300" modal="true"
+                        </w:form>
+                	<layout:window id="dialog" width="800" height="300" modal="true" 
                         style="padding: 5px;" collapsible="false" resizable="false" title="实例信息">
-                        <ajax:updater update="true" globalAction="true" url="/org/fireflow/workflowmanagement/instances_data_viewer/InstanceDetailsViewer.xhtml" />
+                        <w:form>
+                        <layout:tabLayout height="400">
+		      			<layout:panel title="Task实例列表">
+		      				<w:dataGrid id="taskgrid" binding="#{InstancesDataViewerBean.taskgrid }" var="taskInst" value="#{InstancesDataViewerBean.taskdata }" singleSelect="true" rows="10" paged="true" toolBarPosition="top">
+		                        	
+		                    	<w:outputColumn header="步骤" id="stepNumber" value="#{taskInst.stepNumber }" />
+		                        <w:outputColumn header="名称" id="displayName" />
+		                        <w:outputColumn header="状态" id="state" value="#{Utilities.workflowElementInstanceStates[taskInst.state]}" />
+		                        <w:outputColumn header="挂起" id="suspended" />
+		                        <w:outputColumn header="业务信息" id="bizInfo" />
+		                        	
+		                	</w:dataGrid>
+		      			</layout:panel>
+		      			<layout:panel title="流程变量">
+		
+						</layout:panel>
+    					</layout:tabLayout>
+    					</w:form>
                 </layout:window>
+                
                 
         </w:page>
 </f:view>
