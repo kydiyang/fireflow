@@ -16,76 +16,49 @@ import org.fireflow.example.workflowextension.IExampleTaskInstance;
 import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
-import org.operamasks.faces.component.grid.impl.UIEditDataGrid;
+import org.operamasks.faces.component.grid.impl.UIDataGrid;
+import org.operamasks.faces.component.layout.impl.UIWindow;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-@ManagedBean(scope=ManagedBeanScope.REQUEST)
+@ManagedBean(scope=ManagedBeanScope.SESSION)
 public class InstancesDataViewerBean extends BasicManagedBean {
 	String workflowName4q = null;
 	
 	@ManagedProperty(value="#{CommonWorkflowDAO}")
 	transient CommonWorkflowDAO  commonWorkflowDAO = null;
 	
-	List<ITaskInstance> taskInstanceList = null;
+	@Bind( id = "taskGrid", attribute = "value")
+	private List<ITaskInstance> taskInstanceList;
+	
 	List<IWorkItem> workItemsList = null;
 	
 	List<Object[]> variableList = new ArrayList();
-	
+		
 	@Bind(id = "grid", attribute = "value")
 	private List data ;
 	
 	@Bind(id = "grid")
-	private UIEditDataGrid grid;
+	private UIDataGrid grid;
 	
-	public String getWorkflowName4q() {
-		return workflowName4q;
-	}
-
-	public void setWorkflowName4q(String workflowName4q) {
-		this.workflowName4q = workflowName4q;
-	}
+	@Bind(id = "taskGrid")
+	private UIDataGrid taskGrid;
 	
+	@Bind
+	private UIWindow dialog;
 	
-
-	public CommonWorkflowDAO getCommonWorkflowDAO() {
-		return commonWorkflowDAO;
-	}
-
-	public void setCommonWorkflowDAO(CommonWorkflowDAO commonWorkflowDAO) {
-		this.commonWorkflowDAO = commonWorkflowDAO;
-	}
-
-	
-	public List<ITaskInstance> getTaskInstanceList() {
-		return taskInstanceList;
-	}
-
-	public void setTaskInstanceList(List<ITaskInstance> taskInstanceList) {
-		this.taskInstanceList = taskInstanceList;
-	}
-
-	public List<IWorkItem> getWorkItemsList() {
-		return workItemsList;
-	}
-
-	public void setWorkItemsList(List<IWorkItem> workItemsList) {
-		this.workItemsList = workItemsList;
-	}
-
-	
-
-	public List<Object[]> getVariableList() {
-		return variableList;
-	}
-
-	public void setVariableList(List<Object[]> variableList) {
-		this.variableList = variableList;
-	}
+	/*protected void initObject(){
+		if(this.currentObject != null) return;
+		
+		Object[] os = grid.getSelectedValues();
+		if (os != null && os.length > 0) 
+			this.currentObject = os[0];
+	}*/
 
 	protected String executeBizOperQuery(){
 		Criterion exp1 = Expression.like("name", "%"+this.workflowName4q+"%");
@@ -99,12 +72,14 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	}
 	
 	protected String fireBizDataSelected() {
-		Object[] os = grid.getSelectedValues();
-		if (os == null || os.length <= 0) 
-			return null;
-		super.fireBizDataSelected();
 		
+		Object[] os = grid.getSelectedValues();
+		if (os != null && os.length > 0) 
+			this.currentObject = os[0];
+		if(this.currentObject == null)
+			return null;
 		IProcessInstance processInstance = (IProcessInstance)this.currentObject;
+		this.selectedObjectId = processInstance.getId();
 		
 		Map varMap = processInstance.getProcessInstanceVariables();
 		variableList.clear();
@@ -126,10 +101,26 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			((IExampleTaskInstance)taskInstance).setWorkItems(wis);
 		}
 		
-		this.outcome = "SHOW_DETAIL";
+		this.outcome = "/org/fireflow/workflowmanagement/instances_data_viewer/InstanceDetailsViewer.xhtml";
 		return null;
 	}	
 	
+	/**
+	 * 打开对话框
+	 */
+	@Action
+    public void showDialog() {
+		//this.initObject();
+		fireBizDataSelected();
+		dialog.show();
+		//taskGrid.reload();
+    }
+	
+	/**
+	 * 暂停
+	 * @return
+	 */
+	@Action(id="abort")
 	public String abortProcessInstance(){
 		onSelectBizData();
 		this.transactionTemplate.execute(new TransactionCallback(){
@@ -151,6 +142,11 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 		return this.SELF_VIEW;
 	}
 	
+	/**
+	 * 挂起
+	 * @return
+	 */
+	@Action(id="suspend")
 	public String suspendProcessInstance(){
 		onSelectBizData();
 		this.transactionTemplate.execute(new TransactionCallback(){
@@ -173,6 +169,11 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 		return this.SELF_VIEW;
 	}
 	
+	/**
+	 * 恢复
+	 * @return
+	 */
+	@Action(id="restore")
 	public String restoreProcessInstance(){
 		onSelectBizData();
 		this.transactionTemplate.execute(new TransactionCallback(){
@@ -200,5 +201,12 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			data = commonWorkflowDAO.findProcessInstanceByCriteria(c);
 		}
 		return data;
-	}	
+	}
+
+	public List<ITaskInstance> getTaskInstanceList() {
+		if(taskInstanceList==null)
+			fireBizDataSelected();
+		return taskInstanceList;
+	}
+
 }
