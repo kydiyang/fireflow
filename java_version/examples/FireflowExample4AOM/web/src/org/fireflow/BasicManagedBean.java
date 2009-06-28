@@ -3,13 +3,11 @@ package org.fireflow;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-
-import javax.faces.context.FacesContext;
 
 public class BasicManagedBean extends AbstractManagedBean {
 	protected List bizDataList = null;
 	protected String selectedObjectId = null;
+	
 	protected Object currentObject = null;
 	protected Boolean isCreatOperation = Boolean.FALSE;
 	
@@ -63,8 +61,8 @@ public class BasicManagedBean extends AbstractManagedBean {
 
 	@Override
 	protected String fireBizDataSelected() {
-		Map requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		this.selectedObjectId = (String)requestMap.get("selectedObjectId");
+		//Map requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		//this.selectedObjectId = (String)requestMap.get("selectedObjectId");
 		for (int i=0;bizDataList!=null && i<bizDataList.size();i++){
 			Object obj = bizDataList.get(i);
 			try {
