@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:t="http://myfaces.apache.org/tomahawk"
-	xmlns:jsfext="http://www.fireflow.org/jsfext">
-<ui:composition
-	template="/org/fireflow/mainframe/ContentPaneTemplate.xhtml">
-	<ui:define name="leftPane">
-		<t:saveState value="#{InstancesDataViewerBean.bizDataList}" />
-		<t:saveState value="#{InstancesDataViewerBean.currentObject}" />
-		<t:saveState value="#{InstancesDataViewerBean.taskInstanceList}" />
-		<t:saveState value="#{InstancesDataViewerBean.variableList}" />
-		<h:form>
+<f:view xmlns:f="http://java.sun.com/jsf/core" xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html" xmlns:w="http://www.apusic.com/jsf/widget"
+        xmlns:layout="http://www.apusic.com/jsf/layout" xmlns:om="http://www.apusic.com/jsf/misc"
+        renderKitId="AJAX">
+        <w:head>
+                <w:stylesheet src="/common/resources/examples.css" />
+        </w:head>
+        <om:useBean value="InstancesDataViewerBean"></om:useBean>
+        <w:page>
+        	<w:form>
+        	<h:inputText id="selectedObjectId" value="#{InstancesDataViewerBean. selectedObjectId}" ></h:inputText>
+			<layout:tabLayout height="400">
+      			<layout:panel title="Task实例列表">
+      				<w:dataGrid id="taskGrid"  binding="#{InstancesDataViewerBean.taskGrid }"  value="#{InstancesDataViewerBean.taskInstanceList }" var="taskInst" singleSelect="true" rows="10" paged="true" toolBarPosition="top">
+                        	
+                    	<w:outputColumn header="步骤" id="stepNumber" value="#{taskInst.stepNumber }" />
+                        <w:outputColumn header="名称" id="displayName" />
+                        <w:outputColumn header="状态" id="state" value="#{Utilities.workflowElementInstanceStates[taskInst.state]}" />
+                        <w:outputColumn header="挂起" id="suspended" />
+                        <w:outputColumn header="业务信息" id="bizInfo" />
+                        	
+                	</w:dataGrid>
+      			</layout:panel>
+      			<layout:panel title="流程变量">
 
-
-			<jsfext:panelTabbedPane serverSideTabSwitch="true" width="100%">
-
-				<t:panelTab id="taskInstancesList" label="Task实例列表">
-					<ui:include
-						src="/org/fireflow/workflowmanagement/instances_data_viewer/TaskInstanceListViewer.xhtml" />
-				</t:panelTab>
-
-				<t:panelTab id="processInstanceAndVariable" label="流程变量">
-					<ui:include
-						src="/org/fireflow/workflowmanagement/instances_data_viewer/ProcessInstanceVariableViewer.xhtml" />
-				</t:panelTab>
-
-			</jsfext:panelTabbedPane>
-
-		</h:form>
-	</ui:define>
-</ui:composition>
-</html>
+				</layout:panel>
+    		</layout:tabLayout>
+        	</w:form>
+        	
+        </w:page>
+</f:view>
