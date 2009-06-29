@@ -1,7 +1,6 @@
 package org.fireflow.workflowmanagement.mbeans;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +34,8 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	transient CommonWorkflowDAO  commonWorkflowDAO = null;
 	
 	
-	private List<ITaskInstance> taskInstanceList;
-	
 	@Bind( id = "taskgrid", attribute = "value")
-	private List taskdata;
+	private List<ITaskInstance> taskInstanceList;
 	
 	List<IWorkItem> workItemsList = null;
 	
@@ -56,13 +53,11 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	@Bind
 	private UIWindow dialog;
 	
-	/*protected void initObject(){
-		if(this.currentObject != null) return;
-		
+	protected void onSelectObject(){
 		Object[] os = grid.getSelectedValues();
 		if (os != null && os.length > 0) 
 			this.currentObject = os[0];
-	}*/
+	}
 
 	protected String executeBizOperQuery(){
 		Criterion exp1 = Expression.like("name", "%"+this.workflowName4q+"%");
@@ -116,6 +111,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	public void grid_ondblclick() {
 		fireBizDataSelected();
 		dialog.show();
+		taskgrid.reload();
 	}
 	
 	/**
@@ -124,11 +120,14 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	 */
 	@Action(id="abort")
 	public String abortProcessInstance(){
-		onSelectBizData();
+		onSelectObject();
+		
 		this.transactionTemplate.execute(new TransactionCallback(){
 
 			public Object doInTransaction(TransactionStatus arg0) {
 				IProcessInstance processInstance = (IProcessInstance)currentObject;
+				if(processInstance == null || processInstance.getState() >= 5)
+					return null;
 				try {
 					((IRuntimeContextAware)processInstance).setRuntimeContext(workflowRuntimeContext);
 					processInstance.abort();
@@ -141,6 +140,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			}
 			
 		});
+		grid.reload();
 		return SELF_VIEW;
 	}
 	
@@ -150,11 +150,13 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	 */
 	@Action(id="suspend")
 	public String suspendProcessInstance(){
-		onSelectBizData();
+		onSelectObject();
 		this.transactionTemplate.execute(new TransactionCallback(){
 
 			public Object doInTransaction(TransactionStatus arg0) {
 				IProcessInstance processInstance = (IProcessInstance)currentObject;
+				if(processInstance == null || processInstance.getState() >= 5 || processInstance.isSuspended())
+					return null;
 				try {
 					
 					((IRuntimeContextAware)processInstance).setRuntimeContext(workflowRuntimeContext);
@@ -168,6 +170,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			}
 			
 		});
+		grid.reload();
 		return SELF_VIEW;
 	}
 	
@@ -177,11 +180,13 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	 */
 	@Action(id="restore")
 	public String restoreProcessInstance(){
-		onSelectBizData();
+		onSelectObject();
 		this.transactionTemplate.execute(new TransactionCallback(){
 
 			public Object doInTransaction(TransactionStatus arg0) {
 				IProcessInstance processInstance = (IProcessInstance)currentObject;
+				if(processInstance == null || processInstance.getState() >= 5 || !processInstance.isSuspended())
+					return null;
 				try {
 					((IRuntimeContextAware)processInstance).setRuntimeContext(workflowRuntimeContext);
 					processInstance.restore();
@@ -194,6 +199,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			}
 			
 		});
+		grid.reload();
 		return SELF_VIEW;
 	}
 
@@ -206,28 +212,8 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	}
 
 	public List<ITaskInstance> getTaskInstanceList() {
-		if(taskInstanceList==null)
-			fireBizDataSelected();
+		fireBizDataSelected();
 		return taskInstanceList;
-	}
-
-	public List getTaskdata() {
-		taskdata = new ArrayList();
-		for(ITaskInstance t : this.getTaskInstanceList()){
-			for(int i=0 ;i<5;i++){
-				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("stepNumber", t.getStepNumber());
-				map.put("displayName", t.getDisplayName());
-				map.put("state", t.getState());
-				map.put("suspended", t.getCreatedTime());
-				map.put("bizInfo", t.getEndTime());
-				taskdata.add(map);
-				
-			}
-			
-		}
-		
-		return taskdata;
 	}
 
 }
