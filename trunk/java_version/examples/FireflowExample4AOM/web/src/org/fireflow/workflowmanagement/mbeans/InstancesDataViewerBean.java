@@ -39,6 +39,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	
 	List<IWorkItem> workItemsList = null;
 	
+	@Bind( id = "variablegrid", attribute = "value")
 	List<Object[]> variableList = new ArrayList();
 		
 	@Bind(id = "grid", attribute = "value")
@@ -49,6 +50,9 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	
 	@Bind(id = "taskgrid")
 	private UIDataGrid taskgrid;
+	
+	@Bind(id = "variablegrid")
+	private UIDataGrid variablegrid;
 	
 	@Bind
 	private UIWindow dialog;
@@ -112,6 +116,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 		fireBizDataSelected();
 		dialog.show();
 		taskgrid.reload();
+		variablegrid.reload();
 	}
 	
 	/**
@@ -214,6 +219,10 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	public List<ITaskInstance> getTaskInstanceList() {
 		fireBizDataSelected();
 		return taskInstanceList;
+	}
+
+	public List<Object[]> getVariableList() {
+		return variableList;
 	}
 
 }
