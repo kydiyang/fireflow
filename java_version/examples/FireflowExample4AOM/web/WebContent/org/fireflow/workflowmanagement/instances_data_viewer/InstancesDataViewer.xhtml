@@ -34,7 +34,7 @@
                             </w:pagingToolbar>
                             
                         </w:dataGrid>
-                        </w:form>
+                </w:form>
                 	<layout:window id="dialog" width="800" height="300" modal="true" autoScroll="true"
                         style="padding: 5px;" collapsible="false" resizable="false" title="实例信息">
                         <w:dataGrid id="taskgrid"  var="taskInst" singleSelect="true" rows="10" paged="true" toolBarPosition="top">
@@ -44,7 +44,7 @@
 		                        <w:outputColumn header="挂起" id="suspended" />
 		                        <w:outputColumn header="业务信息" id="bizInfo" />
 		                </w:dataGrid>
-                        <w:dataGrid id="variablegrid" var="variable" singleSelect="true" rows="10" paged="true">
+                         <w:dataGrid id="variablegrid" var="variable" singleSelect="true" rows="10" paged="true" toolBarPosition="top">
 		                    <w:outputColumn header="变量名" value="#{variable[0]}"/>
 		                    <w:outputColumn header="变量值" value="#{variable[1]}" />
 		                </w:dataGrid>
