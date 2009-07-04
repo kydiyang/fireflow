@@ -19,7 +19,6 @@ import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.annotation.ManagedProperty;
-import org.operamasks.faces.annotation.Required;
 import org.operamasks.faces.annotation.SelectItems;
 import org.operamasks.faces.component.form.impl.UICombo;
 
@@ -66,38 +65,24 @@ public class PaymentBean extends BasicManagedBean{
 	TradeInfoDAO tradeInfoDao = null;
 	
 
-	@Bind
-	private String sn;
 	
-	@Bind
-	private String goodsName;
-
-	@Bind
-	private int unitPrice;
-	
-	@Bind
+	/*@Bind
 	@Required(message = "数量不能为空")
-	private int quantity = 0;
-	
-	@Bind
-	private int amount;
-	
+	int quantity;
+
 	@Bind
 	@Required(message = "客户名称不能为空")
-	private String customerName = "";
+	String customerName = "";*/
 
-	@Bind
-	private String customerMobile;
-
-	@Bind
-	private String customerPhoneFax;
+	
 	
 	@Bind(id = "goodsName")
-	private UICombo goods_comboBox;
+	UICombo goods_comboBox;
 
 	@Action(immediate = true)
 	private void goodsName_onselect() {
-		goodsName = goods_comboBox.getSubmittedValue().toString();
+		String goodsName = goods_comboBox.getSubmittedValue().toString();
+		int unitPrice=1399;
 		if ("TCL 电视机".equals(goodsName)){
 			unitPrice=1399;
 		}else if ("长虹 电视机".equals(goodsName)){
@@ -109,11 +94,12 @@ public class PaymentBean extends BasicManagedBean{
 		}else{
 			unitPrice=1620;
 		}
+		paymentInfo.setUnitPrice(unitPrice);
 	}
 
-	@Action
+	@Action(immediate = true)
 	private void quantity_onchange(){
-		amount = quantity * unitPrice;
+		paymentInfo.setAmount(paymentInfo.getQuantity()*paymentInfo.getUnitPrice());
 	}
 	
 	@Bind
@@ -123,14 +109,14 @@ public class PaymentBean extends BasicManagedBean{
 	private void save() {
 		User currentUser = SecurityUtilities.getCurrentUser();
 		
-		//TODOL设置数据，暂不清楚如何与对象关联，先用此方法代替
-		paymentInfo.setGoodsName(goodsName);
+		//TODO:设置数据，暂不清楚如何与对象关联，先用此方法代替
+		/*paymentInfo.setGoodsName(goodsName);
 		paymentInfo.setUnitPrice((double)unitPrice);	
 		paymentInfo.setQuantity((long)quantity);
 		paymentInfo.setAmount((double)amount);
 		paymentInfo.setCustomerName(customerName);
 		paymentInfo.setCustomerMobile(customerMobile);
-		paymentInfo.setCustomerPhoneFax(customerPhoneFax);
+		paymentInfo.setCustomerPhoneFax(customerPhoneFax);*/
 		
 		// 一、执行业务业务操作，保存业务数据
 		tradeInfoDao.save(paymentInfo);

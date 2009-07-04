@@ -17,9 +17,9 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 	private String sn;
 	private String goodsName;
 	private String goodsType;
-	private Long quantity;
-	private Double unitPrice;
-	private Double amount;
+	private int quantity;
+	private int unitPrice;
+	private int amount;
 	private String customerName;
 	private String customerMobile;
 	private String customerPhoneFax;
@@ -36,7 +36,7 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 
 	/** full constructor */
 	public AbstractTradeInfo(String sn, String goodsName, String goodsType,
-			Long quantity, Double unitPrice, Double amount,
+			int quantity, int unitPrice, int amount,
 			String customerName, String customerMobile,
 			String customerPhoneFax, String customerAddress, String state,
 			Date payedTime, Date deliveredTime) {
@@ -88,30 +88,8 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 	public void setGoodsType(String goodsType) {
 		this.goodsType = goodsType;
 	}
+	
 
-	public Long getQuantity() {
-		return this.quantity;
-	}
-
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
-
-	public Double getUnitPrice() {
-		return this.unitPrice;
-	}
-
-	public void setUnitPrice(Double unitPrice) {
-		this.unitPrice = unitPrice;
-	}
-
-	public Double getAmount() {
-		return this.amount;
-	}
-
-	public void setAmount(Double amount) {
-		this.amount = amount;
-	}
 
 	public String getCustomerName() {
 		return this.customerName;
@@ -167,6 +145,30 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 
 	public void setDeliveredTime(Date deliveredTime) {
 		this.deliveredTime = deliveredTime;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public int getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(int unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
 	}
 
 }

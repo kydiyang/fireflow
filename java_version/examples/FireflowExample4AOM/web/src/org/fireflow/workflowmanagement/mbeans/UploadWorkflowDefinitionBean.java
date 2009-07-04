@@ -1,14 +1,24 @@
 package org.fireflow.workflowmanagement.mbeans;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.fireflow.BasicManagedBean;
+import org.fireflow.engine.definition.WorkflowDefinition;
+import org.fireflow.engine.persistence.IPersistenceService;
+import org.fireflow.model.WorkflowProcess;
+import org.fireflow.model.io.Dom4JFPDLParser;
+import org.fireflow.model.io.FPDLParserException;
+import org.fireflow.security.util.SecurityUtilities;
 import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
 import org.operamasks.faces.component.widget.UIFileUpload;
 import org.operamasks.faces.component.widget.fileupload.FileUploadItem;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @ManagedBean(name="UploadWorkflowDefinitionBean", scope=ManagedBeanScope.REQUEST)
 public class UploadWorkflowDefinitionBean extends BasicManagedBean {
@@ -19,51 +29,65 @@ public class UploadWorkflowDefinitionBean extends BasicManagedBean {
 	@Bind
 	private Boolean published = Boolean.TRUE;
 
-	public void processUpload(FileUploadItem fileUploadItem) {
-		InputStream processbyte;
-		String errMsg = null;
-		System.out.println("--------------------------------------");
-		/*try {
-			processbyte = fileUploadItem.openStream();
+	public void processUpload(final FileUploadItem fileUploadItem) {
+		
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-			Dom4JFPDLParser parser = new Dom4JFPDLParser();
+			public void doInTransactionWithoutResult(
+					TransactionStatus transactionStatus) {
+				InputStream processbyte;
+				String errMsg = null;
+				try {
+					processbyte = fileUploadItem.openStream();
 
-			WorkflowProcess process = parser.parse(processbyte);
+					Dom4JFPDLParser parser = new Dom4JFPDLParser();
 
-			WorkflowDefinition workflowdef = new WorkflowDefinition();
+					WorkflowProcess process = parser.parse(processbyte);
 
-			workflowdef.setWorkflowProcess(process);
-			workflowdef.setState(published);
+					WorkflowDefinition workflowdef = new WorkflowDefinition();
 
-			workflowdef.setUploadUser(SecurityUtilities.getCurrentUser()
-					.getName());
-			workflowdef.setUploadTime(workflowRuntimeContext
-					.getCalendarService().getSysDate());
+					workflowdef.setWorkflowProcess(process);
+					workflowdef.setState(published);
 
-			if (published) {
-				workflowdef.setPublishUser(SecurityUtilities.getCurrentUser()
-						.getName());
-				workflowdef.setPublishTime(workflowRuntimeContext
-						.getCalendarService().getSysDate());
+					workflowdef.setUploadUser(SecurityUtilities.getCurrentUser()
+							.getName());
+					workflowdef.setUploadTime(workflowRuntimeContext
+							.getCalendarService().getSysDate());
+
+					if (published) {
+						workflowdef.setPublishUser(SecurityUtilities.getCurrentUser()
+								.getName());
+						workflowdef.setPublishTime(workflowRuntimeContext
+								.getCalendarService().getSysDate());
+					}
+					IPersistenceService persistenceService = workflowRuntimeContext
+							.getPersistenceService();
+					persistenceService.saveOrUpdateWorkflowDefinition(workflowdef);
+				} catch (UnsupportedEncodingException e) {
+					errMsg = e.getMessage();
+					e.printStackTrace();
+				} catch (IOException e) {
+					errMsg = e.getMessage();
+					e.printStackTrace();
+				} catch (FPDLParserException e) {
+					errMsg = e.getMessage();
+					e.printStackTrace();
+				}
+				if (errMsg != null && !errMsg.trim().equals("")) {
+					addErrorMessage("", errMsg);
+					transactionStatus.setRollbackOnly();
+					return;
+				}
 			}
-			IPersistenceService persistenceService = this.workflowRuntimeContext
-					.getPersistenceService();
-			persistenceService.saveOrUpdateWorkflowDefinition(workflowdef);
-		} catch (UnsupportedEncodingException e) {
-			errMsg = e.getMessage();
-			e.printStackTrace();
-		} catch (IOException e) {
-			errMsg = e.getMessage();
-			e.printStackTrace();
-		} catch (FPDLParserException e) {
-			errMsg = e.getMessage();
-			e.printStackTrace();
-		}*/
+		});
+		
+		
+		
+		
 	}
 
 	@Action
 	public void save(){
-		System.out.println("==========================================");
 		
 	}
 
