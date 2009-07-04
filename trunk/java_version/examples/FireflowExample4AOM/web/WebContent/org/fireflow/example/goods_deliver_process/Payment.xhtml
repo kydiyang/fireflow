@@ -2,17 +2,14 @@
 	xmlns:w="http://www.apusic.com/jsf/widget" xmlns:layout="http://www.apusic.com/jsf/layout"
 	xmlns:h="http://java.sun.com/jsf/html" renderKitId="AJAX">
 	<w:head>
-		<w:stylesheet src="/common/resources/examples.css" />
-		<style>
-label {
-	font-size: 13px;
-}
-</style>
+		
+	<style>
+	label {
+		font-size: 13px;
+	}
+	</style>
 	</w:head>
 	<w:page>
-		<div class="examDesc">
-		<p>收银</p>
-		</div>
 		<w:form>
 			<h3>个人详细信息：</h3>
 			<layout:panelGrid columns="2" cellspacing="5">
@@ -22,31 +19,31 @@ label {
 				<w:textField id="sn" value="#{PaymentBean.paymentInfo.sn }" width="330" readOnly="true" />
 
 				<h:outputLabel value="货品名称："></h:outputLabel>
-				<w:combo id="goodsName" width="164" value="TCL 电视机" >
+				<w:combo id="goodsName"  width="164" value="#{PaymentBean.paymentInfo.goodsName }" >
 					<f:selectItems id="goods" />
 				</w:combo>
 				
 				<h:outputLabel value="单价："></h:outputLabel>
-				<w:numberField id="unitPrice" value="1399" readOnly="true" width="330" />
+				<w:numberField id="unitPrice" value="#{PaymentBean.paymentInfo.unitPrice }"  width="330" />
 				
 				<layout:cell colspan="1" rowspan="1">
 					<label> 数量：<span style="color: red;">*</span></label>
 				</layout:cell>
-				<w:numberField id="quantity" width="330" />
+				<w:numberField required="true" requiredMessage="数量不能为空" id="quantity" value="#{PaymentBean.paymentInfo.quantity }"  width="330" />
 				
 				<h:outputLabel value="总价："></h:outputLabel>
-				<w:numberField id="amount" width="330" readOnly="true" />
+				<w:numberField id="amount" value="#{PaymentBean.paymentInfo.amount }" width="330"  />
 
 				<layout:cell colspan="1" rowspan="1">
 					<label> 客户姓名：<span style="color: red;">*</span></label>
 				</layout:cell>
-				<w:textField id="customerName" width="330" />
+				<w:textField  required="true" requiredMessage="客户姓名不能为空"  id="customerName" value="#{PaymentBean.paymentInfo.customerName }" width="330" />
 				
 				<h:outputLabel value="手机："></h:outputLabel>
-				<w:textField id="customerMobile" width="330" />
+				<w:textField id="customerMobile" value="#{PaymentBean.paymentInfo.customerMobile }" width="330" />
 				
 				<h:outputLabel value="电话/传真:"></h:outputLabel>
-				<w:textField id="customerPhoneFax" width="330" />
+				<w:textField id="customerPhoneFax" value="#{PaymentBean.paymentInfo.customerPhoneFax }" width="330" />
 				
 			</layout:panelGrid>
 			<w:button id="save" value="保存" width="100" />
