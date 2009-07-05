@@ -17,9 +17,9 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 	private String sn;
 	private String goodsName;
 	private String goodsType;
-	private int quantity;
-	private int unitPrice;
-	private int amount;
+	private long quantity;
+	private double unitPrice;
+	private double amount;
 	private String customerName;
 	private String customerMobile;
 	private String customerPhoneFax;
@@ -36,7 +36,7 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 
 	/** full constructor */
 	public AbstractTradeInfo(String sn, String goodsName, String goodsType,
-			int quantity, int unitPrice, int amount,
+			long quantity, double unitPrice, double amount,
 			String customerName, String customerMobile,
 			String customerPhoneFax, String customerAddress, String state,
 			Date payedTime, Date deliveredTime) {
@@ -147,27 +147,27 @@ public abstract class AbstractTradeInfo implements java.io.Serializable {
 		this.deliveredTime = deliveredTime;
 	}
 
-	public int getQuantity() {
+	public long getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(long quantity) {
 		this.quantity = quantity;
 	}
 
-	public int getUnitPrice() {
+	public double getUnitPrice() {
 		return unitPrice;
 	}
 
-	public void setUnitPrice(int unitPrice) {
+	public void setUnitPrice(double unitPrice) {
 		this.unitPrice = unitPrice;
 	}
 
-	public int getAmount() {
+	public double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(int amount) {
+	public void setAmount(double amount) {
 		this.amount = amount;
 	}
 
