@@ -22,7 +22,7 @@ import org.operamasks.faces.annotation.Action;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
-import org.operamasks.faces.component.grid.impl.UIEditDataGrid;
+import org.operamasks.faces.component.grid.impl.UIDataGrid;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -80,7 +80,7 @@ public class WorkItemListBean extends BasicManagedBean {
 			});;
 
 	@Bind(id = "grid")
-	private UIEditDataGrid grid;
+	private UIDataGrid grid;
 
 	/**
 	 * 签收
