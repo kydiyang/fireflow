@@ -13,44 +13,17 @@
                 <br />
                 <w:form style="width:80%;height:80%">
                         <w:editDataGrid id="grid" paged="true" var="definitionInfo" singleSelect="true" rows="10" toolBarPosition="top">
-                        	<w:gridHeader>
-                        		<w:gridHeaderCell label="流程Id" />
-                        		<w:gridHeaderCell label="流程名称" />
-                        		<w:gridHeaderCell label="中文名称" />
-                        		<w:gridHeaderCell label="版本号" />
-                        		<w:gridHeaderCell label="上载人" />
-                        		<w:gridHeaderCell label="上载时间" />
-                        		<w:gridHeaderCell label="发布人" />
-                        		<w:gridHeaderCell label="发布时间" />
-                        		<w:gridHeaderCell label="发布状态" />
-                        	</w:gridHeader>
-                        	<w:outputColumn id="processId" >
-                        		<w:textField id="processIdEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="name" >
-                        		<w:textField id="nameEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="displayName" >
-                        		<w:textField id="displayNameEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="version" >
-                        		<w:textField id="versionEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="uploadUser" >
-                        		<w:textField id="uploadUserNameEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="uploadTime" >
-                        		<w:textField id="uploadTimeEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="publishUser" >
-                        		<w:textField id="publishUserEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="publishTime" >
-                        		<w:textField id="publishTimeEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="state" value="#{definitionInfo.state==true?'已生效':'未生效'}" >
-                        		<w:textField id="stateEdit" allowBlank="false" />
-                        	</w:outputColumn>
+                        	
+                        	<w:outputColumn header="流程Id" id="processId" />
+                        	<w:outputColumn header="流程名称" id="name" />
+                        	<w:outputColumn header="中文名称" id="displayName" />
+                        	<w:outputColumn header="版本号" id="version" />
+                        	<w:outputColumn header="上载人" id="uploadUser" />
+                        	<w:outputColumn header="上载时间" id="uploadTime" />
+                        	<w:outputColumn header="发布人" id="publishUser" />
+                        	<w:outputColumn header="发布时间" id="publishTime" />
+                        	<w:outputColumn header="发布状态" id="state" value="#{definitionInfo.state==true?'已生效':'未生效'}" />
+                        	
                         </w:editDataGrid>
                 </w:form>
         </w:page>
