@@ -19,7 +19,7 @@ import org.fireflow.security.persistence.User;
 import org.operamasks.faces.annotation.Bind;
 import org.operamasks.faces.annotation.ManagedBean;
 import org.operamasks.faces.annotation.ManagedBeanScope;
-import org.operamasks.faces.component.grid.impl.UIEditDataGrid;
+import org.operamasks.faces.component.grid.impl.UIDataGrid;
 import org.springframework.security.context.SecurityContextHolder;
 
 @ManagedBean(scope = ManagedBeanScope.REQUEST)
@@ -31,7 +31,7 @@ public class MyHaveDoneWorkItemBean extends BasicManagedBean {
 	private List data = (List) this.doQueryMyHaveDoneWorkItems();
 
 	@Bind(id = "grid")
-	private UIEditDataGrid grid;
+	private UIDataGrid grid;
 
 	private List doQueryMyHaveDoneWorkItems() {
 		IWorkflowSession wflsession = workflowRuntimeContext
