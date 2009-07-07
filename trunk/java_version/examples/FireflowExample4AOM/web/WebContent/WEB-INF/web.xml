@@ -44,7 +44,9 @@
 			/WEB-INF/classes/config/applicationContext.xml
 		</param-value>
 	</context-param>
+	
 	<!-- HsqlDB Start -->
+	
 	<context-param>
 		<param-name>dbpath</param-name>
 		<param-value>/db/</param-value>
@@ -57,9 +59,11 @@
 		<param-name>port</param-name>
 		<param-value>9001</param-value>
 	</context-param>
+	
 	<listener>
 		<listener-class>org.fireflow.util.HsqlListener</listener-class>
 	</listener>
+	
 	<!-- HsqlDB End -->
 	<listener>
 		<listener-class>
