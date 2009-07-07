@@ -40,21 +40,7 @@ public class RejectInfoBean extends BasicManagedBean {
 		
 		return loanInfo;
 	}
-//	public void setLoanInfo(LoanInfo loanInfo) {
-//		this.loanInfo = loanInfo;
-//	}
-//	public LoanInfoDAO getLoanInfoDAO() {
-//		return loanInfoDAO;
-//	}
-//	public void setLoanInfoDAO(LoanInfoDAO loanInfoDAO) {
-//		this.loanInfoDAO = loanInfoDAO;
-//	}
-//	public String getCurrentSn() {
-//		return currentSn;
-//	}
-//	public void setCurrentSn(String currentSn) {
-//		this.currentSn = currentSn;
-//	}
+
 	
 	/**
 	 * 保存拒绝贷款环节录入的信息
