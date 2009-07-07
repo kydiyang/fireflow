@@ -55,6 +55,9 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	@Bind(id = "variablegrid")
 	private UIDataGrid variablegrid;
 	
+	@Bind(id = "workitemgrid")
+	private UIDataGrid workitemgrid;
+	
 	@Bind
 	private UIWindow dialog;
 	
@@ -118,6 +121,17 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 		dialog.show();
 		taskgrid.reload();
 		variablegrid.reload();
+	}
+	
+	@Action
+	public void taskgrid_ondblclick() {
+		Object[] os = taskgrid.getSelectedValues();
+		if (os != null && os.length > 0) {
+			IExampleTaskInstance taskInstance = (IExampleTaskInstance)os[0];
+			this.workItemsList = taskInstance.getWorkItems();
+		}
+			
+		workitemgrid.reload();
 	}
 	
 	/**
@@ -224,6 +238,10 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 
 	public List<Object[]> getVariableList() {
 		return variableList;
+	}
+
+	public List<IWorkItem> getWorkItemsList() {
+		return workItemsList;
 	}
 
 }
