@@ -12,7 +12,7 @@
                 </div>
                 <br />
                 <w:form style="width:80%;height:80%">
-                        <w:editDataGrid id="grid" paged="true" var="definitionInfo" singleSelect="true" rows="10" toolBarPosition="top">
+                        <w:dataGrid id="grid" paged="true" var="definitionInfo" singleSelect="true" rows="10" toolBarPosition="top">
                         	
                         	<w:outputColumn header="流程Id" id="processId" />
                         	<w:outputColumn header="流程名称" id="name" />
@@ -24,7 +24,7 @@
                         	<w:outputColumn header="发布时间" id="publishTime" />
                         	<w:outputColumn header="发布状态" id="state" value="#{definitionInfo.state==true?'已生效':'未生效'}" />
                         	
-                        </w:editDataGrid>
+                        </w:dataGrid>
                 </w:form>
         </w:page>
 </f:view>
