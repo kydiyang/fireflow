@@ -12,33 +12,13 @@
                 </div>
                 <br />
                 <w:form style="width:80%;height:80%">
-                        <w:editDataGrid id="grid" paged="true" singleSelect="true" rows="10" toolBarPosition="top">
-                        	<w:gridHeader>
-                        		<w:gridHeaderCell label="工单名称" />
-                        		<w:gridHeaderCell label="订单号" />
-                        		<w:gridHeaderCell label="商品名称" />
-                        		<w:gridHeaderCell label="数量" />
-                        		<w:gridHeaderCell label="客户姓名" />
-                        		<w:gridHeaderCell label="状态" />
-                        	</w:gridHeader>
-                        	<w:outputColumn id="displayName" >
-                        		<w:textField id="nameEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="sn" >
-                        		<w:textField id="snEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="goodsName" >
-                        		<w:textField id="goodsNameEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="quantity" >
-                        		<w:textField id="quantityEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="customerName" >
-                        		<w:textField id="customerNameEdit" allowBlank="false" />
-                        	</w:outputColumn>
-                        	<w:outputColumn id="state" >
-                        		<w:textField id="stateEdit" allowBlank="false" />
-                        	</w:outputColumn>
+                        <w:dataGrid id="grid" paged="true" singleSelect="true" rows="10" toolBarPosition="top">
+                        	<w:outputColumn header="工单名称" id="displayName" />
+                        	<w:outputColumn header="订单号" id="sn" />
+                        	<w:outputColumn header="商品名称" id="goodsName" />
+                        	<w:outputColumn header="数量" id="quantity" />
+                        	<w:outputColumn header="客户姓名" id="customerName" />
+                        	<w:outputColumn header="状态" id="state" />
                         	<w:outputColumn id="id" hidden="true" />
                                 <w:pagingToolbar>
                                         <w:separator />
@@ -46,7 +26,7 @@
                                         <w:button id="open" value="处理" image="../images/save.gif"  action="#{WorkItemListBean.open}" />
                                 </w:pagingToolbar>
                                 
-                        </w:editDataGrid>
+                        </w:dataGrid>
                 </w:form>
         </w:page>
 </f:view>
