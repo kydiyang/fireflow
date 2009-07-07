@@ -37,6 +37,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	@Bind( id = "taskgrid", attribute = "value")
 	private List<ITaskInstance> taskInstanceList;
 	
+	@Bind( id = "workitemgrid", attribute = "value")
 	List<IWorkItem> workItemsList = null;
 	
 	@Bind( id = "variablegrid", attribute = "value")
