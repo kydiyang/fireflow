@@ -209,7 +209,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 	}
 
 	public List getData() {
-		if(data == null){
+		if(data == null || data.size()==0){
 			Criterion c = Expression.sql("1=1");
 			data = commonWorkflowDAO.findProcessInstanceByCriteria(c);
 		}
