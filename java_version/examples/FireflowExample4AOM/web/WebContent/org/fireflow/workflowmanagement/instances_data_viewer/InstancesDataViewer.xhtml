@@ -44,6 +44,12 @@
 		                        <w:outputColumn header="挂起" id="suspended" />
 		                        <w:outputColumn header="业务信息" id="bizInfo" />
 		                </w:dataGrid>
+                         <w:dataGrid id="workitemgrid" var="workitem" autoHeight="true" singleSelect="true" rows="10" paged="true" toolBarPosition="top">
+		                    <w:outputColumn header="操作者" id="actorId" />
+		                    <w:outputColumn header="状态" value="#{Utilities.workflowElementInstanceStates[workitem.state]}"/>
+		                    <w:outputColumn header="创建时间" id="createdTime" />
+		                    <w:outputColumn header="完成时间" id="endTime" />
+		                </w:dataGrid>
                          <w:dataGrid id="variablegrid" var="variable" autoHeight="true" singleSelect="true" rows="10" paged="true" toolBarPosition="top">
 		                    <w:outputColumn header="变量名" value="#{variable[0]}"/>
 		                    <w:outputColumn header="变量值" value="#{variable[1]}" />
