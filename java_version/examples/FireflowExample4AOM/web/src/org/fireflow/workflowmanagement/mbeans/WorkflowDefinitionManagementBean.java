@@ -16,6 +16,8 @@ public class WorkflowDefinitionManagementBean extends BasicManagedBean {
 	String workflowName4q = null;
 	Integer version4q = null;
 	
+	protected List bizDataList = null;
+	
 	@ManagedProperty(value="#{CommonWorkflowDAO}")
 	CommonWorkflowDAO commonWorkflowDAO;
 	

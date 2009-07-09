@@ -159,7 +159,7 @@ public class WorkItemListBean extends BasicManagedBean {
 				}
 			} catch (EngineException e) {
 				e.printStackTrace();
-				return this.outcome;
+				return SELF_VIEW;
 			}
 		}
 		return null;

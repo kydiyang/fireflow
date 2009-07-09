@@ -1,6 +1,5 @@
 package org.fireflow.security.mbeans;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.fireflow.BasicManagedBean;
@@ -15,6 +14,7 @@ public class UserManagementBean extends BasicManagedBean{
 
 	UserDAO userDAO = null;
 	
+	List bizDataList = null;
 
 
 	public String getDepartmentCode4Query() {
@@ -54,8 +54,8 @@ public class UserManagementBean extends BasicManagedBean{
 		return null;
 	}
 	protected String fireBizDataSelected() {
-		super.fireBizDataSelected();
-		this.outcome="UserEditPanel";
+		//super.fireBizDataSelected();
+		//this.outcome="UserEditPanel";
 		return null;
 	}
 }
