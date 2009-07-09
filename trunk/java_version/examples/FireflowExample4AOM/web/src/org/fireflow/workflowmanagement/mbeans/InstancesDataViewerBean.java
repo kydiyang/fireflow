@@ -30,9 +30,13 @@ import org.springframework.transaction.support.TransactionCallback;
 public class InstancesDataViewerBean extends BasicManagedBean {
 	String workflowName4q = null;
 	
+	protected List bizDataList = null;
+	protected String selectedObjectId = null;
+	
 	@ManagedProperty(value="#{CommonWorkflowDAO}")
 	transient CommonWorkflowDAO  commonWorkflowDAO = null;
 	
+	protected Object currentObject = null;
 	
 	@Bind( id = "taskgrid", attribute = "value")
 	private List<ITaskInstance> taskInstanceList;
@@ -108,7 +112,7 @@ public class InstancesDataViewerBean extends BasicManagedBean {
 			((IExampleTaskInstance)taskInstance).setWorkItems(wis);
 		}
 		
-		this.outcome = "/org/fireflow/workflowmanagement/instances_data_viewer/InstanceDetailsViewer.xhtml";
+		//this.outcome = "/org/fireflow/workflowmanagement/instances_data_viewer/InstanceDetailsViewer.xhtml";
 		return null;
 	}	
 	
