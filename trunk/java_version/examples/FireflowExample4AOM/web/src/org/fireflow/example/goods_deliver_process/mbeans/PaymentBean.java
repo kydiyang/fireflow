@@ -64,18 +64,6 @@ public class PaymentBean extends BasicManagedBean{
 	@ManagedProperty("#{TradeInfoDAO}")
 	TradeInfoDAO tradeInfoDao = null;
 	
-
-	
-	/*@Bind
-	@Required(message = "数量不能为空")
-	int quantity;
-
-	@Bind
-	@Required(message = "客户名称不能为空")
-	String customerName = "";*/
-
-	
-	
 	@Bind(id = "goodsName")
 	UICombo goods_comboBox;
 
