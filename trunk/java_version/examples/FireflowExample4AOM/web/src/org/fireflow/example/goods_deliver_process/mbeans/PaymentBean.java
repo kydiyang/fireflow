@@ -109,15 +109,6 @@ public class PaymentBean extends BasicManagedBean{
 	private void save() {
 		User currentUser = SecurityUtilities.getCurrentUser();
 		
-		//TODO:设置数据，暂不清楚如何与对象关联，先用此方法代替
-		/*paymentInfo.setGoodsName(goodsName);
-		paymentInfo.setUnitPrice((double)unitPrice);	
-		paymentInfo.setQuantity((long)quantity);
-		paymentInfo.setAmount((double)amount);
-		paymentInfo.setCustomerName(customerName);
-		paymentInfo.setCustomerMobile(customerMobile);
-		paymentInfo.setCustomerPhoneFax(customerPhoneFax);*/
-		
 		// 一、执行业务业务操作，保存业务数据
 		tradeInfoDao.save(paymentInfo);
 
