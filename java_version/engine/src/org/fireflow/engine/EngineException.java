@@ -26,10 +26,23 @@ import org.fireflow.model.WorkflowProcess;
  */
 public class EngineException extends KernelException {
 
+	/**
+	 * 
+	 * @param processInstance 发生异常的流程实例
+	 * @param workflowElement 发生异常的流程环节或者Task
+	 * @param errMsg 错误信息
+	 */
     public EngineException(IProcessInstance processInstance,IWFElement workflowElement,String errMsg){
         super(processInstance,workflowElement,errMsg);
     }
 
+    /**
+     * 
+     * @param processInstanceId 发生异常的流程实例Id
+     * @param process 发生异常的流程
+     * @param workflowElementId 发生异常的环节或者Task的Id
+     * @param errMsg 错误信息
+     */
     public EngineException(String processInstanceId, WorkflowProcess process,
             String workflowElementId, String errMsg) {
         super(null, null, errMsg);

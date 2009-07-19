@@ -15,6 +15,7 @@ public class WorkflowDefinitionInfo {
     protected Date uploadTime;//上载到数据库的时间
     protected String publishUser;//发布人
     protected Date publishTime;//发布时间
+    protected String definitionType;//定义文件的语言类型，fpdl,xpdl,bepl...
     
     public String getDisplayName() {
         return displayName;
@@ -101,6 +102,14 @@ public class WorkflowDefinitionInfo {
 
 	public void setUploadTime(Date uploadTime) {
 		this.uploadTime = uploadTime;
+	}
+
+	public String getDefinitionType() {
+		return definitionType;
+	}
+
+	public void setDefinitionType(String definitionType) {
+		this.definitionType = definitionType;
 	}
 
     

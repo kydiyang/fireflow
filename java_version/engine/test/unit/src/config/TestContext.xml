@@ -66,6 +66,9 @@
                 <value>
 					org/fireflow/engine/persistence/hibernate/WorkflowDefinition.hbm.xml
                 </value>
+                <value>
+					org/fireflow/engine/persistence/hibernate/WorkflowDefinitionInfo.hbm.xml
+                </value>                
             </list>
         </property>
     </bean>

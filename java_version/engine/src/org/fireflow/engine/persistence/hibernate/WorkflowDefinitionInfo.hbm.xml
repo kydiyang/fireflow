@@ -2,19 +2,18 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class dynamic-update="true"
-		name="org.fireflow.engine.definition.WorkflowDefinition" table="T_FF_DF_WORKFLOWDEF" polymorphism="explicit">
+		name="org.fireflow.engine.definition.WorkflowDefinitionInfo" table="T_FF_DF_WORKFLOWDEF">
 		<id name="id" type="java.lang.String">
 			<column length="50" name="ID" />
 			<generator class="uuid.hex">
 			</generator>
 		</id>
-
 		<property name="processId" type="java.lang.String">
 			<column length="100" name="PROCESS_ID" not-null="true" />
 		</property>
 		<property name="definitionType" type="java.lang.String">
 			<column length="100" name="DEFINITION_TYPE" not-null="true" />
-		</property>		
+		</property>				
 		<property name="name" type="java.lang.String">
 			<column length="100" name="NAME" not-null="true" />
 		</property>
@@ -42,11 +41,5 @@
 		<property name="publishTime" type="java.util.Date">
 			<column name="PUBLISH_TIME" />
 		</property>
-
-			<property name="processContent"
-				type="org.springframework.orm.hibernate3.support.ClobStringType">
-				<column name="PROCESS_CONTENT" />
-			</property>
-
 	</class>
 </hibernate-mapping>

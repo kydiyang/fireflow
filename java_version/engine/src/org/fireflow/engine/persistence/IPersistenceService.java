@@ -54,6 +54,9 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public void saveOrUpdateProcessInstance(IProcessInstance processInstance);
     
+//    public void saveProcessInstance(IProcessInstance processInstance);
+//    
+//    public void updateProcessInstance(IProcessInstance processInstance);
 
     /**
      * 通过ID获得“活的”ProcessInstance对象。<br>

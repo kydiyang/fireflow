@@ -4,7 +4,7 @@
     <property name="src.dir" location="${basedir}/src" />
     <property name="build.dir" location="${basedir}/bin" />
     <property name="lib.dir" location="${basedir}/libs" />
-
+	<property name="dbscript.dir" location="${basedir}/dbscript" />
 
     <path  id="hibernate.schemaexport.classpath">
         <path   >
@@ -29,7 +29,7 @@
         text="yes"
         drop="no"
         delimiter=";"
-        output="${src.dir}/org/fireflow/engine/persistence/hibernate/schema-export-4-mysql.sql">
+        output="${dbscript.dir}/schema-export-4-mysql.sql">
             <!--fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset-->
@@ -49,7 +49,7 @@
         text="yes"
         drop="no"
         delimiter=";"
-        output="${src.dir}/org/fireflow/engine/persistence/hibernate/schema-export-4-oracle.sql">
+        output="${dbscript.dir}/schema-export-4-oracle.sql">
             <!--fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset-->
@@ -69,7 +69,7 @@
         text="yes"
         drop="no"
         delimiter=";"
-        output="${src.dir}/org/fireflow/engine/persistence/hibernate/schema-export-4-hsqldb.sql">
+        output="${dbscript.dir}/schema-export-4-hsqldb.sql">
             <!--fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset-->
@@ -89,7 +89,7 @@
         text="yes"
         drop="no"
         delimiter=";"
-        output="${src.dir}/org/fireflow/engine/persistence/hibernate/schema-export-4-sqlserver.sql">
+        output="${dbscript.dir}/schema-export-4-sqlserver.sql">
             <!--fileset dir="${build.dir}">
                         <include name="**/*.hbm.xml"/>
             </fileset-->

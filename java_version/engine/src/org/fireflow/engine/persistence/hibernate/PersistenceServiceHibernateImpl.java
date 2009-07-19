@@ -69,8 +69,11 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
      * @param processInstance
      */
     public void saveOrUpdateProcessInstance(IProcessInstance processInstance) {
+    	
         this.getHibernateTemplate().saveOrUpdate(processInstance);
     }
+    
+
 
     /**
      * Save joinpoint
