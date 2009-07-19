@@ -103,6 +103,7 @@ public interface IWorkflowSession {
 			String creatorId) throws EngineException, KernelException;
 
 	
+	
     /**
      * 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
      * @param processInstanceId
@@ -231,13 +232,12 @@ public interface IWorkflowSession {
      * 签收操作，也必然有一个人签收失败。系统对这种竞争性操作进行了同步。<br/>
      * 该方法和IWorkItem.claim()是等价的。
      * @param workItemId 被签收的工单的Id
-     * @param taskInstanceId 工单对应的TaskInstance的Id
      * @return 如果签收成功，则返回一个新的IWorkItem对象；否则返回null
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      * 
      */
-	public IWorkItem claimWorkItem(String workItemId,String taskInstanceId) throws EngineException, KernelException ;
+	public IWorkItem claimWorkItem(String workItemId) throws EngineException, KernelException ;
 	
 	
 	/**
@@ -406,5 +406,28 @@ public interface IWorkflowSession {
 			DynamicAssignmentHandler dynamicAssignmentHandler);
 	
 	
+	/**
+	 * 类似HttpServletRequest的setAttribute,用于流程操作中传递参数。
+	 * @param name
+	 * @param attr
+	 */
+	public void setAttribute(String name ,Object attr);
 	
+	/**
+	 * 类似HttpServletRequest的getAttribute,用于流程操作中传递参数。
+	 * @param name
+	 * @return
+	 */
+	public Object getAttribute(String name);
+	
+	/**
+	 * 清空workflowSession中的所有参数
+	 */
+	public void clearAttributes();
+	
+	/**
+	 * 清空workflowSession中指定名称的参数
+	 * @param name
+	 */
+	public void removeAttribute(String name);
 }

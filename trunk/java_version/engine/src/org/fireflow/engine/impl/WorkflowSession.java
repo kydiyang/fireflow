@@ -18,7 +18,9 @@ package org.fireflow.engine.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,7 +36,6 @@ import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
-import org.fireflow.engine.taskinstance.ITaskInstanceManager;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.model.DataField;
 import org.fireflow.model.WorkflowProcess;
@@ -48,6 +49,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	protected RuntimeContext runtimeContext = null;
 	protected DynamicAssignmentHandler dynamicAssignmentHandler = null;
 	protected boolean inWithdrawOrRejectOperation = false;
+	protected Map attributes = new HashMap();
 
 	public void setRuntimeContext(RuntimeContext ctx) {
 		this.runtimeContext = ctx;
@@ -394,45 +396,54 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		this.dynamicAssignmentHandler = dynamicAssignmentHandler;
 	}
 
-
-	public IProcessInstance abortProcessInstance(String processInstanceId) throws EngineException {
-		IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
+	public IProcessInstance abortProcessInstance(String processInstanceId)
+			throws EngineException {
+		IProcessInstance processInstance = this
+				.findProcessInstanceById(processInstanceId);
 		processInstance.abort();
 		return processInstance;
 	}
 
+//	 public IWorkItem claimWorkItem(final String workItemId,
+//			final String taskInstanceId) throws EngineException,
+//			KernelException {
+//		IWorkItem result = null;
+//		try {
+//			result = (IWorkItem) this.execute(new IWorkflowSessionCallback() {
+//
+//				public Object doInWorkflowSession(RuntimeContext ctx)
+//						throws EngineException, KernelException {
+//					ITaskInstanceManager taskInstanceMgr = ctx
+//							.getTaskInstanceManager();
+//					IWorkItem workItem = taskInstanceMgr.claimWorkItem(
+//							workItemId, taskInstanceId);
+//					return workItem;
+//				}
+//			});
+//		} catch (EngineException ex) {
+//			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
+//					null, ex);
+//		} catch (KernelException ex) {
+//			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
+//					null, ex);
+//		}
+//		return result;
+//	}
 
-	public IWorkItem claimWorkItem(final String workItemId, final String taskInstanceId)
+	public IWorkItem claimWorkItem(final String workItemId)
 			throws EngineException, KernelException {
 		IWorkItem result = null;
-		try {
-			result = (IWorkItem) this.execute(new IWorkflowSessionCallback() {
-
-				public Object doInWorkflowSession(RuntimeContext ctx)
-						throws EngineException, KernelException {
-					ITaskInstanceManager taskInstanceMgr = ctx.getTaskInstanceManager();
-					IWorkItem workItem = taskInstanceMgr.claimWorkItem(workItemId, taskInstanceId);
-					return workItem;
-				}
-			});
-		} catch (EngineException ex) {
-			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
-					null, ex);
-		} catch (KernelException ex) {
-			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
-					null, ex);
-		}
+		IWorkItem wi = this.findWorkItemById(workItemId);
+		result = wi.claim();
 		return result;
 	}
-
 
 	public void completeWorkItem(String workItemId) throws EngineException,
 			KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
 		wi.complete();
-		
-	}
 
+	}
 
 	public void completeWorkItem(String workItemId, String comments)
 			throws EngineException, KernelException {
@@ -440,23 +451,20 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.complete(comments);
 	}
 
-
 	public void completeWorkItem(String workItemId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
-		wi.complete(dynamicAssignmentHandler,comments);
-		
-	}
+		wi.complete(dynamicAssignmentHandler, comments);
 
+	}
 
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId) throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
 		wi.jumpTo(targetActivityId);
-		
-	}
 
+	}
 
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId, String comments) throws EngineException,
@@ -465,29 +473,29 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.jumpTo(targetActivityId, comments);
 	}
 
-
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
 		wi.jumpTo(targetActivityId, dynamicAssignmentHandler, comments);
-		
-	}
 
+	}
 
 	public IProcessInstance findProcessInstanceById(final String id) {
 		try {
-			return (IProcessInstance) this.execute(new IWorkflowSessionCallback() {
+			return (IProcessInstance) this
+					.execute(new IWorkflowSessionCallback() {
 
-				public Object doInWorkflowSession(RuntimeContext ctx)
-						throws EngineException, KernelException {
-					IPersistenceService persistenceService = ctx
-							.getPersistenceService();
+						public Object doInWorkflowSession(RuntimeContext ctx)
+								throws EngineException, KernelException {
+							IPersistenceService persistenceService = ctx
+									.getPersistenceService();
 
-					return persistenceService.findProcessInstanceById(id);
-				}
-			});
+							return persistenceService
+									.findProcessInstanceById(id);
+						}
+					});
 		} catch (EngineException ex) {
 			ex.printStackTrace();
 			return null;
@@ -496,21 +504,22 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 			return null;
 		}
 	}
-
 
 	public List<IProcessInstance> findProcessInstancesByProcessId(
 			final String processId) {
 		try {
-			return (List<IProcessInstance>) this.execute(new IWorkflowSessionCallback() {
+			return (List<IProcessInstance>) this
+					.execute(new IWorkflowSessionCallback() {
 
-				public Object doInWorkflowSession(RuntimeContext ctx)
-						throws EngineException, KernelException {
-					IPersistenceService persistenceService = ctx
-							.getPersistenceService();
+						public Object doInWorkflowSession(RuntimeContext ctx)
+								throws EngineException, KernelException {
+							IPersistenceService persistenceService = ctx
+									.getPersistenceService();
 
-					return persistenceService.findProcessInstancesByProcessId(processId);
-				}
-			});
+							return persistenceService
+									.findProcessInstancesByProcessId(processId);
+						}
+					});
 		} catch (EngineException ex) {
 			ex.printStackTrace();
 			return null;
@@ -519,22 +528,23 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 			return null;
 		}
 	}
-
 
 	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(
 			final String processId, final Integer version) {
 		try {
-			return (List<IProcessInstance>) this.execute(new IWorkflowSessionCallback() {
+			return (List<IProcessInstance>) this
+					.execute(new IWorkflowSessionCallback() {
 
-				public Object doInWorkflowSession(RuntimeContext ctx)
-						throws EngineException, KernelException {
-					IPersistenceService persistenceService = ctx
-							.getPersistenceService();
+						public Object doInWorkflowSession(RuntimeContext ctx)
+								throws EngineException, KernelException {
+							IPersistenceService persistenceService = ctx
+									.getPersistenceService();
 
-					return persistenceService.findProcessInstancesByProcessIdAndVersion(processId,
-							version);
-				}
-			});
+							return persistenceService
+									.findProcessInstancesByProcessIdAndVersion(
+											processId, version);
+						}
+					});
 		} catch (EngineException ex) {
 			ex.printStackTrace();
 			return null;
@@ -543,22 +553,23 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 			return null;
 		}
 	}
-
 
 	public List<ITaskInstance> findTaskInstancesForProcessInstance(
 			final String processInstanceId, final String activityId) {
 		try {
-			return (List<ITaskInstance>) this.execute(new IWorkflowSessionCallback() {
+			return (List<ITaskInstance>) this
+					.execute(new IWorkflowSessionCallback() {
 
-				public Object doInWorkflowSession(RuntimeContext ctx)
-						throws EngineException, KernelException {
-					IPersistenceService persistenceService = ctx
-							.getPersistenceService();
+						public Object doInWorkflowSession(RuntimeContext ctx)
+								throws EngineException, KernelException {
+							IPersistenceService persistenceService = ctx
+									.getPersistenceService();
 
-					return persistenceService.findTaskInstancesForProcessInstance(processInstanceId,
-							activityId);
-				}
-			});
+							return persistenceService
+									.findTaskInstancesForProcessInstance(
+											processInstanceId, activityId);
+						}
+					});
 		} catch (EngineException ex) {
 			ex.printStackTrace();
 			return null;
@@ -567,30 +578,26 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 			return null;
 		}
 	}
-
 
 	public IWorkItem reasignWorkItemTo(String workItemId, String actorId)
 			throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
 		return workItem.reasignTo(actorId);
-		
-	}
 
+	}
 
 	public IWorkItem reasignWorkItemTo(String workItemId, String actorId,
 			String comments) throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
-		return workItem.reasignTo(actorId,comments);
+		return workItem.reasignTo(actorId, comments);
 	}
-
 
 	public void rejectWorkItem(String workItemId) throws EngineException,
 			KernelException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
 		workItem.reject();
-		
-	}
 
+	}
 
 	public void rejectWorkItem(String workItemId, String comments)
 			throws EngineException, KernelException {
@@ -598,13 +605,13 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		workItem.reject(comments);
 	}
 
-
-	public IProcessInstance restoreProcessInstance(String processInstanceId)throws EngineException {
-		IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
+	public IProcessInstance restoreProcessInstance(String processInstanceId)
+			throws EngineException {
+		IProcessInstance processInstance = this
+				.findProcessInstanceById(processInstanceId);
 		processInstance.restore();
 		return processInstance;
 	}
-
 
 	public ITaskInstance restoreTaskInstance(String taskInstanceId)
 			throws EngineException {
@@ -613,13 +620,13 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return taskInst;
 	}
 
-
-	public IProcessInstance suspendProcessInstance(String processInstanceId)throws EngineException {
-		IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
+	public IProcessInstance suspendProcessInstance(String processInstanceId)
+			throws EngineException {
+		IProcessInstance processInstance = this
+				.findProcessInstanceById(processInstanceId);
 		processInstance.suspend();
 		return processInstance;
 	}
-
 
 	public ITaskInstance suspendTaskInstance(String taskInstanceId)
 			throws EngineException {
@@ -628,10 +635,27 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return taskInst;
 	}
 
-
 	public IWorkItem withdrawWorkItem(final String workItemId)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
 		return wi.withdraw();
+	}
+
+	public void clearAttributes() {
+		this.attributes.clear();
+		
+	}
+
+	public Object getAttribute(String name) {
+		return this.attributes.get(name);
+	}
+
+	public void removeAttribute(String name) {
+		this.attributes.remove(name);
+	}
+
+	public void setAttribute(String name, Object attr) {
+		this.attributes.put(name, attr);
+		
 	}
 }

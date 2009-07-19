@@ -113,6 +113,9 @@
                 <value>
                 	/workflowdefinition/skip.xml
                 </value>
+                <value>
+                	/workflowdefinition/LeaveApplicationProcess.xml
+                </value>                
             </list>
         </property>
     </bean>

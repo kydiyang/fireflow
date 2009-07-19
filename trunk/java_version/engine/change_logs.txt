@@ -1,3 +1,10 @@
+﻿#############################################################
+###  org-fireflow-engine-1.0.0-beta-build???.jar      ###
+#############################################################
+1、IWorkflowSession.claimWorkItem(workItemId,taskInstanceId)改为IWorkflowSession.claimWorkItem(workItemid)
+2、在IWorkflowSession中增加了setAttribute(Object)和getAttribute()方法，用于传递参数
+
+
 #############################################################
 ###  org-fireflow-engine-1.0.0-alpha-build090601.jar      ###
 #############################################################

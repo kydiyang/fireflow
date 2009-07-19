@@ -17,6 +17,8 @@
 package org.fireflow.engine.taskinstance;
 
 import org.fireflow.engine.EngineException;
+import org.fireflow.engine.IProcessInstance;
+import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.kernel.KernelException;
 
 /**
@@ -40,4 +42,8 @@ public interface IAssignmentHandler {
      * @throws org.fireflow.kenel.KenelException
      */
     public void assign(IAssignable asignable, String performerName) throws EngineException,KernelException;
+    
+    //后续版本实现。。。
+//    public void assign(IWorkflowSession workflowSession, IProcessInstance processInstance, 
+//            IAssignable asignable, String performerName)throws EngineException,KernelException;
 }

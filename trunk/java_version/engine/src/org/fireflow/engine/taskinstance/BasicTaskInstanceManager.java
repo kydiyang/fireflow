@@ -932,6 +932,7 @@ public class BasicTaskInstanceManager implements
     public IWorkItem reasignWorkItemTo(IWorkItem workItem, String actorId, String comments) {
         WorkItem newWorkItem = new WorkItem();
         BeanUtils.copyProperties(workItem, newWorkItem);
+        newWorkItem.setId(null); 
         newWorkItem.setActorId(actorId);
         newWorkItem.setCreatedTime(rtCtx.getCalendarService().getSysDate());
         rtCtx.getPersistenceService().saveOrUpdateWorkItem(newWorkItem);

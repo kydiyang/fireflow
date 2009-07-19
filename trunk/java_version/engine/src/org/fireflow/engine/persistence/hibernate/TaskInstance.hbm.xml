@@ -58,7 +58,7 @@
     <property name="fromActivityId" type="java.lang.String" update="false">
       <column  length="600" name="FROM_ACTIVITY_ID"/>
     </property>
-    <property name="stepNumber" type="java.lang.Integer" update="false">
+    <property name="stepNumber" type="java.lang.Integer" update="false" index="idx_taskInst_stepNb">
       <column  length="4" name="STEP_NUMBER" not-null="true"/>
     </property>
 
