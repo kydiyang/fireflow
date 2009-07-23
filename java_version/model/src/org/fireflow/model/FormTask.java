@@ -1,8 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2007-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-
 package org.fireflow.model;
 
 import org.fireflow.model.net.Activity;
@@ -10,7 +21,7 @@ import org.fireflow.model.resource.Form;
 import org.fireflow.model.resource.Participant;
 
 /**
- *
+ * 表单类型的Task，即人工任务。
  * @author 非也
  * @version 1.0
  * Created on Mar 15, 2009
@@ -55,14 +66,34 @@ public class FormTask extends Task{
 
     
     //----------Form Task 的属性
+    /**
+     * 操作者
+     */
     protected Participant performer;//引用participant
-    protected String assignmentStrategy = ANY;//workItem分配策略，即任何一个人完成，则taskinstance算完成。
+    
+    /**
+     * 该任务的工作项分配策略。取值为FormTask.ANY,FormTask.ALL。
+     */
+    protected String assignmentStrategy = ANY;//
 
-
+    /**
+     * 缺省表单。
+     */
     protected String defaultView = VIEWFORM;//缺省视图是view form
 
+    /**
+     * 可编辑表单
+     */
     protected Form editForm = null;
+    
+    /**
+     * 只读表单
+     */
     protected Form viewForm = null;
+    
+    /**
+     * 列表表单
+     */
     protected Form listForm = null;
 
 

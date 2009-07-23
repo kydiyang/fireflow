@@ -8,7 +8,7 @@ import org.fireflow.model.AbstractWFElement;
 import org.fireflow.model.WorkflowProcess;
 
 /**
- *
+ * 工作流网的边。
  * @author 非也
  * @version 1.0
  * Created on Mar 18, 2009

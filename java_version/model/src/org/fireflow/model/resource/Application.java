@@ -17,10 +17,15 @@
 
 package org.fireflow.model.resource;
 
-
-
-
+/**
+ * 后台程序。
+ * @author 非也
+ *
+ */
 public class Application extends AbstractResource {
+	/**
+	 * 后台程序的类名。
+	 */
 	private String handler = null;
 	public Application(String name) {
 		this.setName(name);

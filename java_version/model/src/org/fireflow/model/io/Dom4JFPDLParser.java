@@ -94,7 +94,6 @@ import org.xml.sax.SAXException;
 public class Dom4JFPDLParser implements IFPDLParser {
 
 //    String encoding = "utf-8";
-    /** Construct a new Dom4JFPDLParser. */
 //    public Dom4JFPDLParser() {
 //    }
 //

@@ -27,18 +27,44 @@ import org.fireflow.model.TaskRef;
 import org.fireflow.model.WorkflowProcess;
 
 /**
+ * 环节。
  * @author 非也,nychen2000@163.com
  *
  */
 public class Activity extends Node {
-
+	/**
+	 * 环节实例结束策略之一：他的所有的任务实例结束后才可以结束。
+	 */
     public static final String ALL = "ALL";
+    
+    /**
+     * 环节实例结束策略之二：任何一个Task实例结束后环节实例可以结束。
+     */
     public static final String ANY = "ANY";
-    private Transition enteringTransition;//输入弧	
+    
+    /**
+     * 输入转移
+     */
+    private Transition enteringTransition;//输入弧
+    
+    /**
+     * 输出转移
+     */
     private Transition leavingTransition;//输出弧
 
+    /**
+     * 对全局Task的引用的列表
+     */
     private List<TaskRef> taskRefs = new ArrayList<TaskRef>();
+    
+    /**
+     * 局部的task列表
+     */
     private List<Task> inlineTasks = new ArrayList<Task>();
+    
+    /**
+     * 环节实例结束策略，缺省为ALL
+     */
     private String completionStrategy = ALL;
 
     public Activity(){

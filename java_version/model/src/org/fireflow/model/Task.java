@@ -25,7 +25,7 @@ import org.fireflow.model.net.Activity;
  */
 public abstract class Task extends AbstractWFElement {
     /**
-     * 任务类型之一 ：TOOL类型，即工具类型任务，该任务自动调用java代码完成特定的工作。
+     * 任务类型之二 ：TOOL类型，即工具类型任务，该任务自动调用java代码完成特定的工作。
      */
     public static final String TOOL = "TOOL";
     
@@ -52,15 +52,15 @@ public abstract class Task extends AbstractWFElement {
     public static final String REDO = "REDO";
 
     /**
-     * 循环情况下，任务分配指示之二：重做<br>
-     * 循环的情况下该任务将被忽略
+     * 循环情况下，任务分配指示之二：忽略<br>
+     * 循环的情况下该任务将被忽略，即在流程实例的生命周期里，仅执行一遍。
      */
     public static final String SKIP = "SKIP";
 
     /**
-     * 循环的情况下，任务分配指示之三：无<br>
-     * 对于Tool类型和Subflow类型的task会重新执行一遍
-     * 对于Form类型的Task，重新执行一遍，且工作流引擎仍然调用Performer属性设置的handler分配任务
+     * 循环的情况下，任务分配指示之三：无<br/>
+     * 对于Tool类型和Subflow类型的task会重新执行一遍，和REDO效果一样的。<br/>
+     * 对于Form类型的Task，重新执行一遍，且工作流引擎仍然调用Performer属性的AssignmentHandler分配任务
      */
     public static final String NONE = "NONE";
     
@@ -69,36 +69,35 @@ public abstract class Task extends AbstractWFElement {
      */
     protected String type = FORM;//
 
+    /**
+     * 任务执行的时限
+     */
     protected Duration duration;
 
 
-    protected int priority = 1;
     /**
-     * 循环情况下，任务分配指示，取值为REDO和NONE
+     * 任务优先级别(1.0暂时没有用到)
+     */
+    protected int priority = 1;
+    
+    /**
+     * 循环情况下任务执行策略，取值为REDO、SKIP和NONE,
      */
     protected String loopStrategy = REDO;//
 
 
     /**
-     * 业务子系统定制的任务实例创建器，如果没有设置该Creator，系统将已默认的方式创建流程实例。默认的方式是创建org.fireflow.engine.impl.TaskInstance实力。
+     * 任务实例创建器。如果没有设置，则使用所在流程的全局任务实例创建器。
      */
     protected String taskInstanceCreator = null;
 
     /**
-     * 任务实例的运行器，如果没有设置runner，则按照默认方式运行，默认运行规则如下：<br>
-     * 1、对于FormTask，然后分配工单(WorkItem)<br>
-     * 2、对于ToolTask，执行applicationHandler实例<br>
-     * 3、对于SubflowTask，创建一个对应的子流程实例<br>
+     * 任务实例运行器，如果没有设置，则使用所在流程的全局的任务实例运行器
      */
     protected String taskInstanceRunner = null;
 
     /**
-     * 业务子系统定制的任务实例是否可终结评价器。如果没有设置，系统采用默认的规则评价任务实例是否可以结束。规则如下：<br>
-     * 1、对于FormTask，检查其是否有活动的WorkItem，如果没有，则可以结束，否则不可以结束。<br>
-     * 2、对于ToolTask,applicationHandler调用返回即可结束。<br>
-     * 3、对于SubflowTask，因为绝大多数情况下只需要创建一个子流程实例，所以只要子流程实例结束，则SubflowTask实例也结束。所以
-     * 对于创建了“并发子流程”的SubflowTask，业务子系统必须自行实现一个taskInstanceEndableEvaluator以检查是否可以终结父TaskInstance。
-     *
+     * 任务实例的终结评价器，用于告诉引擎，该实例是否可以结束。如果没有设置，则使用所在流程的全局的任务实例终结评价器。
      */
     protected String taskInstanceCompletionEvaluator = null;
     

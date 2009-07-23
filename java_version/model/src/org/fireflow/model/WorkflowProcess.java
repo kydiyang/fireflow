@@ -28,6 +28,8 @@ import org.fireflow.model.net.Synchronizer;
 import org.fireflow.model.net.Transition;
 
 /**
+ * 业务流程。<br/>
+ * 这是Fire workflow工作流模型的最顶层元素。
  * @author 非也,nychen2000@163.com
  *
  */
@@ -35,51 +37,96 @@ public class WorkflowProcess extends AbstractWFElement {
 
     //子元素
 //    private List formalParameters = new ArrayList();
+	/**
+	 * 流程数据项，运行时转换为流程变量进行存储。
+	 */
     private List<DataField> dataFields = new ArrayList<DataField>();
+    
+    /**
+     * 全局Task
+     */
     private List<Task> tasks = new ArrayList<Task>();
+    
+    /**
+     * 流程环节
+     */
     private List<Activity> activities = new ArrayList<Activity>();
+    
+    /**
+     * 转移
+     */
     private List<Transition> transitions = new ArrayList<Transition>();
+    
+    /**
+     * 循环
+     */
     private List<Loop> loops = new ArrayList<Loop>();
+    
+    /**
+     * 同步器
+     */
     private List<Synchronizer> synchronizers = new ArrayList<Synchronizer>();
+    
+    /**
+     * 开始节点
+     */
     private StartNode startNode = null;
+    
+    /**
+     * 结束节点
+     */
     private List<EndNode> endNodes = new ArrayList<EndNode>();
+    
+    
     //其他属性
+    /**
+     * 资源文件（在1.0中暂时未使用）
+     */
     private String resourceFile = null;
+    
+    /**
+     * 资源管理器（在1.0中暂时未使用）
+     */
     private String resourceManager = null;
 
     /**
-     * 业务子系统定制的任务实例创建器，如果没有设置该Creator，系统将已默认的方式创建流程实例。默认的方式是创建org.fireflow.engine.impl.TaskInstance实力。
+     * 本流程全局的任务实例创建器。
+     * 如果没有设置，引擎将使用DefaultTaskInstanceCreator来创建TaskInstance。
      */
     protected String taskInstanceCreator = null;
 
     /**
-     * 任务实例的运行器，如果没有设置runner，则按照默认方式运行，默认运行规则如下：<br>
-     * 1、对于FormTask，然后分配工单(WorkItem)<br>
-     * 2、对于ToolTask，执行applicationHandler实例<br>
-     * 3、对于SubflowTask，创建一个对应的子流程实例<br>
+     * 本流程全局的FormTask Instance运行器。如果没有设置，引擎将使用DefaultFormTaskInstanceRunner来运行TaskInstance。
      */
-//    protected String taskInstanceRunner = null;
-
     protected String formTaskInstanceRunner = null;
 
+    /**
+     * 本流程全局的ToolTask Instance运行器。如果没有设置，引擎将使用DefaultToolTaskInstanceRunner来运行TaskInstance。
+     */
     protected String toolTaskInstanceRunner = null;
 
+    /**
+     * 本流程全局的SubflowTask Instance运行器。如果没有设置，引擎将使用DefaultSubflowTaskInstanceRunner来运行TaskInstance。
+     */
     protected String subflowTaskInstanceRunner = null;
 
-    /**
-     * 业务子系统定制的任务实例是否可终结评价器。如果没有设置，系统采用默认的规则评价任务实例是否可以结束。规则如下：<br>
-     * 1、对于FormTask，检查其是否有活动的WorkItem，如果没有，则可以结束，否则不可以结束。<br>
-     * 2、对于ToolTask,applicationHandler调用返回即可结束。<br>
-     * 3、对于SubflowTask，因为绝大多数情况下只需要创建一个子流程实例，所以只要子流程实例结束，则SubflowTask实例也结束。所以
-     * 对于创建了“并发子流程”的SubflowTask，业务子系统必须自行实现一个taskInstanceEndableEvaluator以检查是否可以终结父TaskInstance。
-     *
-     */
-//    protected String taskInstanceCompletionEvaluator = null;
 
+    /**
+     * 本流程全局的FormTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
+     * 如果没有设置，引擎使用缺省实现DefaultFormTaskInstanceCompletionEvaluator。
+     */
     protected String formTaskInstanceCompletionEvaluator = null;
 
+    /**
+     * 本流程全局的ToolTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
+     * 如果没有设置，引擎使用缺省实现DefaultToolTaskInstanceCompletionEvaluator。
+     */    
     protected String toolTaskInstanceCompletionEvaluator = null;
 
+    /**
+     * 本流程全局的SubflowTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
+     * 如果没有设置，引擎使用缺省实现DefaultSubflowTaskInstanceCompletionEvaluator。
+     */ 
     protected String subflowTaskInstanceCompletionEvaluator = null;
     
 //    private int version = 1;//version在流程定义中不需要，只有在流程存储中需要，每次updatge数据库，都需要增加Version值
@@ -96,7 +143,7 @@ public class WorkflowProcess extends AbstractWFElement {
 //        return formalParameters;
 //    }
     /**
-     * 返回所有的流程变量
+     * 返回所有的流程数据项
      * @return
      */
     public List<DataField> getDataFields() {
@@ -163,6 +210,10 @@ public class WorkflowProcess extends AbstractWFElement {
         return synchronizers;
     }
 
+    /**
+     * 返回所有的全局Task
+     * @return
+     */
     public List<Task> getTasks(){
         return this.tasks;
     }
@@ -200,8 +251,8 @@ public class WorkflowProcess extends AbstractWFElement {
 
     /**
      * 通过ID查找该流程中的任意元素
-     * @param id
-     * @return
+     * @param id 元素的Id
+     * @return 流程元素，如：Activity,Task,Synchronizer等等
      */
     public IWFElement findWFElementById(String id) {
         if (this.getId().equals(id)) {
@@ -277,8 +328,8 @@ public class WorkflowProcess extends AbstractWFElement {
 
     /**
      * 通过Id查找任意元素的序列号
-     * @param id
-     * @return
+     * @param id 流程元素的id
+     * @return 流程元素的序列号
      */
     public String findSnById(String id) {
         IWFElement elem = this.findWFElementById(id);
@@ -289,7 +340,7 @@ public class WorkflowProcess extends AbstractWFElement {
     }
 
     /**
-     * 验证workflow process是否完整正确
+     * 验证workflow process是否完整正确。
      * @return null表示流程正确；否则表示流程错误，返回值是错误原因
      */
     public String validate() {
@@ -390,7 +441,7 @@ public class WorkflowProcess extends AbstractWFElement {
      * 判断两个Activity是否在同一个执行线上
      * @param activityId1
      * @param activityId2
-     * @return
+     * @return true表示在同一个执行线上，false表示不在同一个执行线上
      */
     public boolean isInSameLine(String activityId1, String activityId2) {
         Node node1 = (Node)this.findWFElementById(activityId1);

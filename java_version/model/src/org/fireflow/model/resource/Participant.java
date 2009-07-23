@@ -16,8 +16,18 @@
  */
 package org.fireflow.model.resource;
 
+/**
+ * 参与者。
+ * @author 非也
+ *
+ */
 public class Participant extends AbstractResource {
 
+	/**
+	 * 任务分配句柄的类名。<br/>
+	 * Fire workflow引擎调用该句柄获得真正的操作者ID。
+	 * 
+	 */
     private String assignmentHandlerClassName = null;
 
     public Participant(String name) {
