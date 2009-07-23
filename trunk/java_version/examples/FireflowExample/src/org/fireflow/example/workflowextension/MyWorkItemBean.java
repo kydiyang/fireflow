@@ -1,6 +1,8 @@
 package org.fireflow.example.workflowextension;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -16,6 +18,8 @@ import org.fireflow.model.FormTask;
 import org.fireflow.model.Task;
 import org.fireflow.security.persistence.User;
 import org.fireflow.security.util.SecurityUtilities;
+import org.fireflow.util.Utilities;
+import org.fireflow.workflowmanagement.persistence.CommonWorkflowDAO;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -33,6 +37,14 @@ public class MyWorkItemBean extends BasicManagedBean {
 	List myHaveDoneWorkItems = null;
 	String selectedWorkItemId = null;
 
+	
+	//更多查询条件
+	String condition_sn = null;
+	String condition_applicant = null;
+	String condition_customer_name = null;
+	
+	CommonWorkflowDAO commonWorkflowDAO = null;
+	
 	/**
 	 * 查询待办任务
 	 * 
@@ -56,7 +68,39 @@ public class MyWorkItemBean extends BasicManagedBean {
 
 		return this.outcome;
 	}
+	
+	/**
+	 * 通过更多业务属性作为条件查询待办任务
+	 * 
+	 * 
+	 */
+	public String doQueryMyToDoWorkItemsByConditions() {
+		if (!Utilities.isEmpty(this.condition_applicant) && 
+				!Utilities.isEmpty(this.condition_customer_name)){
+			
+		}
+		this.transactionTemplate.execute(new TransactionCallback() {
 
+			public Object doInTransaction(TransactionStatus arg0) {
+
+				User currentUser = (User) SecurityUtilities.getCurrentUser();
+				Map conditions = new HashMap();
+				conditions.put("sn", condition_sn);
+				conditions.put("actorId", currentUser.getLoginid());
+				conditions.put("applicant", condition_applicant);
+				conditions.put("customer_name", condition_customer_name);
+				
+				myTodoWorkitems = commonWorkflowDAO.findWorkItemsByConditions(conditions);
+
+				return null;
+			}
+
+		});
+
+		return this.outcome;
+	}
+	
+	
 	/**
 	 * 查询已办任务
 	 * 
@@ -224,4 +268,37 @@ public class MyWorkItemBean extends BasicManagedBean {
 	public void setSelectedWorkItemId(String selectedWorkItemId) {
 		this.selectedWorkItemId = selectedWorkItemId;
 	}
+
+	public String getCondition_sn() {
+		return condition_sn;
+	}
+
+	public void setCondition_sn(String condition_sn) {
+		this.condition_sn = condition_sn;
+	}
+
+	public String getCondition_applicant() {
+		return condition_applicant;
+	}
+
+	public void setCondition_applicant(String condition_applicant) {
+		this.condition_applicant = condition_applicant;
+	}
+
+	public String getCondition_customer_name() {
+		return condition_customer_name;
+	}
+
+	public void setCondition_customer_name(String condition_customer_name) {
+		this.condition_customer_name = condition_customer_name;
+	}
+
+	public CommonWorkflowDAO getCommonWorkflowDAO() {
+		return commonWorkflowDAO;
+	}
+
+	public void setCommonWorkflowDAO(CommonWorkflowDAO commonWorkflowDAO) {
+		this.commonWorkflowDAO = commonWorkflowDAO;
+	}
+	
 }

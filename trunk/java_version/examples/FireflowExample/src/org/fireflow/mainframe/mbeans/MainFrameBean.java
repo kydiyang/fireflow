@@ -38,10 +38,15 @@ public class MainFrameBean {
 		NavigationMenuItem menuItem_havedone = getMenuNaviagtionItem("已办工单",
 		"/org/fireflow/example/workflowextension/MyHaveDoneWorkItem.faces");	
 		
+		NavigationMenuItem menuItem_todo_bizquery = getMenuNaviagtionItem("复杂条件查询",
+		"/org/fireflow/example/workflowextension/MyTodoWorkItemsByComplexCondition.faces");
+		
 		
 		menuItem_dayly.add(menuItem_todo);
 		menuItem_dayly.add(menuItem_havedone);
+		menuItem_dayly.add(menuItem_todo_bizquery);
 		mainMenuItems.add(menuItem_dayly);
+		
 		
 		//商场送货业务
 		NavigationMenuItem menuItem_goodsdeliver = getMenuNaviagtionItem("商场送货业务", null);

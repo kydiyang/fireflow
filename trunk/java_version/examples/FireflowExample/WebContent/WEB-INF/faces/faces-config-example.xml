@@ -9,6 +9,10 @@
 			org.fireflow.example.workflowextension.MyWorkItemBean
 		</managed-bean-class>
 		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+			<property-name>commonWorkflowDAO</property-name>
+			<value>#{CommonWorkflowDAO}</value>
+		</managed-property>
 	</managed-bean>	
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
