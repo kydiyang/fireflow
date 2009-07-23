@@ -28,13 +28,39 @@ import java.util.List;
  *
  */
 public abstract class AbstractWFElement implements IWFElement, Serializable {
-
+	/**
+	 * 元素序列号，请不要在业务代码里面使用该属性的信息。因为这个属性的值是变化的。
+	 */
     private String sn = null;
+    
+    /**
+     * 父元素
+     */
     private IWFElement parentElement;
+    
+    /**
+     * 名称
+     */
     private String name;
+    
+    /**
+     * 显示名称
+     */
     private String displayName;
+    
+    /**
+     * 描述
+     */
     private String description;
-    private List<EventListener> eventListeners = new ArrayList<EventListener>();    
+    
+    /**
+     * 事件监听器
+     */
+    private List<EventListener> eventListeners = new ArrayList<EventListener>();   
+    
+    /**
+     * 扩展属性
+     */
     private Map<String, String> extendedAttributes;
 
     public AbstractWFElement(){

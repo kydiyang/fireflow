@@ -20,6 +20,7 @@ import org.fireflow.model.AbstractWFElement;
 import org.fireflow.model.WorkflowProcess;
 
 /**
+ * 工作流网的节点。
  * @author 非也,nychen2000@163.com
  *
  */

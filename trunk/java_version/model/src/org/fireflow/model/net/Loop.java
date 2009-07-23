@@ -10,7 +10,7 @@ import org.fireflow.model.WorkflowProcess;
 
 
 /**
- *
+ * 循环。
  * @author 非也
  * @version 1.0
  * Created on Mar 15, 2009

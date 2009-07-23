@@ -63,7 +63,7 @@ import org.w3c.dom.Element;
  *
  * @author chennieyun
  */
-public class JAXP_FPDL_Serializer implements FPDLNames {
+public class JAXP_FPDL_Serializer implements IFPDLSerializer {
 
     String encoding = "UTF-8";
 

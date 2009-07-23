@@ -27,11 +27,24 @@ import org.fireflow.model.WorkflowProcess;
  *
  */
 public class Synchronizer extends Node {
-
+	/**
+	 * 输入转移的列表
+	 */
     List<Transition> enteringTransitions = new ArrayList<Transition>();
+    
+    /**
+     * 输出转移的列表
+     */
     List<Transition> leavingTransitions = new ArrayList<Transition>();
 
+    /**
+     * 输入循环的列表
+     */
     List<Loop> enteringLoops = new ArrayList<Loop>();
+    
+    /**
+     * 输出循环的列表
+     */
     List<Loop> leavingLoops = new ArrayList<Loop>();
 
     public Synchronizer() {

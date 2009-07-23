@@ -5,11 +5,14 @@
 package org.fireflow.model.resource;
 
 /**
- *
+ * 子流程。保存对另一个流程引用信息
  * @author chennieyun
  */
 public class SubWorkflowProcess extends AbstractResource {
 
+	/**
+	 * 所引用的流程的id
+	 */
     private String workflowProcessId = null;
 
     public SubWorkflowProcess(String name) {

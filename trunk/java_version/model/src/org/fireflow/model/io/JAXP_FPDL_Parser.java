@@ -60,7 +60,7 @@ import org.xml.sax.SAXException;
  *
  * @author chennieyun
  */
-public class JAXP_FPDL_Parser implements FPDLNames {
+public class JAXP_FPDL_Parser implements IFPDLParser {
 
     public WorkflowProcess parse(InputStream in) throws IOException, FPDLParserException {
         try {

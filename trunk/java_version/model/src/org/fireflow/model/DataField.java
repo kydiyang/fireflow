@@ -21,12 +21,40 @@ package org.fireflow.model;
  * @author 非也,nychen2000@163.com
  */
 public class DataField extends AbstractWFElement {
+	/**
+	 * 字符串类型
+	 */
     public static final String STRING = "STRING";
+    
+    /**
+     * 浮点类型
+     * 
+     */
     public static final String FLOAT = "FLOAT";
+    
+    /**
+     * 双精度类型
+     */
     public static final String DOUBLE = "DOUBLE";
+    
+    /**
+     * 整数类型
+     */
     public static final String INTEGER = "INTEGER";
+    
+    /**
+     * 长整型
+     */
     public static final String LONG = "LONG";
+    
+    /**
+     * 日期时间类型
+     */
     public static final String DATETIME = "DATETIME";
+    
+    /**
+     * 布尔类型
+     */
     public static final String BOOLEAN = "BOOLEAN";
     
     /**
@@ -39,6 +67,9 @@ public class DataField extends AbstractWFElement {
      */
     private String initialValue;
     
+    /**
+     * 数据格式
+     */
     private String dataPattern;
     
 

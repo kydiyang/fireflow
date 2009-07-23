@@ -52,11 +52,13 @@ import java.io.Serializable;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 
-/** Dom4J XPDL Serializer utility class.
 
-    @author Anthony Eden
- * Updated by nychen2000
-*/
+//@author Anthony Eden
+//Updated by nychen2000
+
+/**
+ * 时间间隔
+ */
 public class Duration implements Serializable {
 
     public static final String DAY = "DAY";
