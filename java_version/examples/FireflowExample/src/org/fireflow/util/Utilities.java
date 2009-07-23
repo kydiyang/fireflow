@@ -57,4 +57,10 @@ public class Utilities implements InitializingBean{
 		return states;
 	}
 
+	public static boolean isEmpty(String s){
+		if (s==null || s.trim().equals("")){
+			return true;
+		}
+		return false;
+	}
 }

@@ -17,7 +17,7 @@
 	<target name="zip-file" depends="war">
 		<zip destfile="Fire_Workflow_Example.zip"
 			basedir="${basedir}"
-			includes="FireflowExample-1.0.0-alpha-build${buildnumber}.war,workflowdefinition/**,Fire-Workflow-Example.pdf">
+			includes="FireflowExample-1.0.0-alpha-build${buildnumber}.war,/src/workflowdefinition/**,Fire-Workflow-Example.pdf">
 		</zip>
 	</target>	    
 </project>    
