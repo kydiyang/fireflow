@@ -90,6 +90,8 @@ public class FireWorkflowEngineTest {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
                     IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process");
+                    String id = processInstance.getId();
+                    System.out.println("++++++++++++++id is "+id);
                     processInstance.setProcessInstanceVariable("mobile", mobile);
                     processInstance.run();
                     return processInstance;

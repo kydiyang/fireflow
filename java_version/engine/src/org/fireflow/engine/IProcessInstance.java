@@ -24,8 +24,8 @@ import org.fireflow.model.WorkflowProcess;
 
 /**
  * 流程实例接口<br>
- * 对状态字段作如下规定：小于5的状态为“活动”状态，大于等于5的状态为“非活动”状态。<br>
- * 活动状态包括：INITIALIZED,STARTED,SUSPENDED<br>
+ * 对流程实例的状态字段作如下规定：小于5的状态为“活动”状态，大于等于5的状态为“非活动”状态。<br>
+ * 活动状态包括：INITIALIZED,RUNNING,SUSPENDED<br>
  * 非活动状态包括：COMPLETED,CANCELED
  * @author 非也,nychen2000@163.com
  *

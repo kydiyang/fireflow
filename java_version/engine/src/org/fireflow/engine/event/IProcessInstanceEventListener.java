@@ -24,5 +24,13 @@ import org.fireflow.engine.EngineException;
  *
  */
 public interface IProcessInstanceEventListener {
+	/**
+	 * 响应流程实例的事件。通过e.getEventType来判断事件的类型。
+	 * 流程实例有两种事件：<br/>
+	 * BEFORE_PROCESS_INSTANCE_RUN (= 2):在即将启动流程实例的时候触发的事件<br/>
+	 * AFTER_PROCESS_INSTANCE_COMPLETE (= 7):在流程实例结束后触发的事件
+	 * @param e 流程实例事件
+	 * @throws EngineException
+	 */
 	public void onProcessInstanceEventFired(ProcessInstanceEvent e)throws EngineException;
 }

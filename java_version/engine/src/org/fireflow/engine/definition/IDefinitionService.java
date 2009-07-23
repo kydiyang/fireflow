@@ -20,6 +20,7 @@ import java.util.List;
 import org.fireflow.engine.IRuntimeContextAware;
 
 /**
+ * 流程定义服务。
  * @author 非也，nychen2000@163.com
  *
  */

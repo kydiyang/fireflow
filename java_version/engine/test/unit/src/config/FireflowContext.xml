@@ -112,10 +112,10 @@
                 </value>
                 <value>
                 	/workflowdefinition/skip.xml
-                </value>
+                </value>           
                 <value>
-                	/workflowdefinition/LeaveApplicationProcess.xml
-                </value>                
+                	/workflowdefinition/CompleteWorkItemInAssignmentHandler.xml
+                </value> 
             </list>
         </property>
     </bean>

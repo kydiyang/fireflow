@@ -31,7 +31,9 @@ public class TaskInstanceEvent {
      */
     public static final int BEFORE_TASK_INSTANCE_START = 2;
     
-    
+    /**
+     * 当创建工作项之后
+     */
     public static final int AFTER_WORKITEM_CREATED = 5;
     
     /**

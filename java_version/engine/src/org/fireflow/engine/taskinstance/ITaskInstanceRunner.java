@@ -25,7 +25,7 @@ import org.fireflow.engine.RuntimeContext;
 import org.fireflow.kernel.KernelException;
 
 /**
- *
+ * 任务实例运行器
  * @author 非也
  * @version 1.0
  * Created on Mar 21, 2009

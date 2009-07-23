@@ -121,7 +121,10 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 				processInstance
 						.setParentProcessInstanceId(parentProcessInstanceId);
 				processInstance.setParentTaskInstanceId(parentTaskInstanceId);
-
+				
+				ctx.getPersistenceService().saveOrUpdateProcessInstance(
+						processInstance);
+				
 				// 初始化流程变量
 				List datafields = wfProcess.getDataFields();
 				for (int i = 0; datafields != null && i < datafields.size(); i++) {

@@ -21,7 +21,8 @@ import org.fireflow.engine.condition.ConditionResolver;
 import org.fireflow.engine.definition.DefinitionService4DBMS;
 
 /**
- *
+ * 在没有spring环境下构建RuntimeContext实例。<br/>
+ * (暂未实现)
  * @author chennieyun
  */
 public class RuntimeContextFactory {

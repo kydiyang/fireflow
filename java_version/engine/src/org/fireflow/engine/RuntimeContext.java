@@ -30,25 +30,59 @@ import org.fireflow.kernel.KernelManager;
 import org.fireflow.engine.condition.IConditionResolver;
 
 /**
- * RuntimeContext提供所有流程实例运行环境
+ * RuntimeContext是Fire workflow Engine的总线。所有的服务都挂接在这个总线上，并通过这个总线获取。<br/>
+ * RuntimeContext也是业务代码调用工作流引擎的入口，通过runtimeContext.getWorkflowSession()获得IWorkflowSession 对象，
+ * 然后通过IWorkflowSession调用各种工作流实例对象及其API。<br/>
+ * 
  * @author 非也,nychen2000@163.com
  *
  */
 public class RuntimeContext {
 
 //    private static RuntimeContext instance = null;
-    
+    /**
+     * 是否已经初始化
+     */
     private boolean isInitialized = false;
     //context管理的各种服务
+    /**
+     * 转移条件表达式解析服务
+     */
     private IConditionResolver conditionResolver = null;
+    
+    /**
+     * 实例对象存取服务
+     */
     private IPersistenceService persistenceService = null;
+    
+    /**
+     * 流程定义服务，通过该服务获取流程定义
+     */
     private IDefinitionService definitionService = null;
+    
+    /**
+     * 内核管理器
+     */
     private KernelManager kernelManager = null;
+    
+    /**
+     * TaskInstance 管理器，负责TaskInstance的创建、运行、结束。
+     */
     private ITaskInstanceManager taskInstanceManager = null;
+    
+    /**
+     * 日历服务，
+     */
     private ICalendarService calendarService = null;
+    
+    /**
+     * bean工厂，fire workflow默认使用spring作为其实现
+     */
     private IBeanFactory beanFactory = null;
 
-
+    /**
+     * 是否打开流程跟踪，如果打开，则会往T_FF_HIST_TRACE表中插入纪录。
+     */
     private boolean enableTrace = false;
 
 //    private ThreadLocal<Object> currentDBSession = new ThreadLocal<Object>();
@@ -63,7 +97,7 @@ public class RuntimeContext {
     }
 
     /**
-     * 该方法用户缓存诸如事件监听器，applicationHandler实例等。
+     * 根据bean的name返回bean的实例。<br/>
      * Fire workflow RuntimeContext将该工作委派给org.fireflow.engine.beanfactory.IBeanFatory
      * @param beanName Bean Name具体指什么是由IBeanFatory的实现类来决定的。
      * @return
@@ -104,7 +138,7 @@ public class RuntimeContext {
     }
 
     /**
-     * 返回任务管理器
+     * 返回TaskInstance管理器
      * @return
      */
     public ITaskInstanceManager getTaskInstanceManager() {
@@ -169,8 +203,11 @@ public class RuntimeContext {
     }
 
 
-
-
+    /**
+     * 初始化方法
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void initialize() throws EngineException, KernelException {
 //		System.out.println("执行initialize(),the isInitialized="+this.isInitialized);
 //		System.out.println("看看有没有 受理环节实例"+this.getKenelManager().getWFElementInstance("受理"));

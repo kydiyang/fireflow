@@ -150,6 +150,7 @@ public interface IWorkflowSession {
     /**
      * 查找并返回同一个指定版本业务流程的所有实例
      * @param processId The id of the process definition.
+     * @param version 流程版本号
      * @return A list of processInstance
      */	
     public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId,Integer version);
@@ -159,21 +160,21 @@ public interface IWorkflowSession {
 	 * 
 	 * @param id
 	 *            workitem id
-	 * @return
+	 * @return Workitem对象
 	 */
 	public IWorkItem findWorkItemById(String id);
 
 	/**
-	 * 查找某个操作员的所有工单
+	 * 查找某个操作员的所有工作项
 	 * 
 	 * @param actorId
 	 *            操作员Id
-	 * @return
+	 * @return 某个操作者的所有待办WorkItem列表
 	 */
 	public List<IWorkItem> findMyTodoWorkItems(String actorId);
 
 	/**
-	 * 返回某个操作员在流程实例processInstanceId中的所有工单
+	 * 返回某个操作员在流程实例processInstanceId中的所有工作项
 	 * 
 	 * @param actorId
 	 *            操作员Id
@@ -185,7 +186,7 @@ public interface IWorkflowSession {
 			String processInstanceId);
 
 	/**
-	 * 返回某个操作员在某个流程某个任务上的所有工单
+	 * 返回某个操作员在某个流程某个任务上的所有工作项
 	 * 
 	 * @param actorId
 	 *            操作员Id
@@ -211,7 +212,7 @@ public interface IWorkflowSession {
      * (Engine没有引用到该方法，提供给业务系统使用，20090303)
      * @param processInstanceId  the id of the process instance
      * @param activityId  if the activityId is null, then return all the taskinstance of the processinstance;
-     * @return
+     * @return 符合条件的TaskInstance列表
      */	
 	public List<ITaskInstance> findTaskInstancesForProcessInstance(java.lang.String processInstanceId, String activityId);
 	
@@ -224,14 +225,14 @@ public interface IWorkflowSession {
     /******************************************************************************/
 	
     /**
-     * 签收工单。如果任务实例的分配模式是ANY，则同一个任务实例的其他工单将被删除。
-     * 如果任务是里的分配模式是ALL，则此操作不影响同一个任务实例的其他工单的状态。<br/>
+     * 签收工作项。如果任务实例的分配模式是ANY，则同一个任务实例的其他工作项将被删除。
+     * 如果任务是里的分配模式是ALL，则此操作不影响同一个任务实例的其他工作项的状态。<br/>
      * 如果签收成功，则返回一个新的IWorkItem对象。<br/>
      * 如果签收失败，则返回null。<br/>
      * 例如：同一个TaskInstance被分配给Actor_1和Actor_2，且分配模式是ANY，即便Actor_1和Actor_2同时执行
      * 签收操作，也必然有一个人签收失败。系统对这种竞争性操作进行了同步。<br/>
      * 该方法和IWorkItem.claim()是等价的。
-     * @param workItemId 被签收的工单的Id
+     * @param workItemId 被签收的工作项的Id
      * @return 如果签收成功，则返回一个新的IWorkItem对象；否则返回null
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
@@ -241,13 +242,14 @@ public interface IWorkflowSession {
 	
 	
 	/**
-	 * 对已经结束的工单执行取回操作。<br/>
+	 * 对已经结束的工作项执行取回操作。<br/>
 	 * 只有满足如下约束才能正确执行取回操作：<br/>
 	 * 1、下一个环节没有Tool类型或者Subflow类型的Task；<br/>
 	 * 2、下一个环节Form类型的TaskInstance没有被签收。<br/>
 	 * 如果在本WorkItem成功执行了jumpTo操作或者loopTo操作，只要满足上述条件，也可以
      * 成功执行withdraw。<br/>
 	 * 该方法和IWorkItem.withdraw()等价
+	 * @param workItemId 工作项Id
 	 * @return 如果取回成功，则创建一个新的WorkItem 并返回该WorkItem
 	 * @throws EngineException
 	 * @throws KernelException
@@ -259,6 +261,7 @@ public interface IWorkflowSession {
      * 该操作必须满足如下条件：<br/>
      * 1、前驱环节中没有没有Tool类型和Subflow类型的Task；<br/>
      * 2、没有合当前TaskInstance并行的其他TaskInstance；<br/>
+     * @param workItemId 工作项Id
      * @throws EngineException
      * @throws KernelException
      */
@@ -269,6 +272,8 @@ public interface IWorkflowSession {
      * 该操作必须满足如下条件：<br/>
      * 1、前驱环节中没有没有Tool类型和Subflow类型的Task；<br/>
      * 2、没有合当前TaskInstance并行的其他TaskInstance；<br/>
+     * @param workItemId 工作项Id
+     * @param comments 备注信息
      * @throws EngineException
      * @throws KernelException
      */    
@@ -284,6 +289,7 @@ public interface IWorkflowSession {
      * 2、判断TaskInstance对应的ActivityInstance是否可以结束。如果ActivityInstance的complete strategy
      * 为ANY，或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance<br/>
      * 3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem
+     * @param workItemId 工作项Id
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
@@ -297,8 +303,8 @@ public interface IWorkflowSession {
      * 2、判断TaskInstance对应的ActivityInstance是否可以结束。如果ActivityInstance的complete strategy
      * 为ANY，或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance<br/>
      * 3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem
-     * @param workItemId
-     * @param comments
+     * @param workItemId 工作项Id
+     * @param comments 备注信息
      * @throws EngineException
      * @throws KernelException
      */
@@ -312,9 +318,9 @@ public interface IWorkflowSession {
      * 2、判断TaskInstance对应的ActivityInstance是否可以结束。如果ActivityInstance的complete strategy
      * 为ANY，或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance<br/>
      * 3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem
-     * @param workItemId
-     * @param dynamicAssignmentHandler 用于指定下一个岗位的操作员。
-     * @param comments
+     * @param workItemId 工作项Id
+     * @param dynamicAssignmentHandler 通过动态分配句柄指定下一个环节的操作者。
+     * @param comments 备注信息
      * @throws EngineException
      * @throws KernelException
      */
@@ -322,29 +328,47 @@ public interface IWorkflowSession {
 
     
     /**
-     * 结束当前WorkItem,启动指定的Activity，引擎调用流程设计时指定的AssignmentHandler分配任务。<br/>
+     * 结束当前WorkItem，跳转到指定的Activity<br/>
      * 只有满足如下条件的情况下，该方法才能成功执行，否则抛出EngineException，流程状态恢复到调用该方法之前的状态。<br/>
      * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
-     * 2)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
-     * 3)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
+     * 2)当前Task的assignment为Task.ANY。或者当前Task的assignment为Task.ALL(汇签)，且本WorkItem结束后可以使得TaskInstance结束；与之相反的情况是，
+     * 尚有其他参与汇签的操作者没有完成其工作项，这时engine拒绝跳转操作<br/>
+     * 3)当前TaskInstance结束后,可以使得当前的ActivityInstance结束。与之相反的情况是，当前Activity包含了多个Task，且Activity的Complete Strategy是ALL，
+     * 尚有其他的TaskInstance仍然处于活动状态，这种情况下执行jumpTo操作会被拒绝。
+     * @param workItemId 工作项Id
      * @param targetActivityId 将要被启动的ActivityId
      * @throws org.fireflow.engine.EngineException 
      * @throws org.fireflow.kenel.KenelException
      */
     public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId) throws EngineException, KernelException;
 
+    /**
+     * 结束当前WorkItem，跳转到指定的Activity<br/>
+     * 只有满足如下条件的情况下，该方法才能成功执行，否则抛出EngineException，流程状态恢复到调用该方法之前的状态。<br/>
+     * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
+     * 2)当前Task的assignment为Task.ANY。或者当前Task的assignment为Task.ALL(汇签)，且本WorkItem结束后可以使得TaskInstance结束；与之相反的情况是，
+     * 尚有其他参与汇签的操作者没有完成其工作项，这时engine拒绝跳转操作<br/>
+     * 3)当前TaskInstance结束后,可以使得当前的ActivityInstance结束。与之相反的情况是，当前Activity包含了多个Task，且Activity的Complete Strategy是ALL，
+     * 尚有其他的TaskInstance仍然处于活动状态，这种情况下执行jumpTo操作会被拒绝。
+     * @param workItemId 工作项Id
+     * @param targetActivityId 下一个环节的Id
+     * @param comments 备注信息
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void completeWorkItemAndJumpTo(String workItemId,String targetActivityId,String comments) throws EngineException, KernelException;
 
 
     /**
-     * 结束当前WorkItem，启动指定的Activity，引擎将新的TaskInstance分配给nextActorIds<br/>
+     * 结束当前WorkItem，跳转到指定的Activity<br/>
      * 只有满足如下条件的情况下，该方法才能成功执行，否则抛出EngineException，流程状态恢复到调用该方法之前的状态。<br/>
      * 1)当前Activity和即将启动的Acitivty必须在同一个执行线上<br/>
-     * 2)如果当前Task的assignment为Task.ALL且本WorkItem结束后仍然不能使得TaskInstance结束，引擎将抛出EngineException异常<br/>
-     * 3)如果当前的Activity包含多个TaskInstance，且当前TaskInstance结束后ActivityInstance仍然不能结束，引擎将抛出EngineException异常
-     * @param targetActivityId
-     * @param nextActorIds
-     * @param needClaim 是否需要签收
+     * 2)当前Task的assignment为Task.ANY。或者当前Task的assignment为Task.ALL(汇签)，且本WorkItem结束后可以使得TaskInstance结束；与之相反的情况是，
+     * 尚有其他参与汇签的操作者没有完成其工作项，这时engine拒绝跳转操作<br/>
+     * 3)当前TaskInstance结束后,可以使得当前的ActivityInstance结束。与之相反的情况是，当前Activity包含了多个Task，且Activity的Complete Strategy是ALL，
+     * 尚有其他的TaskInstance仍然处于活动状态，这种情况下执行jumpTo操作会被拒绝。     * @param targetActivityId
+     * @param dynamicAssignmentHandler 可以通过该参数指定下一个环节的Actor，如果这个参数不为空，则引擎忽略下一个环节的Task定义中的AssignmentHandler
+     * @param comments 备注信息
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
@@ -352,16 +376,18 @@ public interface IWorkflowSession {
     
 
     /**
-     * 将工单委派给其他人，自己的工单变成CANCELED状态
+     * 将工作项委派给其他人，自己的工作项变成CANCELED状态
+     * @param workItemId 工作项Id
      * @param actorId 接受任务的操作员Id
+     * @return 新创建的工作项
      */    
     public IWorkItem reasignWorkItemTo(String workItemId,String actorId) throws EngineException;
     
     /**
-     * 将工单委派给其他人，自己的工单变成CANCELED状态。返回新创建的工单
+     * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
      * @param actorId 接受任务的操作员Id
      * @param comments 相关的备注信息
-     * @return 新创建的工单
+     * @return 新创建的工作项
      */    
     public IWorkItem reasignWorkItemTo(String workItemId,String actorId,String comments) throws EngineException;
 	
@@ -374,7 +400,8 @@ public interface IWorkflowSession {
     /******************************************************************************/		
 	/**
 	 * 将TaskInstance挂起
-	 * @param taskInstanceId
+	 * @param taskInstanceId 
+	 * @return 被挂起的任务实例
 	 */
     public ITaskInstance suspendTaskInstance(String taskInstanceId)throws EngineException;
     
@@ -392,14 +419,21 @@ public interface IWorkflowSession {
     /************                                                        **********/
     /************                                                        **********/    
     /******************************************************************************/	
+    /**
+     * 设置当前WorkflowSession是在一个取回或者拒收的操作环境中。
+     * @param b true表示是在一个取回或者拒收的操作环境中；false表示不是在取回或者拒收的操作环境中
+     */
 	public void setWithdrawOrRejectOperationFlag(boolean b);
 
-	
+	/**
+	 * 判断当前workflow session是否处于取回或者拒收的操作环境中
+	 * @return  true表示是在一个取回或者拒收的操作环境中；false表示不是在取回或者拒收的操作环境中
+	 */
 	public boolean isInWithdrawOrRejectOperation();
 
 	
 	/**
-	 * 设置一个动态任务分配处理器。
+	 * 设置一个动态任务分配处理句柄。
 	 * @param dynamicAssignmentHandler
 	 */
 	public void setDynamicAssignmentHandler(

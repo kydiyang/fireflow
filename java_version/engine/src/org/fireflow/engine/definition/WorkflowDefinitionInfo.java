@@ -2,8 +2,15 @@ package org.fireflow.engine.definition;
 
 import java.util.Date;
 
+/**
+ * 流程定义相关信息对象
+ * @author 非也
+ *
+ */
 public class WorkflowDefinitionInfo {
-
+	public static final String FPDL_PROCESS = "FPDL";
+	public static final String XPDL_PROCESS = "XPDL";
+	public static final String BPEL_PROCESS = "BPEL";
     protected String id;
     protected String processId;
     protected String name;
@@ -15,7 +22,7 @@ public class WorkflowDefinitionInfo {
     protected Date uploadTime;//上载到数据库的时间
     protected String publishUser;//发布人
     protected Date publishTime;//发布时间
-    protected String definitionType;//定义文件的语言类型，fpdl,xpdl,bepl...
+    protected String definitionType = FPDL_PROCESS;//定义文件的语言类型，fpdl,xpdl,bepl...
     
     public String getDisplayName() {
         return displayName;

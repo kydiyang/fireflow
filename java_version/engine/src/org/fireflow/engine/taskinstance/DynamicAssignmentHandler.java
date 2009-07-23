@@ -26,11 +26,18 @@ import org.fireflow.kernel.KernelException;
 import org.fireflow.model.FormTask;
 
 /**
- *
+ * 动态任务分配句柄，用于指定后续环节的操作员。
  * @author 非也,nychen2000@163.com
  */
 public class DynamicAssignmentHandler implements IAssignmentHandler{
+	/**
+	 * 工作项是否需要签收
+	 */
     boolean needClaim = false;
+    
+    /**
+     * 操作员Id列表
+     */
     List actorIdsList = null;
     
     public void assign(IAssignable asignable, String performerName) throws EngineException, KernelException {

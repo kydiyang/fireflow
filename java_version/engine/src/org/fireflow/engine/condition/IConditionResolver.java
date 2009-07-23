@@ -28,7 +28,7 @@ public interface IConditionResolver {
      * 解析条件表达式。条件表达是必须是一个值为boolean类型的EL表达式
      * @param vars 变量列表
      * @param elExpression 条件表达式 
-     * @return
+     * @return 返回条件表达式的计算结果
      */
-    public boolean resolveBooleanExpression(Map vars, String elExpression);
+    public boolean resolveBooleanExpression(Map vars, String elExpression) throws Exception;
 }

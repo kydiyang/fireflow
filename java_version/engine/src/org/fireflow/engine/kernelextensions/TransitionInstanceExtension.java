@@ -17,16 +17,18 @@
 package org.fireflow.engine.kernelextensions;
 
 import java.util.Map;
+
+import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.condition.ConditionConstant;
-import org.fireflow.kernel.ITransitionInstance;
-import org.fireflow.kernel.KernelException;
 import org.fireflow.engine.condition.IConditionResolver;
 import org.fireflow.engine.impl.ProcessInstanceTrace;
 import org.fireflow.kernel.IToken;
-import org.fireflow.kernel.event.IEdgeInstanceEventListener;
+import org.fireflow.kernel.ITransitionInstance;
+import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.EdgeInstanceEvent;
+import org.fireflow.kernel.event.IEdgeInstanceEventListener;
 import org.fireflow.kernel.impl.TransitionInstance;
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.IWFElement;
@@ -58,7 +60,7 @@ public class TransitionInstanceExtension implements IKernelExtension,
      * @param transInst
      * @return
      */
-    private boolean determineTheAliveOfToken(Map vars, String condition) {
+    private boolean determineTheAliveOfToken(Map vars, String condition) throws Exception{
 //        System.out.println("Inside SynchronizerInstance.DeterminTheAliveOfToken():: joinPoint.getAlive =" + joinPoint.getAlive());
 //        if (!joinPoint.getAlive()) {
 //            return false;
@@ -86,7 +88,7 @@ public class TransitionInstanceExtension implements IKernelExtension,
         return b;
     }
 
-    public void calculateTheAliveValue(IToken token, String condition) {
+    public void calculateTheAliveValue(IToken token, String condition)throws EngineException {
 
         if (!token.isAlive()) {
             return;//如果token是dead状态，表明synchronizer的joinpoint是dead状态，不需要重新计算。
@@ -103,8 +105,12 @@ public class TransitionInstanceExtension implements IKernelExtension,
         }
 
         //3、计算EL表达式
-        boolean alive = determineTheAliveOfToken(token.getProcessInstance().getProcessInstanceVariables(), condition);
-        token.setAlive(alive);
+        try{
+	        boolean alive = determineTheAliveOfToken(token.getProcessInstance().getProcessInstanceVariables(), condition);
+	        token.setAlive(alive);
+        }catch(Exception ex){
+        	throw new EngineException(token.getProcessInstanceId(),token.getProcessInstance().getWorkflowProcess(),token.getNodeId(),ex.getMessage());
+        }
 
     }
 
