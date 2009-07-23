@@ -26,13 +26,23 @@ import org.fireflow.model.Task;
 import org.fireflow.model.net.Activity;
 
 /**
- *
+ * 任务实例创建器
  * @author 非也
  * @version 1.0
  * Created on Mar 21, 2009
  */
 public interface ITaskInstanceCreator {
 
+	/**
+	 * 创建任务实例
+	 * @param currentSession
+	 * @param runtimeContxt
+	 * @param processInstance
+	 * @param task
+	 * @param activity
+	 * @return
+	 * @throws EngineException
+	 */
     public ITaskInstance createTaskInstance(IWorkflowSession currentSession,RuntimeContext runtimeContxt,
             IProcessInstance processInstance, Task task, Activity activity) throws EngineException;
 }

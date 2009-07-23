@@ -25,35 +25,39 @@ import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
 import org.fireflow.engine.IRuntimeContextAware;
+
 /**
+ * 缺省使用apache的JEXL实现条件表达式的解析。
  * @author 非也,nychen2000@163.com
  * 
- *
+ * 
  */
-public class ConditionResolver implements IConditionResolver,IRuntimeContextAware {
-        protected RuntimeContext rtCtx = null;
-        
-	/* (non-Javadoc)
-	 * @see org.fireflow.kenel.condition.IConditionResolver#resolveBooleanExpression(java.lang.String)
+public class ConditionResolver implements IConditionResolver,
+		IRuntimeContextAware {
+	protected RuntimeContext rtCtx = null;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.fireflow.kenel.condition.IConditionResolver#resolveBooleanExpression
+	 * (java.lang.String)
 	 */
-	public boolean resolveBooleanExpression(Map vars,String elExpression) {
-		// TODO Auto-generated method stub
-		try{
-			Expression expression = ExpressionFactory.createExpression(elExpression);
-			JexlContext jexlCtx = JexlHelper.createContext();
-			jexlCtx.setVars(vars);
-			Object obj = expression.evaluate(jexlCtx);
-			return (Boolean)obj;
-		}catch(Exception ex){
-			ex.printStackTrace();
-			return false;
-		}
+	public boolean resolveBooleanExpression(Map vars, String elExpression)
+			throws Exception {
+		Expression expression = ExpressionFactory
+				.createExpression(elExpression);
+		JexlContext jexlCtx = JexlHelper.createContext();
+		jexlCtx.setVars(vars);
+		Object obj = expression.evaluate(jexlCtx);
+		return (Boolean) obj;
 	}
 
-    public void setRuntimeContext(RuntimeContext ctx) {
-        rtCtx = ctx;
-    }
-    public RuntimeContext getRuntimeContext(){
-        return this.rtCtx;
-    } 
+	public void setRuntimeContext(RuntimeContext ctx) {
+		rtCtx = ctx;
+	}
+
+	public RuntimeContext getRuntimeContext() {
+		return this.rtCtx;
+	}
 }

@@ -8,4 +8,6 @@
     <bean id="org.fireflow.engine.taskinstance.AssignmentHandlerMock" class="org.fireflow.engine.taskinstance.AssignmentHandlerMock"/>
 
     <bean id="org.fireflow.engine.taskinstance.SMSHandler" class="org.fireflow.engine.taskinstance.SMSHandler"/>
+    
+    <bean id="org.fireflow.engine.taskinstance.AssignToCurrentUserAndCompleteWorkItemHandler" class="org.fireflow.engine.taskinstance.AssignToCurrentUserAndCompleteWorkItemHandler"/>
 </beans>

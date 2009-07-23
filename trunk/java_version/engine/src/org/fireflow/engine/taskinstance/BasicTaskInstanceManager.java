@@ -53,6 +53,7 @@ import org.fireflow.model.WorkflowProcess;
 import org.springframework.beans.BeanUtils;
 
 /**
+ * 缺省的任务实例管理器实现。
  * @author 非也,chennieyun
  * 
  */
@@ -335,6 +336,13 @@ public class BasicTaskInstanceManager implements
     protected boolean activityInstanceCanBeCompleted(ITaskInstance taskInstance) throws EngineException {
         IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
         Activity thisActivity = (Activity) taskInstance.getActivity();
+        //检查是否有尚未创建的TaskInstance
+        if (thisActivity.getTasks().size()>1){
+        	List taskInstanceList = persistenceService.findTaskInstancesForProcessInstanceByStepNumber(taskInstance.getProcessInstanceId(), taskInstance.getStepNumber());
+        	if (taskInstanceList==null || taskInstanceList.size()<thisActivity.getTasks().size()){
+        		return false;
+        	}
+        }
         if (thisActivity.getCompletionStrategy().equals(Activity.ALL)) {
             Integer aliveTaskInstanceCount4ThisActivity = persistenceService.getAliveTaskInstanceCountForActivity(taskInstance.getProcessInstanceId(), taskInstance.getActivityId());
 

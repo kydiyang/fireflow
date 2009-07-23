@@ -16,12 +16,14 @@
  */
 package org.fireflow.engine.taskinstance;
 
+import org.fireflow.engine.EngineException;
 import org.fireflow.engine.ITaskInstance;
 
 /**
+ * 调用后台程序逻辑的句柄。
  * @author chennieyun
  *
  */
 public interface IApplicationHandler {
-    public void execute(ITaskInstance taskInstance);
+    public void execute(ITaskInstance taskInstance)throws EngineException;
 }

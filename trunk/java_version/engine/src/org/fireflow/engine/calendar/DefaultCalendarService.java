@@ -104,10 +104,10 @@ public class DefaultCalendarService implements ICalendarService {
 
     public DefaultCalendarService() {
         //初始化businessCalendarProperties
-        businessCalendarProperties.setProperty(hour_format, "HH:mm");
-        businessCalendarProperties.setProperty(day_format, "yyyy-MM-dd");
-        businessCalendarProperties.setProperty(business_time, "8:30-12:00 & 13:30-17:30");
-        businessCalendarProperties.setProperty(hours_of_business_day, "7.5");
+        businessCalendarProperties.setProperty(hour_format, "HH:mm");//时间格式
+        businessCalendarProperties.setProperty(day_format, "yyyy-MM-dd");//日期格式
+        businessCalendarProperties.setProperty(business_time, "8:30-12:00 & 13:30-17:30");//工作时段
+        businessCalendarProperties.setProperty(hours_of_business_day, "7.5"); //每天工作时间
     }
 
     /**

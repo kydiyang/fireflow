@@ -1,8 +1,9 @@
 ﻿#############################################################
-###  org-fireflow-engine-1.0.0-beta-build???.jar      ###
+###  org-fireflow-engine-1.0.0-beta-build090723.jar       ###
 #############################################################
 1、IWorkflowSession.claimWorkItem(workItemId,taskInstanceId)改为IWorkflowSession.claimWorkItem(workItemid)
 2、在IWorkflowSession中增加了setAttribute(Object)和getAttribute()方法，用于传递参数
+3、修正了在AssignmentHandler中结束workItem导致ActivityInstance的结束操作异常的bug
 
 
 #############################################################

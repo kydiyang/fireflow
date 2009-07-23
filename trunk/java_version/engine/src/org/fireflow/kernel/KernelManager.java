@@ -77,8 +77,12 @@ public class KernelManager implements IRuntimeContextAware {
         workflowProcess = workflowDef.getWorkflowProcess();
 
 //		Map nodeInstanceMap = new HashMap();
-        if (workflowProcess == null || workflowProcess.validate() != null) {
-            return null;
+        if (workflowProcess == null ){
+        	throw new KernelException(null,null,"The WorkflowProcess property of WorkflowDefinition[processId="+workflowDef.getProcessId()+"] is null. ");
+        }
+        String validateMsg =  workflowProcess.validate();
+        if (validateMsg != null){
+        	throw new KernelException(null,null,validateMsg);
         }
         NetInstance netInstance = new NetInstance(workflowProcess, kernelExtensions);
 //        netInstance.setWorkflowProcess(workflowProcess);

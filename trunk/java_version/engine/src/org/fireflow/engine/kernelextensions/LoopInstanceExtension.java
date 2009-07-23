@@ -17,6 +17,8 @@
 package org.fireflow.engine.kernelextensions;
 
 import java.util.Map;
+
+import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.condition.IConditionResolver;
@@ -30,74 +32,85 @@ import org.fireflow.kernel.impl.LoopInstance;
 import org.fireflow.kernel.plugin.IKernelExtension;
 
 /**
- *
+ * 
  * @author 非也
- * @version 1.0
- * Created on Mar 18, 2009
+ * @version 1.0 Created on Mar 18, 2009
  */
 public class LoopInstanceExtension implements IKernelExtension,
-        IEdgeInstanceEventListener, IRuntimeContextAware {
+		IEdgeInstanceEventListener, IRuntimeContextAware {
 
-    protected RuntimeContext rtCtx = null;
+	protected RuntimeContext rtCtx = null;
 
-    public void setRuntimeContext(RuntimeContext ctx) {
-        this.rtCtx = ctx;
-    }
+	public void setRuntimeContext(RuntimeContext ctx) {
+		this.rtCtx = ctx;
+	}
 
-    public RuntimeContext getRuntimeContext() {
-        return this.rtCtx;
-    }
+	public RuntimeContext getRuntimeContext() {
+		return this.rtCtx;
+	}
 
-    public String getExtentionTargetName() {
-        return LoopInstance.Extension_Target_Name;
-    }
+	public String getExtentionTargetName() {
+		return LoopInstance.Extension_Target_Name;
+	}
 
-    public String getExtentionPointName() {
-        return LoopInstance.Extension_Point_LoopInstanceEventListener;
-    }
+	public String getExtentionPointName() {
+		return LoopInstance.Extension_Point_LoopInstanceEventListener;
+	}
 
-    private boolean determineTheAliveOfToken(Map vars, String condition) {
-        // TODO通过计算transition上的表达式来确定alive的值
+	private boolean determineTheAliveOfToken(Map vars, String condition)
+			throws Exception {
+		// TODO通过计算transition上的表达式来确定alive的值
 
-        IConditionResolver elResolver = this.rtCtx.getConditionResolver();
-        Boolean b = elResolver.resolveBooleanExpression(vars, condition);
+		IConditionResolver elResolver = this.rtCtx.getConditionResolver();
+		Boolean b = elResolver.resolveBooleanExpression(vars, condition);
 
-        return b;
-    }
-    public void calculateTheAliveValue(IToken token, String condition) {
-            if (!token.isAlive()) {
-                return;//如果token是dead状态，表明synchronizer的joinpoint是dead状态，不需要重新计算。
-            }
+		return b;
+	}
 
-            //1、如果没有循环条件，默认为false
-            if (condition == null || condition.trim().equals("")) {
-                token.setAlive(false);
-                return;
-            }
-            //3、计算EL表达式
-            boolean alive = determineTheAliveOfToken(token.getProcessInstance().getProcessInstanceVariables(), condition);
-            token.setAlive(alive);
-    }
-    public void onEdgeInstanceEventFired(EdgeInstanceEvent e) throws KernelException {
+	public void calculateTheAliveValue(IToken token, String condition)throws EngineException {
+		if (!token.isAlive()) {
+			return;// 如果token是dead状态，表明synchronizer的joinpoint是dead状态，不需要重新计算。
+		}
 
-        if (e.getEventType() == EdgeInstanceEvent.ON_TAKING_THE_TOKEN) {
-            IToken token = e.getToken();
-            //计算token的alive值
-            ILoopInstance transInst = (ILoopInstance) e.getSource();
-            String condition = transInst.getLoop().getCondition();
+		// 1、如果没有循环条件，默认为false
+		if (condition == null || condition.trim().equals("")) {
+			token.setAlive(false);
+			return;
+		}
+		// 3、计算EL表达式
+		try {
+			boolean alive = determineTheAliveOfToken(token.getProcessInstance()
+					.getProcessInstanceVariables(), condition);
+			token.setAlive(alive);
+		} catch (Exception ex) {
+			throw new EngineException(token.getProcessInstanceId(), token
+					.getProcessInstance().getWorkflowProcess(), token
+					.getNodeId(), ex.getMessage());
+		}
+	}
 
-            calculateTheAliveValue(token,condition);
-            
-            if (rtCtx.isEnableTrace() && token.isAlive()) {
-                ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                trace.setProcessInstanceId(e.getToken().getProcessInstanceId());
-                trace.setStepNumber(e.getToken().getStepNumber()+1);
-                trace.setType(ProcessInstanceTrace.LOOP_TYPE);
-                trace.setFromNodeId(transInst.getLoop().getFromNode().getId());
-                trace.setToNodeId(transInst.getLoop().getToNode().getId());
-                trace.setEdgeId(transInst.getLoop().getId());
-                rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
-            }
-        }
-    }
+	public void onEdgeInstanceEventFired(EdgeInstanceEvent e)
+			throws KernelException {
+
+		if (e.getEventType() == EdgeInstanceEvent.ON_TAKING_THE_TOKEN) {
+			IToken token = e.getToken();
+			// 计算token的alive值
+			ILoopInstance transInst = (ILoopInstance) e.getSource();
+			String condition = transInst.getLoop().getCondition();
+
+			calculateTheAliveValue(token, condition);
+
+			if (rtCtx.isEnableTrace() && token.isAlive()) {
+				ProcessInstanceTrace trace = new ProcessInstanceTrace();
+				trace.setProcessInstanceId(e.getToken().getProcessInstanceId());
+				trace.setStepNumber(e.getToken().getStepNumber() + 1);
+				trace.setType(ProcessInstanceTrace.LOOP_TYPE);
+				trace.setFromNodeId(transInst.getLoop().getFromNode().getId());
+				trace.setToNodeId(transInst.getLoop().getToNode().getId());
+				trace.setEdgeId(transInst.getLoop().getId());
+				rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(
+						trace);
+			}
+		}
+	}
 }

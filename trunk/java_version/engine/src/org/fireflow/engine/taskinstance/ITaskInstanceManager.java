@@ -29,6 +29,7 @@ import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 
 /**
+ * 任务实例管理器
  * @author chennieyun
  *
  */
@@ -112,7 +113,7 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
     /**
      * 撤销刚才执行的Complete动作，系统将创建并返回一个新的Running状态的WorkItem
      * @param workItem
-     * @return
+     * @return 新创建的工作项
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kernel.KernelException
      */
@@ -121,11 +122,11 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
     public void rejectWorkItem(IWorkItem workItem,String comments) throws  EngineException, KernelException ;
 
     /**
-     * 将工单位派给其他人，自己的工单变成CANCELED状态。返回新创建的WorkItem.
+     * 将工作项位派给其他人，自己的工作项变成CANCELED状态。返回新创建的WorkItem.
      * @param workItem 我的WorkItem
      * @param actorId 被委派的Actor的Id
      * @param comments 备注信息
-     * @return 新创建的工单
+     * @return 新创建的工作项
      */
     public IWorkItem reasignWorkItemTo(IWorkItem workItem,String actorId,String comments);
 }
