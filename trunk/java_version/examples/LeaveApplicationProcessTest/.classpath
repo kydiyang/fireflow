@@ -31,7 +31,6 @@
 	<classpathentry kind="lib" path="libs/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="libs/commons-pool-1.4.jar"/>
 	<classpathentry kind="lib" path="libs/jta.jar"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.5-bin.jar"/>
 	<classpathentry kind="lib" path="libs/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="libs/fireflow/org-fireflow-engine-1.0.0-beta-build090723.jar"/>
 	<classpathentry kind="lib" path="libs/fireflow/org-fireflow-model-1.0.0-beta-build090723.jar"/>
