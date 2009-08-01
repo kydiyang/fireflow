@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/fireflow_thirdparty/antlr-2.7.6rc1.jar"/>
 	<classpathentry kind="lib" path="libs/fireflow_thirdparty/asm-attrs.jar"/>
