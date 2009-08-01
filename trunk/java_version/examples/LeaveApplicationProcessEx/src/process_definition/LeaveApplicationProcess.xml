@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fpdl:WorkflowProcess PUBLIC "-//Nieyun Chen//ProcessDefinition//CN" "FireFlow_Process_Definition_Language.dtd">
 
-<fpdl:WorkflowProcess xmlns:fpdl="http://www.fireflow.org/Fireflow_Process_Definition_Language" Id="LeaveApplicationProcess" Name="LeaveApplicationProcess" DisplayName="LeaveApplicationProcess" ResourceFile="" ResourceManager="">
+<fpdl:WorkflowProcess xmlns:fpdl="http://www.fireflow.org/Fireflow_Process_Definition_Language" Id="LeaveApplicationProcess" Name="LeaveApplicationProcess" DisplayName="LeaveApplicationProcess" ResourceFile="" ResourceManager="" TaskInstanceCreator="org.fireflow.example.leaveapplication.workflowextension.LeaveApplicationTaskInstanceCreator">
     <fpdl:DataFields>
         <fpdl:DataField Id="LeaveApplicationProcess.leaveDays" Name="leaveDays" DisplayName="请假天数" DataType="INTEGER" InitialValue="1"/>
         <fpdl:DataField Id="LeaveApplicationProcess.approvalFlag" Name="approvalFlag" DisplayName="审批意见" DataType="BOOLEAN" InitialValue="false"/>
@@ -120,6 +120,8 @@
         <fpdl:Transition Id="LeaveApplicationProcess.Transition11" From="LeaveApplicationProcess.Send_Email_Activity" To="LeaveApplicationProcess.EndNode1" Name="Transition11" DisplayName="">
             <fpdl:Condition></fpdl:Condition>
         </fpdl:Transition>
-        <fpdl:Transition Id="LeaveApplicationProcess.Transition6" From="LeaveApplicationProcess.Synchronizer2" To="LeaveApplicationProcess.Send_Email_Activity" Name="Transition6"/>
+        <fpdl:Transition Id="LeaveApplicationProcess.Transition6" From="LeaveApplicationProcess.Synchronizer2" To="LeaveApplicationProcess.Send_Email_Activity" Name="Transition6" DisplayName="">
+            <fpdl:Condition></fpdl:Condition>
+        </fpdl:Transition>
     </fpdl:Transitions>
 </fpdl:WorkflowProcess>
