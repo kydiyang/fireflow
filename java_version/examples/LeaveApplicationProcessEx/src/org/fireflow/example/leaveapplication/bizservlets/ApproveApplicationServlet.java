@@ -21,6 +21,7 @@ import org.fireflow.example.leaveapplication.data.LeaveApplicationInfo;
 import org.fireflow.example.leaveapplication.data.LeaveApplicationInfoDAO;
 import org.fireflow.example.leaveapplication.data.LeaveApprovalInfo;
 import org.fireflow.example.leaveapplication.data.LeaveApprovalInfoDAO;
+import org.fireflow.example.leaveapplication.workflowextension.LeaveApplicationTaskInstanceExtension;
 import org.fireflow.example.ou.User;
 import org.fireflow.model.FormTask;
 import org.springframework.transaction.TransactionStatus;
@@ -77,13 +78,18 @@ public class ApproveApplicationServlet extends HttpServlet {
 				leaveApplicationInfo.setApprovalDetail(leaveApprovalInfo.getDetail());
 				leaveApplicationInfoDAO.update(leaveApplicationInfo);
 				
-				//将审批意见更新到流程变量中去
+				//将审批意见更新到流程变量中去和扩展TaskInstance中去
 				String currentProcessInstanceId = req.getParameter("currentProcessInstanceId");
 				IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
 				IProcessInstance processInstance = workflowSession.findProcessInstanceById(currentProcessInstanceId);
 				if(processInstance!=null){
 					processInstance.setProcessInstanceVariable("approvalFlag", leaveApprovalInfo.getApprovalFlag());
 				}
+				
+				String workItemId = req.getParameter("selectedWorkItemId");
+				IWorkItem workItem = workflowSession.findWorkItemById(workItemId);
+				((LeaveApplicationTaskInstanceExtension)workItem.getTaskInstance()).setApprovalFlag(leaveApprovalInfo.getApprovalFlag());
+				
 				return null;
 			}
 		});

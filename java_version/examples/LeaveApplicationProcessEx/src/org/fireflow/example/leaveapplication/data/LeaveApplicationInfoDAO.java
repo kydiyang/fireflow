@@ -1,7 +1,9 @@
 package org.fireflow.example.leaveapplication.data;
 
 import java.sql.SQLException;
+import java.util.List;
 
+import org.fireflow.example.leaveapplication.workflowextension.LeaveApplicationTaskInstanceExtension;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -40,5 +42,26 @@ public class LeaveApplicationInfoDAO extends HibernateDaoSupport {
 		});
 		
 		return result;
+	}
+	
+	/**
+	 * 通过申请人的姓名查询TaskInstance。
+	 * 该方法同时演示了通过PersistenceService之外的DAO对流程表做复杂查询。
+	 * 很多复杂查询PersistenceService是无能为力的。
+	 * @param name
+	 * @return
+	 */
+	public List findTaskInstanceListByApplicantName(final String name){
+		List result = (List)this.getHibernateTemplate().execute(new HibernateCallback(){
+
+			@Override
+			public Object doInHibernate(Session arg0)
+					throws HibernateException, SQLException {
+				Criteria cr = arg0.createCriteria(LeaveApplicationTaskInstanceExtension.class);
+				cr.add(Expression.eq("applicant", name));
+				return cr.list();
+			}
+		});
+		return result;		
 	}
 }
