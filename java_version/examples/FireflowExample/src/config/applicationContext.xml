@@ -21,7 +21,7 @@
 	<import
 		resource="applicationContext-misc.xml" />		
 	<!-- hsqldb数据源	-->
-	<!-- 
+	<!--  -->
 		<bean id="MyDataSource"
 		class="org.apache.commons.dbcp.BasicDataSource"> <property
 		name="driverClassName" value="org.hsqldb.jdbcDriver"> </property>
@@ -29,10 +29,10 @@
 		value="jdbc:hsqldb:hsql://localhost:9001/fireflow"> </property>
 		<property name="username" value="sa"></property> <property
 		name="password" value=""></property> </bean>
- -->
+
 	
 	<!-- oracle数据源  -->
-	<!-- -->
+	<!-- 
 	<bean id="MyDataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="oracle.jdbc.OracleDriver">
 		</property>
@@ -41,7 +41,7 @@
 		<property name="username" value="fireflow"></property>
 		<property name="password" value="fireflow"></property>
 	</bean>
-	 
+	 -->
 	
 	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
 	<bean id="nativeJdbcExtractor"
