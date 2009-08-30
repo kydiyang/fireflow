@@ -1,7 +1,7 @@
-﻿#############################################################
+#############################################################
 ###  org-fireflow-engine-1.0.0-beta-build090830.jar       ###
 #############################################################
-1、修正IAssignable.asignToActor()和IAssignableasignToActors()中的单词错误
+1、修正IAssignable.asignToActor()和IAssignableasignToActors()中的错误单词"asign"
 2、增加ITaskInstance.abort(...)方法
 3、增加After_Workitem_Complete事件
 
