@@ -35,6 +35,7 @@ import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.definition.IDefinitionService;
 import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.persistence.IPersistenceService;
+import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.engine.taskinstance.IAssignable;
 import org.fireflow.engine.taskinstance.ITaskInstanceManager;
 import org.fireflow.kernel.IActivityInstance;
@@ -259,14 +260,30 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
 //	public void setWorkItems(Set workItems) {
 //		this.workItems = workItems;
 //	}
+    /**
+     * "asign"这个单词写错了，将会被废除。（20090830）
+     * @deprecated
+     */
     public IWorkItem asignToActor(String id) throws EngineException, KernelException {
+        return assignToActor(id);
+    }    
+    
+    public IWorkItem assignToActor(String id) throws EngineException, KernelException {
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         WorkItem wi = taskInstanceMgr.createWorkItem(this.workflowSession,this.getAliveProcessInstance(),this, id);    	
         return wi;
     }
 
+    /**
+     * "asign"这个单词写错了，将会被废除。（20090830）
+     * @deprecated
+     */    
     public List<IWorkItem> asignToActors(List<String> ids) throws EngineException, KernelException {
-        //task应该有一个标志(asignToEveryone)，表明asign的规则
+       return assignToActors(ids);
+    }
+    
+    public List<IWorkItem> assignToActors(List<String> ids) throws EngineException, KernelException {
+        //task应该有一个标志(asignToEveryone)，表明asign的规则 (?)
         List<IWorkItem> workItemList = new ArrayList<IWorkItem>();
         for (int i = 0; ids != null && i < ids.size(); i++) {
             ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
@@ -416,6 +433,49 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
         persistenceService.saveOrUpdateTaskInstance(this);
     }
+
+	public void abort() throws EngineException, KernelException {
+		abort(null);
+		
+	}
+
+	public void abort(String targetActivityId)
+			throws EngineException, KernelException {
+		abort(targetActivityId,null);
+		
+	}
+
+	public void abort(String targetActivityId,
+			DynamicAssignmentHandler dynamicAssignmentHandler)
+			throws EngineException, KernelException {
+		
+    	if (this.workflowSession==null){
+    		new EngineException(this.getProcessInstanceId(),
+    				this.getWorkflowProcess(),this.getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getProcessInstanceId(),
+    				this.getWorkflowProcess(),this.getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+    	
+        if ((this.getState().intValue() == ITaskInstance.COMPLETED ) ||
+        		(this.getState().intValue()==ITaskInstance.CANCELED)) {
+            throw new EngineException(this.getProcessInstanceId(), this.getWorkflowProcess(),
+                    this.getTaskId(),
+                    "Abort task instance failed . The state of the task instance [id=" + this.getId() + "] is " + this.getState());
+        }    	
+    	
+    	if (dynamicAssignmentHandler!=null){
+    		this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+    	}		
+
+    	
+        ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
+        taskInstanceMgr.abortTaskInstance(this.workflowSession, this.getAliveProcessInstance(), this, targetActivityId);
+    	
+	}
 
   
 //    public String getTokenId() {

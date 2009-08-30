@@ -19,6 +19,9 @@ package org.fireflow.engine.taskinstance;
 
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IWorkItem;
+import org.fireflow.engine.IWorkflowSession;
+import org.fireflow.engine.IWorkflowSessionAware;
+import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.kernel.KernelException;
 
 /**
@@ -30,6 +33,11 @@ import org.fireflow.kernel.KernelException;
 public class CurrentUserAssignmentHandlerMock implements IAssignmentHandler{
     public static final String ACTOR_ID = "Fireflow JUnit Tester";
     public void assign(IAssignable asignable, String performerName) throws EngineException, KernelException {
+    	TaskInstance taskInstance = (TaskInstance)asignable;
+    	IWorkflowSession workflowSession = ((IWorkflowSessionAware)taskInstance).getCurrentWorkflowSession();
+    	
+    	System.out.println("+++++++++++++Current Workflow Session is "+workflowSession.hashCode());
+    	System.out.println("+++++++++++ x in current workflow session is "+workflowSession.getAttribute("x"));
         IWorkItem wi = asignable.asignToActor(ACTOR_ID);
         wi.claim();
     }

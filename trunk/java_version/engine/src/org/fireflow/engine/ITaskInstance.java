@@ -19,6 +19,7 @@ package org.fireflow.engine;
 import java.util.Date;
 import java.util.List;
 
+import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
@@ -227,5 +228,34 @@ public interface ITaskInstance {
 	 */
 	public void restore() throws EngineException;
 
+	/**
+	 * 将该TaskInstance中止，并且使得当前流程实例按照流程定义往下流转。</br>
+	 * 与该TaskInstance相关的WorkItem都被置为Canceled状态。</br>
+	 * 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。</br>
+	 * @throws EngineException
+	 */
+	public void abort() throws EngineException,KernelException;
+	
+	/**
+	 * 将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。</br>
+	 * 与该TaskInstance相关的WorkItem都被置为Canceled状态。</br>
+	 * 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。</br>
+	 * @param targetActivityId
+	 * @throws EngineException
+	 * @throws KernelException
+	 */
+	public void abort(String targetActivityId) throws EngineException,KernelException;
+	
+	/**
+	 * 将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。该环节任务的操作人从dynamicAssignmentHandler获取。</br>
+	 * 与该TaskInstance相关的WorkItem都被置为Canceled状态。</br>
+	 * 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。</br>
+	 * @param targetActivityId
+	 * @param dynamicAssignmentHandler
+	 * @param comments
+	 * @throws EngineException
+	 * @throws KernelException
+	 */
+	public void abort(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException;
 	// public Set getWorkItems() ;
 }

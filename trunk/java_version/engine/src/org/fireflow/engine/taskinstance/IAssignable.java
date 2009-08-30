@@ -44,6 +44,16 @@ public interface IAssignable {
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
+    public IWorkItem assignToActor(String actorId) throws EngineException,KernelException;
+    
+    /**
+     * 该方法的单词assign写错了，被废弃
+     * @param actorId
+     * @return
+     * @throws EngineException
+     * @throws KernelException
+     * @deprecated
+     */
     public IWorkItem asignToActor(String actorId) throws EngineException,KernelException;
 
     /**
@@ -55,6 +65,16 @@ public interface IAssignable {
      * @return  返回创建的WorkItem列表
      * @throws org.fireflow.engine.EngineException
      * @throws org.fireflow.kenel.KenelException
+     */
+    public List<IWorkItem> assignToActors(List<String> actorIds) throws EngineException,KernelException;
+    
+    /**
+     * 该方法的assign单词写错了，被废弃
+     * @param actorIds
+     * @return
+     * @throws EngineException
+     * @throws KernelException
+     * @deprecated
      */
     public List<IWorkItem> asignToActors(List<String> actorIds) throws EngineException,KernelException;
 }
