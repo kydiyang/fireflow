@@ -220,6 +220,15 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
     				"The current runtime context is null.");    		
     	}
+
+        if (this.getState().intValue() != IWorkItem.RUNNING) {
+            TaskInstance thisTaskInst = (TaskInstance) this.getTaskInstance();
+//			System.out.println("WorkItem的当前状态为"+this.getState()+"，不可以执行complete操作。");
+            throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
+                    thisTaskInst.getTaskId(),
+                    "Complete work item failed . The state of the work item [id=" + this.getId() + "] is " + this.getState());
+        }    	
+    	
     	if (dynamicAssignmentHandler!=null){
     		this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
     	}

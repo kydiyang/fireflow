@@ -24,6 +24,8 @@ public class DefaultTaskInstanceEventListener implements
 		}
 		else if (e.getEventType()==TaskInstanceEvent.AFTER_WORKITEM_CREATED){
 			afterWorkItemCreated(session,proceInst,taskInst,wi);
+		}else if (e.getEventType()==TaskInstanceEvent.AFTER_WORKITEM_COMPLETE){
+			afterWorkItemComplete(session,proceInst,taskInst,wi);
 		}
 
 	}
@@ -40,4 +42,9 @@ public class DefaultTaskInstanceEventListener implements
 			IProcessInstance processInstance,ITaskInstance taskInstance,IWorkItem workItem)throws EngineException{
     	
     }
+    
+    protected void afterWorkItemComplete(IWorkflowSession currentSession,
+			IProcessInstance processInstance,ITaskInstance taskInstance,IWorkItem workItem)throws EngineException{
+//    	System.out.println("---------------------------------after workitem complete!!!!!!!!!!!!!!");
+    }    
 }

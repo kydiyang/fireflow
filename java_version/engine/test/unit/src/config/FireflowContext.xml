@@ -116,6 +116,12 @@
                 <value>
                 	/workflowdefinition/CompleteWorkItemInAssignmentHandler.xml
                 </value> 
+                <value>
+				 /workflowdefinition/AbortTaskInstance.xml
+                </value>          
+                <value>
+				 /workflowdefinition/AbortTaskInstance2.xml
+                </value>   
             </list>
         </property>
     </bean>

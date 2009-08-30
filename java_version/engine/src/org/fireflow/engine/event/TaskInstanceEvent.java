@@ -37,9 +37,17 @@ public class TaskInstanceEvent {
     public static final int AFTER_WORKITEM_CREATED = 5;
     
     /**
+     * 当工作项完成之后
+     */
+    public static final int AFTER_WORKITEM_COMPLETE = 6;
+    
+    /**
      * 在任务实例结束时触发的事件
      */
     public static final int AFTER_TASK_INSTANCE_COMPLETE = 7;
+    
+    
+    
     int eventType = -1;
     ITaskInstance source = null;
     IWorkflowSession workflowSession = null;
