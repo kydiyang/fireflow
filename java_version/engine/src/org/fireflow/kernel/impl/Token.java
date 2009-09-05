@@ -17,8 +17,11 @@
 package org.fireflow.kernel.impl;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.fireflow.engine.EngineConstant;
 import org.fireflow.engine.IProcessInstance;
-//import org.fireflow.kenel.IRuntimeContext;
 import org.fireflow.kernel.IToken;
 
 /**
@@ -39,7 +42,12 @@ public class Token implements IToken {
 
     private String fromActivityId = null;
 
-    private transient IProcessInstance processInstance = null;
+    /**
+     * 这个信息应该存放在contextInfo中，（20090906）
+     */
+//    private transient IProcessInstance processInstance = null;
+    
+    private transient Map contextInfo = new HashMap();
     /* (non-Javadoc)
      * @see org.fireflow.kenel.IToken#getCurrentNodeInstance()
      */
@@ -105,12 +113,13 @@ public class Token implements IToken {
     }
 
     public IProcessInstance getProcessInstance() {
-        return processInstance;
+    	return (IProcessInstance)this.contextInfo.get(EngineConstant.CURRENT_PROCESS_INSTANCE);
     }
 
     public void setProcessInstance(IProcessInstance inst) {
-        processInstance = inst;
-        if (this.processInstance != null) {
+//        processInstance = inst;
+    	this.contextInfo.put(EngineConstant.CURRENT_PROCESS_INSTANCE, inst);
+        if (inst != null) {
             this.processInstanceId = inst.getId();
         } else {
             this.processInstanceId = null;
@@ -166,5 +175,9 @@ public class Token implements IToken {
 
     public void setFromActivityId(String s) {
         this.fromActivityId = s;
+    }
+    
+    public Map getContextInfo(){
+    	return this.contextInfo;
     }
 }

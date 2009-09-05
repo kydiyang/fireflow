@@ -16,8 +16,7 @@
  */
 package org.fireflow.kernel;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.fireflow.engine.IProcessInstance;
 /**
@@ -79,4 +78,11 @@ public interface IToken {
      */
     public String getFromActivityId();
     public void setFromActivityId(String s);
+    
+    /**
+     * 返回Engine的当前上下文信息，如WorkflowSession,等。
+     * 这些信息不保存到数据库    
+     * @return
+     */
+    public Map getContextInfo();
 }
