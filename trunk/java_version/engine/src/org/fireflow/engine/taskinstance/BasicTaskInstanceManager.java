@@ -970,7 +970,16 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 							.getTaskId(),
 					"Reject operation refused!The assignment strategy is 'ALL'");
 		}
-
+        //----added by wmj2003 20090915 ---start---
+        //处理拒收的边界问题
+        if(thisTaskInstance.getFromActivityId().equals(IToken.FROM_START_NODE)){
+                throw new EngineException(
+                                thisTaskInstance.getProcessInstanceId(),
+                                thisTaskInstance.getWorkflowProcess(),
+                                thisTaskInstance.getTaskId(),
+                                "Reject operation refused!Because the from activityId equals "+IToken.FROM_START_NODE );
+        }
+        //----added by wmj2003 20090915 ---end---
 		IPersistenceService persistenceService = this.rtCtx
 				.getPersistenceService();
 		List siblingTaskInstancesList = null;

@@ -122,6 +122,9 @@
                 <value>
 				 /workflowdefinition/AbortTaskInstance2.xml
                 </value>   
+                <value>
+				 /workflowdefinition/MultiTasksPerActivity.xml
+                </value>                  
             </list>
         </property>
     </bean>

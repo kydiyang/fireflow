@@ -187,4 +187,16 @@ public interface IProcessInstance {
      * @throws org.fireflow.engine.EngineException
      */
     public void restore() throws EngineException;
+    
+    
+    /**
+     * 对当前流程实例进行调整。用于直接指定当前哪些Activity处于活动状态，活动状态的TaskInstance的操作者。
+     * 对于已经处于活动状态的，但是不在AjustmentStrategy的活动Activity列表中的Activity，将被abort()
+     * AjustmentStrategy的格式应该是：activityActivityId:taskId:performerIdList:needClaim
+     * 算法：1）首先校验AjustmentStrategy的合法性，两个活动的activity之间不能有先后关系
+     * 2）根据Fire Workflow工作流网的数量关系，构建token集合。
+     * 3）出发ActivityInstance.fire(token)方法
+     * @throws EngineException
+     */
+//    public void ajust()throws EngineException;
 }
