@@ -1,4 +1,11 @@
 #############################################################
+###  org-fireflow-engine-1.0.0-release-build0909??.jar    ###
+#############################################################
+1、增加IProcessInstance.adjust(...)方法，用于调整流程事例，即强行指定哪些Activity是活动的
+2、增加IWorkItem.jumpToEx(...)方法，即“超级自由流”
+3、增加ITaskInstance.abortEx(...)方法
+
+#############################################################
 ###  org-fireflow-engine-1.0.0-beta-build090830.jar       ###
 #############################################################
 1、修正IAssignable.asignToActor()和IAssignableasignToActors()中的错误单词"asign"
