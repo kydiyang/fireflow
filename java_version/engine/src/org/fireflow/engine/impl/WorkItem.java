@@ -52,8 +52,18 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     private Date endTime;
     private String comments;
     private ITaskInstance taskInstance;
+    
     protected transient RuntimeContext rtCtx = null;
     protected transient IWorkflowSession workflowSession = null;
+    
+    private String taskInstanceId; //added by wangmj 20090922 供springjdbc实现类使用
+    public String getTaskInstanceId(){
+    	return taskInstanceId;
+    }
+    public void setTaskInstanceId(String taskInstanceId){
+    	this.taskInstanceId=taskInstanceId;
+    }
+    
 
     public void setRuntimeContext(RuntimeContext ctx) {
         this.rtCtx = ctx;
@@ -153,6 +163,7 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
 
     public void setTaskInstance(ITaskInstance taskInstance) {
         this.taskInstance = taskInstance;
+        this.taskInstanceId = taskInstance.getId();//added by wmj2003 20090924
     }
 
     public String getActorId() {
