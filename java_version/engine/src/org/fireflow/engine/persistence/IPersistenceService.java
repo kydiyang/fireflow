@@ -501,6 +501,15 @@ public interface IPersistenceService extends IRuntimeContextAware{
     
 
     /********************************process instance trace info **********************/
+    /**
+     * 保存或者更新流程实例运行轨迹
+     * @param processInstanceTrace
+     */
     public void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);
+    /**
+     * 根据流程实例ID查找流程实例运行轨迹
+     * @param processInstanceId 流程实例ID
+     * @return
+     */
     public List findProcessInstanceTraces(String processInstanceId);
 }
