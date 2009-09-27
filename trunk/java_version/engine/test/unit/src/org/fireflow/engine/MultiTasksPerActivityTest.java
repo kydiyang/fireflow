@@ -43,7 +43,7 @@ public class MultiTasksPerActivityTest {
         transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
         runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
 
-        //é¦–å…ˆå°†è¡¨ä¸­çš„æ•°æ®æ¸…é™¤
+        //Ê×ÏÈ½«±íÖĞµÄÊı¾İÇå³ı
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -55,7 +55,7 @@ public class MultiTasksPerActivityTest {
     }
 
     /**
-     * åˆ›å»ºæµç¨‹å®ä¾‹ï¼Œå¹¶æ‰§è¡Œå®ä¾‹çš„runæ–¹æ³•ã€‚
+     * ´´½¨Á÷³ÌÊµÀı£¬²¢Ö´ĞĞÊµÀıµÄrun·½·¨¡£
      */
     @Test
     public void testStartNewProcess() {
@@ -66,7 +66,7 @@ public class MultiTasksPerActivityTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
 
-                    //å¯åŠ¨"/workflowdefinition/example_workflow.xml"ä¸­çš„â€œé€è´§æµç¨‹â€
+                    //Æô¶¯"/workflowdefinition/example_workflow.xml"ÖĞµÄ¡°ËÍ»õÁ÷³Ì¡±
                     IProcessInstance processInstance = workflowSession.createProcessInstance("MultiTasksPerActivity",CurrentUserAssignmentHandlerMock.ACTOR_ID);
 
                     processInstance.run();
@@ -148,7 +148,7 @@ public class MultiTasksPerActivityTest {
 
         workItemId_3 = ((IWorkItem) workItemList.get(0)).getId();
 
-        //Task4åº”è¯¥ä¸è¢«å®ä¾‹åŒ–
+        //Task4Ó¦¸Ã²»±»ÊµÀı»¯
         workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity4.Task4");
         if(workItemList==null){
         	assertNull(workItemList);
