@@ -274,6 +274,9 @@ public interface IWorkItem{
     public void jumpTo(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
     
 
+    public void jumpToEx(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments) throws EngineException, KernelException ;
+    
+    
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项。
      * @param actorId 接受任务的操作员Id

@@ -944,6 +944,119 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		this.completeWorkItem(workItem, targetActivityInstance, comments);
 	}
 
+	/**
+	 * 自由流方法扩展，去除“同一执行线”的限制
+	 */
+	public void completeWorkItemAndJumpToEx(IWorkItem workItem,
+			String targetActivityId, String comments) throws EngineException,
+			KernelException {
+		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
+				.getCurrentWorkflowSession();
+		
+		
+		// 首先检查是否可以正确跳转
+		
+		// 1）检查是否在同一个“执行线”上
+		WorkflowProcess workflowProcess = workItem.getTaskInstance()
+				.getWorkflowProcess();
+		String thisActivityId = workItem.getTaskInstance().getActivityId();
+		TaskInstance thisTaskInst = (TaskInstance) workItem.getTaskInstance();
+		
+//		boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId,
+//		targetActivityId);		
+//		if (!isInSameLine) {
+//			throw new EngineException(
+//					thisTaskInst.getProcessInstanceId(),
+//					thisTaskInst.getWorkflowProcess(),
+//					thisTaskInst.getTaskId(),
+//					"Jumpto refused because of the current activitgy and the target activity are NOT in the same 'Execution Thread'.");
+//		}
+
+		// 2）检查目标Activity Form Task的数量(暂时关闭该检查项目)
+		// Activity targetActivity =
+		// (Activity)workflowProcess.findWFElementById(activityId);
+		// int count = getFormTaskCount(targetActivity);
+		// if (count!=1){
+		// if (!isInSameLine) throw new
+		// EngineException("Jumpto refused because of the  FORM-type-task count of the target activitgy  is NOT 1; the count is "+count);
+		// }
+
+		// 3)检查当前的 taskinstance是否可以结束
+		IPersistenceService persistenceService = rtCtx.getPersistenceService();
+
+		Integer aliveWorkItemCount = persistenceService
+				.getAliveWorkItemCountForTaskInstance(thisTaskInst.getId());
+		if (aliveWorkItemCount != null && aliveWorkItemCount > 1) {
+			throw new EngineException(
+					thisTaskInst.getProcessInstanceId(),
+					thisTaskInst.getWorkflowProcess(),
+					thisTaskInst.getTaskId(),
+					"Jumpto refused because of current taskinstance can NOT be completed. some workitem of this taskinstance is in runing state or initialized state");
+
+		}
+
+		// 4)检查当前的activity instance是否可以结束
+		if (Activity.ALL.equals(workItem.getTaskInstance().getActivity()
+				.getCompletionStrategy())) {
+
+			Integer aliveTaskInstanceCount4ThisActivity = persistenceService
+					.getAliveTaskInstanceCountForActivity(workItem
+							.getTaskInstance().getProcessInstanceId(), workItem
+							.getTaskInstance().getActivityId());
+			if (aliveTaskInstanceCount4ThisActivity.intValue() > 1) {// 大于2表明当前Activity不可以complete
+				throw new EngineException(
+						thisTaskInst.getProcessInstanceId(),
+						thisTaskInst.getWorkflowProcess(),
+						thisTaskInst.getTaskId(),
+						"Jumpto refused because of current activity instance can NOT be completed. some task instance of this activity instance is in runing state or initialized state");
+			}
+		}
+		
+		//4)首先检查目标状态M是否存在冲突,如果存在冲突则不允许跳转；如果不存在冲突，则需要调整token
+				
+
+		
+		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
+				workflowProcess.getId(),
+				workItem.getTaskInstance().getVersion());
+		if (netInstance == null) {
+			throw new EngineException(thisTaskInst.getProcessInstanceId(),
+					thisTaskInst.getWorkflowProcess(),
+					thisTaskInst.getTaskId(),
+					"Not find the net instance for workflow process [id="
+							+ workflowProcess.getId() + ", version="
+							+ workItem.getTaskInstance().getVersion() + "]");
+		}
+		Object obj = netInstance.getWFElementInstance(targetActivityId);
+		IActivityInstance targetActivityInstance = (IActivityInstance) obj;
+		if (targetActivityInstance == null) {
+			throw new EngineException(thisTaskInst.getProcessInstanceId(),
+					thisTaskInst.getWorkflowProcess(),
+					thisTaskInst.getTaskId(),
+					"Not find the activity instance  for activity[process id="
+							+ workflowProcess.getId() + ", version="
+							+ workItem.getTaskInstance().getVersion()
+							+ ",activity id=" + targetActivityId + "]");
+		}
+
+		if (rtCtx.isEnableTrace()) {
+
+			ProcessInstanceTrace trace = new ProcessInstanceTrace();
+			trace.setProcessInstanceId(workItem.getTaskInstance()
+					.getProcessInstanceId());
+			trace.setStepNumber(workItem.getTaskInstance().getStepNumber() + 1);
+			trace.setType(ProcessInstanceTrace.JUMPTO_TYPE);
+			trace.setFromNodeId(workItem.getTaskInstance().getActivityId());
+			trace.setToNodeId(targetActivityId);
+			trace.setEdgeId("");
+			rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(
+					trace);
+		}
+
+		this.completeWorkItem(workItem, targetActivityInstance, comments);
+	}
+	
+	
 	public void rejectWorkItem(IWorkItem workItem, String comments)
 			throws EngineException, KernelException {
 		Activity thisActivity = workItem.getTaskInstance().getActivity();

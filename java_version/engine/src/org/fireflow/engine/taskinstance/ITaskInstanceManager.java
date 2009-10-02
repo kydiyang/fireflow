@@ -124,6 +124,8 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
      */
     public void completeWorkItemAndJumpTo(IWorkItem workItem,String targetActivityId, String comments) throws EngineException, KernelException ;
 
+    public void completeWorkItemAndJumpToEx(IWorkItem workItem,String targetActivityId, String comments) throws EngineException, KernelException ;
+
     /**
      * 撤销刚才执行的Complete动作，系统将创建并返回一个新的Running状态的WorkItem
      * @param workItem
