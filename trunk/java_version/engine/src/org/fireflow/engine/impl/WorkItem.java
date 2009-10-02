@@ -340,6 +340,24 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         taskInstanceManager.completeWorkItemAndJumpTo(this, targetActivityId,comments);
     }
 
+    public void jumpToEx(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments) throws EngineException, KernelException {
+    	if (this.workflowSession==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getTaskInstance().getProcessInstanceId(),
+    				this.getTaskInstance().getWorkflowProcess(),this.getTaskInstance().getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+    	if (dynamicAssignmentHandler!=null){
+    		this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+    	}
+        ITaskInstanceManager taskInstanceManager = this.rtCtx.getTaskInstanceManager();
+        taskInstanceManager.completeWorkItemAndJumpToEx(this, targetActivityId,comments);
+    }    
+    
     public IWorkflowSession getCurrentWorkflowSession() {
         return this.workflowSession;
     }

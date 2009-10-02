@@ -4,6 +4,7 @@
 1、增加IProcessInstance.adjust(...)方法，用于调整流程事例，即强行指定哪些Activity是活动的
 2、增加IWorkItem.jumpToEx(...)方法，即“超级自由流”
 3、增加ITaskInstance.abortEx(...)方法
+4、引入IK-Expression作为条件表达式解析器
 
 #############################################################
 ###  org-fireflow-engine-1.0.0-beta-build090830.jar       ###
