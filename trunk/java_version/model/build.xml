@@ -14,7 +14,7 @@
 	</target>
 	
 	<target name="jar-outer">
-		<jar destfile="org-fireflow-model-1.0.0-beta-build${buildnumber}.jar"
+		<jar destfile="org-fireflow-model-1.0.0-release-build${buildnumber}.jar"
 			basedir="${build.dir}"></jar>
 
 	</target>	
@@ -22,7 +22,7 @@
 	<target name="zip-file" depends="jar-inner,jar-outer">
 		<zip destfile="Fire_Workflow_Model.zip"
 			basedir="${basedir}"
-			includes="org-fireflow-model-1.0.0-beta-build${buildnumber}.jar,change_logs.txt">
+			includes="org-fireflow-model-1.0.0-release-build${buildnumber}.jar,change_logs.txt">
 		</zip>
 	</target>
 </project>
