@@ -484,7 +484,14 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.jumpTo(targetActivityId, dynamicAssignmentHandler, comments);
 
 	}
+	public void completeWorkItemAndJumpToEx(String workItemId,
+			String targetActivityId,
+			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
+			throws EngineException, KernelException {
+		IWorkItem wi = this.findWorkItemById(workItemId);
+		wi.jumpToEx(targetActivityId, dynamicAssignmentHandler, comments);
 
+	}
 	public IProcessInstance findProcessInstanceById(final String id) {
 		try {
 			return (IProcessInstance) this

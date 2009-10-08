@@ -248,6 +248,7 @@ public interface ITaskInstance {
 	
 	/**
 	 * 将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。该环节任务的操作人从dynamicAssignmentHandler获取。</br>
+	 * 当前环节和目标环节必须在同一条“执行线”上</br>
 	 * 与该TaskInstance相关的WorkItem都被置为Canceled状态。</br>
 	 * 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。</br>
 	 * @param targetActivityId
@@ -257,5 +258,17 @@ public interface ITaskInstance {
 	 * @throws KernelException
 	 */
 	public void abort(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException;
+	
+	/**
+	 * 将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。该环节任务的操作人从dynamicAssignmentHandler获取。</br>
+	 * 当前环节和目标环节 可以不在 同一条“执行线”上</br>
+	 * 与该TaskInstance相关的WorkItem都被置为Canceled状态。</br>
+	 * 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。</br>
+	 * @param targetActivityId
+	 * @param dynamicAssignmentHandler
+	 * @throws EngineException
+	 * @throws KernelException
+	 */
+	public void abortEx(String targetActivityId,DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException;
 	// public Set getWorkItems() ;
 }

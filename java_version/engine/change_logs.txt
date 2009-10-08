@@ -1,10 +1,9 @@
 #############################################################
-###  org-fireflow-engine-1.0.0-release-build0909??.jar    ###
+###  org-fireflow-engine-1.0.0-release-build091008.jar    ###
 #############################################################
-1、增加IProcessInstance.adjust(...)方法，用于调整流程事例，即强行指定哪些Activity是活动的
-2、增加IWorkItem.jumpToEx(...)方法，即“超级自由流”
-3、增加ITaskInstance.abortEx(...)方法
-4、引入IK-Expression作为条件表达式解析器
+1、增加IWorkItem.jumpToEx(...)方法，取消了当前环节和目标环节必须在同一条执行线的限制，使得自由流更加自由
+2、增加ITaskInstance.abortEx(...)方法，取消了当前环节和目标环节必须在同一条执行线的限制，
+3、引入IK-Expression作为条件表达式解析器
 
 #############################################################
 ###  org-fireflow-engine-1.0.0-beta-build090830.jar       ###

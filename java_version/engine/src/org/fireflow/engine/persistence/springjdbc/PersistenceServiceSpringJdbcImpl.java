@@ -655,14 +655,14 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#deleteTokensForNodes(java.lang.String, java.util.List)
 	     */
-	    public void deleteTokensForNodes(final String processInstanceId, final List<String> nodeIdsList) {
+	    public void deleteTokensForNodes(final String processInstanceId, final List nodeIdsList) {
 	    	
 	    	super.getJdbcTemplate().batchUpdate(
 	                "delete from t_ff_rt_token where processinstance_id = ? and node_id=? ",
 	                new BatchPreparedStatementSetter() {
 	                    public void setValues(PreparedStatement ps, int i) throws SQLException {
 	                        ps.setString(1, processInstanceId);
-	                        ps.setString(2, nodeIdsList.get(i));
+	                        ps.setString(2, (String)nodeIdsList.get(i));
 	                    }
 
 	                    public int getBatchSize() {

@@ -87,6 +87,18 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
     public void abortTaskInstance(IWorkflowSession currentSession, IProcessInstance processInstance,
             ITaskInstance taskInstance, String targetActivityId) throws EngineException, KernelException ;
     
+    /**
+     * 中止task instance。
+     * @param currentSession
+     * @param processInstance
+     * @param taskInstance
+     * @param targetActivityInstance
+     * @throws EngineException
+     * @throws KernelException
+     */
+    public void abortTaskInstanceEx(IWorkflowSession currentSession, IProcessInstance processInstance,
+            ITaskInstance taskInstance, String targetActivityId) throws EngineException, KernelException ;
+    
     
     /**
      * 根据TaskInstance创建workItem。

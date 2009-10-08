@@ -354,6 +354,12 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         //记录结束时间
         this.setEndTime(rtCtx.getCalendarService().getSysDate());
         rtCtx.getPersistenceService().saveOrUpdateProcessInstance(this);
+        
+        //删除所有的token
+        for (int i = 0; tokens != null && i < tokens.size(); i++) {
+            IToken token = tokens.get(i);
+            rtCtx.getPersistenceService().deleteToken(token);
+        }
 
         //触发事件
         ProcessInstanceEvent event = new ProcessInstanceEvent();

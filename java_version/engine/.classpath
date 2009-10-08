@@ -40,6 +40,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/FireflowModel"/>
 	<classpathentry kind="lib" path="libs_4_unit_test/junit-4.6.jar"/>
 	<classpathentry kind="lib" path="libs_4_unit_test/ojdbc14.jar"/>
-	<classpathentry kind="lib" path="libs/IKExpression2.1.1.jar"/>
+	<classpathentry kind="lib" path="libs/IKExpression2.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

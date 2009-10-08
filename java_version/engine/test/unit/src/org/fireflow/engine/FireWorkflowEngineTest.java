@@ -50,7 +50,7 @@ public class FireWorkflowEngineTest {
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
-    private final static String mobile = "123123123123";
+    private final static String mobile = "";//null;//"123123123123";
 
     //-----variables-----------------
 
@@ -230,7 +230,7 @@ public class FireWorkflowEngineTest {
         assertNotNull(tokensListOnEndNode);
         assertEquals(1, tokensListOnEndNode.size());
         IToken tokenOnEndNode = (IToken)tokensListOnEndNode.get(0);
-        if (mobile==null){
+        if (mobile==null || mobile.equals("")){
             assertEquals(Boolean.FALSE,tokenOnEndNode.isAlive());
         }else{
             assertEquals(Boolean.TRUE,tokenOnEndNode.isAlive());
@@ -242,7 +242,7 @@ public class FireWorkflowEngineTest {
         deliverGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
 
         List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(this.currentProcessInstance.getId(), "Goods_Deliver_Process.TZSH");
-        assertEquals(mobile==null,taskInstanceList.size()==0);
+        assertEquals(mobile==null || mobile.equals(""),taskInstanceList.size()==0);
         assertEquals(mobile!=null && !mobile.equals(""),taskInstanceList.size()==1);
     }
 

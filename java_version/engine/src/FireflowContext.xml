@@ -16,7 +16,7 @@
             <ref local="persistenceService"/>
         </property>
         <property name="conditionResolver">
-            <ref local="conditionResolver"/>
+            <ref local="ikConditionResolver"/>
         </property>
         <property name="calendarService">
             <ref local="calendarService"/>
@@ -122,6 +122,8 @@
     <bean id="conditionResolver" class="org.fireflow.engine.condition.ConditionResolver">
     </bean>
 
+    <bean id="ikConditionResolver" class="org.fireflow.engine.condition.IKConditionResolver">
+    </bean>
 
     <bean id="springBeanFactory" class="org.fireflow.engine.beanfactory.SpringBeanFactory">
     </bean>
