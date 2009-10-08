@@ -33,8 +33,8 @@ public class Token implements IToken {
 //	private INetInstance currentProcessInstance;
 //	private ITransitionInstance transitionInstance;
 
-    private Boolean alive = null;
-    private Integer value = null;
+    private Boolean alive = Boolean.FALSE;
+    private Integer value = 0;
     private String nodeId = null;
     private String id = null;
     private String processInstanceId = null;

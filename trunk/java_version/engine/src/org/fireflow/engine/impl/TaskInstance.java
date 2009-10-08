@@ -477,6 +477,35 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     	
 	}
 
+	public void abortEx(String targetActivityId,DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException{
+		
+    	if (this.workflowSession==null){
+    		new EngineException(this.getProcessInstanceId(),
+    				this.getWorkflowProcess(),this.getTaskId(),
+    				"The current workflow session is null.");
+    	}
+    	if (this.rtCtx==null){
+    		new EngineException(this.getProcessInstanceId(),
+    				this.getWorkflowProcess(),this.getTaskId(),
+    				"The current runtime context is null.");    		
+    	}
+    	
+        if ((this.getState().intValue() == ITaskInstance.COMPLETED ) ||
+        		(this.getState().intValue()==ITaskInstance.CANCELED)) {
+            throw new EngineException(this.getProcessInstanceId(), this.getWorkflowProcess(),
+                    this.getTaskId(),
+                    "Abort task instance failed . The state of the task instance [id=" + this.getId() + "] is " + this.getState());
+        }    	
+    	
+    	if (dynamicAssignmentHandler!=null){
+    		this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+    	}		
+
+    	
+        ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
+        taskInstanceMgr.abortTaskInstanceEx(this.workflowSession, this.getAliveProcessInstance(), this, targetActivityId);
+    			
+	}
   
 //    public String getTokenId() {
 //        return tokenId;

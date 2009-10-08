@@ -374,6 +374,16 @@ public interface IWorkflowSession {
      */
     public void completeWorkItemAndJumpTo(String workItemId,String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
     
+    /**
+     * 相较于completeWorkItemAndJumpTo，取消了“在同一执行线”的限制。
+     * @param workItemId
+     * @param targetActivityId
+     * @param dynamicAssignmentHandler
+     * @param comments
+     * @throws EngineException
+     * @throws KernelException
+     */
+    public void completeWorkItemAndJumpToEx(String workItemId,String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
 
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态

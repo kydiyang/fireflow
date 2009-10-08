@@ -17,8 +17,11 @@
 package org.fireflow.engine.taskinstance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.IRuntimeContextAware;
@@ -26,30 +29,34 @@ import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.IWorkflowSessionAware;
-import org.fireflow.engine.impl.TaskInstance;
-import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.kernel.IActivityInstance;
-import org.fireflow.kernel.IToken;
-import org.fireflow.kernel.KernelException;
-import org.fireflow.model.net.Activity;
-import org.fireflow.model.Task;
-
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.beanfactory.IBeanFactory;
 import org.fireflow.engine.calendar.ICalendarService;
 import org.fireflow.engine.event.ITaskInstanceEventListener;
 import org.fireflow.engine.event.TaskInstanceEvent;
 import org.fireflow.engine.impl.ProcessInstanceTrace;
+import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
 import org.fireflow.engine.impl.WorkflowSession;
+import org.fireflow.engine.persistence.IPersistenceService;
+import org.fireflow.kernel.IActivityInstance;
 import org.fireflow.kernel.INetInstance;
 import org.fireflow.kernel.ISynchronizerInstance;
+import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.ITransitionInstance;
+import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.impl.Token;
 import org.fireflow.model.Duration;
 import org.fireflow.model.EventListener;
 import org.fireflow.model.FormTask;
+import org.fireflow.model.IWFElement;
+import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
+import org.fireflow.model.net.Activity;
+import org.fireflow.model.net.EndNode;
+import org.fireflow.model.net.Node;
+import org.fireflow.model.net.Synchronizer;
+import org.fireflow.model.net.Transition;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -674,6 +681,223 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 
 	}
 
+	public final void abortTaskInstanceEx(IWorkflowSession currentSession,
+			IProcessInstance processInstance, ITaskInstance thisTaskInst,
+			String targetActivityId) throws EngineException, KernelException {
+		// 如果TaskInstance处于结束状态，则直接返回
+		if (thisTaskInst.getState() == ITaskInstance.COMPLETED
+				|| thisTaskInst.getState() == ITaskInstance.CANCELED) {
+			return;
+		}
+		
+		// Initialized状态的TaskInstance也可以中止，20090830
+		// if (taskInstance.getState() == ITaskInstance.INITIALIZED) {
+		// WorkflowProcess process = taskInstance.getWorkflowProcess();
+		// throw new EngineException(taskInstance.getProcessInstanceId(),
+		// process,
+		// taskInstance.getTaskId(),
+		// "Complete task insatance failed.The state of the task insatnce[id=" +
+		// taskInstance.getId() + "] is " + taskInstance.getState());
+		// }
+		if (thisTaskInst.isSuspended()) {
+			WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+			throw new EngineException(thisTaskInst.getProcessInstanceId(),
+					process, thisTaskInst.getTaskId(),
+					"Abort task insatance failed. The task instance [id="
+							+ thisTaskInst.getId() + "] is suspended");
+		}
+
+		// 
+		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+		WorkflowProcess workflowProcess = thisTaskInst.getWorkflowProcess();
+		List<IToken> allTokens = null;
+		List<String> aliveActivityIdsAfterJump = new ArrayList<String>();
+		if (targetActivityId != null) {			
+			String thisActivityId = thisTaskInst.getActivityId();
+			boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId,
+					targetActivityId);
+			
+			if (isInSameLine){
+				this.abortTaskInstance(currentSession, processInstance, thisTaskInst, targetActivityId);
+			}
+			
+			//合法性检查
+			allTokens = persistenceService.findTokensForProcessInstance(thisTaskInst.getProcessInstanceId(), null);
+
+			aliveActivityIdsAfterJump.add(targetActivityId);
+			
+			for (int i=0;allTokens!=null && i<allTokens.size();i++){
+				IToken tokenTmp = allTokens.get(i);
+				IWFElement workflowElement = workflowProcess.findWFElementById(tokenTmp.getNodeId());
+				if ((workflowElement instanceof Activity) && !workflowElement.getId().equals(thisActivityId)){
+					
+					aliveActivityIdsAfterJump.add(workflowElement.getId());
+					
+					if (workflowProcess.isReachable(targetActivityId, workflowElement.getId()) 
+						|| workflowProcess.isReachable(workflowElement.getId(), targetActivityId)){
+						throw new EngineException(
+								thisTaskInst.getProcessInstanceId(),
+								thisTaskInst.getWorkflowProcess(),
+								thisTaskInst.getTaskId(),
+								"Abort refused because of the business-logic conflict!");
+
+					}
+				}
+			}			
+			
+			//1）检查是否在同一个“执行线”上(不做该检查，20091008)	
+//			if (!isInSameLine) {
+//				throw new EngineException(
+//						taskInstance.getProcessInstanceId(),
+//						taskInstance.getWorkflowProcess(),
+//						taskInstance.getTaskId(),
+//						"Jumpto refused because of the current activitgy and the target activity are NOT in the same 'Execution Thread'.");
+//			}
+		}
+
+		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
+				workflowProcess.getId(), thisTaskInst.getVersion());
+		IActivityInstance targetActivityInstance = null;
+		if (targetActivityId!=null){
+			targetActivityInstance = (IActivityInstance) netInstance
+				.getWFElementInstance(targetActivityId);
+		}
+
+		IActivityInstance thisActivityInstance = (IActivityInstance) netInstance
+				.getWFElementInstance(thisTaskInst.getActivityId());
+		if (thisActivityInstance == null) {
+			WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+			throw new EngineException(thisTaskInst.getProcessInstanceId(),
+					process, thisTaskInst.getTaskId(), "系统没有找到与activityId="
+							+ thisTaskInst.getActivityId() 
+							+ "对应activityInstance，无法执行abort操作。");
+		}
+
+		if (targetActivityInstance != null) {
+			((TaskInstance) thisTaskInst)
+					.setTargetActivityId(targetActivityInstance.getActivity()
+							.getId());
+		}
+
+
+		// 第一步，首先Abort当前taskInstance
+		persistenceService.abortTaskInstance((TaskInstance) thisTaskInst);
+
+		// 触发相应的事件
+		TaskInstanceEvent e = new TaskInstanceEvent();
+		e.setSource(thisTaskInst);
+		e.setWorkflowSession(currentSession);
+		e.setProcessInstance(processInstance);
+		e.setEventType(TaskInstanceEvent.AFTER_TASK_INSTANCE_COMPLETE);
+		if (this.defaultTaskInstanceEventListener != null) {
+			this.defaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
+		}
+
+		this.fireTaskInstanceEvent(thisTaskInst, e);
+
+		// 第二步，检查ActivityInstance是否可以结束
+		if (!activityInstanceCanBeCompleted(thisTaskInst)) {
+			return;
+		}
+
+		// 第三步，尝试结束对应的activityInstance
+		List<IToken> tokens = persistenceService.findTokensForProcessInstance(
+				thisTaskInst.getProcessInstanceId(), thisTaskInst
+						.getActivityId());
+		// System.out.println("Inside TaskInstance.complete(targetActivityInstance):: tokens.size is "+tokens.size());
+		if (tokens == null || tokens.size() == 0) {
+			return;// 表明activityInstance已经结束了。
+		}
+		if (tokens.size() > 1) {
+			WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+			throw new EngineException(thisTaskInst.getProcessInstanceId(),
+					process, thisTaskInst.getTaskId(), "与activityId="
+							+ thisTaskInst.getActivityId() + "对应的token数量(="
+							+ tokens.size() + ")不正确，正确只能为1，因此无法完成complete操作");
+		}
+		IToken token = tokens.get(0);
+		// stepNumber不相等，不允许执行结束操作。
+		if (token.getStepNumber().intValue() != thisTaskInst.getStepNumber()
+				.intValue()) {
+			return;
+		}
+		if (token.isAlive() == false) {
+			WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+			throw new EngineException(thisTaskInst.getProcessInstanceId(),
+					process, thisTaskInst.getTaskId(), "与activityId="
+							+ thisTaskInst.getActivityId()
+							+ "对应的token.alive=false，因此无法完成complete操作");
+		}
+
+		// INetInstance netInstance =
+		// rtCtx.getKernelManager().getNetInstance(taskInstance.getProcessId(),
+		// taskInstance.getVersion());
+		// Object obj =
+		// netInstance.getWFElementInstance(taskInstance.getActivityId());
+
+		token.setProcessInstance(processInstance);
+
+		//调整token布局
+		if (targetActivityId != null) {
+			List<Synchronizer> allSynchronizersAndEnds = new ArrayList<Synchronizer>(); 
+			allSynchronizersAndEnds.addAll(workflowProcess.getSynchronizers());
+			allSynchronizersAndEnds.addAll(workflowProcess.getEndNodes());
+			for (int i=0;i<allSynchronizersAndEnds.size();i++){
+				Synchronizer synchronizer = allSynchronizersAndEnds.get(i);
+				if (synchronizer.getName().equals("Synchronizer4")){
+					System.out.println(synchronizer.getName());
+				}
+				int volumn = 0;
+				if (synchronizer instanceof EndNode){
+					volumn = synchronizer.getEnteringTransitions().size();
+				}else{
+					volumn = synchronizer.getEnteringTransitions().size()*synchronizer.getLeavingTransitions().size();
+				}			
+				IToken tokenTmp =  new Token();
+				tokenTmp.setNodeId(synchronizer.getId());
+				tokenTmp.setAlive(false);
+				tokenTmp.setProcessInstanceId(thisTaskInst.getProcessInstanceId());
+				tokenTmp.setStepNumber(-1);
+
+				List<String> incomingTransitionIds = new ArrayList<String>();
+				boolean reachable = false;
+				List<Transition> enteringTrans = synchronizer.getEnteringTransitions();			
+				for (int m=0;m<aliveActivityIdsAfterJump.size();m++){
+					String aliveActivityId = aliveActivityIdsAfterJump.get(m);
+					if (workflowProcess.isReachable(aliveActivityId, synchronizer.getId())){					
+						Transition trans = null;
+						reachable = true;
+						for (int j=0;j<enteringTrans.size();j++){
+							trans = enteringTrans.get(j);
+							Node fromNode = (Node)trans.getFromNode();
+							if (workflowProcess.isReachable(aliveActivityId, fromNode.getId())){
+								if (!incomingTransitionIds.contains(trans.getId())){
+									incomingTransitionIds.add(trans.getId());
+								}
+							}
+						}			
+					}
+				}
+				if (reachable){
+					tokenTmp.setValue(volumn-(incomingTransitionIds.size()*volumn/enteringTrans.size()));	
+					
+					IToken virtualToken = getJoinInfo(allTokens,synchronizer.getId());
+					
+					if (virtualToken!=null){
+						persistenceService.deleteTokensForNode(thisTaskInst.getProcessInstanceId(), synchronizer.getId());
+					}
+					
+					if (tokenTmp.getValue()!=0){
+						tokenTmp.setProcessInstance(processInstance);
+						persistenceService.saveOrUpdateToken(tokenTmp);
+					}
+				}
+			}
+		}
+		thisActivityInstance.complete(token, targetActivityInstance);
+
+	}
+	
 	/**
 	 * 触发task instance相关的事件
 	 * 
@@ -956,14 +1180,20 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		
 		// 首先检查是否可以正确跳转
 		
-		// 1）检查是否在同一个“执行线”上
+
 		WorkflowProcess workflowProcess = workItem.getTaskInstance()
 				.getWorkflowProcess();
 		String thisActivityId = workItem.getTaskInstance().getActivityId();
 		TaskInstance thisTaskInst = (TaskInstance) workItem.getTaskInstance();
 		
-//		boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId,
-//		targetActivityId);		
+		boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId,
+		targetActivityId);	
+		if (isInSameLine){
+			this.completeWorkItemAndJumpTo(workItem, targetActivityId, comments);
+			return;
+		}
+		
+		// 1）检查是否在同一个“执行线”上(关闭该检查，20091002)		
 //		if (!isInSameLine) {
 //			throw new EngineException(
 //					thisTaskInst.getProcessInstanceId(),
@@ -1013,8 +1243,31 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 		
 		//4)首先检查目标状态M是否存在冲突,如果存在冲突则不允许跳转；如果不存在冲突，则需要调整token
+		List<IToken> allTokens = persistenceService.findTokensForProcessInstance(thisTaskInst.getProcessInstanceId(), null);
+		WorkflowProcess thisProcess = thisTaskInst.getWorkflowProcess();
+		List<String> aliveActivityIdsAfterJump = new ArrayList<String>();
+		aliveActivityIdsAfterJump.add(targetActivityId);
+		
+		for (int i=0;allTokens!=null && i<allTokens.size();i++){
+			IToken tokenTmp = allTokens.get(i);
+			IWFElement workflowElement = thisProcess.findWFElementById(tokenTmp.getNodeId());
+			if ((workflowElement instanceof Activity) && !workflowElement.getId().equals(thisActivityId)){
 				
+				aliveActivityIdsAfterJump.add(workflowElement.getId());
+				
+				if (thisProcess.isReachable(targetActivityId, workflowElement.getId()) 
+					|| thisProcess.isReachable(workflowElement.getId(), targetActivityId)){
+					throw new EngineException(
+							thisTaskInst.getProcessInstanceId(),
+							thisTaskInst.getWorkflowProcess(),
+							thisTaskInst.getTaskId(),
+							"Jumpto refused because of the business-logic conflict!");
 
+				}
+			}
+		}
+
+		//所有检查结束，开始执行跳转操作
 		
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
 				workflowProcess.getId(),
@@ -1053,9 +1306,117 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 					trace);
 		}
 
+		//调整token布局
+		List<Synchronizer> allSynchronizersAndEnds = new ArrayList<Synchronizer>(); 
+		allSynchronizersAndEnds.addAll(thisProcess.getSynchronizers());
+		allSynchronizersAndEnds.addAll(thisProcess.getEndNodes());
+		for (int i=0;i<allSynchronizersAndEnds.size();i++){
+			Synchronizer synchronizer = allSynchronizersAndEnds.get(i);
+			if (synchronizer.getName().equals("Synchronizer4")){
+				System.out.println(synchronizer.getName());
+			}
+			int volumn = 0;
+			if (synchronizer instanceof EndNode){
+				volumn = synchronizer.getEnteringTransitions().size();
+			}else{
+				volumn = synchronizer.getEnteringTransitions().size()*synchronizer.getLeavingTransitions().size();
+			}			
+			IToken tokenTmp =  new Token();
+			tokenTmp.setNodeId(synchronizer.getId());
+			tokenTmp.setAlive(false);
+			tokenTmp.setProcessInstanceId(thisTaskInst.getProcessInstanceId());
+			tokenTmp.setStepNumber(-1);
+
+			List<String> incomingTransitionIds = new ArrayList<String>();
+			boolean reachable = false;
+			List<Transition> enteringTrans = synchronizer.getEnteringTransitions();			
+			for (int m=0;m<aliveActivityIdsAfterJump.size();m++){
+				String aliveActivityId = aliveActivityIdsAfterJump.get(m);
+				if (thisProcess.isReachable(aliveActivityId, synchronizer.getId())){					
+					Transition trans = null;
+					reachable = true;
+					for (int j=0;j<enteringTrans.size();j++){
+						trans = enteringTrans.get(j);
+						Node fromNode = (Node)trans.getFromNode();
+						if (thisProcess.isReachable(aliveActivityId, fromNode.getId())){
+							if (!incomingTransitionIds.contains(trans.getId())){
+								incomingTransitionIds.add(trans.getId());
+							}
+						}
+					}			
+				}
+			}
+			if (reachable){
+				tokenTmp.setValue(volumn-(incomingTransitionIds.size()*volumn/enteringTrans.size()));	
+				
+				IToken virtualToken = getJoinInfo(allTokens,synchronizer.getId());
+				
+				if (virtualToken!=null){
+					persistenceService.deleteTokensForNode(thisTaskInst.getProcessInstanceId(), synchronizer.getId());
+				}
+				
+				if (tokenTmp.getValue()!=0){
+					tokenTmp.setProcessInstance(thisTaskInst.getAliveProcessInstance());
+					persistenceService.saveOrUpdateToken(tokenTmp);
+				}
+			}
+		}
+		
 		this.completeWorkItem(workItem, targetActivityInstance, comments);
 	}
 	
+	/**
+	 * 获取特定同步器的汇聚信息，如果该同步器已经存在token，则返回一个综合性的虚拟的token，否则返回null。
+	 * @param allTokens
+	 * @param synchronizerId
+	 * @return
+	 */
+	private IToken getJoinInfo(List<IToken> allTokens,String synchronizerId){
+		boolean findTokens = false;
+		Map<String,IToken> tokensMap = new HashMap<String,IToken>();
+        for (int i = 0; i < allTokens.size(); i++) {
+            IToken tmpToken = (IToken) allTokens.get(i);
+            if (!tmpToken.getNodeId().equals(synchronizerId)){
+            	continue;
+            }
+            findTokens = true;
+            String tmpFromActivityId = tmpToken.getFromActivityId();
+            if (!tokensMap.containsKey(tmpFromActivityId)) {
+                tokensMap.put(tmpFromActivityId, tmpToken);
+            } else {
+                IToken tmpToken2 = (IToken) tokensMap.get(tmpFromActivityId);
+                if (tmpToken2.getStepNumber() > tmpToken.getStepNumber()) {
+                    tokensMap.put(tmpFromActivityId, tmpToken2);
+                }
+            }
+        }
+
+        if (!findTokens) return null;
+        IToken virtualToken = new Token();
+        int stepNumber = 0;
+        List<IToken> tokensList = new ArrayList<IToken>(tokensMap.values());
+
+        for (int i = 0; i < tokensList.size(); i++) {
+            IToken _token = (IToken) tokensList.get(i);
+            virtualToken.setValue(virtualToken.getValue()+_token.getValue());
+            if (_token.isAlive()) {
+            	virtualToken.setAlive(true);
+                String oldFromActivityId = virtualToken.getFromActivityId();
+                if (oldFromActivityId == null || oldFromActivityId.trim().equals("")) {
+                	virtualToken.setFromActivityId(_token.getFromActivityId());
+                } else {
+                	virtualToken.setFromActivityId(oldFromActivityId + IToken.FROM_ACTIVITY_ID_SEPARATOR + _token.getFromActivityId());
+                }
+            }
+            if (_token.getStepNumber() > stepNumber) {
+                stepNumber = _token.getStepNumber();
+            }
+        }
+
+        virtualToken.setStepNumber(stepNumber + 1);
+        
+        return virtualToken;
+	} 
 	
 	public void rejectWorkItem(IWorkItem workItem, String comments)
 			throws EngineException, KernelException {
