@@ -17,35 +17,70 @@
 package org.fireflow.kernel;
 
 import java.util.List;
-import org.fireflow.kernel.event.NodeInstanceEvent;
+
 import org.fireflow.kernel.event.INodeInstanceEventListener;
-import org.fireflow.model.IWFElement;
 /**
  * (NodeInstance应该是无状态的，不会随着ProcessInstance的增加而增加。??)
  * @author 非也，nychen2000@163.com
  *
  */
 public interface INodeInstance {
+	/**
+	 * @return
+	 */
 	public String getId();
+	/**
+	 * wangmj  node 触发 (最核心的方法)
+	 * @param token
+	 * @throws KernelException
+	 */
 	public void fire(IToken token)throws KernelException;
 	
+	/**
+	 * wangmj 获取输出弧的实例
+	 * @return
+	 */
 	public List<ITransitionInstance> getLeavingTransitionInstances();
+	/**
+	 * @param transitionInstance
+	 */
 	public void addLeavingTransitionInstance(ITransitionInstance transitionInstance);
 	
+	/**
+	 * @return
+	 */
 	public List<ITransitionInstance> getEnteringTransitionInstances();
+	/**
+	 * @param transitionInstance
+	 */
 	public void addEnteringTransitionInstance(ITransitionInstance transitionInstance);
 
+	/**
+	 * @return
+	 */
 	public List<ILoopInstance> getLeavingLoopInstances();
+	/**
+	 * @param loopInstance
+	 */
 	public void addLeavingLoopInstance(ILoopInstance loopInstance);
 
+	/**
+	 * @return
+	 */
 	public List<ILoopInstance> getEnteringLoopInstances();
+	/**
+	 * @param loopInstance
+	 */
 	public void addEnteringLoopInstance(ILoopInstance loopInstance);
 	
-//	public void fireNodeEnteredEvent(NodeInstanceEvent event)throws KenelException;
-//	public void fireNodeLeavingEvent(NodeInstanceEvent event) throws KenelException;
-	
+	/**
+	 * @param listeners
+	 */
 	public void setEventListeners(List<INodeInstanceEventListener> listeners);
 	
+	/**
+	 * @return
+	 */
 	public List<INodeInstanceEventListener> getEventListeners();
 	
 

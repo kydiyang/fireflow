@@ -16,9 +16,6 @@
  */
 package org.fireflow.engine;
 
-import org.fireflow.engine.calendar.DefaultCalendarService;
-import org.fireflow.engine.condition.ConditionResolver;
-import org.fireflow.engine.definition.DefinitionService4DBMS;
 
 /**
  * 在没有spring环境下构建RuntimeContext实例。<br/>
@@ -26,7 +23,7 @@ import org.fireflow.engine.definition.DefinitionService4DBMS;
  * @author chennieyun
  */
 public class RuntimeContextFactory {
-    private static RuntimeContext ctx = null;
+//    private static RuntimeContext ctx = null;
     
 //    public static getRuntimeContext(){
 //        if (ctx==null){

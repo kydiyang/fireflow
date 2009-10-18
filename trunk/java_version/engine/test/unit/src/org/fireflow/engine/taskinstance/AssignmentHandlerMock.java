@@ -31,7 +31,7 @@ import org.fireflow.kernel.KernelException;
 public class AssignmentHandlerMock implements IAssignmentHandler{
     public static final String ACTOR_ID = "Fireflow JUnit Tester";
     public void assign(IAssignable asignable, String performerName) throws EngineException, KernelException {
-        asignable.asignToActor(ACTOR_ID);
+        asignable.assignToActor(ACTOR_ID);
     }
 
 }

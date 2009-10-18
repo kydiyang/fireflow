@@ -33,11 +33,14 @@ import org.fireflow.kernel.KernelException;
  */
 public class DefaultFormTaskInstanceCompletionEvaluator implements ITaskInstanceCompletionEvaluator{
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceCompletionEvaluator#taskInstanceCanBeCompleted(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance)
+     */
     public boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession,RuntimeContext runtimeContext,
             IProcessInstance processInstance ,ITaskInstance taskInstance)throws EngineException ,KernelException {
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
         Integer aliveWorkItemCount = persistenceService.getAliveWorkItemCountForTaskInstance(taskInstance.getId());
-        if (aliveWorkItemCount == null || aliveWorkItemCount == 0) {
+        if (aliveWorkItemCount == null || aliveWorkItemCount.intValue() == 0) {
             return true;
         } else {
             return false;

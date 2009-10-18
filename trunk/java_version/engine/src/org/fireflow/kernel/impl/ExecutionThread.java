@@ -16,18 +16,15 @@
  */
 package org.fireflow.kernel.impl;
 
-import java.util.List;
-
-//import org.fireflow.kenel.IExecutionThread;
-import org.fireflow.kernel.ITransitionInstance;
-import org.fireflow.kernel.KernelException;
+//import java.util.List;
 
 /**
  * @author chennieyun
  *
  */
 public class ExecutionThread  {
-	private List threadBody = null;
+	//TODO  mingjie.mj 这个类的存在有用吗？
+//	private List threadBody = null;
 
 //	public void execute(RuntimeContext rtContext,ITransitionInstance enteringTransInst) throws KenelException {
 //		// TODO Auto-generated method stub

@@ -17,19 +17,23 @@
 package org.fireflow.kernel.event;
 
 import java.util.EventObject;
+
 import org.fireflow.kernel.IToken;
 
 /**
+ * edge监听器
  *
  * @author chennieyun
  */
+@SuppressWarnings("serial")
 public class EdgeInstanceEvent extends EventObject {
 
     public static final int ON_TAKING_THE_TOKEN = 1;
     int eventType = -1;
     private IToken token = null;
 
-    private EdgeInstanceEvent() {
+    @SuppressWarnings("unused")
+	private EdgeInstanceEvent() {
         super(null);
     }
 

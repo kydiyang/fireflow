@@ -88,7 +88,7 @@ public class AbortProcessInstanceTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process");
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
                     processInstance.setProcessInstanceVariable("mobile", mobile);
                     processInstance.run();
                     return processInstance;

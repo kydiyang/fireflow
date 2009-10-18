@@ -23,5 +23,8 @@ import org.fireflow.model.net.Transition;
  *
  */
 public interface ITransitionInstance extends IEdgeInstance{
+	/**
+	 * @return
+	 */
 	public Transition getTransition();
 }

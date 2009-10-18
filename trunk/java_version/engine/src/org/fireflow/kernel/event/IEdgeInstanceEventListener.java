@@ -24,5 +24,10 @@ import org.fireflow.kernel.KernelException;
  */
 public interface IEdgeInstanceEventListener {
 
+    /**
+     * edge(transition loop)  监听器触发
+     * @param e
+     * @throws KernelException 
+     */
     public void onEdgeInstanceEventFired(EdgeInstanceEvent e) throws KernelException;
 }

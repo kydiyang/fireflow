@@ -20,12 +20,17 @@ import org.fireflow.engine.IProcessInstance;
 import org.fireflow.model.IWFElement;
 
 /**
+ * wangmj 引擎内核exception定义
  * @author 非也
  *
  */
 public class KernelException extends Exception {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7219349319943347690L;
+	/**
      * 抛出异常的流程实例的Id
      */
     String processInstanceId = null;
@@ -67,17 +72,9 @@ public class KernelException extends Exception {
             this.setWorkflowElementName(workflowElement.getName());
             this.setWorkflowElementDisplayName(workflowElement.getDisplayName());
         }
-    // TODO Auto-generated constructor stub
     }
 
-//    public KenelException() {
-//        super();
-//        // TODO Auto-generated constructor stub
-//    }
-//
-//    public KenelException(String processInstanceId, String processId, String processName, String message) {
-//
-//    }
+
     public String getProcessId() {
         return processId;
     }
@@ -133,25 +130,4 @@ public class KernelException extends Exception {
     public void setWorkflowElementDisplayName(String workflowElementDisplayName) {
         this.workflowElementDisplayName = workflowElementDisplayName;
     }
-    /*
-    public KenelException() {
-    super();
-    // TODO Auto-generated constructor stub
-    }
-
-    public KenelException(String arg0, Throwable arg1) {
-    super(arg0, arg1);
-    // TODO Auto-generated constructor stub
-    }
-
-    public KenelException(String arg0) {
-    super(arg0);
-    // TODO Auto-generated constructor stub
-    }
-
-    public KenelException(Throwable arg0) {
-    super(arg0);
-    // TODO Auto-generated constructor stub
-    }
-     */
 }

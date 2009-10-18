@@ -25,5 +25,10 @@ import org.fireflow.engine.ITaskInstance;
  *
  */
 public interface IApplicationHandler {
+    /**
+     * 节点（对应的task自动执行）
+     * @param taskInstance
+     * @throws EngineException
+     */
     public void execute(ITaskInstance taskInstance)throws EngineException;
 }

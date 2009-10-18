@@ -17,6 +17,7 @@
 package org.fireflow.engine.taskinstance;
 
 import java.util.List;
+
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
@@ -39,6 +40,9 @@ import org.fireflow.model.resource.Participant;
  */
 public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceRunner#run(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance)
+     */
     public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance,
             ITaskInstance taskInstance) throws EngineException, KernelException {
                 if (!Task.FORM.equals(taskInstance.getTaskType())){
@@ -50,7 +54,7 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
                 DynamicAssignmentHandler dynamicAssignmentHandler = ((WorkflowSession)currentSession).consumeCurrentDynamicAssignmentHandler();
                 FormTask task = (FormTask)taskInstance.getTask();
                 // performer(id,name,type,handler)
-                Participant performer = task.getPerformer();
+                Participant performer = task.getPerformer();//获取到form的执行者
                 if (performer == null || performer.getAssignmentHandler().trim().equals("")) {
                     throw new EngineException(processInstance,
                             taskInstance.getActivity(),
@@ -59,21 +63,33 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
                 assign(currentSession,processInstance,runtimeContext,taskInstance, task, performer, dynamicAssignmentHandler);
     }
 
+    /**
+     * 分配， 按照当前任务的参与者插入工单
+     * @param currentSession
+     * @param processInstance
+     * @param runtimeContext
+     * @param taskInstance
+     * @param formTask
+     * @param part
+     * @param dynamicAssignmentHandler
+     * @throws EngineException
+     * @throws KernelException
+     */
     protected void assign(IWorkflowSession currentSession,IProcessInstance processInstance, RuntimeContext runtimeContext,ITaskInstance taskInstance, FormTask formTask, Participant part, DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException, KernelException {
         //如果有指定的Actor，则按照指定的Actor分配任务
         if (dynamicAssignmentHandler != null) {
 
             dynamicAssignmentHandler.assign((IAssignable) taskInstance, part.getName());
 
-        }
-        else {
+        } else {
 
         	IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        	List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(taskInstance.getProcessInstanceId(), taskInstance.getActivityId());
+        	//从数据库中查询任务信息
+        	List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(taskInstance.getProcessInstanceId(), taskInstance.getActivityId());
         	ITaskInstance theLastCompletedTaskInstance = null;
 
         	for (int i=0;taskInstanceList!=null && i<taskInstanceList.size();i++){
-        		ITaskInstance tmp = (ITaskInstance)taskInstanceList.get(i);
+        		ITaskInstance tmp = taskInstanceList.get(i);
         		if (tmp.getId().equals(taskInstance.getId()))continue;
                 if (!tmp.getTaskId().equals(taskInstance.getTaskId()))continue;
                 if (tmp.getState().intValue()!=ITaskInstance.COMPLETED)continue;
@@ -88,18 +104,21 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
 
         	//如果是循环且LoopStrategy==REDO，则分配个上次完成该工作的操作员
             if (theLastCompletedTaskInstance!=null && (FormTask.REDO.equals(formTask.getLoopStrategy()) || currentSession.isInWithdrawOrRejectOperation())) {
-            	List workItemList = persistenceService.findCompletedWorkItemsForTaskInstance(theLastCompletedTaskInstance.getId());
+            	List<IWorkItem> workItemList = persistenceService.findCompletedWorkItemsForTaskInstance(theLastCompletedTaskInstance.getId());
             	ITaskInstanceManager taskInstanceMgr = runtimeContext.getTaskInstanceManager();
                 for (int k = 0; k < workItemList.size(); k++) {
-                    IWorkItem completedWorkItem = (IWorkItem) workItemList.get(k);
+                    IWorkItem completedWorkItem = workItemList.get(k);
 
                     IWorkItem newFromWorkItem = taskInstanceMgr.createWorkItem(currentSession,processInstance,taskInstance, completedWorkItem.getActorId());
-                    newFromWorkItem.claim();
+                    newFromWorkItem.claim(); //并自动签收
                 }
             } else {
                 IBeanFactory beanFactory = runtimeContext.getBeanFactory();
+                //从spring中获取到对应任务的Performer，创建工单
                 IAssignmentHandler assignmentHandler = (IAssignmentHandler) beanFactory.getBean(part.getAssignmentHandler());
-                ((IAssignmentHandler) assignmentHandler).assign((IAssignable) taskInstance, part.getName());
+//                ((IAssignmentHandler) assignmentHandler).assign((IAssignable) taskInstance, part.getName());
+                //modified by wangmj 20090904
+                assignmentHandler.assign((IAssignable) taskInstance, part.getName());
             }
         }
 

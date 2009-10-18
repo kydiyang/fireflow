@@ -16,21 +16,20 @@
  */
 package org.fireflow.engine.kernelextensions;
 
-import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IRuntimeContextAware;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.persistence.IPersistenceService;
-/**
- * @author chennieyun
- * 
- */
 import org.fireflow.kernel.IActivityInstance;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
-import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.kernel.impl.ActivityInstance;
-//import org.fireflow.kenel.event.NodeInstanceEventType;
+import org.fireflow.kernel.plugin.IKernelExtension;
+
+/**
+ * @author wangmingjie
+ *
+ */
 public class ActivityInstanceExtension implements IKernelExtension,
         INodeInstanceEventListener,IRuntimeContextAware {
     protected RuntimeContext rtCtx = null;
@@ -42,25 +41,25 @@ public class ActivityInstanceExtension implements IKernelExtension,
         return this.rtCtx;
     }    
     public String getExtentionPointName() {
-        // TODO Auto-generated method stub
         return ActivityInstance.Extension_Point_NodeInstanceEventListener;
     }
 
     public String getExtentionTargetName() {
-        // TODO Auto-generated method stub
         return ActivityInstance.Extension_Target_Name;
     }
 
     
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException {
-        // TODO Auto-generated method stub
         if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_FIRED) {
-            
+            //保存token，并创建taskinstance
             IPersistenceService persistenceService = rtCtx.getPersistenceService();
+            //TODO wmj2003 这里是插入还是更新token
             persistenceService.saveOrUpdateToken(e.getToken());
+            //触发activity节点，就要创建新的task
             rtCtx.getTaskInstanceManager().createTaskInstances(e.getToken(), (IActivityInstance) e.getSource());
         } else if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED) {
+        	//TODO  wmj2003 因为什么原因未处理呢？ 归档任务？
 //			RuntimeContext.getInstance()
 //			.getTaskInstanceManager()
 //			.archiveTaskInstances((IActivityInstance)e.getSource());

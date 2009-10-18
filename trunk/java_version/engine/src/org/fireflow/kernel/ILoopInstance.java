@@ -26,6 +26,9 @@ import org.fireflow.model.net.Loop;
  * Created on Mar 18, 2009
  */
 public interface ILoopInstance extends IEdgeInstance{
+    /**
+     * @return
+     */
     public Loop getLoop();
 
     /**

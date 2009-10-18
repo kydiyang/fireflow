@@ -17,8 +17,6 @@
 package org.fireflow.engine.taskinstance;
 
 import org.fireflow.engine.EngineException;
-import org.fireflow.engine.IProcessInstance;
-import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.kernel.KernelException;
 
 /**

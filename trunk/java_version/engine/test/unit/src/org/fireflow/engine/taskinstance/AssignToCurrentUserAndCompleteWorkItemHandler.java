@@ -9,7 +9,7 @@ public class AssignToCurrentUserAndCompleteWorkItemHandler implements
 
     public static final String ACTOR_ID = "Fireflow JUnit Tester";
     public void assign(IAssignable asignable, String performerName) throws EngineException, KernelException {
-        IWorkItem wi = asignable.asignToActor(ACTOR_ID);
+        IWorkItem wi = asignable.assignToActor(ACTOR_ID);
         wi.claim();
         wi.complete();
     }

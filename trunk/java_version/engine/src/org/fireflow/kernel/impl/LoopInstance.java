@@ -19,6 +19,7 @@ package org.fireflow.kernel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.fireflow.kernel.ILoopInstance;
 import org.fireflow.kernel.INodeInstance;
 import org.fireflow.kernel.IToken;
@@ -39,14 +40,11 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
     public transient static final String Extension_Target_Name = "org.fireflow.kernel.LoopInstance";
     public transient static List<String> Extension_Point_Names = new ArrayList<String>();
     public transient static final String Extension_Point_LoopInstanceEventListener = "LoopInstanceEventListener";
-//    public transient static final String Extension_Point_ConditionEvaluator = "ConditionEvaluator";
 
     static {
         Extension_Point_Names.add(Extension_Point_LoopInstanceEventListener);
-//        Extension_Point_Names.add(Extension_Point_ConditionEvaluator);
-    }
+  }
 
-//    private 
 
     private transient Loop loop = null;
 
@@ -62,15 +60,21 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
         if (weight==0){
             if (leavingNodeInstance instanceof SynchronizerInstance){
                 weight=((SynchronizerInstance)this.leavingNodeInstance).getVolume();
+                  //如果后继结点是同步器节点，那么权值=后继结点的容量
             }else if (leavingNodeInstance instanceof StartNodeInstance){
                 weight = ((StartNodeInstance)this.leavingNodeInstance).getVolume();
+                //如果后继结点是开始节点，那么权值=开始节点的容量
             }else if (leavingNodeInstance instanceof EndNodeInstance){
                 weight = ((EndNodeInstance)this.leavingNodeInstance).getVolume();
+                //如果后继结点是结束节点，那么权值=结束节点的容量
             }
         }
         return weight;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.IEdgeInstance#take(org.fireflow.kernel.IToken)
+     */
     public boolean take(IToken token) throws KernelException {
         boolean oldAlive = token.isAlive();
 
@@ -106,19 +110,20 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
         this.loop = arg0;
     }
 
-    public String getExtensionTargetName() {
+    @SuppressWarnings("static-access")
+	public String getExtensionTargetName() {
         return this.Extension_Target_Name;
     }
 
-    public List<String> getExtensionPointNames() {
+    @SuppressWarnings("static-access")
+	public List<String> getExtensionPointNames() {
         return this.Extension_Point_Names;
     }
 
     public void registExtension(IKernelExtension extension) throws RuntimeException {
         if (!Extension_Target_Name.equals(extension.getExtentionTargetName())) {
             return;
-//			throw new KenelException("Error:When construct the TansitionInstance,the Extension_Target_Name is mismatching");
-        }
+    }
         if (Extension_Point_LoopInstanceEventListener.equals(extension.getExtentionPointName())) {
             if (extension instanceof IEdgeInstanceEventListener) {
                 this.eventListeners.add((IEdgeInstanceEventListener) extension);

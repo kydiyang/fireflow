@@ -32,6 +32,9 @@ import org.fireflow.kernel.KernelException;
  */
 public class DefaultSubflowTaskInstanceCompletionEvaluator implements ITaskInstanceCompletionEvaluator{
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceCompletionEvaluator#taskInstanceCanBeCompleted(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance)
+     */
     public boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession,RuntimeContext runtimeContext,
             IProcessInstance processInstance ,ITaskInstance taskInstance)throws EngineException ,KernelException{
         //在Fire Workflow 中，系统默认每个子流程仅创建一个实例，所以当子流程实例完成后，SubflowTaskInstance都可以被completed

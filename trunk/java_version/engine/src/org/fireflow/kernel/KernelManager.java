@@ -35,59 +35,87 @@ import org.fireflow.model.WorkflowProcess;
 public class KernelManager implements IRuntimeContextAware {
 
 //    private HashMap<String,Object> wfElementInstanceMap = new HashMap<String,Object>();
+    /**
+     * 工作流网实例
+     */
     private HashMap<String, INetInstance> netInstanceMap = new HashMap<String, INetInstance>();
+    /**
+     * wangmj spring 初始化的时候将扩展属性注入到这个map中
+     * 内核扩展对象
+     */
     private Map<String, List<IKernelExtension>> kernelExtensions = new HashMap<String, List<IKernelExtension>>();
+    /**
+     * 工作流总线
+     */
     protected RuntimeContext rtCtx = null;
 
     public void setRuntimeContext(RuntimeContext ctx) {
         this.rtCtx = ctx;
         if (this.kernelExtensions != null && this.kernelExtensions.size()>0) {
-            Iterator values = this.kernelExtensions.values().iterator();
+            Iterator<List<IKernelExtension>> values = this.kernelExtensions.values().iterator();
             while (values != null && values.hasNext()) {
-                List extensionList = (List) values.next();
+                List<IKernelExtension> extensionList = values.next();
                 for (int i = 0; extensionList != null && i < extensionList.size(); i++) {
-                    IKernelExtension extension = (IKernelExtension) extensionList.get(i);
+                    IKernelExtension extension =  extensionList.get(i);
                     ((IRuntimeContextAware) extension).setRuntimeContext(rtCtx);
+                    //wangmj? 如何就强制转换成IRuntimeContextAware了？
+                    //答：因为IKernelExtension 的实现类，同时也实现了接口IRuntimeContextAware
                 }
             }
         }
     }
-
+    
     public RuntimeContext getRuntimeContext() {
         return this.rtCtx;
     }
-
+    
+    /**
+     * 在获取工作流网实例的时候，调用createNetInstance方法，创建实例
+     * @param processId  流程定义ID
+     * @param version    流程版本号
+     * @return
+     * @throws KernelException
+     */
     public INetInstance getNetInstance(String processId, Integer version) throws KernelException {
         INetInstance netInstance = this.netInstanceMap.get(processId + "_V_" + version);
         if (netInstance == null) {
-
+        	//数据流定义在runtimeContext初始化的时候，就被加载了，将流程定义的xml读入到内存中
             WorkflowDefinition def = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(processId, version);
             netInstance = this.createNetInstance(def);
         }
         return netInstance;
     }
 
+    /**
+     * 清空所有工作流网的实例
+     */
     public void clearAllNetInstance() {
         netInstanceMap.clear();
     }
 
+    /**
+     * 创建一个工作流网实例
+     * @param workflowDef
+     * @return
+     * @throws KernelException
+     */
     public INetInstance createNetInstance(WorkflowDefinition workflowDef) throws KernelException {
         if (workflowDef==null)return null;
         WorkflowProcess workflowProcess = null;
-        workflowProcess = workflowDef.getWorkflowProcess();
+        workflowProcess = workflowDef.getWorkflowProcess();//解析fpdl
 
 //		Map nodeInstanceMap = new HashMap();
         if (workflowProcess == null ){
         	throw new KernelException(null,null,"The WorkflowProcess property of WorkflowDefinition[processId="+workflowDef.getProcessId()+"] is null. ");
         }
-        String validateMsg =  workflowProcess.validate();
+        String validateMsg =  workflowProcess.validate();//校验工作流定义是否有效
         if (validateMsg != null){
         	throw new KernelException(null,null,validateMsg);
         }
         NetInstance netInstance = new NetInstance(workflowProcess, kernelExtensions);
 //        netInstance.setWorkflowProcess(workflowProcess);
-        netInstance.setVersion(workflowDef.getVersion());
-
+        netInstance.setVersion(workflowDef.getVersion());//设置版本号
+        //map的key的组成规则：流程定义ID_V_版本号
         netInstanceMap.put(workflowDef.getProcessId() + "_V_" + workflowDef.getVersion(), netInstance);
 
 //		netInstance.setRtCxt(new RuntimeContext());

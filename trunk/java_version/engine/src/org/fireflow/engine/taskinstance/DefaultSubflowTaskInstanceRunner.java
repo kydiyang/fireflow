@@ -16,15 +16,18 @@
  */
 package org.fireflow.engine.taskinstance;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.definition.WorkflowDefinition;
-import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.kernel.KernelException;
@@ -42,6 +45,9 @@ import org.fireflow.model.resource.SubWorkflowProcess;
  */
 public class DefaultSubflowTaskInstanceRunner implements ITaskInstanceRunner {
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceRunner#run(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance)
+     */
     public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance,
             ITaskInstance taskInstance) throws EngineException, KernelException {
         if (!Task.SUBFLOW.equals(taskInstance.getTaskType())) {
@@ -69,19 +75,22 @@ public class DefaultSubflowTaskInstanceRunner implements ITaskInstanceRunner {
         }
         
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-
+        //更改任务的状态和开始时间
         ((TaskInstance) taskInstance).setState(ITaskInstance.RUNNING);
         ((TaskInstance) taskInstance).setStartedTime(runtimeContext.getCalendarService().getSysDate());
+        //TODO wmj2003 应该是update TaskInstance
         persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
 
         IProcessInstance subProcessInstance = currentSession.createProcessInstance(subWorkflowProcess.getName(),taskInstance);
 
         //初始化流程变量,从父实例获得初始值
-        Map processVars = ((TaskInstance) taskInstance).getAliveProcessInstance().getProcessInstanceVariables();
-        List datafields = subWorkflowProcess.getDataFields();
+        Map<String ,Object> processVars = ((TaskInstance) taskInstance).getAliveProcessInstance().getProcessInstanceVariables();
+        List<DataField> datafields = subWorkflowProcess.getDataFields();
         for (int i = 0; datafields != null && i < datafields.size(); i++) {
-            DataField df = (DataField) datafields.get(i);
+            DataField df = datafields.get(i);
+            //TODO wmj2003 疑问，这里的逻辑都不对吧？ 直接 subProcessInstance.setProcessInstanceVariable(df.getName(), processVars.get(df.getName()));
+            //还需要判断什么类型啊？反正value是Object
             if (df.getDataType().equals(DataField.STRING)) {
                 if (processVars.get(df.getName()) != null && (processVars.get(df.getName()) instanceof String)) {
                     subProcessInstance.setProcessInstanceVariable(df.getName(), processVars.get(df.getName()));
@@ -121,10 +130,26 @@ public class DefaultSubflowTaskInstanceRunner implements ITaskInstanceRunner {
                     subProcessInstance.setProcessInstanceVariable(df.getName(), Boolean.FALSE);
                 }
             } else if (df.getDataType().equals(DataField.DATETIME)) {
-                //TODO 需要完善一下
+                //TODO 需要完善一下 （ 父子流程数据传递——时间类型的数据还未做传递-不知道为什么？）
+            	//wmj2003 20090925 补充上了
+                if (processVars.get(df.getName()) != null && (processVars.get(df.getName()) instanceof Date)) {
+                    subProcessInstance.setProcessInstanceVariable(df.getName(), processVars.get(df.getName()));
+                } else if (df.getInitialValue() != null) {
+					try {
+	                	SimpleDateFormat dFormat = new SimpleDateFormat(df.getDataPattern());
+						Date dateTmp = dFormat.parse(df.getInitialValue());
+						subProcessInstance.setProcessInstanceVariable(df.getName(), dateTmp);
+					} catch (ParseException e) {
+						subProcessInstance.setProcessInstanceVariable(df.getName(), null);
+						e.printStackTrace();
+					}
+                   
+                } else {
+                    subProcessInstance.setProcessInstanceVariable(df.getName(), null);
+                }
             }
         }
-
+        //TODO wmj2003 创建子流程实例，并插入流程实例变量。
         runtimeContext.getPersistenceService().saveOrUpdateProcessInstance(subProcessInstance);
         subProcessInstance.run();
     }

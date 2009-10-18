@@ -57,16 +57,26 @@ public class LoopInstanceExtension implements IKernelExtension,
 		return LoopInstance.Extension_Point_LoopInstanceEventListener;
 	}
 
-	private boolean determineTheAliveOfToken(Map vars, String condition)
+	/**
+	 * @param vars
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean determineTheAliveOfToken(Map<String ,Object> vars, String condition)
 			throws Exception {
-		// TODO通过计算transition上的表达式来确定alive的值
-
+		// 通过计算transition上的表达式来确定alive的值
 		IConditionResolver elResolver = this.rtCtx.getConditionResolver();
 		Boolean b = elResolver.resolveBooleanExpression(vars, condition);
 
 		return b;
 	}
 
+	/**
+	 * @param token
+	 * @param condition
+	 * @throws EngineException
+	 */
 	public void calculateTheAliveValue(IToken token, String condition)throws EngineException {
 		if (!token.isAlive()) {
 			return;// 如果token是dead状态，表明synchronizer的joinpoint是dead状态，不需要重新计算。
@@ -108,6 +118,7 @@ public class LoopInstanceExtension implements IKernelExtension,
 				trace.setFromNodeId(transInst.getLoop().getFromNode().getId());
 				trace.setToNodeId(transInst.getLoop().getToNode().getId());
 				trace.setEdgeId(transInst.getLoop().getId());
+				//TODO wmj2003 一旦token从当前边上经过，那么就保存流程运行轨迹,这里应该是insert
 				rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(
 						trace);
 			}

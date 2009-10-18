@@ -21,14 +21,13 @@ import java.util.List;
 
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.condition.ConditionConstant;
-import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.kernel.ISynchronizerInstance;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.ITransitionInstance;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
-//import org.fireflow.kenel.event.NodeInstanceEventType;
+import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.net.StartNode;
 import org.fireflow.model.net.Synchronizer;
 
@@ -55,7 +54,7 @@ public class StartNodeInstance extends AbstractNodeInstance implements
     public StartNodeInstance(StartNode startNd) {
         this.startNode = startNd;
         volume = startNode.getLeavingTransitions().size();
-
+//  start 节点容量 ==输出弧的数量
 //		System.out.println(" startnode's volume is "+volume);
     }
 
@@ -63,8 +62,12 @@ public class StartNodeInstance extends AbstractNodeInstance implements
         return this.startNode.getId();
     }
 
+    // 开始节点触发
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.INodeInstance#fire(org.fireflow.kernel.IToken)
+     */
     public void fire(IToken tk) throws KernelException {
-        if (!tk.isAlive()) {
+        if (!tk.isAlive()) {//如果token是false，那么直接返回
             return;//
         }
         if (tk.getValue() != volume) {
@@ -75,34 +78,36 @@ public class StartNodeInstance extends AbstractNodeInstance implements
 
         }
 
-        tk.setNodeId(this.getSynchronizer().getId());
+        tk.setNodeId(this.getSynchronizer().getId());//到开始节点（同步器）
 
-        IProcessInstance processInstance = tk.getProcessInstance();
+        IProcessInstance processInstance = tk.getProcessInstance();//从token中获得流程实例对象
 
         //触发token_entered事件
         NodeInstanceEvent event1 = new NodeInstanceEvent(this);
         event1.setToken(tk);
-        event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-        fireNodeLeavingEvent(event1);
+        event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED); //token进入
+        fireNodeEvent(event1);
 
         //触发fired事件
         NodeInstanceEvent event2 = new NodeInstanceEvent(this);
         event2.setToken(tk);
-        event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
-        fireNodeEnteredEvent(event2);
+        event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);//token 触发
+        fireNodeEvent(event2);
 
         //触发leaving事件
         NodeInstanceEvent event4 = new NodeInstanceEvent(this);
         event4.setToken(tk);
-        event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
-        fireNodeLeavingEvent(event4);
+        event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING); //token 离开
+        fireNodeEvent(event4);
 
 
-        boolean activiateDefaultCondition = true;
+        boolean activiateDefaultCondition = true;//激活默认弧线的标志
         ITransitionInstance defaultTransInst = null;
+        //找到所有开始节点的输出弧 
         for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.size(); i++) {
             ITransitionInstance transInst = leavingTransitionInstances.get(i);
             String condition = transInst.getTransition().getCondition();
+            //如果弧线的条件！=null 并且 =“default” ，那么弧线实例就是default的弧线了。
             if (condition != null && condition.equals(ConditionConstant.DEFAULT)) {
                 defaultTransInst = transInst;
                 continue;
@@ -112,17 +117,17 @@ public class StartNodeInstance extends AbstractNodeInstance implements
             token.setAlive(true);
             token.setProcessInstance(processInstance);
             token.setFromActivityId(tk.getFromActivityId());
-            token.setStepNumber(tk.getStepNumber()+1);
+            token.setStepNumber(tk.getStepNumber()+1); //步骤号+1
             
-            boolean alive = transInst.take(token);
+            boolean alive = transInst.take(token);//触发弧线的token
             if (alive) {
                 activiateDefaultCondition = false;
             }
 
         }
-        if (defaultTransInst != null) {
+        if (defaultTransInst != null) {//如果defaultTransInst!=null ，走的是default值的弧线 
             Token token = new Token();
-            token.setAlive(activiateDefaultCondition);
+            token.setAlive(activiateDefaultCondition);//设置token为dead
             token.setProcessInstance(processInstance);
             token.setFromActivityId(token.getFromActivityId());
             token.setStepNumber(tk.getStepNumber()+1);
@@ -134,7 +139,7 @@ public class StartNodeInstance extends AbstractNodeInstance implements
         NodeInstanceEvent event3 = new NodeInstanceEvent(this);
         event3.setToken(tk);
         event3.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
-        fireNodeLeavingEvent(event3);
+        fireNodeEvent(event3);
     }
 
     public int getVolume() {

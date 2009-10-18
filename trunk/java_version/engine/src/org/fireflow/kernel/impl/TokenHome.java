@@ -3,7 +3,9 @@ package org.fireflow.kernel.impl;
 // Generated Feb 25, 2008 11:40:06 AM by Hibernate Tools 3.2.0.b9
 
 import java.util.List;
+
 import javax.naming.InitialContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LockMode;
@@ -11,12 +13,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
 
 /**
+ * 
  * Home object for domain model class Token.
  * @see org.fireflow.kenel.impl.Token
  * @author Hibernate Tools
  */
 public class TokenHome {
-
+//TODO  mingjie.mj 20091018 这个类的存在有用吗？
 	private static final Log log = LogFactory.getLog(TokenHome.class);
 
 	private final SessionFactory sessionFactory = getSessionFactory();
@@ -106,6 +109,7 @@ public class TokenHome {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List findByExample(Token instance) {
 		log.debug("finding Token instance by example");
 		try {

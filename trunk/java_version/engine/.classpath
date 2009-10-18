@@ -37,9 +37,10 @@
 	<classpathentry kind="lib" path="libs_4_unit_test/commons-jexl-1.1.jar"/>
 	<classpathentry kind="lib" path="libs_4_unit_test/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="libs_4_unit_test/commons-pool-1.4.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FireflowModel"/>
+	<classpathentry kind="lib" path="libs_4_unit_test/jtds-1.2.3.jar"/>
 	<classpathentry kind="lib" path="libs_4_unit_test/junit-4.6.jar"/>
 	<classpathentry kind="lib" path="libs_4_unit_test/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="libs/IKExpression2.1.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FireflowModel"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

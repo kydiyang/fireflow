@@ -16,30 +16,72 @@
  */
 package org.fireflow.kernel;
 
-import java.util.Set;
-
 import org.fireflow.engine.IProcessInstance;
 
 /**
+ * wangmj 和T_FF_RT_TOKEN表是对应的。
  * @author chennieyun
  *
  */
 public interface IJoinPoint {
+	/**
+	 * @return
+	 */
 	public IProcessInstance getProcessInstance();
+	/**
+	 * @param processInstance
+	 */
 	public void setProcessInstance(IProcessInstance processInstance);
-        public String getProcessInstanceId();
-        public void setProcessInstanceId(String id);
+    /**
+     * @return
+     */
+    public String getProcessInstanceId();
+    /**
+     * @param id
+     */
+    public void setProcessInstanceId(String id);
+	/**
+	 * value是同步器当前的token值之和。
+	 * @return
+	 */
 	public Integer getValue();
+	/**
+	 * @param v
+	 */
 	public void addValue(Integer v);
+	/**
+	 * @return
+	 */
 	public Boolean getAlive();
+	/**
+	 * @param alive
+	 */
 	public void setAlive(Boolean alive);
+	/**
+	 * @return
+	 */
 	public String getSynchronizerId() ;
 
+	/**
+	 * @param synchronizerId
+	 */
 	public void setSynchronizerId(String synchronizerId) ;
 
+    /**
+     * @return
+     */
     public Integer getStepNumber();
+    /**
+     * @param i
+     */
     public void setStepNumber(Integer i);
 
+    /**
+     * @return
+     */
     public String getFromActivityId();
+    /**
+     * @param s
+     */
     public void setFromActivityId(String s);
 }

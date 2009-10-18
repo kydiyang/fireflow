@@ -17,7 +17,6 @@
 package org.fireflow.engine;
 
 import java.util.Date;
-import java.util.List;
 
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
@@ -89,12 +88,6 @@ public interface IWorkItem{
      */
     public Date getCreatedTime();
 
-    /**
-     * 返回签收时间。（改由方法getClaimedTime()完成）
-     * @return
-     * @deprecated
-     */
-    public Date getSignedTime();
 
     /**
      * 返回签收时间
@@ -119,17 +112,6 @@ public interface IWorkItem{
      * @return
      */
     public ITaskInstance getTaskInstance();
-
-    /**
-     * 签收工作项。如果任务实例的分配模式是ANY，则同一个任务实例的其他工作项将被删除。
-     * 如果任务是里的分配模式是ALL，则此操作不影响同一个任务实例的其他工作项的状态。<br/>
-     * 该方法命名不恰当，被public void claim()方法替代
-     * @throws org.fireflow.engine.EngineException
-     * @throws org.fireflow.kenel.KenelException
-     * @deprecated 
-     */
-    public void sign() throws EngineException, KernelException;
-
 
     /**
      * 签收工作项。如果任务实例的分配模式是ANY，则同一个任务实例的其他工作项将被删除。
@@ -274,15 +256,23 @@ public interface IWorkItem{
     public void jumpTo(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
     
 
+    /**
+     * 超级自由流 （使用说明参考jumpTo ）
+     * @param targetActivityId
+     * @param dynamicAssignmentHandler
+     * @param comments
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void jumpToEx(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments) throws EngineException, KernelException ;
     
-    
+
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项。
      * @param actorId 接受任务的操作员Id
      * @return 新创建的工作项
      */    
-    public IWorkItem reasignTo(String actorId) throws EngineException;
+    public IWorkItem reassignTo(String actorId) throws EngineException;
     
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -290,7 +280,7 @@ public interface IWorkItem{
      * @param comments 相关的备注信息
      * @return 新创建的工作项
      */    
-    public IWorkItem reasignTo(String actorId,String comments) throws EngineException;
+    public IWorkItem reassignTo(String actorId,String comments) throws EngineException;
 
 
 }

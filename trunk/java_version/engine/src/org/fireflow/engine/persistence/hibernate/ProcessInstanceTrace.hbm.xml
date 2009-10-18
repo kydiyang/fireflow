@@ -4,7 +4,7 @@
   <class name="org.fireflow.engine.impl.ProcessInstanceTrace" table="T_FF_HIST_TRACE">
     <id name="id" type="java.lang.String">
       <column length="50" name="ID"/>
-      <generator class="uuid.hex"/>
+      <generator class="uuid"/>
     </id>
     <property name="processInstanceId" type="java.lang.String" update="false">
       <column  length="50" name="PROCESSINSTANCE_ID" not-null="true" index="IDX_TRACE_PROCINSTID"/>

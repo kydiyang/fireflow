@@ -31,6 +31,15 @@ import org.fireflow.kernel.KernelException;
  * Created on Mar 21, 2009
  */
 public interface ITaskInstanceRunner {
+    /**
+     * 运行任务
+     * @param currentSession
+     * @param runtimeContext
+     * @param processInstance
+     * @param taskInstance
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void run(IWorkflowSession currentSession,RuntimeContext runtimeContext,
             IProcessInstance processInstance,ITaskInstance taskInstance) throws EngineException,KernelException ;
 }

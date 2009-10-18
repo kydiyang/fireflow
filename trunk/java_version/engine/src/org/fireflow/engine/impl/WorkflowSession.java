@@ -49,7 +49,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	protected RuntimeContext runtimeContext = null;
 	protected DynamicAssignmentHandler dynamicAssignmentHandler = null;
 	protected boolean inWithdrawOrRejectOperation = false;
-	protected Map attributes = new HashMap();
+	protected Map<String,Object> attributes = new HashMap<String,Object>();
 
 	public void setRuntimeContext(RuntimeContext ctx) {
 		this.runtimeContext = ctx;
@@ -126,9 +126,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 						processInstance);
 				
 				// 初始化流程变量
-				List datafields = wfProcess.getDataFields();
+				List<DataField> datafields = wfProcess.getDataFields();
 				for (int i = 0; datafields != null && i < datafields.size(); i++) {
-					DataField df = (DataField) datafields.get(i);
+					DataField df =  datafields.get(i);
 					if (df.getDataType().equals(DataField.STRING)) {
 						if (df.getInitialValue() != null) {
 							processInstance.setProcessInstanceVariable(df
@@ -257,6 +257,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	 * @throws org.fireflow.engine.EngineException
 	 * @throws org.fireflow.kenel.KenelException
 	 */
+	@SuppressWarnings("unchecked")
 	public Object execute(IWorkflowSessionCallback callback)
 			throws EngineException, KernelException {
 		try {
@@ -321,10 +322,11 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<IWorkItem> findMyTodoWorkItems(final String actorId) {
-		List result = null;
+		List<IWorkItem> result = null;
 		try {
-			result = (List) this.execute(new IWorkflowSessionCallback() {
+			result = (List<IWorkItem>) this.execute(new IWorkflowSessionCallback() {
 
 				public Object doInWorkflowSession(RuntimeContext ctx)
 						throws EngineException, KernelException {
@@ -342,11 +344,12 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<IWorkItem> findMyTodoWorkItems(final String actorId,
 			final String processInstanceId) {
-		List result = null;
+		List<IWorkItem> result = null;
 		try {
-			result = (List) this.execute(new IWorkflowSessionCallback() {
+			result = (List<IWorkItem>) this.execute(new IWorkflowSessionCallback() {
 
 				public Object doInWorkflowSession(RuntimeContext ctx)
 						throws EngineException, KernelException {
@@ -364,11 +367,12 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<IWorkItem> findMyTodoWorkItems(final String actorId,
 			final String processId, final String taskId) {
-		List result = null;
+		List<IWorkItem> result = null;
 		try {
-			result = (List) this.execute(new IWorkflowSessionCallback() {
+			result = (List<IWorkItem>) this.execute(new IWorkflowSessionCallback() {
 
 				public Object doInWorkflowSession(RuntimeContext ctx)
 						throws EngineException, KernelException {
@@ -515,6 +519,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<IProcessInstance> findProcessInstancesByProcessId(
 			final String processId) {
 		try {
@@ -539,6 +544,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(
 			final String processId, final Integer version) {
 		try {
@@ -564,6 +570,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<ITaskInstance> findTaskInstancesForProcessInstance(
 			final String processInstanceId, final String activityId) {
 		try {
@@ -589,17 +596,17 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
-	public IWorkItem reasignWorkItemTo(String workItemId, String actorId)
+	public IWorkItem reassignWorkItemTo(String workItemId, String actorId)
 			throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
-		return workItem.reasignTo(actorId);
+		return workItem.reassignTo(actorId);
 
 	}
 
-	public IWorkItem reasignWorkItemTo(String workItemId, String actorId,
+	public IWorkItem reassignWorkItemTo(String workItemId, String actorId,
 			String comments) throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
-		return workItem.reasignTo(actorId, comments);
+		return workItem.reassignTo(actorId, comments);
 	}
 
 	public void rejectWorkItem(String workItemId) throws EngineException,
@@ -668,4 +675,5 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		this.attributes.put(name, attr);
 		
 	}
+
 }

@@ -29,15 +29,15 @@ public interface ISynchronizerInstance extends INodeInstance {
 	 * @param k
 	 */
 	public void setVolume(int k);
+	/**
+	 * @return
+	 */
 	public int getVolume();
+
 	
 	/**
-	 * value是同步器当前的token值之和。
-	 * （已经转移到JoinPoint中，20080215）
-	 * @param value
+	 * 获取到同步器信息
+	 * @return
 	 */
-//	public void setValue(int value);
-//	public int getValue();
-	
 	public Synchronizer getSynchronizer();
 }

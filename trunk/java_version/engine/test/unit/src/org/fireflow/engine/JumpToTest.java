@@ -90,7 +90,7 @@ public class JumpToTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Jump.xml
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("JumpTo");
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
                     processInstance.run();
                     return processInstance;

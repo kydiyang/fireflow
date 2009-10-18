@@ -17,9 +17,9 @@
 package org.fireflow.engine.persistence.hibernate;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
@@ -65,6 +65,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
     }
 
     /**
+     * 流程实例
      * Save processInstance
      * @param processInstance
      */
@@ -74,50 +75,31 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
     }
     
 
-
-    /**
-     * Save joinpoint
-     * @param joinPoint
-     */
-//    public void saveOrUpdateJoinPoint(IJoinPoint joinPoint) {
-//        this.getHibernateTemplate().saveOrUpdate(joinPoint);
-//    }
-
     /* (non-Javadoc)
      * @see org.fireflow.engine.persistence.IPersistenceService#saveTaskInstance(org.fireflow.engine.ITaskInstance)
      */
     public void saveOrUpdateTaskInstance(ITaskInstance taskInstance) {
         this.getHibernateTemplate().saveOrUpdate(taskInstance);
     }
-//
-	/* (non-Javadoc)
-     * @see org.fireflow.engine.persistence.IPersistenceService#saveWorkItem(org.fireflow.engine.IWorkItem)
-     */
 
+
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#saveOrUpdateWorkItem(org.fireflow.engine.IWorkItem)
+     */
     public void saveOrUpdateWorkItem(IWorkItem workitem) {
         this.getHibernateTemplate().saveOrUpdate(workitem);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#saveOrUpdateToken(org.fireflow.kernel.IToken)
+     */
     public void saveOrUpdateToken(IToken token) {
         this.getHibernateTemplate().saveOrUpdate(token);
     }
 
-//    public List<IJoinPoint> findJoinPointsForProcessInstance(final String processInstanceId, final String synchronizerId) {
-//        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
-//
-//            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-//                Criteria criteria = arg0.createCriteria(JoinPoint.class);
-//                criteria.add(Expression.eq("processInstanceId", processInstanceId));
-//                if (synchronizerId != null && !synchronizerId.trim().equals("")) {
-//                    criteria.add(Expression.eq("synchronizerId", synchronizerId));
-//                }
-//                return criteria.list();
-//            }
-//        });
-//
-//        return result;
-//
-//    }
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#getAliveTokenCountForNode(java.lang.String, java.lang.String)
+     */
     public Integer getAliveTokenCountForNode(final String processInstanceId, final String nodeId) {
         Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -141,6 +123,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#getCompletedTaskInstanceCountForTask(java.lang.String, java.lang.String)
+     */
     public Integer getCompletedTaskInstanceCountForTask(final String processInstanceId, final String taskId) {
         Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -164,6 +149,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#getAliveTaskInstanceCountForActivity(java.lang.String, java.lang.String)
+     */
     public Integer getAliveTaskInstanceCountForActivity(final String processInstanceId, final String activityId) {
         Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -176,9 +164,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 
                 Criterion cri1 = Expression.eq("state", new Integer(ITaskInstance.INITIALIZED));
                 Criterion cri2 = Expression.eq("state", new Integer(ITaskInstance.RUNNING));
-//                Criterion cri3 = Expression.eq("state", new Integer(ITaskInstance.SUSPENDED));
                 Criterion cri_or = Expression.or(cri1, cri2);
-//                Criterion cri_or = Expression.or(cri_tmp, cri3);
 
                 criteria.add(cri_or);
 
@@ -194,11 +180,13 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 
     /**
      * 获得同一个Token的所有状态为Initialized的TaskInstance
+     * @param processInstanceId
      * @param tokenId
      * @return
      */
-    public List<ITaskInstance> findInitializedTaskInstancesListForToken(final String processInstanceId, final String tokenId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    @SuppressWarnings("unchecked")
+	public List<ITaskInstance> findInitializedTaskInstancesListForToken(final String processInstanceId, final String tokenId) {
+        List<ITaskInstance> result = (List<ITaskInstance>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
 
@@ -215,9 +203,13 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
-    public List<ITaskInstance> findTaskInstancesForProcessInstance(final java.lang.String processInstanceId,
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTaskInstancesForProcessInstance(java.lang.String, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<ITaskInstance> findTaskInstancesForProcessInstance(final java.lang.String processInstanceId,
             final String activityId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+        List<ITaskInstance> result = (List<ITaskInstance>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
 
@@ -232,8 +224,12 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
-    public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(final String processInstanceId, final Integer stepNumber) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTaskInstancesForProcessInstanceByStepNumber(java.lang.String, java.lang.Integer)
+     */
+    @SuppressWarnings("unchecked")
+	public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(final String processInstanceId, final Integer stepNumber) {
+        List<ITaskInstance> result = (List<ITaskInstance>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
 
@@ -248,49 +244,24 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
         return result;
     }
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#lockTaskInstance(java.lang.String)
+     */
     public void lockTaskInstance(String taskInstanceId){
     	this.getHibernateTemplate().get(TaskInstance.class, taskInstanceId,LockMode.UPGRADE);
     }
-    /*
-    public List<ITaskInstance> findTaskInstancesForProcessInstanceByFromActivityId(final String processInstanceId, final String fromActivityId) {
-    List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
-
-    public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-
-    Criteria criteria = arg0.createCriteria(TaskInstance.class);
-    criteria.add(Expression.eq("processInstanceId", processInstanceId.trim()));
-
-    if (fromActivityId != null && !fromActivityId.trim().equals("")) {
-    criteria.add(Expression.eq("fromActivityId", fromActivityId.trim()));
-    }
-    return (List<ITaskInstance>) criteria.list();
-    }
-    });
-    return result;
-    }
+    
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTokenById(java.lang.String)
      */
-//    public IToken findDeadTokenById(final String id){
-//       IToken result = (IToken) this.getHibernateTemplate().execute(new HibernateCallback() {
-//
-//            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-//
-//                Criteria criteria = arg0.createCriteria(Token.class);
-//
-//
-//                criteria.add(Expression.eq("id", id));
-//
-//                criteria.add(Expression.eq("alive",java.lang.Boolean.FALSE));
-//
-//                return criteria.uniqueResult();
-//            }
-//        });
-//        return result;
-//    }
     public IToken findTokenById(String id) {
         return (IToken) this.getHibernateTemplate().get(Token.class, id);
     }
 
-    public void deleteTokensForNodes(final String processInstanceId, final List nodeIdsList) {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#deleteTokensForNodes(java.lang.String, java.util.List)
+     */
+    public void deleteTokensForNodes(final String processInstanceId, final List<String> nodeIdsList) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
@@ -303,6 +274,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#deleteTokensForNode(java.lang.String, java.lang.String)
+     */
     public void deleteTokensForNode(final String processInstanceId, final String nodeId) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -316,15 +290,20 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#deleteToken(org.fireflow.kernel.IToken)
+     */
     public void deleteToken(IToken token) {
         this.getHibernateTemplate().delete(token);
     }
 
-    /**
-     * 
+
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTokensForProcessInstance(java.lang.String, java.lang.String)
      */
-    public List<IToken> findTokensForProcessInstance(final String processInstanceId, final String nodeId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    @SuppressWarnings("unchecked")
+	public List<IToken> findTokensForProcessInstance(final String processInstanceId, final String nodeId) {
+        List<IToken> result = (List<IToken>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
 
@@ -341,24 +320,16 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
-//    public void updateWorkItem(IWorkItem workItem) {
-//        //在hibernate中，update操作无需处理？
-//        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-//
-//        session.update(workItem);
-//    }
-
-//    public void updateTaskInstance(ITaskInstance taskInstance) {
-//        //在hibernate中，update操作无需处理？
-//        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-//
-//        session.update(taskInstance);
-//
-//    }
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkItemById(java.lang.String)
+     */
     public IWorkItem findWorkItemById(String id) {
         return (IWorkItem) this.getHibernateTemplate().get(WorkItem.class, id);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findAliveTaskInstanceById(java.lang.String)
+     */
     public ITaskInstance findAliveTaskInstanceById(final String id) {
         ITaskInstance result = (ITaskInstance) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -380,42 +351,17 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTaskInstanceById(java.lang.String)
+     */
     public ITaskInstance findTaskInstanceById(String id) {
         return (ITaskInstance) this.getHibernateTemplate().get(TaskInstance.class, id);
     }
 
 
-    /*
-    public List<IWorkItem> findWorkItemsForTaskInstance(final String taskInstanceId) {
-    List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
-
-    public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-    Criteria criteria = arg0.createCriteria(WorkItem.class);
-    criteria.add(Expression.eq("taskInstance.id", taskInstanceId));
-    List<IWorkItem> _result = criteria.list();
-
-    return _result;
-    }
-    });
-    return result;
-
-    }
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#abortTaskInstance(org.fireflow.engine.impl.TaskInstance)
      */
-//    public List<IWorkItem> findAliveWorkItemsWithoutJoinForTaskInstance(final String taskInstanceId) {
-//        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
-//
-//            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-//                String hql = "From org.fireflow.engine.impl.WorkItem m Where m.taskInstance.id=:taskInstanceId And (m.state=0 Or m.state=1 Or m.state=3)";
-//                Query query = arg0.createQuery(hql);
-//
-//                query.setString("taskInstanceId", taskInstanceId);
-//
-//                return query.list();
-//            }
-//        });
-//        System.out.println("===================================");
-//        return result;
-//    }
     public void abortTaskInstance(final TaskInstance taskInstance) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -441,6 +387,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#getAliveWorkItemCountForTaskInstance(java.lang.String)
+     */
     public Integer getAliveWorkItemCountForTaskInstance(final String taskInstanceId) {
         Object result = (Object) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -458,61 +407,68 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         }
     }
 
-    public List<IWorkItem> findCompletedWorkItemsForTaskInstance(final String taskInstanceId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findCompletedWorkItemsForTaskInstance(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findCompletedWorkItemsForTaskInstance(final String taskInstanceId) {
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 String hql = "From org.fireflow.engine.impl.WorkItem m Where m.taskInstance.id=:taskInstanceId And m.state=:state";
                 Query query = arg0.createQuery(hql);
                 query.setString("taskInstanceId", taskInstanceId);
                 query.setInteger("state", IWorkItem.COMPLETED);
-                return query.list();
+                return (List<IWorkItem>)query.list();
             }
         });
-//        System.out.println("===================================");
+
         return result;
     }
     
-    public List<IWorkItem> findWorkItemsForTaskInstance(final String taskInstanceId){
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkItemsForTaskInstance(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findWorkItemsForTaskInstance(final String taskInstanceId){
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
-            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+			public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
             	Criteria criteria = arg0.createCriteria(WorkItem.class);
             	criteria.createAlias("taskInstance", "taskInstance");
             	criteria.add(Expression.eq("taskInstance.id", taskInstanceId));
                 
-            	return criteria.list();
+            	return (List<IWorkItem>) criteria.list();
             }
         });
         return result;    	
     }
 
-    public List<IWorkItem> findWorkItemsForTask(final String taskid) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkItemsForTask(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findWorkItemsForTask(final String taskid) {
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
-            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+			public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(WorkItem.class);
 
                 criteria.createAlias("taskInstance", "taskInstance");
                 criteria.add(Expression.eq("taskInstance.taskId", taskid));
-                List<IWorkItem> _result = criteria.list();
-
-                return _result;
+                return (List<IWorkItem>) criteria.list();
             }
         });
         return result;
     }
 
-//    public List<IToken> findTokens(IProcessInstance processInstance) {
-//        Session session = (Session) RuntimeContext.getInstance().getCurrentDBSession();
-//        Criteria criteria = session.createCriteria(Token.class);
-//
-//        criteria.add(Expression.eq("processInstance.id", processInstance.getId()));
-//
-//        return (List<IToken>) criteria.list();
-//    }
-    public List<IProcessInstance> findProcessInstancesByProcessId(final String processId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findProcessInstancesByProcessId(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IProcessInstance> findProcessInstancesByProcessId(final String processId) {
+        List<IProcessInstance> result = (List<IProcessInstance>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(ProcessInstance.class);
@@ -521,16 +477,18 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 
                 criteria.addOrder(Order.asc("createdTime"));
                 
-                List<IProcessInstance> _result = criteria.list();
-
-                return _result;
+                return (List<IProcessInstance>)criteria.list();
             }
         });
         return result;
     }
 
-    public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(final String processId, final Integer version) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findProcessInstancesByProcessIdAndVersion(java.lang.String, java.lang.Integer)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(final String processId, final Integer version) {
+        List<IProcessInstance> result = (List<IProcessInstance>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(ProcessInstance.class);
@@ -538,18 +496,22 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 criteria.add(Expression.eq("processId", processId));
                 criteria.add(Expression.eq("version", version));
                 criteria.addOrder(Order.asc("createdTime"));                
-                List<IProcessInstance> _result = criteria.list();
-
-                return _result;
+                return (List<IProcessInstance>) criteria.list();
             }
         });
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findProcessInstanceById(java.lang.String)
+     */
     public IProcessInstance findProcessInstanceById(String id) {
         return (IProcessInstance) this.getHibernateTemplate().get(ProcessInstance.class, id);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findAliveProcessInstanceById(java.lang.String)
+     */
     public IProcessInstance findAliveProcessInstanceById(final String id) {
         IProcessInstance result = (IProcessInstance) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -559,9 +521,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 
                 Criterion cri1 = Expression.eq("state", new Integer(IProcessInstance.INITIALIZED));
                 Criterion cri2 = Expression.eq("state", new Integer(IProcessInstance.RUNNING));
-//                Criterion cri3 = Expression.eq("state", new Integer(IProcessInstance.SUSPENDED));
+
                 Criterion cri_or = Expression.or(cri1, cri2);
-//                Criterion cri_or = Expression.or(cri_tmp, cri3);
+                
 
                 Criterion cri0 = Expression.eq("id", id);
                 Criterion cri_and = Expression.and(cri0, cri_or);
@@ -573,9 +535,10 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
-//    public IJoinPoint findJoinPointById(String id) {
-//        return (IJoinPoint) this.getHibernateTemplate().get(JoinPoint.class, id);
-//    }
+
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#saveOrUpdateWorkflowDefinition(org.fireflow.engine.definition.WorkflowDefinition)
+     */
     public void saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
         if (workflowDef.getId() == null || workflowDef.getId().equals("")) {
             Integer latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.getProcessId());
@@ -588,6 +551,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         this.getHibernateTemplate().saveOrUpdate(workflowDef);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTheLatestVersionNumber(java.lang.String)
+     */
     public Integer findTheLatestVersionNumber(final String processId) {
         //取得当前最大的发布状态为有效的version值
         Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
@@ -608,6 +574,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTheLatestVersionNumberIgnoreState(java.lang.String)
+     */
     public Integer findTheLatestVersionNumberIgnoreState(final String processId){
         Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
@@ -625,10 +594,16 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;    	
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkflowDefinitionById(java.lang.String)
+     */
     public WorkflowDefinition findWorkflowDefinitionById(String id) {
         return (WorkflowDefinition) this.getHibernateTemplate().get(WorkflowDefinition.class, id);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkflowDefinitionByProcessIdAndVersionNumber(java.lang.String, int)
+     */
     public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(final String processId, final int version) {
         WorkflowDefinition workflowDef = (WorkflowDefinition) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -642,32 +617,44 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return workflowDef;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTheLatestVersionOfWorkflowDefinitionByProcessId(java.lang.String)
+     */
     public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId) {
         Integer latestVersion = this.findTheLatestVersionNumber(processId);
         return this.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, latestVersion);
     }
 
-    public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(final String processId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkflowDefinitionsByProcessId(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(final String processId) {
+        List<WorkflowDefinition> result = (List<WorkflowDefinition>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria c = arg0.createCriteria(WorkflowDefinition.class);
                 c.add(Expression.eq("processId", processId));
-                return c.list();
+                return (List<WorkflowDefinition>)c.list();
             }
         });
 
         return result;
     }
 
-    public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition() {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findAllTheLatestVersionsOfWorkflowDefinition()
+     */
+    @SuppressWarnings("unchecked")
+	public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition() {
+        List<WorkflowDefinition> result = (List<WorkflowDefinition>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 String hql = "select distinct model.processId from WorkflowDefinition model ";
                 Query query = arg0.createQuery(hql);
-                List processIdList = query.list();
-                List _result = new Vector<WorkflowDefinition>();
+                List<String> processIdList = query.list();
+                
+                List<WorkflowDefinition> _result = new ArrayList<WorkflowDefinition>();
                 for (int i = 0; i < processIdList.size(); i++) {
                     WorkflowDefinition wfDef = findTheLatestVersionOfWorkflowDefinitionByProcessId((String) processIdList.get(i));
                     _result.add(wfDef);
@@ -678,13 +665,20 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTodoWorkItems(java.lang.String)
+     */
     public List<IWorkItem> findTodoWorkItems(final String actorId) {
         return findTodoWorkItems(actorId, null);
     }
 
-    public List<IWorkItem> findTodoWorkItems(final String actorId, final String processInstanceId) {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTodoWorkItems(java.lang.String, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findTodoWorkItems(final String actorId, final String processInstanceId) {
 
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(WorkItem.class);
@@ -706,18 +700,21 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                     criteria.add(Expression.eq("taskInstance.processInstanceId", processInstanceId));
                 }
 
-                return criteria.list();
+                return (List<IWorkItem>)criteria.list();
             }
         });
         return result;
     }
 
-    public List<IWorkItem> findTodoWorkItems(final String actorId, final String processId, final String taskId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findTodoWorkItems(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findTodoWorkItems(final String actorId, final String processId, final String taskId) {
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(WorkItem.class);
-
 
                 Criterion cri1 = Expression.eq("state", new Integer(IWorkItem.INITIALIZED));
                 Criterion cri2 = Expression.eq("state", new Integer(IWorkItem.RUNNING));
@@ -739,7 +736,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 if (taskId != null && !taskId.trim().equals("")) {
                     criteria.add(Expression.eq("taskInstance.taskId", taskId));
                 }
-                return criteria.list();
+                return (List<IWorkItem>)criteria.list();
 
 
             }
@@ -747,13 +744,20 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findHaveDoneWorkItems(java.lang.String)
+     */
     public List<IWorkItem> findHaveDoneWorkItems(final String actorId) {
         return findHaveDoneWorkItems(actorId, null);
     }
 
-    public List<IWorkItem> findHaveDoneWorkItems(final String actorId, final String processInstanceId) {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findHaveDoneWorkItems(java.lang.String, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findHaveDoneWorkItems(final String actorId, final String processInstanceId) {
 
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(WorkItem.class);
@@ -775,14 +779,18 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                     criteria.add(Expression.eq("taskInstance.processInstanceId", processInstanceId));
                 }
 
-                return criteria.list();
+                return (List<IWorkItem>)criteria.list();
             }
         });
         return result;
     }
 
-    public List<IWorkItem> findHaveDoneWorkItems(final String actorId, final String processId, final String taskId) {
-        List result = (List) this.getHibernateTemplate().execute(new HibernateCallback() {
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findHaveDoneWorkItems(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<IWorkItem> findHaveDoneWorkItems(final String actorId, final String processId, final String taskId) {
+        List<IWorkItem> result = (List<IWorkItem>) this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 Criteria criteria = arg0.createCriteria(WorkItem.class);
@@ -808,7 +816,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 if (taskId != null && !taskId.trim().equals("")) {
                     criteria.add(Expression.eq("taskInstance.taskId", taskId));
                 }
-                return criteria.list();
+                return (List<IWorkItem>)criteria.list();
 
 
             }
@@ -816,6 +824,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#deleteWorkItemsInInitializedState(java.lang.String)
+     */
     public void deleteWorkItemsInInitializedState(final String taskInstanceId) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -828,6 +839,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#getAliveProcessInstanceCountForParentTaskInstance(java.lang.String)
+     */
     public Integer getAliveProcessInstanceCountForParentTaskInstance(final String taskInstanceId) {
         Integer result = (Integer) this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -837,9 +851,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 
                 Criterion cri1 = Expression.eq("state", new Integer(IProcessInstance.INITIALIZED));
                 Criterion cri2 = Expression.eq("state", new Integer(IProcessInstance.RUNNING));
-//                Criterion cri3 = Expression.eq("state", new Integer(IProcessInstance.SUSPENDED));
+//              Criterion cri3 = Expression.eq("state", new Integer(IProcessInstance.SUSPENDED));
                 Criterion cri_or = Expression.or(cri1, cri2);
-//                Criterion cri_or = Expression.or(cri_tmp, cri3);
+//              Criterion cri_or = Expression.or(cri_tmp, cri3);
 
                 criteria.add(cri_or);
 
@@ -853,6 +867,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#suspendProcessInstance(org.fireflow.engine.impl.ProcessInstance)
+     */
     public void suspendProcessInstance(final ProcessInstance processInstance) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -871,6 +888,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#restoreProcessInstance(org.fireflow.engine.impl.ProcessInstance)
+     */
     public void restoreProcessInstance(final ProcessInstance processInstance) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -889,6 +909,9 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#abortProcessInstance(org.fireflow.engine.impl.ProcessInstance)
+     */
     public void abortProcessInstance(final ProcessInstance processInstance) {
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
@@ -897,7 +920,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 processInstance.setState(IProcessInstance.CANCELED);
                 processInstance.setEndTime(now);
                 arg0.update(processInstance);
-
+//更新所有的任务实例状态为canceled
                 String hql1 = "Update org.fireflow.engine.impl.TaskInstance as m set m.state=:state,m.endTime=:endTime,m.canBeWithdrawn=:canBewithdrawn Where m.processInstanceId=:processInstanceId And (m.state=0 Or m.state=1)";
                 Query query1 = arg0.createQuery(hql1);
                 query1.setInteger("state", ITaskInstance.CANCELED);
@@ -905,7 +928,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 query1.setBoolean("canBewithdrawn", Boolean.FALSE);
                 query1.setString("processInstanceId", processInstance.getId());
                 query1.executeUpdate();
-
+//更新所有工作项的状态为canceled
 
                 String hql2 = "Update org.fireflow.engine.impl.WorkItem as m set m.state=:state,m.endTime=:endTime Where m.taskInstance in (From org.fireflow.engine.impl.TaskInstance n  Where n.processInstanceId=:processInstanceId)   And (m.state=0 Or m.state=1)";
                 Query query2 = arg0.createQuery(hql2);
@@ -913,7 +936,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
                 query2.setDate("endTime", now);
                 query2.setString("processInstanceId", processInstance.getId());
                 query2.executeUpdate();
-
+//删除所有的token
                 String hql3 = "Delete org.fireflow.kernel.impl.Token where processInstanceId=:processInstanceId";
                 Query query3 = arg0.createQuery(hql3);
                 query3.setString("processInstanceId", processInstance.getId());
@@ -923,31 +946,20 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
             }
         });
     }
-    /*
-    public List<IWorkItem> findHaveDoneWorkItems(final String processInstanceId,final String activityId){
-    if (processInstanceId==null || processInstanceId.trim().equals("")||
-    activityId==null || activityId.trim().equals("")){
-    return null;
-    }
-    Object result = this.getHibernateTemplate().execute(new HibernateCallback() {
-    public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-    String hql = " from org.fireflow.engine.impl.WorkItem as model where model.taskInstance.processInstance.id=? and model.activityId=? and model.state=2";
-    Query query = arg0.createQuery(hql);
-    query.setString(0, processInstanceId);
-    query.setString(1, activityId);
-    return query.list();
-    }
-    });
 
-    return (List)result;
-    }
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#saveOrUpdateProcessInstanceTrace(org.fireflow.engine.impl.ProcessInstanceTrace)
      */
-
     public void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace) {
         this.getHibernateTemplate().saveOrUpdate(processInstanceTrace);
     }
-    public List findProcessInstanceTraces(final String processInstanceId){
-		List l = (List)this.getHibernateTemplate().execute(new HibernateCallback() {
+    
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.persistence.IPersistenceService#findProcessInstanceTraces(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+	public List<ProcessInstanceTrace> findProcessInstanceTraces(final String processInstanceId){
+		List<ProcessInstanceTrace> l = (List<ProcessInstanceTrace>)this.getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session arg0)
 					throws HibernateException, SQLException {
 				String hql = "From org.fireflow.engine.impl.ProcessInstanceTrace as m Where m.processInstanceId=:processInstanceId Order by m.stepNumber,m.minorNumber";

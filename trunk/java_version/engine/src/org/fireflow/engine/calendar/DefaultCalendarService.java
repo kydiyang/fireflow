@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.Duration;
 
@@ -265,7 +266,7 @@ public class DefaultCalendarService implements ICalendarService {
         SimpleDateFormat dFormat = new SimpleDateFormat(this.businessCalendarProperties.getProperty(hour_format));
         String paramTimeStr = dFormat.format(date);
         StringTokenizer stringTokenizer = new StringTokenizer(businessTime, "&");
-        List timeSpanList = new ArrayList();
+        List<String> timeSpanList = new ArrayList<String>();
         while (stringTokenizer.hasMoreTokens()) {
             String timeSpan = stringTokenizer.nextToken();
             int isInTheSpan = testTimeInTheTimeSpan(date, timeSpan);

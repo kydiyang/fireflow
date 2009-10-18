@@ -17,3 +17,8 @@ create table T_FF_RT_WORKITEM (ID varchar(50) not null, STATE int not null, CREA
 create index IDX_TRACE_PROCINSTID on T_FF_HIST_TRACE (PROCESSINSTANCE_ID);
 alter table T_FF_RT_PROCINST_VAR add constraint FKD79C420D7AF471D8 foreign key (PROCESSINSTANCE_ID) references T_FF_RT_PROCESSINSTANCE;
 alter table T_FF_RT_WORKITEM add constraint FK4131554DE2527DDC foreign key (TASKINSTANCE_ID) references T_FF_RT_TASKINSTANCE;
+alter table T_FF_RT_PROCINST_VAR
+   add constraint var_reference_process foreign key (processinstance_id)
+      references T_FF_RT_PROCESSINSTANCE (id)
+         on update cascade on delete cascade
+go

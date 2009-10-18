@@ -24,7 +24,15 @@ import java.util.List;
  *
  */
 public interface IPlugable {
+	/**
+	 * wangmj 获取扩展目标名称
+	 * @return
+	 */
 	public String getExtensionTargetName();
+	/**
+	 * wangmj获取扩展点名称
+	 * @return
+	 */
 	public List<String> getExtensionPointNames();
 	
 	//TODO extesion是单态还是多实例？单态应该效率高一些。

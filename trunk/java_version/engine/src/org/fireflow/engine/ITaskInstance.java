@@ -17,7 +17,6 @@
 package org.fireflow.engine;
 
 import java.util.Date;
-import java.util.List;
 
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;

@@ -89,7 +89,7 @@ public class WithdrawAndRejectTest {
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("WithdrawAndReject");
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("WithdrawAndReject","fireflowTester");
                     processInstance.run();
                     return processInstance;
                 } catch (EngineException ex) {

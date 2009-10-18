@@ -5,10 +5,11 @@
 		table="T_FF_RT_TASKINSTANCE">
 		<id name="id" type="java.lang.String">
 			<column length="50" name="ID" />
-			<generator class="uuid.hex" />
+			<generator class="uuid" />
 		</id>
-		<discriminator column="BIZ_TYPE" length="250"
-			type="java.lang.String" />
+		
+		<discriminator column="BIZ_TYPE" length="250" type="java.lang.String" />
+		
 		<property name="taskId" type="java.lang.String" update="false">
 			<column length="300" name="TASK_ID" not-null="true">
 				<comment>任务id</comment>

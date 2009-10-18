@@ -91,7 +91,7 @@ public class FireWorkflowEngineTest {
                     System.out.println("====================workflowSession in start process is "+workflowSession.hashCode());
                     workflowSession.setAttribute("x", "abcde");
                     //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process");
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
                     String id = processInstance.getId();
 //                    System.out.println("++++++++++++++id is "+id);
                     processInstance.setProcessInstanceVariable("mobile", mobile);

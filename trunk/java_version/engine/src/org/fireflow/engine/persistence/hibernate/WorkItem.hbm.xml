@@ -4,7 +4,7 @@
   <class dynamic-update="true" name="org.fireflow.engine.impl.WorkItem" table="T_FF_RT_WORKITEM">
     <id name="id" type="java.lang.String">
       <column length="50" name="ID"/>
-      <generator class="uuid.hex"/>
+      <generator class="uuid"/>
     </id>
     <property name="state" type="java.lang.Integer">
       <column name="STATE" length="1" not-null="true" >

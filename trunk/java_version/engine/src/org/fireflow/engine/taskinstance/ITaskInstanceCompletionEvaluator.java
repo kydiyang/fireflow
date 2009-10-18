@@ -31,6 +31,16 @@ import org.fireflow.kernel.KernelException;
  * Created on Mar 21, 2009
  */
 public interface ITaskInstanceCompletionEvaluator {
+    /**
+     * 判断任务实例是否可以终止
+     * @param currentSession
+     * @param runtimeContext
+     * @param processInstance
+     * @param taskInstance
+     * @return true表示可以终止，false不能终止
+     * @throws EngineException
+     * @throws KernelException
+     */
     public boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession,RuntimeContext runtimeContext,
             IProcessInstance processInstance ,ITaskInstance taskInstance)throws EngineException ,KernelException;
 }

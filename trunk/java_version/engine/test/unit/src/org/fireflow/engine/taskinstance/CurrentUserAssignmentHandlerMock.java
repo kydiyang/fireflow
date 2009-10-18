@@ -38,7 +38,7 @@ public class CurrentUserAssignmentHandlerMock implements IAssignmentHandler{
     	
     	System.out.println("+++++++++++++Current Workflow Session is "+workflowSession.hashCode());
     	System.out.println("+++++++++++ x in current workflow session is "+workflowSession.getAttribute("x"));
-        IWorkItem wi = asignable.asignToActor(ACTOR_ID);
+        IWorkItem wi = asignable.assignToActor(ACTOR_ID);
         wi.claim();
     }
 

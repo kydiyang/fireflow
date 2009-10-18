@@ -16,18 +16,15 @@
  */
 package org.fireflow.engine;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import org.fireflow.engine.beanfactory.IBeanFactory;
 import org.fireflow.engine.calendar.ICalendarService;
+import org.fireflow.engine.condition.IConditionResolver;
 import org.fireflow.engine.definition.IDefinitionService;
 import org.fireflow.engine.impl.WorkflowSession;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.ITaskInstanceManager;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.KernelManager;
-import org.fireflow.engine.condition.IConditionResolver;
 
 /**
  * RuntimeContext是Fire workflow Engine的总线。所有的服务都挂接在这个总线上，并通过这个总线获取。<br/>
@@ -39,7 +36,6 @@ import org.fireflow.engine.condition.IConditionResolver;
  */
 public class RuntimeContext {
 
-//    private static RuntimeContext instance = null;
     /**
      * 是否已经初始化
      */
@@ -84,14 +80,6 @@ public class RuntimeContext {
      * 是否打开流程跟踪，如果打开，则会往T_FF_HIST_TRACE表中插入纪录。
      */
     private boolean enableTrace = false;
-
-//    private ThreadLocal<Object> currentDBSession = new ThreadLocal<Object>();
-//	private ThreadLocal<IFireflowSession> currentFireflowSession = new ThreadLocal<IFireflowSession>();
-    //保持一个内部用的beanFactory,类似spring的beanfactory,用于注册Listener,ApplicationHandler,AssignmentHandler的
-    //单态实例，可以考虑这个beanfactory是否可以引用spring的beanfactory
-    //将Bean的创建工作委派给IBeanFactory,20090228
-//    private Map<String, Object> beanCache = new HashMap<String, Object>();
-
     
     public RuntimeContext() {
     }
@@ -110,14 +98,6 @@ public class RuntimeContext {
         }
     }
 
-    //DBSession 放在哪里比较好些？
-//    public void setCurrentDBSession(Object dbSession) {
-//        currentDBSession.set(dbSession);
-//    }
-//
-//    public Object getCurrentDBSession() {
-//        return currentDBSession.get();
-//    }
     /**
      * 返回条件解析器
      * @return
@@ -209,24 +189,18 @@ public class RuntimeContext {
      * @throws KernelException
      */
     public void initialize() throws EngineException, KernelException {
-//		System.out.println("执行initialize(),the isInitialized="+this.isInitialized);
-//		System.out.println("看看有没有 受理环节实例"+this.getKenelManager().getWFElementInstance("受理"));
         if (!isInitialized) {
-//			initKenelExtensions();
             initAllNetInstances();
             isInitialized = true;
         }
     }
 
+    /**
+     * 初始化所有的工作流网实例
+     * @throws KernelException
+     */
     protected void initAllNetInstances() throws KernelException {
-        /*
-        List<WorkflowProcess> allWfProcess = definitionService.getAllWorkflowProcesses();
-        this.getKenelManager().clearAllNetInstance();
-        for(int i=0;allWfProcess!=null && i<allWfProcess.size();i++){
-        WorkflowProcess process = allWfProcess.get(i);
-        this.getKenelManager().createNetInstance( process);
-        }
-         */
+
     }
 
     public boolean isEnableTrace() {
