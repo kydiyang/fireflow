@@ -16,7 +16,6 @@
  */
 package org.fireflow.model;
 
-import org.fireflow.model.net.Activity;
 import org.fireflow.model.resource.Form;
 import org.fireflow.model.resource.Participant;
 
@@ -26,6 +25,7 @@ import org.fireflow.model.resource.Participant;
  * @version 1.0
  * Created on Mar 15, 2009
  */
+@SuppressWarnings("serial")
 public class FormTask extends Task{
     /**
      * 可编辑表单
@@ -53,16 +53,16 @@ public class FormTask extends Task{
      */
     public static final String ANY = "ANY";
 
-
-    /**
-     * @deprecated
-     */
-    public static final String MANUAL = "MANUAL";
-    /**
-     * @deprecated
-     */
-    public static final String AUTOMATIC = "AUTOMATIC";
-
+//被mignjie.mj注释掉 20091018 
+//    /**
+//     * @deprecated
+//     */
+//    public static final String MANUAL = "MANUAL";
+//    /**
+//     * @deprecated
+//     */
+//    public static final String AUTOMATIC = "AUTOMATIC";
+//
 
     
     //----------Form Task 的属性

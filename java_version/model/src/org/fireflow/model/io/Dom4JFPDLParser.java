@@ -51,12 +51,11 @@ package org.fireflow.model.io;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import java.util.UUID;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -93,13 +92,7 @@ import org.xml.sax.SAXException;
  */
 public class Dom4JFPDLParser implements IFPDLParser {
 
-//    String encoding = "utf-8";
-//    public Dom4JFPDLParser() {
-//    }
-//
-//    public void setEncoding(String ecd) {
-//        this.encoding = ecd;
-//    }
+
     public WorkflowProcess parse(InputStream in) throws IOException,
             FPDLParserException {
         try {
@@ -116,7 +109,7 @@ public class Dom4JFPDLParser implements IFPDLParser {
             });
             Document document = reader.read(in);
 
-            WorkflowProcess wp = parse(document);
+            WorkflowProcess wp = parse(document);//解析
             return wp;
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -126,52 +119,56 @@ public class Dom4JFPDLParser implements IFPDLParser {
 //        return parse(new InputStreamReader(in));
     }
 
-    protected WorkflowProcess parse(Document document) throws FPDLParserException {
+    @SuppressWarnings("static-access")
+	protected WorkflowProcess parse(Document document) throws FPDLParserException {
         Element workflowProcessElement = document.getRootElement();
-
+//流程ID
         WorkflowProcess wp = new WorkflowProcess(workflowProcessElement.attributeValue(NAME));
-        wp.setSn(UUID.randomUUID().toString());
+        wp.setSn(UUID.randomUUID().toString());//使用UUID作为流程实例ID
+        //流程整体描述
         wp.setDescription(Util4Parser.elementAsString(workflowProcessElement,
                 DESCRIPTION));
-
+        //流程Task creator
         wp.setTaskInstanceCreator(workflowProcessElement.attributeValue(TASK_INSTANCE_CREATOR));
 
         wp.setFormTaskInstanceRunner(workflowProcessElement.attributeValue(FORM_TASK_INSTANCE_RUNNER));
-
         wp.setToolTaskInstanceRunner(workflowProcessElement.attributeValue(TOOL_TASK_INSTANCE_RUNNER));
-
         wp.setSubflowTaskInstanceRunner(workflowProcessElement.attributeValue(SUBFLOW_TASK_INSTANCE_RUNNER));
 
         wp.setFormTaskInstanceCompletionEvaluator(workflowProcessElement.attributeValue(FORM_TASK_INSTANCE_COMPLETION_EVALUATOR));
-
         wp.setToolTaskInstanceCompletionEvaluator(workflowProcessElement.attributeValue(TOOL_TASK_INSTANCE_COMPLETION_EVALUATOR));
         wp.setSubflowTaskInstanceCompletionEvaluator(workflowProcessElement.attributeValue(SUBFLOW_TASK_INSTANCE_COMPLETION_EVALUATOR));
-
+//流程显示名称
         wp.setDisplayName(workflowProcessElement.attributeValue(DISPLAY_NAME));
+        //下面两个属性，暂时还未使用
         wp.setResourceFile(workflowProcessElement.attributeValue(RESOURCE_FILE));
         wp.setResourceManager(workflowProcessElement.attributeValue(RESOURCE_MANAGER));
 
-
+        //解析datafields
         this.loadDataFields(wp, wp.getDataFields(), Util4Parser.child(
                 workflowProcessElement, this.DATA_FIELDS));
+        //开始节点
         loadStartNode(wp, Util4Parser.child(workflowProcessElement, START_NODE));
-
+//整体流程对应的task ,这个属性好像暂时未启用
         loadTasks(wp, wp.getTasks(),Util4Parser.child(
                     workflowProcessElement, TASKS) );
-
+//所有业务节点,同时将这个节点的所有的属性都解析出来保存到节点信息中。
         loadActivities(wp, wp.getActivities(), Util4Parser.child(
                 workflowProcessElement, ACTIVITIES));
+        //工作流同步器节点
         loadSynchronizers(wp, wp.getSynchronizers(), Util4Parser.child(
                 workflowProcessElement, SYNCHRONIZERS));
+        //结束节点
         loadEndNodes(wp, wp.getEndNodes(), Util4Parser.child(
                 workflowProcessElement, END_NODES));
+        //转移线
         loadTransitions(wp, Util4Parser.child(workflowProcessElement,
                 TRANSITIONS));
-
+//循环线
         loadLoops(wp,Util4Parser.child(workflowProcessElement, LOOPS));
-
+//所有的监听器
         loadEventListeners(wp.getEventListeners(), Util4Parser.child(workflowProcessElement, EVENT_LISTENERS));
-
+//加载扩展属性
         Map<String, String> extAttrs = wp.getExtendedAttributes();
         loadExtendedAttributes(extAttrs, Util4Parser.child(
                 workflowProcessElement, EXTENDED_ATTRIBUTES));
@@ -180,76 +177,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
 
     }
 
-    /*
-    public WorkflowProcess parse(InputSource in) throws IOException, FPDLParserException {
-    String oldSigletonClassName = System.getProperty("org.dom4j.DocumentFactory.singleton.strategy");
-    try {
-    //            java.util.logging.LogManager.getLogManager().getLogger(Dom4JFPDLSerializer.class.getName()).log(Level.WARNING, "=======================检查是否是新版本");
-
-    System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", "org.fireflow.model.io.MySigleton4DocumentFactory");
-    SAXReader reader = new SAXReader(new DocumentFactory());
-    reader.setEntityResolver(new EntityResolver() {
-
-    String emptyDtd = "";
-    ByteArrayInputStream bytels = new ByteArrayInputStream(emptyDtd.getBytes());
-
-    public InputSource resolveEntity(String publicId,
-    String systemId) throws SAXException, IOException {
-    return new InputSource(bytels);
-    }
-    });
-    reader.setEncoding(encoding);
-    Document document = reader.read(in);
-
-    WorkflowProcess wp = parse(document);
-    return wp;
-    } catch (DocumentException e) {
-    e.printStackTrace();
-    throw new FPDLParserException("Error parsing document.", e);
-    } finally {
-    if (oldSigletonClassName != null && !oldSigletonClassName.equals("")) {
-    System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", oldSigletonClassName);
-    }
-    }
-    }
+    /**
+     * @param listeners
+     * @param element
      */
-
-    /*
-    public WorkflowProcess parse(Reader in) throws IOException,
-    FPDLParserException {
-    String oldSigletonClassName = System.getProperty("org.dom4j.DocumentFactory.singleton.strategy");
-    try {
-    //            java.util.logging.LogManager.getLogManager().getLogger(Dom4JFPDLSerializer.class.getName()).log(Level.WARNING, "=======================检查是否是新版本");
-
-    System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", "org.fireflow.model.io.MySigleton4DocumentFactory");
-    SAXReader reader = new SAXReader(new DocumentFactory());
-    reader.setEntityResolver(new EntityResolver() {
-
-    String emptyDtd = "";
-    ByteArrayInputStream bytels = new ByteArrayInputStream(emptyDtd.getBytes());
-
-    public InputSource resolveEntity(String publicId,
-    String systemId) throws SAXException, IOException {
-    return new InputSource(bytels);
-    }
-    });
-    reader.setEncoding(encoding);
-    Document document = reader.read(in);
-
-    WorkflowProcess wp = parse(document);
-    return wp;
-    } catch (DocumentException e) {
-    e.printStackTrace();
-    throw new FPDLParserException("Error parsing document.", e);
-    } finally {
-    if (oldSigletonClassName != null && !oldSigletonClassName.equals("")) {
-    System.setProperty("org.dom4j.DocumentFactory.singleton.strategy", oldSigletonClassName);
-    }
-
-    }
-    }
-     */
-    protected void loadEventListeners(List listeners, Element element) {
+    protected void loadEventListeners(List<EventListener> listeners, Element element) {
         listeners.clear();
         if (element == null) {
             return;
@@ -257,10 +189,10 @@ public class Dom4JFPDLParser implements IFPDLParser {
         if (element == null) {
             return;
         }
-        List listenerElms = Util4Parser.children(element, EVENT_LISTENER);
-        Iterator iter = listenerElms.iterator();
+        List<Element> listenerElms = Util4Parser.children(element, EVENT_LISTENER);
+        Iterator<Element> iter = listenerElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             EventListener listener = new EventListener();
             listener.setClassName(elm.attributeValue(CLASS_NAME));
 
@@ -268,6 +200,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadStartNode(WorkflowProcess wp, Element element)
             throws FPDLParserException {
         if (element == null) {
@@ -282,16 +219,22 @@ public class Dom4JFPDLParser implements IFPDLParser {
         wp.setStartNode(startNode);
     }
 
+    /**
+     * @param wp
+     * @param endNodes
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadEndNodes(WorkflowProcess wp, List<EndNode> endNodes,
             Element element) throws FPDLParserException {
         endNodes.clear();
         if (element == null) {
             return;
         }
-        List endNodesElms = Util4Parser.children(element, END_NODE);
-        Iterator iter = endNodesElms.iterator();
+        List<Element> endNodesElms = Util4Parser.children(element, END_NODE);
+        Iterator<Element> iter = endNodesElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             EndNode endNode = new EndNode(wp, elm.attributeValue(NAME));
             endNode.setSn(UUID.randomUUID().toString());
             endNode.setDescription(Util4Parser.elementAsString(element,
@@ -302,16 +245,22 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param synchronizers
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadSynchronizers(WorkflowProcess wp, List<Synchronizer> synchronizers,
             Element element) throws FPDLParserException {
         synchronizers.clear();
         if (element == null) {
             return;
         }
-        List synchronizerElms = Util4Parser.children(element, SYNCHRONIZER);
-        Iterator iter = synchronizerElms.iterator();
+        List<Element> synchronizerElms = Util4Parser.children(element, SYNCHRONIZER);
+        Iterator<Element> iter = synchronizerElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             Synchronizer synchronizer = new Synchronizer(wp, elm.attributeValue(NAME));
             synchronizer.setSn(UUID.randomUUID().toString());
             synchronizer.setDescription(Util4Parser.elementAsString(element,
@@ -325,6 +274,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param activities
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadActivities(WorkflowProcess wp, List<Activity> activities,
             Element element) throws FPDLParserException {
 
@@ -333,11 +288,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
             return;
         }
 
-        List activitElements = Util4Parser.children(element, ACTIVITY);
+        List<Element> activitElements = Util4Parser.children(element, ACTIVITY);
         activities.clear();
-        Iterator iter = activitElements.iterator();
+        Iterator<Element> iter = activitElements.iterator();
         while (iter.hasNext()) {
-            Element activityElement = (Element) iter.next();
+            Element activityElement =  iter.next();
 
             Activity activity = new Activity(wp, activityElement.attributeValue(NAME));
             activity.setSn(UUID.randomUUID().toString());
@@ -356,15 +311,21 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param workflowProcess
+     * @param parent
+     * @param taskRefs
+     * @param taskRefsElement
+     */
     protected void loadTaskRefs(WorkflowProcess workflowProcess,IWFElement parent,List<TaskRef> taskRefs,Element taskRefsElement){
         taskRefs.clear();
         if (taskRefsElement==null){
             return;
         }
-        List taskRefElems = Util4Parser.children(taskRefsElement, TASKREF);
-        Iterator iter = taskRefElems.iterator();
+        List<Element> taskRefElems = Util4Parser.children(taskRefsElement, TASKREF);
+        Iterator<Element> iter = taskRefElems.iterator();
         while(iter.hasNext()){
-            Element elm = (Element)iter.next();
+            Element elm = iter.next();
             String taskId = elm.attributeValue(REFERENCE);
             Task task = (Task)workflowProcess.findWFElementById(taskId);
             if (task!=null){
@@ -375,21 +336,33 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param parent
+     * @param tasks
+     * @param tasksElement
+     * @throws FPDLParserException
+     */
     protected void loadTasks(IWFElement parent, List<Task> tasks, Element tasksElement)
             throws FPDLParserException {
         tasks.clear();
         if (tasksElement == null) {
             return;
         }
-        List tasksElms = Util4Parser.children(tasksElement, TASK);
-        Iterator iter = tasksElms.iterator();
+        List<Element> tasksElms = Util4Parser.children(tasksElement, TASK);
+        Iterator<Element> iter = tasksElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             Task task = createTask(parent, elm);
             if (task!=null)tasks.add(task);
         }
     }
 
+    /**
+     * @param parent
+     * @param taskElement
+     * @return
+     * @throws FPDLParserException
+     */
     protected Task createTask(IWFElement parent, Element taskElement)
             throws FPDLParserException {
         Task task = null;
@@ -444,7 +417,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
 
     }
 
-    protected Participant createPerformer(Element performerElement) {
+    /**
+     * @param performerElement
+     * @return
+     */
+    @SuppressWarnings("static-access")
+	protected Participant createPerformer(Element performerElement) {
         if (performerElement == null) {
             return null;
         }
@@ -457,7 +435,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return part;
     }
 
-    protected SubWorkflowProcess createSubWorkflowProcess(Element subFlowElement) {
+    /**
+     * @param subFlowElement
+     * @return
+     */
+    @SuppressWarnings("static-access")
+	protected SubWorkflowProcess createSubWorkflowProcess(Element subFlowElement) {
         if (subFlowElement == null) {
             return null;
         }
@@ -472,6 +455,10 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return subFlow;
     }
 
+    /**
+     * @param applicationElement
+     * @return
+     */
     protected Application createApplication(Element applicationElement) {
         if (applicationElement == null) {
             return null;
@@ -485,6 +472,10 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return app;
     }
 
+    /**
+     * @param formElement
+     * @return
+     */
     protected Form createForm(Element formElement) {
         if (formElement == null) {
             return null;
@@ -497,7 +488,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return form;
     }
 
-    protected Duration createDuration(Element durationElement) {
+    /**
+     * @param durationElement
+     * @return
+     */
+    @SuppressWarnings("static-access")
+	protected Duration createDuration(Element durationElement) {
         if (durationElement == null) {
             return null;
         }
@@ -518,6 +514,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return duration;
     }
 
+    /**
+     * @param wp
+     * @param loopElement
+     * @return
+     * @throws FPDLParserException
+     */
     protected Loop createLoop(WorkflowProcess wp, Element loopElement)
             throws FPDLParserException {
         String fromNodeId = loopElement.attributeValue(FROM);
@@ -545,9 +547,14 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return loop;
     }
 
-     protected void loadLoops(WorkflowProcess wp ,Element loopsElement)throws FPDLParserException{
+     /**
+     * @param wp
+     * @param loopsElement
+     * @throws FPDLParserException
+     */
+    protected void loadLoops(WorkflowProcess wp ,Element loopsElement)throws FPDLParserException{
          if (loopsElement==null)return;
-         List loopElementList = Util4Parser.children(loopsElement, LOOP);
+         List<Element> loopElementList = Util4Parser.children(loopsElement, LOOP);
 
         List<Loop> loops = wp.getLoops();
 
@@ -555,9 +562,9 @@ public class Dom4JFPDLParser implements IFPDLParser {
 
         loops.clear();
 
-        Iterator iter = loopElementList.iterator();
+        Iterator<Element> iter = loopElementList.iterator();
         while (iter.hasNext()) {
-            Element loopElement = (Element) iter.next();
+            Element loopElement = iter.next();
             Loop loop = createLoop(wp, loopElement);
             loops.add(loop);
 
@@ -572,6 +579,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
      }
 
 
+    /**
+     * @param wp
+     * @param transitionsElement
+     * @throws FPDLParserException
+     */
     protected void loadTransitions(WorkflowProcess wp, Element transitionsElement)
             throws FPDLParserException {
 
@@ -582,15 +594,20 @@ public class Dom4JFPDLParser implements IFPDLParser {
         loadTransitions(wp, Util4Parser.children(transitionsElement, TRANSITION));
     }
 
+    /**
+     * @param wp
+     * @param elements
+     * @throws FPDLParserException
+     */
     protected void loadTransitions(WorkflowProcess wp, List<Element> elements)
             throws FPDLParserException {
         List<Transition> transitions = wp.getTransitions();
 
         transitions.clear();
 
-        Iterator iter = elements.iterator();
+        Iterator<Element> iter = elements.iterator();
         while (iter.hasNext()) {
-            Element transitionElement = (Element) iter.next();
+            Element transitionElement =  iter.next();
             Transition transition = createTransition(wp, transitionElement);
             transitions.add(transition);
             Node fromNode = transition.getFromNode();
@@ -609,6 +626,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @return
+     * @throws FPDLParserException
+     */
     protected Transition createTransition(WorkflowProcess wp, Element element)
             throws FPDLParserException {
         String fromNodeId = element.attributeValue(FROM);
@@ -636,6 +659,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return transition;
     }
 
+    /**
+     * @param wp
+     * @param dataFields
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadDataFields(WorkflowProcess wp, List<DataField> dataFields,
             Element element) throws FPDLParserException {
 
@@ -643,15 +672,21 @@ public class Dom4JFPDLParser implements IFPDLParser {
             return;
         }
 
-        List datafieldsElement = Util4Parser.children(element, DATA_FIELD);
+        List<Element> datafieldsElement = Util4Parser.children(element, DATA_FIELD);
         dataFields.clear();
-        Iterator iter = datafieldsElement.iterator();
+        Iterator<Element> iter = datafieldsElement.iterator();
         while (iter.hasNext()) {
-            Element dataFieldElement = (Element) iter.next();
+            Element dataFieldElement = iter.next();
             dataFields.add(createDataField(wp, dataFieldElement));
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @return
+     * @throws FPDLParserException
+     */
     protected DataField createDataField(WorkflowProcess wp, Element element)
             throws FPDLParserException {
         if (element == null) {
@@ -676,6 +711,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
         return dataField;
     }
 
+    /**
+     * @param extendedAttributes
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadExtendedAttributes(Map<String, String> extendedAttributes,
             Element element) throws FPDLParserException {
 
@@ -683,11 +723,11 @@ public class Dom4JFPDLParser implements IFPDLParser {
             return;
         }
         extendedAttributes.clear();
-        List extendAttributeElementsList = Util4Parser.children(element,
+        List<Element> extendAttributeElementsList = Util4Parser.children(element,
                 EXTENDED_ATTRIBUTE);
-        Iterator iter = extendAttributeElementsList.iterator();
+        Iterator<Element> iter = extendAttributeElementsList.iterator();
         while (iter.hasNext()) {
-            Element extAttrElement = (Element) iter.next();
+            Element extAttrElement = iter.next();
             String name = extAttrElement.attributeValue(NAME);
             String value = extAttrElement.attributeValue(VALUE);
 

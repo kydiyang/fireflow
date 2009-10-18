@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -37,6 +37,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.fireflow.model.DataField;
 import org.fireflow.model.Duration;
 import org.fireflow.model.EventListener;
@@ -212,7 +213,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         this.encoding = encoding;
     }
 
-    protected void writeEventListeners(List eventListeners, Element parentElement, Document document) {
+    protected void writeEventListeners(List<EventListener> eventListeners, Element parentElement, Document document) {
         if (eventListeners == null || eventListeners.size() == 0) {
             return;
         }
@@ -221,14 +222,14 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
                 Util4JAXPSerializer.addElement(document, parentElement,
                 EVENT_LISTENERS);
         for (int i = 0; i < eventListeners.size(); i++) {
-            EventListener listener = (EventListener) eventListeners.get(i);
+            EventListener listener =  eventListeners.get(i);
             Element eventListenerElm = Util4JAXPSerializer.addElement(document,
                     eventListenersElm, EVENT_LISTENER);
             eventListenerElm.setAttribute(CLASS_NAME, listener.getClassName());
         }
     }
 
-    protected void writeDataFields(List dataFields, Element parent, Document document)
+    protected void writeDataFields(List<DataField> dataFields, Element parent, Document document)
             throws FPDLSerializerException {
 
         if (dataFields == null || dataFields.size() == 0) {
@@ -237,9 +238,9 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
 
         Element dataFieldsElement = Util4JAXPSerializer.addElement(document, parent,
                 DATA_FIELDS);
-        Iterator iter = dataFields.iterator();
+        Iterator<DataField> iter = dataFields.iterator();
         while (iter.hasNext()) {
-            DataField dataField = (DataField) iter.next();
+            DataField dataField = iter.next();
             Element dataFieldElement = Util4JAXPSerializer.addElement(document,
                     dataFieldsElement, DATA_FIELD);
 
@@ -258,12 +259,12 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         }
     }
 
-    protected void writeEndNodes(List endNodes, Element parent, Document document) {
+    protected void writeEndNodes(List<EndNode> endNodes, Element parent, Document document) {
         Element endNodesElement = Util4JAXPSerializer.addElement(document, parent, END_NODES);
-        Iterator iter = endNodes.iterator();
+        Iterator<EndNode> iter = endNodes.iterator();
 
         while (iter.hasNext()) {
-            writeEndNode((EndNode) iter.next(), endNodesElement, document);
+            writeEndNode( iter.next(), endNodesElement, document);
         }
     }
 
@@ -295,7 +296,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         writeExtendedAttributes(startNode.getExtendedAttributes(), startElement, document);
     }
 
-    protected void writeSynchronizers(List synchronizers, Element parent, Document document)
+    protected void writeSynchronizers(List<Synchronizer> synchronizers, Element parent, Document document)
             throws FPDLSerializerException {
         if (synchronizers == null || synchronizers.size() == 0) {
             return;
@@ -303,10 +304,10 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         Element synchronizersElement = Util4JAXPSerializer.addElement(document, parent,
                 SYNCHRONIZERS);
 
-        Iterator iter = synchronizers.iterator();
+        Iterator<Synchronizer> iter = synchronizers.iterator();
 
         while (iter.hasNext()) {
-            writeSynchronizer((Synchronizer) iter.next(), synchronizersElement, document);
+            writeSynchronizer( iter.next(), synchronizersElement, document);
         }
     }
 
@@ -324,7 +325,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
                 synchronizerElement, document);
     }
 
-    protected void writeActivities(List activities, Element parent, Document document)
+    protected void writeActivities(List<Activity> activities, Element parent, Document document)
             throws FPDLSerializerException {
 
         if (activities == null || activities.size() == 0) {
@@ -334,9 +335,9 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         Element activitiesElement = Util4JAXPSerializer.addElement(document, parent,
                 ACTIVITIES);
 
-        Iterator iter = activities.iterator();
+        Iterator<Activity> iter = activities.iterator();
         while (iter.hasNext()) {
-            writeActivity((Activity) iter.next(), activitiesElement, document);
+            writeActivity( iter.next(), activitiesElement, document);
         }
     }
 
@@ -359,23 +360,23 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         writeTaskRefs(activity.getTaskRefs(), activityElement,document);
     }
 
-    protected void writeTaskRefs(List taskRefs, Element parent,Document document) {
+    protected void writeTaskRefs(List<TaskRef> taskRefs, Element parent,Document document) {
         Element taskRefsElement = Util4JAXPSerializer.addElement(document,parent, TASKREFS);
-        Iterator iter = taskRefs.iterator();
+        Iterator<TaskRef> iter = taskRefs.iterator();
         while (iter.hasNext()) {
-            TaskRef taskRef = (TaskRef) iter.next();
+            TaskRef taskRef = iter.next();
             Element taskRefElement = Util4JAXPSerializer.addElement(document,taskRefsElement, TASKREF);
             taskRefElement.setAttribute(REFERENCE, taskRef.getReferencedTask().getId());
         }
     }
 
-    protected void writeTasks(List tasks, Element parent, Document document)
+    protected void writeTasks(List<Task> tasks, Element parent, Document document)
             throws FPDLSerializerException {
         Element tasksElement = Util4JAXPSerializer.addElement(document, parent, TASKS);
-        Iterator iter = tasks.iterator();
+        Iterator<Task> iter = tasks.iterator();
 
         while (iter.hasNext()) {
-            writeTask((Task) iter.next(), tasksElement, document);
+            writeTask( iter.next(), tasksElement, document);
         }
     }
 
@@ -388,9 +389,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         taskElement.setAttribute(DISPLAY_NAME, task.getDisplayName());
         taskElement.setAttribute(TYPE, task.getType());
         Util4JAXPSerializer.addElement(document, taskElement, DESCRIPTION, task.getDescription());
-        
-//        taskElement.addAttribute(START_MODE, task.getStartMode());
-        String type = task.getType();
+
         if (task instanceof FormTask) {
             this.writePerformer(((FormTask) task).getPerformer(), taskElement, document);
 
@@ -402,7 +401,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         } else if (task instanceof ToolTask) {
 
             this.writeApplication(((ToolTask) task).getApplication(), taskElement, document);
-            taskElement.setAttribute(EXECUTION, ((ToolTask) task).getExecution());
+//            taskElement.setAttribute(EXECUTION, ((ToolTask) task).getExecution());
         } else if (task instanceof SubflowTask) {
             this.writeSubWorkflowProcess(((SubflowTask) task).getSubWorkflowProcess(), taskElement, document);
         }
@@ -474,16 +473,16 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         Util4JAXPSerializer.addElement(document, editFormElement, URI, form.getUri());
     }
 
-    protected void writeLoops(List loops, Element parent, Document document) {
+    protected void writeLoops(List<Loop> loops, Element parent, Document document) {
         if (loops == null || loops.size() == 0) {
             return;
         }
         Element transitionsElement = Util4JAXPSerializer.addElement(document, parent,
                 LOOPS);
 
-        Iterator iter = loops.iterator();
+        Iterator<Loop> iter = loops.iterator();
         while (iter.hasNext()) {
-            Loop loop = (Loop) iter.next();
+            Loop loop = iter.next();
 
             Element loopElement = Util4JAXPSerializer.addElement(document, transitionsElement,
                     LOOP);
@@ -502,7 +501,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         }
     }
 
-    protected void writeTransitions(List transitions, Element parent, Document document)
+    protected void writeTransitions(List<Transition> transitions, Element parent, Document document)
             throws FPDLSerializerException {
 
         if (transitions == null || transitions.size() == 0) {
@@ -512,9 +511,9 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
         Element transitionsElement = Util4JAXPSerializer.addElement(document, parent,
                 TRANSITIONS);
 
-        Iterator iter = transitions.iterator();
+        Iterator<Transition> iter = transitions.iterator();
         while (iter.hasNext()) {
-            writeTransition((Transition) iter.next(), transitionsElement, document);
+            writeTransition( iter.next(), transitionsElement, document);
         }
     }
 
@@ -537,7 +536,7 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
                 transitionElement, document);
     }
 
-    protected Element writeExtendedAttributes(Map extendedAttributes,
+    protected Element writeExtendedAttributes(Map<String,String> extendedAttributes,
             Element parent, Document document) {
 
         if (extendedAttributes == null || extendedAttributes.size() == 0) {
@@ -550,10 +549,10 @@ public class JAXP_FPDL_Serializer implements IFPDLSerializer {
 //                        parent
 //				.addElement(EXTENDED_ATTRIBUTES);
 
-        Iterator keys = extendedAttributes.keySet().iterator();
+        Iterator<String> keys = extendedAttributes.keySet().iterator();
         while (keys.hasNext()) {
-            Object key = keys.next();
-            Object value = extendedAttributes.get(key);
+        	String key = keys.next();
+        	String value = extendedAttributes.get(key);
 
             Element extendedAttributeElement = Util4JAXPSerializer.addElement(document,
                     extendedAttributesElement, EXTENDED_ATTRIBUTE);

@@ -16,7 +16,6 @@
  */
 package org.fireflow.model;
 
-import org.fireflow.model.net.Activity;
 
 
 /**

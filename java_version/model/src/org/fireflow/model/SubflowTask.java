@@ -16,7 +16,6 @@
  */
 package org.fireflow.model;
 
-import org.fireflow.model.net.Activity;
 import org.fireflow.model.resource.SubWorkflowProcess;
 
 /**
@@ -25,6 +24,7 @@ import org.fireflow.model.resource.SubWorkflowProcess;
  * @version 1.0
  * Created on Mar 15, 2009
  */
+@SuppressWarnings("serial")
 public class SubflowTask extends Task{
 	/**
 	 * 任务所引用的子流程信息。

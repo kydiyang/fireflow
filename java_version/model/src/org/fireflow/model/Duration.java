@@ -49,8 +49,6 @@
 package org.fireflow.model;
 
 import java.io.Serializable;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 
 //@author Anthony Eden
@@ -59,6 +57,7 @@ import java.io.Serializable;
 /**
  * 时间间隔
  */
+@SuppressWarnings("serial")
 public class Duration implements Serializable {
 
     public static final String DAY = "DAY";

@@ -24,6 +24,7 @@ import org.fireflow.model.WorkflowProcess;
  * @author 非也,nychen2000@163.com
  *
  */
+@SuppressWarnings("serial")
 public class Node extends AbstractWFElement {
 
     public Node() {
@@ -31,6 +32,5 @@ public class Node extends AbstractWFElement {
 
     public Node(WorkflowProcess workflowProcess, String name) {
         super(workflowProcess, name);
-    // TODO Auto-generated constructor stub
     }
 }

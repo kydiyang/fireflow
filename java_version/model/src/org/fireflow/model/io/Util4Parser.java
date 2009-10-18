@@ -53,9 +53,9 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.fireflow.model.Duration;
 
 
 /** Dom4J XPDL Serializer utility class.
@@ -92,7 +92,8 @@ public class Util4Parser {
      @return The child elements
      */
 
-    public static List<Element> children(Element element, String name) {
+    @SuppressWarnings("unchecked")
+	public static List<Element> children(Element element, String name) {
         if (element==null){
             return null;
         }

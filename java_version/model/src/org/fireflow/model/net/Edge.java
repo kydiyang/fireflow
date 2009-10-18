@@ -13,6 +13,7 @@ import org.fireflow.model.WorkflowProcess;
  * @version 1.0
  * Created on Mar 18, 2009
  */
+@SuppressWarnings("serial")
 public class Edge extends AbstractWFElement {
     /**
      * 转移(或者循环)的源节点。<br>
