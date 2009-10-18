@@ -7,6 +7,7 @@ package org.fireflow.model.io;
  * @author chennieyun
  *
  */
+@SuppressWarnings("serial")
 public class FPDLParserException extends Exception{
 
     /** Construct a new FPDLParserException. */

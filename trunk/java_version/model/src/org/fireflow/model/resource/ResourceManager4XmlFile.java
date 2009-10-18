@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Vector;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -48,13 +49,17 @@ public class ResourceManager4XmlFile implements IResourceManager {
         participants = this.loadParticipants(rootElement);
     }
 
+    /**
+     * @param element
+     * @return
+     */
     protected List<Form> loadForms( Element element)  {
         Element formsElement = Util4Parser.child(element, "Forms");
         if (formsElement==null)return null;
-        List formElementList = Util4Parser.children(formsElement, "Form");
+        List<Element> formElementList = Util4Parser.children(formsElement, "Form");
         List<Form> forms = new Vector<Form>();
         for (int i=0; formElementList!=null && i<formElementList.size();i++){
-            Element formElm = (Element)formElementList.get(i);
+            Element formElm = formElementList.get(i);
             String name = formElm.attributeValue("Name");
             Form form = new Form(name);
             form.setDisplayName(formElm.attributeValue("DisplayName"));
@@ -65,13 +70,17 @@ public class ResourceManager4XmlFile implements IResourceManager {
         return forms;
     }
     
+    /**
+     * @param element
+     * @return
+     */
     protected List<Application> loadApplications( Element element)  {
         Element applicationsElement = Util4Parser.child(element, "Applications");
         if (applicationsElement==null)return null;
-        List appElementList = Util4Parser.children(applicationsElement, "Application");
+        List<Element> appElementList = Util4Parser.children(applicationsElement, "Application");
         List<Application> apps = new Vector<Application>();
         for (int i=0; appElementList!=null && i<appElementList.size();i++){
-            Element appElm = (Element)appElementList.get(i);
+            Element appElm = appElementList.get(i);
             String name = appElm.attributeValue("Name");
             Application app = new Application(name);
             app.setDisplayName(appElm.attributeValue("DisplayName"));
@@ -82,13 +91,17 @@ public class ResourceManager4XmlFile implements IResourceManager {
         return apps;
     }    
     
+    /**
+     * @param element
+     * @return
+     */
     protected List<Participant> loadParticipants( Element element)  {
         Element participantsElement = Util4Parser.child(element, "Participants");
         if (participantsElement==null)return null;
-        List partElementList = Util4Parser.children(participantsElement, "Participant");
+        List<Element> partElementList = Util4Parser.children(participantsElement, "Participant");
         List<Participant> parts = new Vector<Participant>();
         for (int i=0; partElementList!=null && i<partElementList.size();i++){
-            Element partElm = (Element)partElementList.get(i);
+            Element partElm = partElementList.get(i);
             String name = partElm.attributeValue("Name");
             Participant participant = new Participant(name);
             participant.setDisplayName(partElm.attributeValue("DisplayName"));
@@ -98,14 +111,23 @@ public class ResourceManager4XmlFile implements IResourceManager {
         }
         return parts;
     }        
+    /* (non-Javadoc)
+     * @see org.fireflow.model.resource.IResourceManager#getApplications()
+     */
     public List<Application> getApplications() {
         return this.applications;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.model.resource.IResourceManager#getParticipants()
+     */
     public List<Participant> getParticipants() {
         return this.participants;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.model.resource.IResourceManager#getForms()
+     */
     public List<Form> getForms() {
         return this.forms;
     }

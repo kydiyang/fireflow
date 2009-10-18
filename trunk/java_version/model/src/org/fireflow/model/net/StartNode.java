@@ -24,6 +24,7 @@ import org.fireflow.model.WorkflowProcess;
  * 开始节点
  * @author 非也,nychen2000@163.com
  */
+@SuppressWarnings("serial")
 public class StartNode extends Synchronizer {
 
     static final String name = "START_NODE";
@@ -33,7 +34,6 @@ public class StartNode extends Synchronizer {
 
     public StartNode(WorkflowProcess workflowProcess) {
         super(workflowProcess, name);
-    // TODO Auto-generated constructor stub
     }
 
     /**

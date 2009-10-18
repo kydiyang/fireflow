@@ -49,18 +49,16 @@
 
 package org.fireflow.model.io;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
 import java.util.Date;
+import java.util.List;
 
-import org.dom4j.QName;
-import org.dom4j.Element;
 import org.dom4j.CDATA;
+import org.dom4j.Element;
+import org.dom4j.QName;
 import org.fireflow.model.Duration;
 
 
@@ -296,7 +294,8 @@ class Util4Serializer{
      @return The child elements
      */
 
-    public static List children(Element element, String name) {
+    @SuppressWarnings("unchecked")
+	public static List children(Element element, String name) {
         return element.elements(new QName(name, element.getNamespace()));
     }
 

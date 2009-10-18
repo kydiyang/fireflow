@@ -49,7 +49,6 @@
 package org.fireflow.model.io;
 
 import org.dom4j.Namespace;
-import org.dom4j.QName;
 /**
  * @author Anthony Eden
  * updated by nychen2000

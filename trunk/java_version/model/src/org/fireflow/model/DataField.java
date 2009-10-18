@@ -20,6 +20,7 @@ package org.fireflow.model;
  * 流程变量
  * @author 非也,nychen2000@163.com
  */
+@SuppressWarnings("serial")
 public class DataField extends AbstractWFElement {
 	/**
 	 * 字符串类型

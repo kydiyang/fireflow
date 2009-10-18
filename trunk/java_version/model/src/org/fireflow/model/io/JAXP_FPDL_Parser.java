@@ -26,9 +26,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.fireflow.model.DataField;
 import org.fireflow.model.Duration;
 import org.fireflow.model.EventListener;
@@ -144,7 +146,7 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
 
     }
 
-    protected void loadEventListeners(List listeners, Element element) {
+    protected void loadEventListeners(List<EventListener> listeners, Element element) {
         listeners.clear();
         if (element == null) {
             return;
@@ -152,10 +154,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         if (element == null) {
             return;
         }
-        List listenerElms = Util4JAXPParser.children(element, EVENT_LISTENER);
-        Iterator iter = listenerElms.iterator();
+        List<Element> listenerElms = Util4JAXPParser.children(element, EVENT_LISTENER);
+        Iterator<Element> iter = listenerElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             EventListener listener = new EventListener();
             listener.setClassName(elm.getAttribute(CLASS_NAME));
 
@@ -183,10 +185,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         if (element == null) {
             return;
         }
-        List endNodesElms = Util4JAXPParser.children(element, END_NODE);
-        Iterator iter = endNodesElms.iterator();
+        List<Element> endNodesElms = Util4JAXPParser.children(element, END_NODE);
+        Iterator<Element> iter = endNodesElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             EndNode endNode = new EndNode(wp, elm.getAttribute(NAME));
             endNode.setSn(UUID.randomUUID().toString());
             endNode.setDescription(Util4JAXPParser.elementAsString(element,
@@ -203,10 +205,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         if (element == null) {
             return;
         }
-        List synchronizerElms = Util4JAXPParser.children(element, SYNCHRONIZER);
-        Iterator iter = synchronizerElms.iterator();
+        List<Element> synchronizerElms = Util4JAXPParser.children(element, SYNCHRONIZER);
+        Iterator<Element> iter = synchronizerElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             Synchronizer synchronizer = new Synchronizer(wp, elm.getAttribute(NAME));
             synchronizer.setSn(UUID.randomUUID().toString());
             synchronizer.setDescription(Util4JAXPParser.elementAsString(element,
@@ -227,11 +229,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
             return;
         }
 
-        List activitElements = Util4JAXPParser.children(element, ACTIVITY);
+        List<Element> activitElements = Util4JAXPParser.children(element, ACTIVITY);
         activities.clear();
-        Iterator iter = activitElements.iterator();
+        Iterator<Element> iter = activitElements.iterator();
         while (iter.hasNext()) {
-            Element activityElement = (Element) iter.next();
+            Element activityElement = iter.next();
 
             Activity activity = new Activity(wp, activityElement.getAttribute(NAME));
             activity.setSn(UUID.randomUUID().toString());
@@ -255,10 +257,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         if (taskRefsElement == null) {
             return;
         }
-        List taskRefElems = Util4JAXPParser.children(taskRefsElement, TASKREF);
-        Iterator iter = taskRefElems.iterator();
+        List<Element> taskRefElems = Util4JAXPParser.children(taskRefsElement, TASKREF);
+        Iterator<Element> iter = taskRefElems.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             String taskId = elm.getAttribute(REFERENCE);
             Task task = (Task) workflowProcess.findWFElementById(taskId);
             if (task != null) {
@@ -275,10 +277,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         if (element == null) {
             return;
         }
-        List tasksElms = Util4JAXPParser.children(element, TASK);
-        Iterator iter = tasksElms.iterator();
+        List<Element> tasksElms = Util4JAXPParser.children(element, TASK);
+        Iterator<Element> iter = tasksElms.iterator();
         while (iter.hasNext()) {
-            Element elm = (Element) iter.next();
+            Element elm = iter.next();
             tasks.add(createTask(parent, elm));
         }
     }
@@ -442,21 +444,17 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         if (loopsElement == null) {
             return;
         }
-        List loopElementList = Util4JAXPParser.children(loopsElement, LOOP);
+        List<Element> loopElementList = Util4JAXPParser.children(loopsElement, LOOP);
 
         List<Loop> loops = wp.getLoops();
 
-
-
         loops.clear();
 
-        Iterator iter = loopElementList.iterator();
+        Iterator<Element> iter = loopElementList.iterator();
         while (iter.hasNext()) {
-            Element loopElement = (Element) iter.next();
+            Element loopElement =  iter.next();
             Loop loop = createLoop(wp, loopElement);
             loops.add(loop);
-
-
 
             Synchronizer fromNode = (Synchronizer) loop.getFromNode();
             Synchronizer toNode = (Synchronizer) loop.getToNode();
@@ -480,32 +478,32 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
             throws FPDLParserException {
         List<Transition> transitions = wp.getTransitions();
 
-        HashMap<String, IWFElement> nodeMap = new HashMap<String, IWFElement>();
+        HashMap<String, Node> nodeMap = new HashMap<String, Node>();
         if (wp.getStartNode() != null) {
             nodeMap.put(wp.getStartNode().getId(), wp.getStartNode());
         }
-        List activityList = wp.getActivities();
+        List<Activity> activityList = wp.getActivities();
         for (int i = 0; i < activityList.size(); i++) {
-            Activity activity = (Activity) activityList.get(i);
+            Activity activity = activityList.get(i);
             nodeMap.put(activity.getId(), activity);
         }
-        List synchronizerList = wp.getSynchronizers();
+        List<Synchronizer> synchronizerList = wp.getSynchronizers();
         for (int i = 0; i < synchronizerList.size(); i++) {
-            Synchronizer syn = (Synchronizer) synchronizerList.get(i);
+            Synchronizer syn = synchronizerList.get(i);
             nodeMap.put(syn.getId(), syn);
         }
-        List endNodeList = wp.getEndNodes();
+        List<EndNode> endNodeList = wp.getEndNodes();
         for (int i = 0; i < endNodeList.size(); i++) {
-            EndNode endNode = (EndNode) endNodeList.get(i);
+            EndNode endNode =  endNodeList.get(i);
             nodeMap.put(endNode.getId(), endNode);
 
         }
 
         transitions.clear();
 
-        Iterator iter = elements.iterator();
+        Iterator<Element> iter = elements.iterator();
         while (iter.hasNext()) {
-            Element transitionElement = (Element) iter.next();
+            Element transitionElement = iter.next();
             Transition transition = createTransition(wp, transitionElement, nodeMap);
             transitions.add(transition);
             Node fromNode = transition.getFromNode();
@@ -524,12 +522,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
-    protected Transition createTransition(WorkflowProcess wp, Element element, Map nodeMap)
+    protected Transition createTransition(WorkflowProcess wp, Element element, Map<String,Node> nodeMap)
             throws FPDLParserException {
         String fromNodeId = element.getAttribute(FROM);
         String toNodeId = element.getAttribute(TO);
-        Node fromNode = (Node) nodeMap.get(fromNodeId);
-        Node toNode = (Node) nodeMap.get(toNodeId);
+        Node fromNode = nodeMap.get(fromNodeId);
+        Node toNode = nodeMap.get(toNodeId);
 
         Transition transition = new Transition(wp,
                 element.getAttribute(NAME), fromNode,
@@ -558,11 +556,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
             return;
         }
 
-        List datafieldsElement = Util4JAXPParser.children(element, DATA_FIELD);
+        List<Element> datafieldsElement = Util4JAXPParser.children(element, DATA_FIELD);
         dataFields.clear();
-        Iterator iter = datafieldsElement.iterator();
+        Iterator<Element> iter = datafieldsElement.iterator();
         while (iter.hasNext()) {
-            Element dataFieldElement = (Element) iter.next();
+            Element dataFieldElement = iter.next();
             dataFields.add(createDataField(wp, dataFieldElement));
         }
     }
@@ -593,11 +591,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
             return;
         }
         extendedAttributes.clear();
-        List extendAttributeElementsList = Util4JAXPParser.children(element,
+        List<Element> extendAttributeElementsList = Util4JAXPParser.children(element,
                 EXTENDED_ATTRIBUTE);
-        Iterator iter = extendAttributeElementsList.iterator();
+        Iterator<Element> iter = extendAttributeElementsList.iterator();
         while (iter.hasNext()) {
-            Element extAttrElement = (Element) iter.next();
+            Element extAttrElement = iter.next();
             String name = extAttrElement.getAttribute(NAME);
             String value = extAttrElement.getAttribute(VALUE);
 

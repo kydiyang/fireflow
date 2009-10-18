@@ -24,6 +24,7 @@ import org.fireflow.model.WorkflowProcess;
  * 结束节点
  * @author 非也,nychen2000@163.com
  */
+@SuppressWarnings("serial")
 public class EndNode extends Synchronizer {
 
     public EndNode() {
@@ -31,7 +32,6 @@ public class EndNode extends Synchronizer {
 
     public EndNode(WorkflowProcess workflowProcess, String name) {
         super(workflowProcess, name);
-    // TODO Auto-generated constructor stub
     }
 
     /**

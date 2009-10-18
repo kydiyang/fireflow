@@ -34,6 +34,7 @@ import org.fireflow.model.net.Transition;
  * @author 非也,nychen2000@163.com
  * 
  */
+@SuppressWarnings("serial")
 public class WorkflowProcess extends AbstractWFElement {
 
 	// 子元素
@@ -278,68 +279,69 @@ public class WorkflowProcess extends AbstractWFElement {
 			return this;
 		}
 
-		List tasksList = this.getTasks();
+		List<Task>  tasksList = this.getTasks();
 		for (int i = 0; i < tasksList.size(); i++) {
-			Task task = (Task) tasksList.get(i);
+			Task task =  tasksList.get(i);
 			if (task.getId().equals(id)) {
 				return task;
 			}
 		}
 
-		List activityList = this.getActivities();
+		List<Activity> activityList = this.getActivities();
 		for (int i = 0; i < activityList.size(); i++) {
-			IWFElement wfElement = (IWFElement) activityList.get(i);
-			if (wfElement.getId().equals(id)) {
-				return wfElement;
+			Activity activity = activityList.get(i);
+			if (activity.getId().equals(id)) {
+				return activity;
 			}
-			List taskList = ((Activity) wfElement).getTasks();
+			List<Task> taskList = activity.getTasks();
 			for (int j = 0; j < taskList.size(); j++) {
-				IWFElement wfElement2 = (IWFElement) taskList.get(j);
-				if (wfElement2.getId().equals(id)) {
-					return wfElement2;
+				Task task =  taskList.get(j);
+				if (task.getId().equals(id)) {
+					return task;
 				}
 			}
 		}
 		if (this.getStartNode().getId().equals(id)) {
 			return this.getStartNode();
 		}
-		List synchronizerList = this.getSynchronizers();
+		
+		List<Synchronizer> synchronizerList = this.getSynchronizers();
 		for (int i = 0; i < synchronizerList.size(); i++) {
-			IWFElement wfElement = (IWFElement) synchronizerList.get(i);
-			if (wfElement.getId().equals(id)) {
-				return wfElement;
+			Synchronizer synchronizer = synchronizerList.get(i);
+			if (synchronizer.getId().equals(id)) {
+				return synchronizer;
 			}
 		}
 
-		List endNodeList = this.getEndNodes();
+		List<EndNode> endNodeList = this.getEndNodes();
 		for (int i = 0; i < endNodeList.size(); i++) {
-			IWFElement wfElement = (IWFElement) endNodeList.get(i);
-			if (wfElement.getId().equals(id)) {
-				return wfElement;
+			EndNode endNode =  endNodeList.get(i);
+			if (endNode.getId().equals(id)) {
+				return endNode;
 			}
 		}
 
-		List transitionList = this.getTransitions();
+		List<Transition> transitionList = this.getTransitions();
 		for (int i = 0; i < transitionList.size(); i++) {
-			IWFElement wfElement = (IWFElement) transitionList.get(i);
-			if (wfElement.getId().equals(id)) {
-				return wfElement;
+			Transition transition = transitionList.get(i);
+			if (transition.getId().equals(id)) {
+				return transition;
 			}
 		}
 
-		List dataFieldList = this.getDataFields();
+		List<DataField> dataFieldList = this.getDataFields();
 		for (int i = 0; i < dataFieldList.size(); i++) {
-			IWFElement wfElement = (IWFElement) dataFieldList.get(i);
-			if (wfElement.getId().equals(id)) {
-				return wfElement;
+			DataField dataField =  dataFieldList.get(i);
+			if (dataField.getId().equals(id)) {
+				return dataField;
 			}
 		}
 
-		List loopList = this.getLoops();
+		List<Loop> loopList = this.getLoops();
 		for (int i = 0; i < loopList.size(); i++) {
-			IWFElement wfElement = (IWFElement) loopList.get(i);
-			if (wfElement.getId().equals(id)) {
-				return wfElement;
+			Loop loop = loopList.get(i);
+			if (loop.getId().equals(id)) {
+				return loop;
 			}
 		}
 		return null;
@@ -390,9 +392,9 @@ public class WorkflowProcess extends AbstractWFElement {
 			}
 
 			// check tasks
-			List taskList = activity.getTasks();
+			List<Task> taskList = activity.getTasks();
 			for (int j = 0; j < taskList.size(); j++) {
-				Task task = (Task) taskList.get(j);
+				Task task =  taskList.get(j);
 				if (task.getType() == null) {
 					return errHead + "task[" + task.getId()
 							+ "]'s taskType can Not be null.";
@@ -467,9 +469,9 @@ public class WorkflowProcess extends AbstractWFElement {
 		}
 
 		// check datafield
-		List dataFieldList = this.getDataFields();
+		List<DataField> dataFieldList = this.getDataFields();
 		for (int i = 0; i < dataFieldList.size(); i++) {
-			DataField df = (DataField) dataFieldList.get(i);
+			DataField df =  dataFieldList.get(i);
 			if (df.getDataType() == null) {
 				return errHead + "unknown data type of datafield[" + df.getId()
 						+ "]";
@@ -495,10 +497,10 @@ public class WorkflowProcess extends AbstractWFElement {
 		if (fromNodeId.equals(toNodeId)) {
 			return true;
 		}
-		List reachableList = this.getReachableNodes(fromNodeId);
+		List<Node> reachableList = this.getReachableNodes(fromNodeId);
 
 		for (int j = 0; reachableList != null && j < reachableList.size(); j++) {
-			IWFElement node = (IWFElement) reachableList.get(j);
+			Node node =  reachableList.get(j);
 			if (node.getId().equals(toNodeId)) {
 				return true;
 			}
@@ -519,12 +521,12 @@ public class WorkflowProcess extends AbstractWFElement {
 		Node node2 = (Node) this.findWFElementById(activityId2);
 		if (node1 == null || node2 == null)
 			return false;
-		List connectableNodes4Activity1 = new ArrayList();
+		List<Node> connectableNodes4Activity1 = new ArrayList<Node>();
 		connectableNodes4Activity1.add(node1);
 		connectableNodes4Activity1.addAll(getReachableNodes(activityId1));
 		connectableNodes4Activity1.addAll(getEnterableNodes(activityId1));
 
-		List connectableNodes4Activity2 = new ArrayList();
+		List<Node> connectableNodes4Activity2 = new ArrayList<Node>();
 		connectableNodes4Activity2.add(node2);
 		connectableNodes4Activity2.addAll(getReachableNodes(activityId2));
 		connectableNodes4Activity2.addAll(getEnterableNodes(activityId2));
@@ -545,16 +547,15 @@ public class WorkflowProcess extends AbstractWFElement {
 		 * System.out.println("node.id of act2 is "+node.getId()); }
 		 */
 
-		if (connectableNodes4Activity1.size() != connectableNodes4Activity2
-				.size()) {
+		if (connectableNodes4Activity1.size() != connectableNodes4Activity2.size()) {
 			return false;
 		}
 
 		for (int i = 0; i < connectableNodes4Activity1.size(); i++) {
-			Node node = (Node) connectableNodes4Activity1.get(i);
+			Node node =  connectableNodes4Activity1.get(i);
 			boolean find = false;
 			for (int j = 0; j < connectableNodes4Activity2.size(); j++) {
-				Node tmpNode = (Node) connectableNodes4Activity2.get(j);
+				Node tmpNode = connectableNodes4Activity2.get(j);
 				if (node.getId().equals(tmpNode.getId())) {
 					find = true;
 					break;
@@ -565,47 +566,48 @@ public class WorkflowProcess extends AbstractWFElement {
 		}
 		return true;
 	}
-
-	public List getReachableNodes(String nodeId) {
-		List reachableNodesList = new ArrayList();
+    /**
+     * 获取可以到达的节点
+     * @param nodeId
+     * @return
+     */
+	public List<Node> getReachableNodes(String nodeId) {
+		List<Node> reachableNodesList = new ArrayList<Node>();
 		Node node = (Node) this.findWFElementById(nodeId);
 		if (node instanceof Activity) {
 			Activity activity = (Activity) node;
 			Transition leavingTransition = activity.getLeavingTransition();
 			if (leavingTransition != null) {
-				Node toNode = (Node) leavingTransition.getToNode();
+				Node toNode = leavingTransition.getToNode();
 				if (toNode != null) {
 					reachableNodesList.add(toNode);
-					reachableNodesList
-							.addAll(getReachableNodes(toNode.getId()));
+					reachableNodesList.addAll(getReachableNodes(toNode.getId()));
 				}
 			}
 		} else if (node instanceof Synchronizer) {
 			Synchronizer synchronizer = (Synchronizer) node;
-			List leavingTransitions = synchronizer.getLeavingTransitions();
+			List<Transition> leavingTransitions = synchronizer.getLeavingTransitions();
 			for (int i = 0; leavingTransitions != null
 					&& i < leavingTransitions.size(); i++) {
-				Transition leavingTransition = (Transition) leavingTransitions
-						.get(i);
+				Transition leavingTransition =  leavingTransitions.get(i);
 				if (leavingTransition != null) {
 					Node toNode = (Node) leavingTransition.getToNode();
 					if (toNode != null) {
 						reachableNodesList.add(toNode);
-						reachableNodesList.addAll(getReachableNodes(toNode
-								.getId()));
+						reachableNodesList.addAll(getReachableNodes(toNode.getId()));
 					}
 
 				}
 			}
 		}
-
-		List tmp = new ArrayList();
+        //剔除重复节点
+        List<Node> tmp = new ArrayList<Node>();
 		boolean alreadyInTheList = false;
 		for (int i = 0; i < reachableNodesList.size(); i++) {
-			Node nodeTmp = (Node) reachableNodesList.get(i);
+			Node nodeTmp = reachableNodesList.get(i);
 			alreadyInTheList = false;
 			for (int j = 0; j < tmp.size(); j++) {
-				Node nodeTmp2 = (Node) tmp.get(j);
+				Node nodeTmp2 = tmp.get(j);
 				if (nodeTmp2.getId().equals(nodeTmp.getId())) {
 					alreadyInTheList = true;
 					break;
@@ -618,47 +620,50 @@ public class WorkflowProcess extends AbstractWFElement {
 		reachableNodesList = tmp;
 		return reachableNodesList;
 	}
-
-	public List getEnterableNodes(String nodeId) {
-		List enterableNodesList = new ArrayList();
+    /**
+     * 获取进入的节点(activity 或者synchronizer)
+     * @param nodeId
+     * @return
+     */
+	public List<Node> getEnterableNodes(String nodeId) {
+		List<Node> enterableNodesList = new ArrayList<Node>();
 		Node node = (Node) this.findWFElementById(nodeId);
 		if (node instanceof Activity) {
 			Activity activity = (Activity) node;
 			Transition enteringTransition = activity.getEnteringTransition();
 			if (enteringTransition != null) {
-				Node fromNode = (Node) enteringTransition.getFromNode();
+				Node fromNode = enteringTransition.getFromNode();
 				if (fromNode != null) {
 					enterableNodesList.add(fromNode);
-					enterableNodesList.addAll(getEnterableNodes(fromNode
-							.getId()));
+					enterableNodesList.addAll(getEnterableNodes(fromNode.getId()));
 				}
 			}
 		} else if (node instanceof Synchronizer) {
 			Synchronizer synchronizer = (Synchronizer) node;
-			List enteringTransitions = synchronizer.getEnteringTransitions();
+			List<Transition> enteringTransitions = synchronizer.getEnteringTransitions();
 			for (int i = 0; enteringTransitions != null
 					&& i < enteringTransitions.size(); i++) {
-				Transition enteringTransition = (Transition) enteringTransitions
-						.get(i);
+				Transition enteringTransition =  enteringTransitions.get(i);
 				if (enteringTransition != null) {
-					Node fromNode = (Node) enteringTransition.getFromNode();
+					Node fromNode = enteringTransition.getFromNode();
 					if (fromNode != null) {
 						enterableNodesList.add(fromNode);
-						enterableNodesList.addAll(getEnterableNodes(fromNode
-								.getId()));
+						enterableNodesList.addAll(getEnterableNodes(fromNode.getId()));
 					}
 
 				}
 			}
 		}
 
-		List tmp = new ArrayList();
+	    //剔除重复节点 
+		//TODO mingjie.mj 20091018 改为使用集合是否更好?
+        List<Node> tmp = new ArrayList<Node>();
 		boolean alreadyInTheList = false;
 		for (int i = 0; i < enterableNodesList.size(); i++) {
-			Node nodeTmp = (Node) enterableNodesList.get(i);
+			Node nodeTmp = enterableNodesList.get(i);
 			alreadyInTheList = false;
 			for (int j = 0; j < tmp.size(); j++) {
-				Node nodeTmp2 = (Node) tmp.get(j);
+				Node nodeTmp2 =  tmp.get(j);
 				if (nodeTmp2.getId().equals(nodeTmp.getId())) {
 					alreadyInTheList = true;
 					break;

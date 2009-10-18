@@ -22,11 +22,13 @@ package org.fireflow.model;
  * @version 1.0
  * Created on Mar 15, 2009
  */
+@SuppressWarnings("serial")
 public class TaskRef extends AbstractWFElement {
 	/**
 	 * 被引用的Task
 	 */
     Task referencedTask = null;
+    
     public TaskRef(IWFElement parent ,Task task){
         super(parent,task.getName());
         referencedTask = task;

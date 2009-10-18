@@ -52,16 +52,17 @@ package org.fireflow.model.io;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
-/** Date utilities.
 
-    @author Anthony Eden
-*/
-
+/**
+ * Date utilities.
+ * @author Anthony Eden
+ *
+ */
 public class DateUtilities{
 
     private static final DateUtilities dateUtilities = new DateUtilities();
@@ -107,7 +108,7 @@ public class DateUtilities{
     */
 
     public Date parse(String dateString) throws ParseException{
-        Iterator iter = formats.iterator();
+        Iterator<SimpleDateFormat> iter = formats.iterator();
         while(iter.hasNext()){
             try{
                 return ((DateFormat)iter.next()).parse(dateString);
@@ -123,7 +124,7 @@ public class DateUtilities{
         @return A List of DateFormat objects
     */
 
-    public List getFormats(){
+    public List<SimpleDateFormat> getFormats(){
         return formats;
     }
 

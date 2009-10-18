@@ -17,11 +17,8 @@
 package org.fireflow.model.net;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import java.util.ListIterator;
 import org.fireflow.model.Task;
 import org.fireflow.model.TaskRef;
 import org.fireflow.model.WorkflowProcess;
@@ -31,6 +28,7 @@ import org.fireflow.model.WorkflowProcess;
  * @author 非也,nychen2000@163.com
  *
  */
+@SuppressWarnings("serial")
 public class Activity extends Node {
 	/**
 	 * 环节实例结束策略之一：他的所有的任务实例结束后才可以结束。

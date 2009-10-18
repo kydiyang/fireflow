@@ -2,6 +2,7 @@
 
 package org.fireflow.model.io;
 
+@SuppressWarnings("serial")
 public class FPDLSerializerException extends Exception{
 
     /** Construct a new FPDLSerializerException. */

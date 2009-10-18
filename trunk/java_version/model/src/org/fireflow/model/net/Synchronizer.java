@@ -26,6 +26,7 @@ import org.fireflow.model.WorkflowProcess;
  * @author 非也,nychen2000@163.com
  *
  */
+@SuppressWarnings("serial")
 public class Synchronizer extends Node {
 	/**
 	 * 输入转移的列表
@@ -52,7 +53,6 @@ public class Synchronizer extends Node {
 
     public Synchronizer(WorkflowProcess workflowProcess, String name) {
         super(workflowProcess, name);
-    // TODO Auto-generated constructor stub
     }
 
     /**
@@ -73,7 +73,7 @@ public class Synchronizer extends Node {
 
     /**
      * 返回输入Loop集合
-     * @return
+     * @return 
      */
     public List<Loop> getEnteringLoops(){
         return this.enteringLoops;

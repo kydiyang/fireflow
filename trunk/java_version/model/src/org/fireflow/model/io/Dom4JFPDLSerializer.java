@@ -90,12 +90,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
     public static final String DEFAULT_XPDL_VERSION = "1.0";
     public static final String DEFAULT_VENDOR = "\u975E\u4E5F";
 
-    // private static final Log log =
-    // LogFactory.getLog(Dom4JFPDLSerializer.class);
+
     public void serialize(WorkflowProcess workflowProcess, OutputStream out)
             throws IOException, FPDLSerializerException {
 
-//        serialize(workflowProcess, new OutputStreamWriter(out));
         Document document = workflowProcessToDom(workflowProcess);
 
         // write the document to the output stream
@@ -108,22 +106,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         out.flush();
     }
 
-    /*
-    public void serialize(WorkflowProcess workflowProcess, Writer out)
-    throws IOException, FPDLSerializerException {
-    // create the Document object
-    Document document = workflowProcessToDom(workflowProcess);
 
-    // write the document to the output stream
-    OutputFormat format = new OutputFormat("    ", true);
-    format.setEncoding("utf-8");
-
-    XMLWriter writer = new XMLWriter(out, format);
-
-    writer.write(document);
-    out.flush();
-    }
-     */
     public Document workflowProcessToDom(WorkflowProcess workflowProcess)
             throws FPDLSerializerException {
         DocumentFactory df = new DocumentFactory();
@@ -132,8 +115,8 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Element workflowProcessElement = df.createElement(new QName(
                 WORKFLOW_PROCESS, FPDL_NS));
         workflowProcessElement.addNamespace(FPDL_NS_PREFIX, FPDL_URI);
-//        workflowProcessElement.addNamespace(XSD_NS_PREFIX, XSD_URI);
-//        workflowProcessElement.addNamespace(XSI_NS_PREFIX, XSI_URI);
+//      workflowProcessElement.addNamespace(XSD_NS_PREFIX, XSD_URI);
+//      workflowProcessElement.addNamespace(XSI_NS_PREFIX, XSI_URI);
         workflowProcessElement.addAttribute(ID, workflowProcess.getId());
         workflowProcessElement.addAttribute(NAME, workflowProcess.getName());
         workflowProcessElement.addAttribute(DISPLAY_NAME, workflowProcess.getDisplayName());
@@ -202,7 +185,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
-    protected void writeEventListeners(List eventListeners, Element parentElement) {
+    protected void writeEventListeners(List<EventListener> eventListeners, Element parentElement) {
         if (eventListeners == null || eventListeners.size() == 0) {
             return;
         }
@@ -218,7 +201,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
-    protected void writeDataFields(List dataFields, Element parent)
+    protected void writeDataFields(List<DataField> dataFields, Element parent)
             throws FPDLSerializerException {
 
         if (dataFields == null || dataFields.size() == 0) {
@@ -227,9 +210,9 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
         Element dataFieldsElement = Util4Serializer.addElement(parent,
                 DATA_FIELDS);
-        Iterator iter = dataFields.iterator();
+        Iterator<DataField> iter = dataFields.iterator();
         while (iter.hasNext()) {
-            DataField dataField = (DataField) iter.next();
+            DataField dataField = iter.next();
             Element dataFieldElement = Util4Serializer.addElement(
                     dataFieldsElement, DATA_FIELD);
 
@@ -248,12 +231,12 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
-    protected void writeEndNodes(List endNodes, Element parent) {
+    protected void writeEndNodes(List<EndNode> endNodes, Element parent) {
         Element endNodesElement = Util4Serializer.addElement(parent, END_NODES);
-        Iterator iter = endNodes.iterator();
+        Iterator<EndNode> iter = endNodes.iterator();
 
         while (iter.hasNext()) {
-            writeEndNode((EndNode) iter.next(), endNodesElement);
+            writeEndNode( iter.next(), endNodesElement);
         }
     }
 
@@ -285,7 +268,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         writeExtendedAttributes(startNode.getExtendedAttributes(), startElement);
     }
 
-    protected void writeSynchronizers(List synchronizers, Element parent)
+    protected void writeSynchronizers(List<Synchronizer> synchronizers, Element parent)
             throws FPDLSerializerException {
         if (synchronizers == null || synchronizers.size() == 0) {
             return;
@@ -293,10 +276,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Element synchronizersElement = Util4Serializer.addElement(parent,
                 SYNCHRONIZERS);
 
-        Iterator iter = synchronizers.iterator();
+        Iterator<Synchronizer> iter = synchronizers.iterator();
 
         while (iter.hasNext()) {
-            writeSynchronizer((Synchronizer) iter.next(), synchronizersElement);
+            writeSynchronizer( iter.next(), synchronizersElement);
         }
     }
 
@@ -314,7 +297,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
                 synchronizerElement);
     }
 
-    protected void writeActivities(List activities, Element parent)
+    protected void writeActivities(List<Activity> activities, Element parent)
             throws FPDLSerializerException {
 
         if (activities == null || activities.size() == 0) {
@@ -324,9 +307,9 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Element activitiesElement = Util4Serializer.addElement(parent,
                 ACTIVITIES);
 
-        Iterator iter = activities.iterator();
+        Iterator<Activity> iter = activities.iterator();
         while (iter.hasNext()) {
-            writeActivity((Activity) iter.next(), activitiesElement);
+            writeActivity(  iter.next(), activitiesElement);
         }
     }
 
@@ -349,20 +332,20 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         writeTaskRefs(activity.getTaskRefs(), activityElement);
     }
 
-    protected void writeTaskRefs(List taskRefs, Element parent) {
+    protected void writeTaskRefs(List<TaskRef> taskRefs, Element parent) {
         Element taskRefsElement = Util4Serializer.addElement(parent, TASKREFS);
-        Iterator iter = taskRefs.iterator();
+        Iterator<TaskRef>  iter = taskRefs.iterator();
         while (iter.hasNext()) {
-            TaskRef taskRef = (TaskRef) iter.next();
+            TaskRef taskRef = iter.next();
             Element taskRefElement = Util4Serializer.addElement(taskRefsElement, TASKREF);
             taskRefElement.addAttribute(REFERENCE, taskRef.getReferencedTask().getId());
         }
     }
 
-    protected void writeTasks(List tasks, Element parent)
+    protected void writeTasks(List<Task> tasks, Element parent)
             throws FPDLSerializerException {
         Element tasksElement = Util4Serializer.addElement(parent, TASKS);
-        Iterator iter = tasks.iterator();
+        Iterator<Task> iter = tasks.iterator();
 
         while (iter.hasNext()) {
             writeTask((Task) iter.next(), tasksElement);
@@ -377,8 +360,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         taskElement.addAttribute(NAME, task.getName());
         taskElement.addAttribute(DISPLAY_NAME, task.getDisplayName());
         taskElement.addAttribute(TYPE, task.getType());
-//        taskElement.addAttribute(START_MODE, task.getStartMode());
-        String type = task.getType();
+
         if (task instanceof FormTask) {
             this.writePerformer(((FormTask) task).getPerformer(), taskElement);
 
@@ -390,7 +372,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         } else if (task instanceof ToolTask) {
 
             this.writeApplication(((ToolTask) task).getApplication(), taskElement);
-            taskElement.addAttribute(EXECUTION, ((ToolTask) task).getExecution());
+//            taskElement.addAttribute(EXECUTION, ((ToolTask) task).getExecution());
         } else if (task instanceof SubflowTask) {
             this.writeSubWorkflowProcess(((SubflowTask) task).getSubWorkflowProcess(), taskElement);
         }
@@ -440,16 +422,16 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Util4Serializer.addElement(editFormElement, URI, form.getUri());
     }
 
-    protected void writeLoops(List loops, Element parent) {
+    protected void writeLoops(List<Loop> loops, Element parent) {
         if (loops == null || loops.size() == 0) {
             return;
         }
         Element transitionsElement = Util4Serializer.addElement(parent,
                 LOOPS);
 
-        Iterator iter = loops.iterator();
+        Iterator<Loop> iter = loops.iterator();
         while (iter.hasNext()) {
-            Loop loop = (Loop) iter.next();
+            Loop loop = iter.next();
 
             Element loopElement = Util4Serializer.addElement(transitionsElement,
                     LOOP);
@@ -468,7 +450,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
-    protected void writeTransitions(List transitions, Element parent)
+    protected void writeTransitions(List<Transition> transitions, Element parent)
             throws FPDLSerializerException {
 
         if (transitions == null || transitions.size() == 0) {
@@ -478,9 +460,9 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Element transitionsElement = Util4Serializer.addElement(parent,
                 TRANSITIONS);
 
-        Iterator iter = transitions.iterator();
+        Iterator<Transition>  iter = transitions.iterator();
         while (iter.hasNext()) {
-            writeTransition((Transition) iter.next(), transitionsElement);
+            writeTransition( iter.next(), transitionsElement);
         }
     }
 
@@ -503,7 +485,7 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
                 transitionElement);
     }
 
-    protected Element writeExtendedAttributes(Map extendedAttributes,
+    protected Element writeExtendedAttributes(Map<String,String> extendedAttributes,
             Element parent) {
 
         if (extendedAttributes == null || extendedAttributes.size() == 0) {
@@ -516,10 +498,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 //                        parent
 //				.addElement(EXTENDED_ATTRIBUTES);
 
-        Iterator keys = extendedAttributes.keySet().iterator();
+        Iterator<String> keys = extendedAttributes.keySet().iterator();
         while (keys.hasNext()) {
-            Object key = keys.next();
-            Object value = extendedAttributes.get(key);
+            String key = keys.next();
+            String value = extendedAttributes.get(key);
 
             Element extendedAttributeElement = Util4Serializer.addElement(
                     extendedAttributesElement, EXTENDED_ATTRIBUTE);

@@ -16,11 +16,11 @@
  */
 package org.fireflow.model;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 流程元素抽象类
