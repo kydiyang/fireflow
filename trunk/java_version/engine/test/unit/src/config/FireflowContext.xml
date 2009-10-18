@@ -13,9 +13,10 @@
             <ref local="definitionService"/>
         </property>
         <property name="persistenceService">
-            <ref local="persistenceService"/>
+            <ref bean="persistenceService"/>
         </property>
         <property name="conditionResolver">
+        	
             <ref local="ikConditionResolver"/>
         </property>
         <property name="calendarService">
@@ -83,14 +84,23 @@
         <!-- ************ TaskInstance Manager End*************************** -->
 
         <!-- **************Persistence Begin******************** -->
-    <bean id="persistenceService"
+    <bean id="hibernatePersistenceService" 
 		      class="org.fireflow.engine.persistence.hibernate.PersistenceServiceHibernateImpl">
         <property name="sessionFactory">
     			<ref bean="MyHibernateSessionFactory" />
     		</property>
     </bean>
+    
+    <bean id="jdbcPersistenceService" name="persistenceService"
+		      class="org.fireflow.engine.persistence.springjdbc.PersistenceServiceSpringJdbcImpl">
+		<property name="dataSource" >
+			<ref bean="MyDataSource"></ref>
+		</property>  
+    </bean>    
+   
+    
         <!-- ***************Persistence End******************* -->
-
+	
 
 
         <!-- **************workflow Definitions Begin*******  -->

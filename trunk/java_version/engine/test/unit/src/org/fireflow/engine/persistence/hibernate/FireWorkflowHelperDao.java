@@ -20,6 +20,7 @@ package org.fireflow.engine.persistence.hibernate;
 import java.sql.SQLException;
 import java.util.List;
 import org.fireflow.engine.IProcessInstance;
+import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -32,7 +33,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  * @version 1.0
  * Created on Mar 11, 2009
  */
-public class FireWorkflowHelperDao extends HibernateDaoSupport{
+public class FireWorkflowHelperDao extends HibernateDaoSupport implements IFireWorkflowHelperDao{
     /**
      * 测试之前删除所有表中的数据
      */
