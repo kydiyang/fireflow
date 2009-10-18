@@ -30,7 +30,6 @@ import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
-//import org.fireflow.kenel.event.NodeInstanceEventType;
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.net.EndNode;
 import org.fireflow.model.net.Synchronizer;
@@ -54,7 +53,8 @@ public class EndNodeInstance extends AbstractNodeInstance implements
     private int volume = 0;// 即节点的容量
     private int tokenValue = 0;
     private EndNode endNode = null;
-    private boolean alive = false;
+    @SuppressWarnings("unused")
+	private boolean alive = false;
 
     public EndNodeInstance() {
     }
@@ -113,7 +113,7 @@ public class EndNodeInstance extends AbstractNodeInstance implements
      *      org.fireflow.kenel.ITransitionInstance)
      */
     public void fire(IToken tk) throws KernelException {
-            IJoinPoint joinPoint = null;
+    	IJoinPoint joinPoint = null;
         synchronized (this) {
             tk.setNodeId(this.getSynchronizer().getId());
             log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
@@ -121,7 +121,7 @@ public class EndNodeInstance extends AbstractNodeInstance implements
             NodeInstanceEvent event1 = new NodeInstanceEvent(this);
             event1.setToken(tk);
             event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-            fireNodeLeavingEvent(event1);
+            fireNodeEvent(event1);
 
             //汇聚检查
             joinPoint = ((ProcessInstance) tk.getProcessInstance()).createJoinPoint(this, tk);// JoinPoint由谁生成比较好？
@@ -144,7 +144,7 @@ public class EndNodeInstance extends AbstractNodeInstance implements
         NodeInstanceEvent event2 = new NodeInstanceEvent(this);
         event2.setToken(tk);
         event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
-        fireNodeEnteredEvent(event2);
+        fireNodeEvent(event2);
         //首先必须检查是否有满足条件的循环
         boolean doLoop = false;//表示是否有满足条件的循环，false表示没有，true表示有。
         if (joinPoint.getAlive()) {
@@ -169,7 +169,7 @@ public class EndNodeInstance extends AbstractNodeInstance implements
             NodeInstanceEvent event3 = new NodeInstanceEvent(this);
             event3.setToken(tk);
             event3.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
-            fireNodeLeavingEvent(event3);
+            fireNodeEvent(event3);
         }
         
 //        NodeInstanceEvent event4 = new NodeInstanceEvent(this);

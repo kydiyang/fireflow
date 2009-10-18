@@ -9,14 +9,14 @@ import org.wltea.expression.datameta.Variable;
 
 public class IKConditionResolver implements IConditionResolver {
 
-	public boolean resolveBooleanExpression(Map vars, String elExpression)
+	public boolean resolveBooleanExpression(Map<String ,Object> vars, String elExpression)
 			throws Exception {
 		System.out.println("-----====------IK Expression---Expression is "+elExpression);
 		List<Variable> variables = new ArrayList<Variable>();
-		Object[] keys = vars.keySet().toArray();
+		String[] keys = vars.keySet().toArray(new String[vars.size()]);
 		for (int i=0;keys!=null && i<keys.length;i++){
-			Object key =keys[i];
-			variables.add(Variable.createVariable(key.toString(), vars.get(key)));
+			String key =keys[i];
+			variables.add(Variable.createVariable(key, vars.get(key)));
 		}
 
 		Object result = ExpressionEvaluator.evaluate(elExpression,variables);

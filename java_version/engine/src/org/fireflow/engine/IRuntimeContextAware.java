@@ -17,12 +17,18 @@
 package org.fireflow.engine;
 
 /**
- * 类似IWorkflowSessionAware
+ * 类似<link>IWorkflowSessionAware</link>
  * @author 非也，nychen2000@163.com
  * @see org.fireflow.engine.IWorkflowSessionAware
  */
 public interface IRuntimeContextAware {
+    /**
+     * @param ctx
+     */
     public void setRuntimeContext(RuntimeContext ctx);
     
+    /**
+     * @return
+     */
     public RuntimeContext getRuntimeContext();
 }

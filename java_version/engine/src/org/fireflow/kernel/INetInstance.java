@@ -16,36 +16,53 @@
  */
 package org.fireflow.kernel;
 
-//import org.fireflow.engine.IRuntimeContext;
+// import org.fireflow.engine.IRuntimeContext;
 import org.fireflow.engine.IProcessInstance;
-import org.fireflow.kernel.event.NodeInstanceEvent;
 import org.fireflow.model.WorkflowProcess;
 
 /**
  * ProcessInstance负责和外部运行环境（RuntimeContext)沟通
- * @author chennieyun
- * 是否应该叫做WorkflowNetInstance?
+ * 
+ * @author chennieyun 是否应该叫做WorkflowNetInstance?
  */
 public interface INetInstance {
-//	public void setRuntimeContext(IRuntimeContext rtCtx);
-//	
-//	public IRuntimeContext getRuntimeContext();
-	
+	// public void setRuntimeContext(IRuntimeContext rtCtx);
+	//	
+	// public IRuntimeContext getRuntimeContext();
+
+	/**
+	 * @return
+	 */
 	public String getId();
-        
-        public Integer getVersion();
-	
-	//TODO 实参-形参如何体现？通过Context?
-	public void run(IProcessInstance processInstance)throws KernelException;
-	
+
+	/**
+	 * @return
+	 */
+	public Integer getVersion();
+
+	// TODO 实参-形参如何体现？通过Context?
+	/**
+	 * 启动工作流的实例 
+	 * @param processInstance
+	 * @throws KernelException
+	 */
+	public void run(IProcessInstance processInstance) throws KernelException;
+
 	/**
 	 * 结束流程实例，如果流程状态没有达到终态，则直接返回。
+	 * 
 	 * @throws RuntimeException
 	 */
-	public void complete()throws KernelException;
-	
-	
+	public void complete() throws KernelException;
+
+	/**
+	 * @return
+	 */
 	public WorkflowProcess getWorkflowProcess();
-	
-	public Object getWFElementInstance(String wfElementId) ;
+
+	/**
+	 * @param wfElementId
+	 * @return
+	 */
+	public Object getWFElementInstance(String wfElementId);
 }

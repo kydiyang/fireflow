@@ -32,7 +32,6 @@ import org.fireflow.kernel.ITransitionInstance;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
-//import org.fireflow.kenel.event.NodeInstanceEventType;
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.net.Synchronizer;
 
@@ -65,23 +64,26 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         int a = synchronizer.getEnteringTransitions().size();
         int b = synchronizer.getLeavingTransitions().size();
         volume = a * b;
-
-//		System.out.println("synchronizer "+synchronizer.getName()+"'s volume is "+volume);
+        //added by wangmj 20090905
+		System.out.println("synchronizer "+synchronizer.getName()+"'s volume is "+volume);
     }
 
 
 
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.INodeInstance#fire(org.fireflow.kernel.IToken)
+     */
     public void fire(IToken tk) throws KernelException {
         //TODO 此处性能需要改善一下,20090312
         IJoinPoint joinPoint = null;
-        synchronized (this) {
+        synchronized (this) { //流程同步器需要处理并发的情况，而activity的节点不需要处理并发情况？同步器节点，可能被同时触发，activity节点不会被同时触发？
             tk.setNodeId(this.getSynchronizer().getId());
             log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             // 触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(this);
             event1.setToken(tk);
-            event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-            fireNodeLeavingEvent(event1);
+            event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);//token 进入
+            fireNodeEvent(event1);
 
             //汇聚检查
 
@@ -95,8 +97,8 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
                 throw exception;
             }
-            if (value < volume) {// 如果Value小于容量则继续等待其他弧的汇聚。
-                return;
+            if (value < volume) {// 如果Value小于容量则继续等待其他弧的汇聚。 (哪些状态为dead的token到此结束，不再向下传递)
+                return;  
             }
         }
 
@@ -105,24 +107,22 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         NodeInstanceEvent event2 = new NodeInstanceEvent(this);
         event2.setToken(tk);
         event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
-        fireNodeEnteredEvent(event2);
+        fireNodeEvent(event2);
 
         //在此事件监听器中，删除原有的token
         NodeInstanceEvent event4 = new NodeInstanceEvent(this);
         event4.setToken(tk);
         event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
-        fireNodeLeavingEvent(event4);
+        fireNodeEvent(event4);
 
         //首先必须检查是否有满足条件的循环
         boolean doLoop = false;//表示是否有满足条件的循环，false表示没有，true表示有。
         if (joinPoint.getAlive()) {
-            IToken tokenForLoop = null;
-
-                tokenForLoop = new Token(); // 产生新的token
-                tokenForLoop.setAlive(joinPoint.getAlive());
-                tokenForLoop.setProcessInstance(processInstance);
-                tokenForLoop.setStepNumber(joinPoint.getStepNumber()-1);
-                tokenForLoop.setFromActivityId(joinPoint.getFromActivityId());
+            IToken tokenForLoop = new Token(); // 产生新的token
+            tokenForLoop.setAlive(joinPoint.getAlive());
+            tokenForLoop.setProcessInstance(processInstance);
+            tokenForLoop.setStepNumber(joinPoint.getStepNumber()-1);
+            tokenForLoop.setFromActivityId(joinPoint.getFromActivityId());
 
             for (int i = 0; i < this.leavingLoopInstances.size(); i++) {
                 ILoopInstance loopInstance = this.leavingLoopInstances.get(i);
@@ -169,7 +169,7 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         NodeInstanceEvent event3 = new NodeInstanceEvent(this);
         event3.setToken(tk);
         event3.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
-        fireNodeLeavingEvent(event3);
+        fireNodeEvent(event3);
     }
 
     public void setVolume(int arg) {
@@ -180,13 +180,6 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         return volume;
     }
 
-    // public int getValue() {
-    // return value;
-    // }
-    //
-    // public void setValue(int tokens) {
-    // this.value = tokens;
-    // }
     public String getExtensionTargetName() {
         return Extension_Target_Name;
     }

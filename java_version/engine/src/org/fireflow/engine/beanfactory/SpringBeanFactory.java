@@ -26,10 +26,17 @@ import org.springframework.beans.factory.BeanFactoryAware;
 public class SpringBeanFactory implements IBeanFactory,BeanFactoryAware {
     BeanFactory springBeanFactory = null;
 
+    /**
+     * @param beanName
+     * @return
+     */
     public Object getBean(String beanName) {
         return springBeanFactory.getBean(beanName);
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.BeanFactoryAware#setBeanFactory(org.springframework.beans.factory.BeanFactory)
+     */
     public void setBeanFactory(BeanFactory arg0) throws BeansException {
         springBeanFactory = arg0;
     }

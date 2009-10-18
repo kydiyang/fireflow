@@ -82,7 +82,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	        return this.rtCtx;
 	    }
 
-	    public java.sql.Date getSqlDate(final java.util.Date date){
+	    private java.sql.Date getSqlDate(final java.util.Date date){
 	    	if(date == null ){
 	    		return null;
 	    	}else{
@@ -250,13 +250,10 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	if(super.getJdbcTemplate().queryForInt("select count(*) from t_ff_rt_procinst_var where processinstance_id=? and name=? "
 	    			,new Object[]{processInstanceId,name} ,new int[] {Types.VARCHAR,Types.VARCHAR})==0){
 	    		//插入
-	    		try{
-		       		super.getJdbcTemplate().update("insert into t_ff_rt_procinst_var(processinstance_id,name,value )values (?,?,?)"
-		    	    		,new Object[]{processInstanceId,name,value});
-	    		}catch(Exception e){
-	    			e.printStackTrace();
-	    			//TODO  先插入，然后再查询，然后在插入，这个时候事务并没有提交，查询的结果==0为什么？
-	    		}
+	    		
+	       		super.getJdbcTemplate().update("insert into t_ff_rt_procinst_var(processinstance_id,name,value )values (?,?,?)"
+	    	    		,new Object[]{processInstanceId,name,value});
+    	
 	    	}else{
 	    		//更新
 	       		super.getJdbcTemplate().update("update t_ff_rt_procinst_var set value=? where processinstance_id=? and name=? "
@@ -655,14 +652,14 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#deleteTokensForNodes(java.lang.String, java.util.List)
 	     */
-	    public void deleteTokensForNodes(final String processInstanceId, final List nodeIdsList) {
+	    public void deleteTokensForNodes(final String processInstanceId, final List<String> nodeIdsList) {
 	    	
 	    	super.getJdbcTemplate().batchUpdate(
 	                "delete from t_ff_rt_token where processinstance_id = ? and node_id=? ",
 	                new BatchPreparedStatementSetter() {
 	                    public void setValues(PreparedStatement ps, int i) throws SQLException {
 	                        ps.setString(1, processInstanceId);
-	                        ps.setString(2, (String)nodeIdsList.get(i));
+	                        ps.setString(2, nodeIdsList.get(i));
 	                    }
 
 	                    public int getBatchSize() {
@@ -811,7 +808,8 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	}
 	    }
 
-	    private Map<String,Object> getVarMap(String processInstanceId) {
+	    @SuppressWarnings("unchecked")
+		private Map<String,Object> getVarMap(String processInstanceId) {
 	    	String varSql  = "select * from t_ff_rt_procinst_var where processinstance_id=? ";
 	    	List l = super.getJdbcTemplate().query(varSql,new Object[]{processInstanceId},new ProcessInstanceVarRowMapper());
 	    	
@@ -836,14 +834,14 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	return resultMap;
 	    }
 	    
-	    public static void main(String[] args){
-	    	PersistenceServiceSpringJdbcImpl t = new PersistenceServiceSpringJdbcImpl();
-	    	System.out.println(t.getObject("java.lang.String#000100"));
-	    	System.out.println(t.getSqlDate(new java.util.Date()));
-	    	//测试通过后，需要将这两个方法设置为private类型。
-	    }
-	    
-	    public Object getObject(String value){
+//	    public static void main(String[] args){
+//	    	PersistenceServiceSpringJdbcImpl t = new PersistenceServiceSpringJdbcImpl();
+//	    	System.out.println(t.getObject("java.lang.String#000100"));
+//	    	System.out.println(t.getSqlDate(new java.util.Date()));
+//	    	//测试通过后，需要将这两个方法设置为private类型。
+//	    }
+//	    
+	    private Object getObject(String value){
 	    	if (value == null)
 				return null;
 			int index = value.indexOf("#");
@@ -1181,7 +1179,8 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#findTodoWorkItems(java.lang.String)
 	     */
-	    public List<IWorkItem> findTodoWorkItems(final String actorId) {
+	    @SuppressWarnings("unchecked")
+		public List<IWorkItem> findTodoWorkItems(final String actorId) {
 	    	if(actorId==null || actorId.trim().equals("")){
 	    		throw new NullPointerException("工单操作员（actorId）不能为空！");
 	    	}
@@ -1282,7 +1281,8 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#findHaveDoneWorkItems(java.lang.String)
 	     */
-	    public List<IWorkItem> findHaveDoneWorkItems(final String actorId) {
+	    @SuppressWarnings("unchecked")
+		public List<IWorkItem> findHaveDoneWorkItems(final String actorId) {
 	    	if(actorId==null || actorId.trim().equals("")){
 	    		throw new NullPointerException("工单操作员（actorId）不能为空！");
 	    	}
@@ -1637,7 +1637,7 @@ class TaskInstanceRowMapper implements RowMapper {
 	public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 		TaskInstance taskInstance = new TaskInstance();
 		taskInstance.setId(rs.getString("id"));
-		//TODO 20090922 wmj2003 没有给biz_type赋值 是否需要给基于jdbc的数据增加 setBizType()方法？
+		//TODO wmj2003 20090922  没有给biz_type赋值 是否需要给基于jdbc的数据增加 setBizType()方法？
 		taskInstance.setTaskId(rs.getString("task_id"));
 		taskInstance.setActivityId(rs.getString("activity_id"));
 		taskInstance.setName(rs.getString("name"));

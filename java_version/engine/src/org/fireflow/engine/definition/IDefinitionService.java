@@ -17,19 +17,16 @@
 package org.fireflow.engine.definition;
 
 import java.util.List;
+
 import org.fireflow.engine.IRuntimeContextAware;
 
 /**
- * 
  * 流程定义服务。
  * @author 非也，nychen2000@163.com
  *
  */
 public interface IDefinitionService extends IRuntimeContextAware {
-//	public WorkflowProcess getWorkflowProcessByName(String name);
-//	public void setDefinitionFiles(List<String> definitionFileNames)throws IOException,FPDLParserException;
-//	public List<WorkflowProcess> getAllWorkflowProcesses();
-//        public WorkflowProcess getWorkflowProcessById(String id);
+
     /**
      * 返回所有流程的最新版本
      * @return 

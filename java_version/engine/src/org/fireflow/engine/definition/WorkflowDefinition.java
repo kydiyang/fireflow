@@ -20,9 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.io.Dom4JFPDLParser;
 import org.fireflow.model.io.Dom4JFPDLSerializer;
@@ -38,7 +38,7 @@ public class WorkflowDefinition extends WorkflowDefinitionInfo{
 
     protected transient WorkflowProcess workflowProcess;
 
-    protected String processContent;
+    protected String processContent; //流程定义文件的内容
 
 
     public String getProcessContent() {
@@ -49,13 +49,17 @@ public class WorkflowDefinition extends WorkflowDefinitionInfo{
         this.processContent = processContent;
     }
 
+    /**
+     * @return
+     * @throws RuntimeException
+     */
     public WorkflowProcess getWorkflowProcess() throws RuntimeException{
         if (workflowProcess == null) {
             if (this.processContent != null && !this.processContent.trim().equals("")) {
 
                 ByteArrayInputStream in = null;
                 try {
-                    Dom4JFPDLParser parser = new Dom4JFPDLParser();
+                    Dom4JFPDLParser parser = new Dom4JFPDLParser();//采用dom4j来解析xml
                     in = new ByteArrayInputStream(this.processContent.getBytes("utf-8"));
                     this.workflowProcess = parser.parse(in);
 
@@ -69,8 +73,7 @@ public class WorkflowDefinition extends WorkflowDefinitionInfo{
                 catch(FPDLParserException ex){
                     Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
                     throw new RuntimeException(ex.getMessage());
-                }
-                finally {
+                } finally {
                     try {
                         in.close();
                     } catch (IOException ex) {
@@ -83,6 +86,10 @@ public class WorkflowDefinition extends WorkflowDefinitionInfo{
         return workflowProcess;
     }
 
+    /**
+     * @param process
+     * @throws RuntimeException
+     */
     public void setWorkflowProcess(WorkflowProcess process) throws  RuntimeException {
         try {
             this.workflowProcess = process;

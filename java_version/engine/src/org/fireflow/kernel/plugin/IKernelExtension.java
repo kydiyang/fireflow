@@ -21,6 +21,14 @@ package org.fireflow.kernel.plugin;
  *
  */
 public interface IKernelExtension {
+	/**
+	 * wangmj获取扩展目标名称
+	 * @return
+	 */
 	public String getExtentionTargetName();
+	/**
+	 * wangmj获取扩展点名称
+	 * @return
+	 */
 	public String getExtentionPointName();
 }

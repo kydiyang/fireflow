@@ -30,5 +30,5 @@ public interface IConditionResolver {
      * @param elExpression 条件表达式 
      * @return 返回条件表达式的计算结果
      */
-    public boolean resolveBooleanExpression(Map vars, String elExpression) throws Exception;
+    public boolean resolveBooleanExpression(Map<String ,Object> vars, String elExpression) throws Exception;
 }

@@ -29,11 +29,8 @@ import org.fireflow.kernel.IToken;
  *
  */
 public class Token implements IToken {
-//	private INodeInstance currentNodeInstance;
-//	private INetInstance currentProcessInstance;
-//	private ITransitionInstance transitionInstance;
 
-    private Boolean alive = Boolean.FALSE;
+    private Boolean alive = null;
     private Integer value = 0;
     private String nodeId = null;
     private String id = null;
@@ -42,68 +39,19 @@ public class Token implements IToken {
 
     private String fromActivityId = null;
 
-    /**
-     * 这个信息应该存放在contextInfo中，（20090906）
-     */
 //    private transient IProcessInstance processInstance = null;
-    
-    private transient Map contextInfo = new HashMap();
-    /* (non-Javadoc)
-     * @see org.fireflow.kenel.IToken#getCurrentNodeInstance()
-     */
-//	public INodeInstance getCurrentNodeInstance() {
-//		return currentNodeInstance;
-//	}
-
-    /* (non-Javadoc)
-     * @see org.fireflow.kenel.IToken#getCurrentProcessInstance()
-     */
-//	public INetInstance getNetInstance() {
-//		return currentProcessInstance;
-//	}
-//	
-//	public void setNetInstance(INetInstance procInst){
-//		this.currentProcessInstance = procInst; 
-//	}
-    /* (non-Javadoc)
-     * @see org.fireflow.kenel.IToken#getRuntimeContext()
-     */
-//	public IRuntimeContext getRuntimeContext() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+    //20090908 
+    private transient Map<String ,IProcessInstance> contextInfo = new HashMap<String ,IProcessInstance>();
 
     /* (non-Javadoc)
      * @see org.fireflow.kenel.IToken#getValue()
      */
     public Integer getValue() {
-//		if (this.transitionInstance!=null){
-//			return this.transitionInstance.getWeight();
-//		}
+
         return value;
     }
 
-    /* (non-Javadoc)
-     * @see org.fireflow.kenel.IToken#setCurrentNodeInstance(org.fireflow.kenel.INodeInstance)
-     */
-//	public void setCurrentNodeInstance(INodeInstance currentNodeInstance) {
-//	
-//		this.currentNodeInstance = currentNodeInstance;
-//	}
-
-    /* (non-Javadoc)
-     * @see org.fireflow.kenel.IToken#setRuntimeContext(org.fireflow.kenel.IRuntimeContext)
-     */
-//	public void setRuntimeContext(IRuntimeContext rtCtx) {
-//		
-//	}
-
-//	public void setTransitionInstance(ITransitionInstance transInst){
-//		transitionInstance = transInst;
-//	}
-//	public ITransitionInstance getTransitionInstance(){
-//		return transitionInstance;
-//	}
+   
     public Boolean isAlive() {
         return alive;
     }
@@ -112,12 +60,18 @@ public class Token implements IToken {
         this.alive = alive;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.IToken#getProcessInstance()
+     */
     public IProcessInstance getProcessInstance() {
     	return (IProcessInstance)this.contextInfo.get(EngineConstant.CURRENT_PROCESS_INSTANCE);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.IToken#setProcessInstance(org.fireflow.engine.IProcessInstance)
+     */
     public void setProcessInstance(IProcessInstance inst) {
-//        processInstance = inst;
+
     	this.contextInfo.put(EngineConstant.CURRENT_PROCESS_INSTANCE, inst);
         if (inst != null) {
             this.processInstanceId = inst.getId();
@@ -126,13 +80,6 @@ public class Token implements IToken {
         }
     }
 
-//	public void setAppointedTransitionNames(Set<String> appointedTransitionNames){
-//		
-//	}
-//	
-//	public Set<String> getAppointedTransitionNames(){
-//		return null;
-//	}
     public void setValue(Integer v) {
         value = v;
     }
@@ -177,7 +124,7 @@ public class Token implements IToken {
         this.fromActivityId = s;
     }
     
-    public Map getContextInfo(){
+    public Map<String ,IProcessInstance> getContextInfo(){
     	return this.contextInfo;
     }
 }

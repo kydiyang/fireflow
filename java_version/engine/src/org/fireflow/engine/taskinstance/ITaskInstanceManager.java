@@ -16,7 +16,6 @@
  */
 package org.fireflow.engine.taskinstance;
 
-import java.util.List;
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.IRuntimeContextAware;
@@ -156,5 +155,5 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
      * @param comments 备注信息
      * @return 新创建的工作项
      */
-    public IWorkItem reasignWorkItemTo(IWorkItem workItem,String actorId,String comments);
+    public IWorkItem reassignWorkItemTo(IWorkItem workItem,String actorId,String comments);
 }

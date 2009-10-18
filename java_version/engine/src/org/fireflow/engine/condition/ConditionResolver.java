@@ -18,13 +18,12 @@ package org.fireflow.engine.condition;
 
 import java.util.Map;
 
-import org.fireflow.engine.RuntimeContext;
-import org.fireflow.engine.condition.IConditionResolver;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
-import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
 import org.fireflow.engine.IRuntimeContextAware;
+import org.fireflow.engine.RuntimeContext;
 
 /**
  * 缺省使用apache的JEXL实现条件表达式的解析。
@@ -43,10 +42,9 @@ public class ConditionResolver implements IConditionResolver,
 	 * org.fireflow.kenel.condition.IConditionResolver#resolveBooleanExpression
 	 * (java.lang.String)
 	 */
-	public boolean resolveBooleanExpression(Map vars, String elExpression)
+	public boolean resolveBooleanExpression(Map<String ,Object> vars, String elExpression)
 			throws Exception {
-		Expression expression = ExpressionFactory
-				.createExpression(elExpression);
+		Expression expression = ExpressionFactory.createExpression(elExpression);
 		JexlContext jexlCtx = JexlHelper.createContext();
 		jexlCtx.setVars(vars);
 		Object obj = expression.evaluate(jexlCtx);

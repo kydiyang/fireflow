@@ -30,7 +30,6 @@ import org.fireflow.kernel.impl.EndNodeInstance;
 public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
 
     public String getExtentionPointName() {
-        // TODO Auto-generated method stub
         return EndNodeInstance.Extension_Point_NodeInstanceEventListener;
     }
 
@@ -38,13 +37,12 @@ public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
      * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
      */
     public String getExtentionTargetName() {
-        // TODO Auto-generated method stub
         return EndNodeInstance.Extension_Target_Name;
     }
 
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException {
-
+    	//如果节点实例结束，就触发
         if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED) {
             // 执行ProcessInstance的complete操作
 

@@ -35,6 +35,9 @@ import org.fireflow.model.WorkflowProcess;
  */
 public class DefaultToolTaskInstanceRunner implements ITaskInstanceRunner{
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceRunner#run(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance)
+     */
     public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance,
             ITaskInstance taskInstance) throws EngineException, KernelException {
         if (!Task.TOOL.equals(taskInstance.getTaskType())) {
@@ -69,7 +72,11 @@ public class DefaultToolTaskInstanceRunner implements ITaskInstanceRunner{
         try {
             ((IApplicationHandler) obj).execute(taskInstance);
         } catch (Exception e) {
-            //TODO, 对tool类型的task抛出的错误应该怎么处理？
+            //TODO wmj2003 对tool类型的task抛出的错误应该怎么处理？ 这个时候引擎会如何？整个流程是否还可以继续？
+        	e.printStackTrace();
+            throw new EngineException(processInstance,
+                    taskInstance.getActivity(),
+                    "DefaultToolTaskInstanceRunner：TaskInstance的任务执行失败！");
         }
 
         ITaskInstanceManager taskInstanceManager = runtimeContext.getTaskInstanceManager();

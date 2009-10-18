@@ -23,5 +23,11 @@ import org.fireflow.kernel.KernelException;
  *
  */
 public interface IWorkflowSessionCallback {
+	/**
+	 * @param ctx
+	 * @return
+	 * @throws EngineException
+	 * @throws KernelException
+	 */
 	public Object doInWorkflowSession(RuntimeContext ctx)throws EngineException ,KernelException;
 }

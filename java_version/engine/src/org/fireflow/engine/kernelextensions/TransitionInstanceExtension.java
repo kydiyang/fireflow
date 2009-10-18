@@ -60,7 +60,7 @@ public class TransitionInstanceExtension implements IKernelExtension,
      * @param transInst
      * @return
      */
-    private boolean determineTheAliveOfToken(Map vars, String condition) throws Exception{
+    private boolean determineTheAliveOfToken(Map<String ,Object> vars, String condition) throws Exception{
 //        System.out.println("Inside SynchronizerInstance.DeterminTheAliveOfToken():: joinPoint.getAlive =" + joinPoint.getAlive());
 //        if (!joinPoint.getAlive()) {
 //            return false;
@@ -88,6 +88,12 @@ public class TransitionInstanceExtension implements IKernelExtension,
         return b;
     }
 
+    /**
+     * 计算value值
+     * @param token
+     * @param condition
+     * @throws EngineException
+     */
     public void calculateTheAliveValue(IToken token, String condition)throws EngineException {
 
         if (!token.isAlive()) {
@@ -122,11 +128,15 @@ public class TransitionInstanceExtension implements IKernelExtension,
         return TransitionInstance.Extension_Point_TransitionInstanceEventListener;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.event.IEdgeInstanceEventListener#onEdgeInstanceEventFired(org.fireflow.kernel.event.EdgeInstanceEvent)
+     */
     public void onEdgeInstanceEventFired(EdgeInstanceEvent e) throws KernelException {
         if (e.getEventType() == EdgeInstanceEvent.ON_TAKING_THE_TOKEN) {
             IToken token = e.getToken();
             ITransitionInstance transInst = (ITransitionInstance) e.getSource();
             String condition = transInst.getTransition().getCondition();
+            
             calculateTheAliveValue(token, condition);
 
             if (rtCtx.isEnableTrace() && token.isAlive()) {
@@ -147,6 +157,7 @@ public class TransitionInstanceExtension implements IKernelExtension,
                 trace.setToNodeId(transInst.getTransition().getToNode().getId());
                 trace.setEdgeId(transInst.getTransition().getId());
                 trace.setMinorNumber(minorNumber);
+                //TODO wmj2003 这里应该是insert。一旦token从当前边上经过，那么就保存流程运行轨迹.
                 rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
             }
         }

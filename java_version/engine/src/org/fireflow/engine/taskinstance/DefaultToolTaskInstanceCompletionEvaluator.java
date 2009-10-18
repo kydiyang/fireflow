@@ -32,6 +32,9 @@ import org.fireflow.kernel.KernelException;
  */
 public class DefaultToolTaskInstanceCompletionEvaluator implements ITaskInstanceCompletionEvaluator{
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceCompletionEvaluator#taskInstanceCanBeCompleted(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance)
+     */
     public boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession,RuntimeContext runtimeContext,
             IProcessInstance processInstance ,ITaskInstance taskInstance)throws EngineException ,KernelException {
         //Tool类型的TaskInstance在handler执行完后，都可以直接结束。

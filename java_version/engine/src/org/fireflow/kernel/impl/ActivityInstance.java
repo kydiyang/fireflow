@@ -21,16 +21,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.kernel.IActivityInstance;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.ITransitionInstance;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
-//import org.fireflow.kenel.event.NodeInstanceEventType;
-
+import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.net.Activity;
 
 /**
@@ -59,8 +56,10 @@ public class ActivityInstance extends AbstractNodeInstance implements
         return activity.getId();
     }
 
-    public void fire(IToken tk)
-            throws KernelException {
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.INodeInstance#fire(org.fireflow.kernel.IToken)
+     */
+    public void fire(IToken tk) throws KernelException {
         log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
         IToken token = tk;
         token.setNodeId(this.getActivity().getId());
@@ -68,29 +67,32 @@ public class ActivityInstance extends AbstractNodeInstance implements
         //触发TokenEntered事件
         NodeInstanceEvent event1 = new NodeInstanceEvent(this);
         event1.setToken(tk);
-        event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-        fireNodeEnteredEvent(event1);
-        if (token.isAlive()) {
+        event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);//token 来了
+        fireNodeEvent(event1);
+        if (token.isAlive()) {//如果token是活动的，那么就保存token，并创建taskinstance
             NodeInstanceEvent event = new NodeInstanceEvent(this);
             event.setToken(token);
-            event.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
-            fireNodeEnteredEvent(event);
+            event.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);//token 被触发
+            fireNodeEvent(event);
 
             //如果没有task,即该activity是一个dummy activity，则直接complete
             //注释:2009-06-01,complete工作被移植到了BasicTaskInstanceManager.createTaskInstances(...)
 //            if (this.getActivity().getTasks().size() == 0) {
 //                this.complete(token, null);
 //            }
-        } else {
+        } else {//如果token是dead状态，那么就直接结束当前节点。
             this.complete(token, null);
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.IActivityInstance#complete(org.fireflow.kernel.IToken, org.fireflow.kernel.IActivityInstance)
+     */
     public void complete(IToken token, IActivityInstance targetActivityInstance) throws KernelException {
         NodeInstanceEvent event2 = new NodeInstanceEvent(this);
         event2.setToken(token);
-        event2.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
-        fireNodeLeavingEvent(event2);
+        event2.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING); //token leaving
+        fireNodeEvent(event2);
 
 
         token.setFromActivityId(this.getActivity().getId());
@@ -112,11 +114,11 @@ public class ActivityInstance extends AbstractNodeInstance implements
             }
         }
 
-        if (token.isAlive()) {
+        if (token.isAlive()) { //TODO wmj2003 20090914 按理说，这是的token的状态肯定是dead，那么为什么要处理呢？
             NodeInstanceEvent event = new NodeInstanceEvent(this);
             event.setToken(token);
-            event.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
-            fireNodeLeavingEvent(event);
+            event.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED); //token completed
+            fireNodeEvent(event);
         }
     }
 

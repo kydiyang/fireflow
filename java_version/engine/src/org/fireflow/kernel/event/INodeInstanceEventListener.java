@@ -16,12 +16,16 @@
  */
 package org.fireflow.kernel.event;
 
-import org.fireflow.engine.EngineException;
 import org.fireflow.kernel.KernelException;
 /**
  * @author chennieyun
  *
  */
 public interface INodeInstanceEventListener {
+	/**
+	 * 节点实例监听器
+	 * @param e
+	 * @throws KernelException
+	 */
 	public void onNodeInstanceEventFired(NodeInstanceEvent e)throws KernelException;
 }

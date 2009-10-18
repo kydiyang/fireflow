@@ -21,9 +21,11 @@ import java.util.EventObject;
 import org.fireflow.kernel.IToken;
 
 /**
+ * node监听器
  * @author chennieyun
  *
  */
+@SuppressWarnings("serial")
 public class NodeInstanceEvent extends EventObject {
 	public static final int NODEINSTANCE_TOKEN_ENTERED = 1;
 	public static final int NODEINSTANCE_FIRED = 2;
@@ -33,6 +35,7 @@ public class NodeInstanceEvent extends EventObject {
 	int eventType = -1;
 	private IToken token = null;
 
+	@SuppressWarnings("unused")
 	private NodeInstanceEvent(){
 		super(null);
 	}

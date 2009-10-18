@@ -18,7 +18,6 @@ package org.fireflow.engine;
 
 import java.util.List;
 
-import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
 
@@ -61,20 +60,6 @@ public interface IWorkflowSession {
     /******************************************************************************/		
 	
 	/**
-	 * 创建流程实例。如果流程定义了流程变量(DataField）,则自动把流程变量初始化成流程实例变量。 建议改用
-	 * createProcessInstance(String workflowProcessName,String creatorId)。
-	 * 
-	 * @param workflowProcessName
-	 *            流程的Name属性，在Fire workflow中，流程的Name和Id是相等的而且都是唯一的。
-	 * @return 新创建的流程实例
-	 * @throws org.fireflow.engine.EngineException
-	 * @throws org.fireflow.kenel.KenelException
-	 * @deprecated
-	 */
-	public IProcessInstance createProcessInstance(String workflowProcessName)
-			throws EngineException, KernelException;
-
-	/**
 	 * 创建流程实例。如果流程定义了流程变量(DataField）,则自动把流程变量初始化成流程实例变量。
 	 * 
 	 * @param workflowProcessName
@@ -103,6 +88,18 @@ public interface IWorkflowSession {
 			String creatorId) throws EngineException, KernelException;
 
 	
+//	/**
+//	 * added by wmj2003 根据流程定义id和流程版本号 来创建流程实例。
+//	 * @param workflowProcessName
+//	 * @param version
+//	 * @param creatorId
+//	 * @return
+//	 * @throws EngineException
+//	 * @throws KernelException
+//	 */
+//	public IProcessInstance createProcessInstance(String workflowProcessName,int version,
+//			String creatorId) throws EngineException, KernelException;
+
 	
     /**
      * 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
@@ -133,8 +130,8 @@ public interface IWorkflowSession {
 	
     /**
      * 通过ID获得ProcessInstance对象。
-     * @param id processInstance.id
-     * @return process instance
+     * @param id processInstance.id 流程实例ID
+     * @return process instance 
      */
 	public IProcessInstance findProcessInstanceById(String id);
 	
@@ -385,13 +382,14 @@ public interface IWorkflowSession {
      */
     public void completeWorkItemAndJumpToEx(String workItemId,String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler,String comments) throws EngineException, KernelException;
 
+
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态
      * @param workItemId 工作项Id
      * @param actorId 接受任务的操作员Id
      * @return 新创建的工作项
      */    
-    public IWorkItem reasignWorkItemTo(String workItemId,String actorId) throws EngineException;
+    public IWorkItem reassignWorkItemTo(String workItemId,String actorId) throws EngineException;
     
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -399,7 +397,7 @@ public interface IWorkflowSession {
      * @param comments 相关的备注信息
      * @return 新创建的工作项
      */    
-    public IWorkItem reasignWorkItemTo(String workItemId,String actorId,String comments) throws EngineException;
+    public IWorkItem reassignWorkItemTo(String workItemId,String actorId,String comments) throws EngineException;
 	
 	
     /******************************************************************************/

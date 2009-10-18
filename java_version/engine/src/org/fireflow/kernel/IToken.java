@@ -19,70 +19,109 @@ package org.fireflow.kernel;
 import java.util.Map;
 
 import org.fireflow.engine.IProcessInstance;
+
 /**
  * 
  * token的生命周期开始与一个synchronizer（包括startnode 和 endnode)，结束于另一个synchronizer
- *
+ * 
  * @author 非也
- *
+ * 
  */
 public interface IToken {
 
-    public static final String FROM_ACTIVITY_ID_SEPARATOR = "&";
-    public static final String FROM_START_NODE = "FROM_START_NODE";
-	//token因该没有和外部运行环境(RuntimeContext)沟通的职责
-//	public void setRuntimeContext(IRuntimeContext rtCtx);
-//	public IRuntimeContext getRuntimeContext();
-	
+	/**
+	 * 前驱activityid的分隔符为"&"
+	 */
+	public static final String FROM_ACTIVITY_ID_SEPARATOR = "&";
+	public static final String FROM_START_NODE = "FROM_START_NODE";
+
+	/**
+	 * @return
+	 */
 	public IProcessInstance getProcessInstance();
+
+	/**
+	 * @param inst
+	 */
 	public void setProcessInstance(IProcessInstance inst);
-        
-        public void setProcessInstanceId(String id);
-        public String getProcessInstanceId();
-	
-//	public INetInstance getNetInstance();
-//	public void setNetInstance(INetInstance netInst); 
-	
-//	public INodeInstance getCurrentNodeInstance();
-//	public void setCurrentNodeInstance(INodeInstance currentNodeInstance);
-//	
+
+	/**
+	 * @param id
+	 */
+	public void setProcessInstanceId(String id);
+
+	/**
+	 * @return
+	 */
+	public String getProcessInstanceId();
+
+
+	/**
+	 * @return
+	 */
 	public String getNodeId();
+
+	/**
+	 * @param nodeId
+	 */
 	public void setNodeId(String nodeId);
-	
-//	public void setTransitionInstance(ITransitionInstance transInst);
-//	public ITransitionInstance getTransitionInstance();
-	
+
+
+	/**
+	 * @param v
+	 */
 	public void setValue(Integer v);
-	
+
+	/**
+	 * @return
+	 */
 	public Integer getValue();
-	
-	//通过alive标志来判断nodeinstance是否要fire
+
+	// 通过alive标志来判断nodeinstance是否要fire
 	public Boolean isAlive();
-	
+
+	/**
+	 * @param b
+	 */
 	public void setAlive(Boolean b);
-	
-//	public void setAppointedTransitionNames(Set<String> appointedTransitionNames);
-//	
-//	public Set<String> getAppointedTransitionNames();
-	
+
+	/**
+	 * @return
+	 */
 	public String getId();
+
+	/**
+	 * @param id
+	 */
 	public void setId(String id);
 
-    public Integer getStepNumber();
+	/**
+	 * @return
+	 */
+	public Integer getStepNumber();
 
-    public void setStepNumber(Integer i);
+	/**
+	 * @param i
+	 */
+	public void setStepNumber(Integer i);
 
+	/**
+	 * 获得前驱Activity的Id,如果有多个，则用"&"分割
+	 * 
+	 * @return
+	 */
+	public String getFromActivityId();
+
+	/**
+	 * @param s
+	 */
+	public void setFromActivityId(String s);
+	
     /**
-     * 获得前驱Activity的Id,如果有多个，则用"&"分割
-     * @return
-     */
-    public String getFromActivityId();
-    public void setFromActivityId(String s);
-    
-    /**
+     * @date 20090908 
      * 返回Engine的当前上下文信息，如WorkflowSession,等。
      * 这些信息不保存到数据库    
      * @return
      */
-    public Map getContextInfo();
+    public Map<String ,IProcessInstance> getContextInfo();
 }

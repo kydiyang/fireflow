@@ -17,6 +17,7 @@
 package org.fireflow.engine.definition;
 
 import java.util.List;
+
 import org.fireflow.engine.RuntimeContext;
 
 /**
@@ -28,15 +29,24 @@ public class DefinitionService4DBMS implements IDefinitionService {
     protected RuntimeContext rtCtx = null;
     
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.definition.IDefinitionService#getAllLatestVersionsOfWorkflowDefinition()
+     */
     public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition() {
         return rtCtx.getPersistenceService().findAllTheLatestVersionsOfWorkflowDefinition();
         
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.definition.IDefinitionService#getWorkflowDefinitionByProcessIdAndVersionNumber(java.lang.String, java.lang.Integer)
+     */
     public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String id, Integer version) {
         return rtCtx.getPersistenceService().findWorkflowDefinitionByProcessIdAndVersionNumber(id, version);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.definition.IDefinitionService#getTheLatestVersionOfWorkflowDefinition(java.lang.String)
+     */
     public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId) {
         return rtCtx.getPersistenceService().findTheLatestVersionOfWorkflowDefinitionByProcessId(processId);
     }

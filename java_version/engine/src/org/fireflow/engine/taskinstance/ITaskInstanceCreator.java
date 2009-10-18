@@ -21,7 +21,6 @@ import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.RuntimeContext;
-import org.fireflow.kernel.KernelException;
 import org.fireflow.model.Task;
 import org.fireflow.model.net.Activity;
 

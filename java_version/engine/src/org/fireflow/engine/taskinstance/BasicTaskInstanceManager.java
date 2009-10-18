@@ -403,7 +403,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		Activity thisActivity = (Activity) taskInstance.getActivity();
 		// 检查是否有尚未创建的TaskInstance
 		if (thisActivity.getTasks().size() > 1) {
-			List taskInstanceList = persistenceService
+			List<ITaskInstance> taskInstanceList = persistenceService
 					.findTaskInstancesForProcessInstanceByStepNumber(
 							taskInstance.getProcessInstanceId(), taskInstance
 									.getStepNumber());
@@ -911,9 +911,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 			return;
 		}
 
-		List listeners = task.getEventListeners();
+		List<EventListener> listeners = task.getEventListeners();
 		for (int i = 0; i < listeners.size(); i++) {
-			EventListener listener = (EventListener) listeners.get(i);
+			EventListener listener = listeners.get(i);
 			Object obj = rtCtx.getBeanByName(listener.getClassName());
 			if (obj != null && (obj instanceof ITaskInstanceEventListener)) {
 				((ITaskInstanceEventListener) obj).onTaskInstanceEventFired(e);
@@ -1070,8 +1070,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 	public void completeWorkItemAndJumpTo(IWorkItem workItem,
 			String targetActivityId, String comments) throws EngineException,
 			KernelException {
-		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
-				.getCurrentWorkflowSession();
+//这个变量并没有被使用		
+//		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
+//				.getCurrentWorkflowSession();
 		// 首先检查是否可以正确跳转
 		// 1）检查是否在同一个“执行线”上
 		WorkflowProcess workflowProcess = workItem.getTaskInstance()
@@ -1174,8 +1175,8 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 	public void completeWorkItemAndJumpToEx(IWorkItem workItem,
 			String targetActivityId, String comments) throws EngineException,
 			KernelException {
-		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
-				.getCurrentWorkflowSession();
+//		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
+//				.getCurrentWorkflowSession();
 		
 		
 		// 首先检查是否可以正确跳转
@@ -1456,7 +1457,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
         //----added by wmj2003 20090915 ---end---
 		IPersistenceService persistenceService = this.rtCtx
 				.getPersistenceService();
-		List siblingTaskInstancesList = null;
+		List<ITaskInstance> siblingTaskInstancesList = null;
 
 		siblingTaskInstancesList = persistenceService
 				.findTaskInstancesForProcessInstanceByStepNumber(workItem
@@ -1473,7 +1474,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		// 检查From Activity中是否有ToolTask和SubflowTask
-		List fromActivityIdList = new ArrayList();
+		List<String> fromActivityIdList = new ArrayList<String>();
 		StringTokenizer tokenizer = new StringTokenizer(thisTaskInstance
 				.getFromActivityId(), IToken.FROM_ACTIVITY_ID_SEPARATOR);
 		while (tokenizer.hasMoreTokens()) {
@@ -1485,9 +1486,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 			String fromActivityId = (String) fromActivityIdList.get(i);
 			Activity fromActivity = (Activity) workflowProcess
 					.findWFElementById(fromActivityId);
-			List fromTaskList = fromActivity.getTasks();
+			List<Task> fromTaskList = fromActivity.getTasks();
 			for (int j = 0; j < fromTaskList.size(); j++) {
-				Task task = (Task) fromTaskList.get(j);
+				Task task =  fromTaskList.get(j);
 				if (Task.TOOL.equals(task.getType())
 						|| Task.SUBFLOW.equals(task.getType())) {
 					throw new EngineException(
@@ -1696,14 +1697,14 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		int newStepNumber = thisTaskInstance.getStepNumber() + 2;
 		try {
 			DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
-			List actorIds = new ArrayList();
+			List<String> actorIds = new ArrayList<String>();
 			actorIds.add(workItem.getActorId());
 			dynamicAssignmentHandler.setActorIdsList(actorIds);
 			((WorkflowSession) session)
 					.setCurrentDynamicAssignmentHandler(dynamicAssignmentHandler);
 
 			// 1、首先将后续环节的TaskInstance极其workItem变成Canceled状态
-			List targetActivityIdList = new ArrayList();
+			List<String> targetActivityIdList = new ArrayList<String>();
 			StringBuffer theFromActivityIds = new StringBuffer("");
 			for (int i = 0; i < targetTaskInstancesList.size(); i++) {
 				TaskInstance taskInstTemp = (TaskInstance) targetTaskInstancesList
@@ -1780,7 +1781,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 
 			this.createTaskInstances(newToken, thisActivityInstance);
 
-			List workItems = persistenceService.findTodoWorkItems(workItem
+			List<IWorkItem>  workItems = persistenceService.findTodoWorkItems(workItem
 					.getActorId(), workItem.getTaskInstance().getProcessId(),
 					workItem.getTaskInstance().getTaskId());
 			if (workItems == null || workItems.size() == 0) {
@@ -1806,7 +1807,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 	}
 
-	public IWorkItem reasignWorkItemTo(IWorkItem workItem, String actorId,
+	public IWorkItem reassignWorkItemTo(IWorkItem workItem, String actorId,
 			String comments) {
 		WorkItem newWorkItem = new WorkItem();
 		BeanUtils.copyProperties(workItem, newWorkItem);

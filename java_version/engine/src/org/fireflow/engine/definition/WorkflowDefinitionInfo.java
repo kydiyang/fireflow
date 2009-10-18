@@ -11,12 +11,12 @@ public class WorkflowDefinitionInfo {
 	public static final String FPDL_PROCESS = "FPDL";
 	public static final String XPDL_PROCESS = "XPDL";
 	public static final String BPEL_PROCESS = "BPEL";
-    protected String id;
-    protected String processId;
-    protected String name;
-    protected String displayName;
-    protected String description;
-    protected Integer version;
+    protected String id; //主键
+    protected String processId;//流程id
+    protected String name; //流程英文名称
+    protected String displayName;//流程显示名称
+    protected String description;//流程业务说明
+    protected Integer version;//版本号
     protected Boolean state;//是否发布，1=已经发布,0未发布
     protected String uploadUser ;//上载到数据库的操作员
     protected Date uploadTime;//上载到数据库的时间

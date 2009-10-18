@@ -84,7 +84,7 @@ public class LoopTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Loop.xml
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("Loop");
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
                     processInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
                     processInstance.run();
                     return processInstance;

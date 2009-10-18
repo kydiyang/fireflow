@@ -44,7 +44,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
     /************                                                        **********/    
     /******************************************************************************/
     /**
-     * 插入或者更新ProcessInstance 。<br/>
+     * 插入或者更新ProcessInstance 。同时也会保存或更新流程变量<br/>
      * Save or update processinstance. 
      * If the processInstance.id is null then insert a new process instance record
      * and genarate a new id for it (save operation);
@@ -54,10 +54,6 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public void saveOrUpdateProcessInstance(IProcessInstance processInstance);
     
-//    public void saveProcessInstance(IProcessInstance processInstance);
-//    
-//    public void updateProcessInstance(IProcessInstance processInstance);
-
     /**
      * 通过ID获得“活的”ProcessInstance对象。<br>
      * “活的”是指ProcessInstance.state=INITIALIZED Or ProcessInstance.state=STARTED Or ProcessInstance=SUSPENDED的流程实例
@@ -156,11 +152,11 @@ public interface IPersistenceService extends IRuntimeContextAware{
     /**
      * 获得activity的“活的”TaskInstance的数量<br/>
      * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
-     * @param processInstanceId
-     * @param activityId
+     * @param processInstanceId 流程实例ID
+     * @param activityId 任务ID
      * @return
      */
-    public Integer getAliveTaskInstanceCountForActivity(java.lang.String processInstanceId, String activityId);
+    public Integer getAliveTaskInstanceCountForActivity(String processInstanceId, String activityId);
 
     /**
      * 返回某个Task已经结束的TaskInstance的数量。<br/>
@@ -169,7 +165,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param taskId
      * @return
      */
-    public Integer getCompletedTaskInstanceCountForTask(java.lang.String processInstanceId,String taskId);
+    public Integer getCompletedTaskInstanceCountForTask(String processInstanceId,String taskId);
 
 
     /**
@@ -187,7 +183,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param activityId  if the activityId is null, then return all the taskinstance of the processinstance;
      * @return
      */
-    public List<ITaskInstance> findTaskInstancesForProcessInstance(java.lang.String processInstanceId, String activityId);
+    public List<ITaskInstance> findTaskInstancesForProcessInstance(String processInstanceId, String activityId);
 
 
     /**
@@ -343,31 +339,6 @@ public interface IPersistenceService extends IRuntimeContextAware{
         
 
 
-    /*************************Persistence methods for joinpoint*********************/
-    /**
-     * Save joinpoint
-     *
-     * @param joinPoint
-     */
-//    public void saveOrUpdateJoinPoint(IJoinPoint joinPoint);
-
-    /**
-     * Find the joinpoint id
-     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-     * @param id
-     * @return
-     */
-//    public IJoinPoint findJoinPointById(String id);
-    
-    /**
-     * Find all the joinpoint of the process instance, and the synchronizerId of the joinpoint must equals to the seconds argument.
-     * @param processInstanceId
-     * @param synchronizerId if the synchronizerId is null ,then all the joinpoint of the process instance will be returned.
-     * @return
-     */
-//    public List<IJoinPoint> findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId);
-
-    
     /******************************************************************************/
     /************                                                        **********/
     /************            token 相关的持久化方法                       **********/    
@@ -388,12 +359,6 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public Integer getAliveTokenCountForNode(String processInstanceId, String nodeId);
 
-    /**
-     * 查找到状态为Dead的token
-     * @param id
-     * @return
-     */
-//    public IToken findDeadTokenById(String id);
 
     /**
      * (Engine没有引用到该方法，提供给业务系统使用，20090303)
@@ -422,7 +387,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processInstanceId
      * @param nodeIdsList
      */
-    public void deleteTokensForNodes(String processInstanceId,List nodeIdsList);
+    public void deleteTokensForNodes(String processInstanceId,List<String> nodeIdsList);
 
     /**
      * 删除token
@@ -485,14 +450,14 @@ public interface IPersistenceService extends IRuntimeContextAware{
     
     /**
      * Find the latest version number <br>
-     * 返回最新的有效版本号
+     * 返回最新的有效版本号 （只是针对已经发布的版本）
      * @param processId
      * @return the version number ,null if there is no workflow definition stored in the DB.
      */
     public Integer findTheLatestVersionNumber(String processId);
     
     /**
-     * 返回最新版本号,
+     * 返回最新版本号(忽略是否发布)
      * @param processId
      * @return
      */
@@ -501,15 +466,12 @@ public interface IPersistenceService extends IRuntimeContextAware{
     
 
     /********************************process instance trace info **********************/
-    /**
-     * 保存或者更新流程实例运行轨迹
-     * @param processInstanceTrace
-     */
     public void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);
     /**
+     * 20090923 modified by wmj2003
      * 根据流程实例ID查找流程实例运行轨迹
      * @param processInstanceId 流程实例ID
      * @return
      */
-    public List findProcessInstanceTraces(String processInstanceId);
+    public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId);
 }

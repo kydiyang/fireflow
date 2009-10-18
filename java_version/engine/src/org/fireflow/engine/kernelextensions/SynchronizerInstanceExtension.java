@@ -24,9 +24,8 @@ import org.fireflow.kernel.ISynchronizerInstance;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
-//import org.fireflow.kenel.event.NodeInstanceEventType;
-import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.kernel.impl.SynchronizerInstance;
+import org.fireflow.kernel.plugin.IKernelExtension;
 
 /**
  * @author 非也
@@ -49,7 +48,6 @@ public class SynchronizerInstanceExtension implements IKernelExtension,
      * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionPointName()
      */
     public String getExtentionPointName() {
-        // TODO Auto-generated method stub
         return SynchronizerInstance.Extension_Point_NodeInstanceEventListener;
     }
 
@@ -57,7 +55,6 @@ public class SynchronizerInstanceExtension implements IKernelExtension,
      * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
      */
     public String getExtentionTargetName() {
-        // TODO Auto-generated method stub
         return SynchronizerInstance.Extension_Target_Name;
     }
 
@@ -66,17 +63,11 @@ public class SynchronizerInstanceExtension implements IKernelExtension,
      */
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException, EngineException {
-        // TODO Auto-generated method stub
-        //此处注释掉，由ProcessInstance.createJoinPoint()决定是否保存，20090309
-//        if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED) {
-//            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
-//            persistenceService.saveOrUpdateToken(e.getToken());
-//        }
-
+    	//同步器节点的监听器触发条件，是在离开这个节点的时候
         if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_LEAVING) {
             ISynchronizerInstance syncInst = (ISynchronizerInstance) e.getSource();
             IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
-
+            //删除同步器节点的token
             persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().getId());
 
         }

@@ -24,6 +24,16 @@ import org.fireflow.model.net.Activity;
  *
  */
 public interface IActivityInstance extends INodeInstance {
+	/**
+	 * wangmj  活动结束
+	 * @param token
+	 * @param targetActivityInstance
+	 * @throws KernelException
+	 */
 	public void complete(IToken token,IActivityInstance targetActivityInstance)throws KernelException;
+	/**
+	 * wangmj 获取当前活动
+	 * @return
+	 */
 	public Activity getActivity();
 }

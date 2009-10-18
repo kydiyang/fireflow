@@ -17,6 +17,7 @@
 package org.fireflow.engine.taskinstance;
 
 import java.util.List;
+
 import org.fireflow.engine.EngineException;
 import org.fireflow.engine.IWorkItem;
 import org.fireflow.kernel.KernelException;
@@ -26,15 +27,6 @@ import org.fireflow.kernel.KernelException;
  * @author 非也,nychen2000@163.com
  */
 public interface IAssignable {
-    /**
-     * 将TaskInstance分配给编号为actorId的操作员。即系统只创建一个WorkItem，并分配给编号为actorId的操作员
-     * @param actorId 操作员Id
-     * @param needClaim 是否需要签收，true表示需要操作员执行签收动作,系统将WorkItem设置为INITIALIZED状态；false不需要签收，Workitem直接被设置为STARTED状态。
-     * @return  返回创建的WorkItem
-     * @throws org.fireflow.engine.EngineException
-     * @throws org.fireflow.kenel.KenelException
-     */
-//    public IWorkItem asignToActor(String actorId, boolean needClaim) throws EngineException,KernelException;
 
     /**
      * 将TaskInstance分配给编号为actorId的操作员。即系统只创建一个WorkItem，并分配给编号为actorId的操作员<br>
@@ -46,15 +38,6 @@ public interface IAssignable {
      */
     public IWorkItem assignToActor(String actorId) throws EngineException,KernelException;
     
-    /**
-     * 该方法的单词assign写错了，被废弃
-     * @param actorId
-     * @return
-     * @throws EngineException
-     * @throws KernelException
-     * @deprecated
-     */
-    public IWorkItem asignToActor(String actorId) throws EngineException,KernelException;
 
     /**
      * 将TaskInstance分配给列表中的操作员。即创建N个WorkItem，每个操作员一个WorkItem，并且这些WorkItem都需要签收。<br>
@@ -68,13 +51,5 @@ public interface IAssignable {
      */
     public List<IWorkItem> assignToActors(List<String> actorIds) throws EngineException,KernelException;
     
-    /**
-     * 该方法的assign单词写错了，被废弃
-     * @param actorIds
-     * @return
-     * @throws EngineException
-     * @throws KernelException
-     * @deprecated
-     */
-    public List<IWorkItem> asignToActors(List<String> actorIds) throws EngineException,KernelException;
+
 }

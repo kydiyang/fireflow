@@ -19,15 +19,13 @@ package org.fireflow.kernel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.fireflow.kernel.IEdgeInstance;
 import org.fireflow.kernel.INodeInstance;
-import org.fireflow.kernel.IToken;
-import org.fireflow.kernel.KernelException;
-import org.fireflow.kernel.event.EdgeInstanceEvent;
 import org.fireflow.kernel.event.IEdgeInstanceEventListener;
 
 /**
- *
+ * wangmj  实现edge的公共方法 
  * @author 非也
  * @version 1.0
  * Created on Mar 18, 2009

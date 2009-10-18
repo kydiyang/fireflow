@@ -5,7 +5,7 @@
 		name="org.fireflow.engine.definition.WorkflowDefinitionInfo" table="T_FF_DF_WORKFLOWDEF">
 		<id name="id" type="java.lang.String">
 			<column length="50" name="ID" />
-			<generator class="uuid.hex">
+			<generator class="uuid">
 			</generator>
 		</id>
 		<property name="processId" type="java.lang.String">

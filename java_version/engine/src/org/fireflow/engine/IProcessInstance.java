@@ -43,7 +43,7 @@ public interface IProcessInstance {
     public static final int RUNNING = 1;
 
     /**
-     * 被挂起
+     * 被挂起（确实不应该放在状态中）
      */
 //    public static final int SUSPENDED = 3;
 
@@ -57,6 +57,11 @@ public interface IProcessInstance {
      */
     public static final int CANCELED = 9;
 
+    /**
+     * 流程实例开始运行！
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void run() throws EngineException, KernelException;
 
     /**
@@ -84,6 +89,9 @@ public interface IProcessInstance {
      */
     public String getProcessId();
 
+    /**
+     * @return
+     */
     public Integer getState();
 
     /**
@@ -125,6 +133,7 @@ public interface IProcessInstance {
     public Date getExpiredTime();
 
     /**
+     * wangmj 获取流程实例变量的值.<br>
      * Get the process instance variable,return null if the variable is not existing .
      * @param name the name of the variable
      * @return the value of the variable. It may be Integer,String,Boolean,java.util.Date or Float
@@ -142,13 +151,13 @@ public interface IProcessInstance {
      * Get all the process instance variables. the key of the returned map is the variable's name
      * @return 
      */
-    public Map getProcessInstanceVariables();
+    public Map<String ,Object> getProcessInstanceVariables();
 
     /**
      * update the process instance variables batched.
      * @param vars
      */
-    public void setProcessInstanceVariables(Map vars);
+    public void setProcessInstanceVariables(Map<String ,Object> vars);
 
     /**
      * return the corresponding workflow process.
@@ -180,6 +189,10 @@ public interface IProcessInstance {
      */
     public void suspend() throws EngineException;
 
+    /**
+     * 是否挂起
+     * @return
+     */
     public Boolean isSuspended();
 
     /**
@@ -187,16 +200,4 @@ public interface IProcessInstance {
      * @throws org.fireflow.engine.EngineException
      */
     public void restore() throws EngineException;
-    
-    
-    /**
-     * 对当前流程实例进行调整。用于直接指定当前哪些Activity处于活动状态，活动状态的TaskInstance的操作者。
-     * 对于已经处于活动状态的，但是不在AjustmentStrategy的活动Activity列表中的Activity，将被abort()
-     * AjustmentStrategy的格式应该是：activityActivityId:taskId:performerIdList:needClaim
-     * 算法：1）首先校验AjustmentStrategy的合法性，两个活动的activity之间不能有先后关系
-     * 2）根据Fire Workflow工作流网的数量关系，构建token集合。
-     * 3）出发ActivityInstance.fire(token)方法
-     * @throws EngineException
-     */
-//    public void ajust()throws EngineException;
 }

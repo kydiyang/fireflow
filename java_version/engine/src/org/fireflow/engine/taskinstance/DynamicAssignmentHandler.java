@@ -38,7 +38,7 @@ public class DynamicAssignmentHandler implements IAssignmentHandler{
     /**
      * 操作员Id列表
      */
-    List actorIdsList = null;
+    List<String> actorIdsList = null;
     
     public void assign(IAssignable asignable, String performerName) throws EngineException, KernelException {
         if (actorIdsList==null || actorIdsList.size()==0){
@@ -47,9 +47,10 @@ public class DynamicAssignmentHandler implements IAssignmentHandler{
                     taskInstance.getTaskId(),"actorIdsList can not be empty");
         }
 
-        List<IWorkItem> workItems = asignable.asignToActors(actorIdsList);
+        List<IWorkItem> workItems = asignable.assignToActors(actorIdsList);
         
         ITaskInstance taskInst = (ITaskInstance)asignable;
+        //如果不需要签收，这里自动进行签收，（FormTask的strategy="all"或者=any并且工作项数量为1）
         if (!needClaim){
 	        if (FormTask.ALL.equals(taskInst.getAssignmentStrategy()) ||
 	        		(FormTask.ANY.equals(taskInst.getAssignmentStrategy()) && actorIdsList.size()==1)){
@@ -62,11 +63,11 @@ public class DynamicAssignmentHandler implements IAssignmentHandler{
         	
     }
 
-    public List getActorIdsList() {
+    public List<String> getActorIdsList() {
         return actorIdsList;
     }
 
-    public void setActorIdsList(List actorIdsList) {
+    public void setActorIdsList(List<String> actorIdsList) {
         this.actorIdsList = actorIdsList;
     }
 

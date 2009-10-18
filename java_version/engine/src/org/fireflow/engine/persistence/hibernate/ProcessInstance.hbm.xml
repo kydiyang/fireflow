@@ -4,7 +4,7 @@
 	<class name="org.fireflow.engine.impl.ProcessInstance" table="T_FF_RT_PROCESSINSTANCE">
 		<id name="id" type="java.lang.String">
 			<column length="50" name="ID" />
-			<generator class="uuid.hex" />
+			<generator class="uuid" />
 		</id>
 		<property name="processId" type="java.lang.String" update="false">
 			<column length="100" name="PROCESS_ID" not-null="true">
@@ -91,7 +91,7 @@
 			column="PROCESSINSTANCE_ID"/> <one-to-many
 			class="org.fireflow.kenel.impl.Token"/> </set>
 		-->
-		<map lazy="false" name="processInstanceVariables" table="T_FF_RT_PROCINST_VAR">
+		<map lazy="false" cascade="delete" name="processInstanceVariables" table="T_FF_RT_PROCINST_VAR">
 			<key column="PROCESSINSTANCE_ID" />
 			<map-key column="NAME" type="java.lang.String" />
 			<element column="VALUE"

@@ -22,7 +22,6 @@ import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.impl.TaskInstance;
-import org.fireflow.kernel.KernelException;
 import org.fireflow.model.Task;
 import org.fireflow.model.net.Activity;
 
@@ -34,6 +33,9 @@ import org.fireflow.model.net.Activity;
  */
 public class DefaultTaskInstanceCreator implements ITaskInstanceCreator {
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.ITaskInstanceCreator#createTaskInstance(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.RuntimeContext, org.fireflow.engine.IProcessInstance, org.fireflow.model.Task, org.fireflow.model.net.Activity)
+     */
     public ITaskInstance createTaskInstance(IWorkflowSession currentSession,
             RuntimeContext runtimeContxt, IProcessInstance processInstance,
             Task task, Activity activity) throws EngineException{

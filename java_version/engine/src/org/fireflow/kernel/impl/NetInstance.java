@@ -19,17 +19,14 @@ package org.fireflow.kernel.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-//import org.fireflow.engine.IRuntimeContext;
 import java.util.Map;
+
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.kernel.INetInstance;
-
 import org.fireflow.kernel.INodeInstance;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
-
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.net.Activity;
@@ -48,14 +45,21 @@ public class NetInstance implements INetInstance {
     private WorkflowProcess workflowProcess = null;
     private Integer version = null;
     private StartNodeInstance startNodeInstance = null;
-//	private List<EndNodeInstance> endNodeInstances = new ArrayList<EndNodeInstance>();
+
     private Map<String, Object> wfElementInstanceMap = new HashMap<String, Object>();
-//	private IRuntimeContext runtimeContext = null;
+
     protected List<INodeInstanceEventListener> eventListeners = new ArrayList<INodeInstanceEventListener>();
 
+    /**
+     * wangmj  初始化一个工作流网实例,将引擎的扩展属性，注入到对应的工作流元素中
+     * @param process
+     * @param kenelExtensions
+     * @throws KernelException
+     */
     public NetInstance(WorkflowProcess process, final Map<String, List<IKernelExtension>> kenelExtensions) throws KernelException{
         this.workflowProcess = process;
-
+        
+        //开始节点
         StartNode startNode = workflowProcess.getStartNode();
         startNodeInstance = new StartNodeInstance(startNode);
         List<IKernelExtension> extensionList = kenelExtensions.get(startNodeInstance.getExtensionTargetName());
@@ -66,10 +70,10 @@ public class NetInstance implements INetInstance {
         this.setStartNodeInstance(startNodeInstance);
         wfElementInstanceMap.put(startNode.getId(), startNodeInstance);
 
-
-        List activities = workflowProcess.getActivities();
+        //活动节点activity
+        List<Activity> activities = workflowProcess.getActivities();
         for (int i = 0; i < activities.size(); i++) {
-            Activity activity = (Activity) activities.get(i);
+            Activity activity = activities.get(i);
             ActivityInstance activityInstance = new ActivityInstance(activity);
             extensionList = kenelExtensions.get(activityInstance.getExtensionTargetName());
             for (int j = 0; extensionList != null && j < extensionList.size(); j++) {
@@ -78,10 +82,10 @@ public class NetInstance implements INetInstance {
             }
             wfElementInstanceMap.put(activity.getId(), activityInstance);
         }
-
-        List synchronizers = workflowProcess.getSynchronizers();
+        //同步器节点
+        List<Synchronizer> synchronizers = workflowProcess.getSynchronizers();
         for (int i = 0; i < synchronizers.size(); i++) {
-            Synchronizer synchronizer = (Synchronizer) synchronizers.get(i);
+            Synchronizer synchronizer = synchronizers.get(i);
             SynchronizerInstance synchronizerInstance = new SynchronizerInstance(synchronizer);
             extensionList = kenelExtensions.get(synchronizerInstance.getExtensionTargetName());
             for (int j = 0; extensionList != null && j < extensionList.size(); j++) {
@@ -90,13 +94,13 @@ public class NetInstance implements INetInstance {
             }
             wfElementInstanceMap.put(synchronizer.getId(), synchronizerInstance);
         }
-
+        //结束节点
         List<EndNode> endNodes = workflowProcess.getEndNodes();
-//        List<EndNodeInstance> endNodeInstances = netInstance.getEndNodeInstances();
+
         for (int i = 0; i < endNodes.size(); i++) {
             EndNode endNode = endNodes.get(i);
             EndNodeInstance endNodeInstance = new EndNodeInstance(endNode);
-//            endNodeInstances.add(endNodeInstance);
+
             extensionList = kenelExtensions.get(endNodeInstance.getExtensionTargetName());
             for (int j = 0; extensionList != null && j < extensionList.size(); j++) {
                 IKernelExtension extension = extensionList.get(j);
@@ -104,10 +108,10 @@ public class NetInstance implements INetInstance {
             }
             wfElementInstanceMap.put(endNode.getId(), endNodeInstance);
         }
-
-        List transitions = workflowProcess.getTransitions();
+        //转移线
+        List<Transition> transitions = workflowProcess.getTransitions();
         for (int i = 0; i < transitions.size(); i++) {
-            Transition transition = (Transition) transitions.get(i);
+            Transition transition = transitions.get(i);
             TransitionInstance transitionInstance = new TransitionInstance(transition);
 
             String fromNodeId = transition.getFromNode().getId();
@@ -134,10 +138,10 @@ public class NetInstance implements INetInstance {
             }
             wfElementInstanceMap.put(transitionInstance.getId(), transitionInstance);
         }
-
-        List loops = workflowProcess.getLoops();
+        //循环线
+        List<Loop> loops = workflowProcess.getLoops();
         for (int i = 0; i < loops.size(); i++) {
-            Loop loop = (Loop) loops.get(i);
+            Loop loop = loops.get(i);
             LoopInstance loopInstance = new LoopInstance(loop);
 
             String fromNodeId = loop.getFromNode().getId();
@@ -179,6 +183,10 @@ public class NetInstance implements INetInstance {
         this.version = v;
     }
 
+
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.INetInstance#run(org.fireflow.engine.IProcessInstance)
+     */
     public void run(IProcessInstance processInstance) throws KernelException {
         if (startNodeInstance == null) {
             KernelException exception = new KernelException(processInstance,
@@ -187,19 +195,16 @@ public class NetInstance implements INetInstance {
             throw exception;
         }
 
-        Token token = new Token();
-        token.setAlive(true);
-        token.setProcessInstance(processInstance);
-        token.setValue(startNodeInstance.getVolume());
-        token.setStepNumber(0);
-        token.setFromActivityId(IToken.FROM_START_NODE);
+        Token token = new Token();//初始化token
+        token.setAlive(true); //活动的
+        token.setProcessInstance(processInstance); //对应流程实例
+        token.setValue(startNodeInstance.getVolume()); //token容量
+        token.setStepNumber(0); //步骤号，开始节点的第一步默认为0
+        token.setFromActivityId(IToken.FROM_START_NODE); //从哪个节点来 "FROM_START_NODE" 规定的节点。
 
-        //processevent应该放在processInstance中去触发
-//        ProcessInstanceEvent event = new ProcessInstanceEvent();
-//        event.setToken(token);
-//        this.fireBeforeProcessInstanceRunEvent(event);//??
+        //注意这里并没有保存token
 
-        startNodeInstance.fire(token);
+        startNodeInstance.fire(token);//启动开始节点 
     }
 
     /**
@@ -211,25 +216,15 @@ public class NetInstance implements INetInstance {
         //2、执行compelete操作，
         //3、触发after complete事件
         //4、返回主流程
+    	
     }
 
 
-//	public IRuntimeContext getRtCxt() {
-//		return runtimeContext;
-//	}
-//
-//	public void setRtCxt(IRuntimeContext rtCxt) {
-//		this.runtimeContext = rtCxt;
-//	}
 
     public WorkflowProcess getWorkflowProcess() {
         return workflowProcess;
     }
 
-//	public void setWorkflowProcess(WorkflowProcess workflowProcess) {
-//		this.workflowProcess = workflowProcess;
-//
-//	}
     public StartNodeInstance getStartNodeInstance() {
         return startNodeInstance;
     }
@@ -238,33 +233,6 @@ public class NetInstance implements INetInstance {
         this.startNodeInstance = startNodeInstance;
     }
 
-//    public List<EndNodeInstance> getEndNodeInstances() {
-//        return endNodeInstances;
-//    }
-
-//	public void setEndNodeInstances(List endNodeInstances) {
-//		EndNodeInstances = endNodeInstances;
-//	}
-//    protected void fireBeforeProcessInstanceRunEvent(ProcessInstanceEvent event) throws KenelException {
-//        for (int i = 0; i < this.eventListeners.size(); i++) {
-//            IProcessInstanceEventListener listener = (IProcessInstanceEventListener) this.eventListeners.get(i);
-//            listener.onProcessInstanceFired(event);
-//        }
-//    }
-//
-//    protected void fireAfterProcessInstanceCompleteEvent(ProcessInstanceEvent event) throws KenelException {
-//        for (int i = 0; i < this.eventListeners.size(); i++) {
-//            IProcessInstanceEventListener listener = (IProcessInstanceEventListener) this.eventListeners.get(i);
-//            listener.onProcessInstanceFired(event);
-//        }
-//    }
-//	public void setRuntimeContext(IRuntimeContext rtCtx){
-//		runtimeContext = rtCtx;
-//	}
-//	
-//	public IRuntimeContext getRuntimeContext(){
-//		return runtimeContext;
-//	}
 
     public Object getWFElementInstance(String wfElementId) {
         return wfElementInstanceMap.get(wfElementId);

@@ -21,9 +21,11 @@ import org.fireflow.model.IWFElement;
 import org.fireflow.model.WorkflowProcess;
 
 /**
+ * wangmj 引擎exception定义
  * @author chennieyun
  *
  */
+@SuppressWarnings("serial")
 public class EngineException extends KernelException {
 
 	/**
@@ -60,25 +62,4 @@ public class EngineException extends KernelException {
             }
         }
     }
-    /*
-    public EngineException() {
-    super();
-    // TODO Auto-generated constructor stub
-    }
-
-    public EngineException(String arg0, Throwable arg1) {
-    super(arg0, arg1);
-    // TODO Auto-generated constructor stub
-    }
-
-    public EngineException(String arg0) {
-    super(arg0);
-    // TODO Auto-generated constructor stub
-    }
-
-    public EngineException(Throwable arg0) {
-    super(arg0);
-    // TODO Auto-generated constructor stub
-    }
-     */
 }

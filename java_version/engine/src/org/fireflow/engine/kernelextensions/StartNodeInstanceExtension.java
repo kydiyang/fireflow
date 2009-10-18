@@ -30,7 +30,6 @@ import org.fireflow.kernel.impl.StartNodeInstance;
 public class StartNodeInstanceExtension extends SynchronizerInstanceExtension {
 
     public String getExtentionPointName() {
-        // TODO Auto-generated method stub
         return StartNodeInstance.Extension_Point_NodeInstanceEventListener;
     }
 
@@ -38,7 +37,6 @@ public class StartNodeInstanceExtension extends SynchronizerInstanceExtension {
      * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
      */
     public String getExtentionTargetName() {
-        // TODO Auto-generated method stub
         return StartNodeInstance.Extension_Target_Name;
     }
 
