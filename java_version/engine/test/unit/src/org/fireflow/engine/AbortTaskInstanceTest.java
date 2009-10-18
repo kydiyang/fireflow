@@ -8,8 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.fireflow.engine.impl.TaskInstance;
+import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.AssignToCurrentUserAndCompleteWorkItemHandler;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
@@ -51,7 +51,7 @@ public class AbortTaskInstanceTest {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                FireWorkflowHelperDao helperDao = (FireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
                 helperDao.clearAllTables();
             }
         });

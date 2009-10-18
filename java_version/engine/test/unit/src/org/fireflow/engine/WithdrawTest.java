@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.fireflow.engine.impl.TaskInstance;
 import org.junit.Test;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
+import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.kernel.IToken;
@@ -71,7 +72,7 @@ public class WithdrawTest {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                FireWorkflowHelperDao helperDao = (FireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
                 helperDao.clearAllTables();
             }
         });

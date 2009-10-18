@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
@@ -43,19 +44,19 @@ public class MultiTasksPerActivityTest {
         transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
         runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
 
-        //Ê×ÏÈ½«±íÖÐµÄÊý¾ÝÇå³ý
+
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                FireWorkflowHelperDao helperDao = (FireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
                 helperDao.clearAllTables();
             }
         });
     }
 
     /**
-     * ´´½¨Á÷³ÌÊµÀý£¬²¢Ö´ÐÐÊµÀýµÄrun·½·¨¡£
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ö´ï¿½ï¿½Êµï¿½ï¿½ï¿½runï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     @Test
     public void testStartNewProcess() {
@@ -66,7 +67,7 @@ public class MultiTasksPerActivityTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
 
-                    //Æô¶¯"/workflowdefinition/example_workflow.xml"ÖÐµÄ¡°ËÍ»õÁ÷³Ì¡±
+                    //ï¿½ï¿½"/workflowdefinition/example_workflow.xml"ï¿½ÐµÄ¡ï¿½ï¿½Í»ï¿½ï¿½ï¿½Ì¡ï¿½
                     IProcessInstance processInstance = workflowSession.createProcessInstance("MultiTasksPerActivity",CurrentUserAssignmentHandlerMock.ACTOR_ID);
 
                     processInstance.run();
@@ -148,7 +149,7 @@ public class MultiTasksPerActivityTest {
 
         workItemId_3 = ((IWorkItem) workItemList.get(0)).getId();
 
-        //Task4Ó¦¸Ã²»±»ÊµÀý»¯
+        //Task4Ó¦ï¿½Ã²ï¿½ï¿½ï¿½Êµï¿½ï¿½
         workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity4.Task4");
         if(workItemList==null){
         	assertNull(workItemList);
