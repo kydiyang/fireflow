@@ -35,49 +35,7 @@ public class WorkItemListBean extends BasicManagedBean {
 	
 	@SuppressWarnings("unchecked")
 	@Bind(id = "grid", attribute = "value")
-	private List data = (List) this.transactionTemplate
-			.execute(new TransactionCallback() {
-
-				public Object doInTransaction(TransactionStatus arg0) {
-					// 查询待办任务
-					IWorkflowSession wflsession = workflowRuntimeContext
-							.getWorkflowSession();
-					User currentUser = (User) SecurityUtilities
-							.getCurrentUser();
-
-					List<IWorkItem> ws = wflsession
-							.findMyTodoWorkItems(currentUser.getId());
-					List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
-					for (IWorkItem w : ws) {
-						Map<String, Object> map = new HashMap<String, Object>();
-
-						map.put("id", w.getId());
-						map.put("state", w.getState() == 0 ? "待签收" : "待处理");
-						if(w.getTaskInstance() instanceof GoodsDeliverTaskInstance){
-							GoodsDeliverTaskInstance task = (GoodsDeliverTaskInstance) w
-							.getTaskInstance();
-							map.put("displayName", task.getDisplayName());
-							map.put("goodsName", task.getGoodsName());
-							map.put("sn", task.getSn());
-							map.put("quantity", task.getQuantity());
-							map.put("customerName", task.getCustomerName());
-						}
-						if(w.getTaskInstance() instanceof LoanTaskInstance){
-							LoanTaskInstance task = (LoanTaskInstance)w.getTaskInstance();
-							map.put("displayName", task.getDisplayName());
-							map.put("goodsName", task.getName());
-							map.put("sn", task.getSn());
-							map.put("quantity", task.getLoanValue());
-							map.put("customerName", task.getApplicantName());
-							map.put("endTime", w.getEndTime());
-							map.put("actorId",w.getActorId() );
-						}
-						datas.add(map);
-					}
-					return datas;
-				}
-
-			});;
+	private List data = null;
 
 	@Bind(id = "grid")
 	private UIDataGrid grid;
@@ -198,6 +156,44 @@ public class WorkItemListBean extends BasicManagedBean {
 		return "/org/fireflow/example/workflowextension/WorkItemList.xhtml";
 	}
 	
+	private List doQueryWorkItemList(){
+		// 查询待办任务
+		IWorkflowSession wflsession = workflowRuntimeContext
+				.getWorkflowSession();
+		User currentUser = (User) SecurityUtilities
+				.getCurrentUser();
+
+		List<IWorkItem> ws = wflsession
+				.findMyTodoWorkItems(currentUser.getId());
+		List<Map<String, Object>> datas = new ArrayList<Map<String, Object>>();
+		for (IWorkItem w : ws) {
+			Map<String, Object> map = new HashMap<String, Object>();
+
+			map.put("id", w.getId());
+			map.put("state", w.getState() == 0 ? "待签收" : "待处理");
+			if(w.getTaskInstance() instanceof GoodsDeliverTaskInstance){
+				GoodsDeliverTaskInstance task = (GoodsDeliverTaskInstance) w
+				.getTaskInstance();
+				map.put("displayName", task.getDisplayName());
+				map.put("goodsName", task.getGoodsName());
+				map.put("sn", task.getSn());
+				map.put("quantity", task.getQuantity());
+				map.put("customerName", task.getCustomerName());
+			}
+			if(w.getTaskInstance() instanceof LoanTaskInstance){
+				LoanTaskInstance task = (LoanTaskInstance)w.getTaskInstance();
+				map.put("displayName", task.getDisplayName());
+				map.put("goodsName", task.getName());
+				map.put("sn", task.getSn());
+				map.put("quantity", task.getLoanValue());
+				map.put("customerName", task.getApplicantName());
+				map.put("endTime", w.getEndTime());
+				map.put("actorId",w.getActorId() );
+			}
+			datas.add(map);
+		}
+		return datas;
+	}
 	
 	public String getSelectWorkItemId() {
 		return selectWorkItemId;
@@ -205,6 +201,12 @@ public class WorkItemListBean extends BasicManagedBean {
 
 	public void setSelectWorkItemId(String selectWorkItemId) {
 		this.selectWorkItemId = selectWorkItemId;
+	}
+
+	public List getData() {
+		if(data == null)
+			data = this.doQueryWorkItemList();
+		return data;
 	}
 
 }
