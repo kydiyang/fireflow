@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
 import org.fireflow.kernel.IToken;
@@ -78,7 +77,7 @@ public class AComplexJump {
 
                     IProcessInstance processInstance = workflowSession.createProcessInstance("AComplexJump",AssignmentHandlerMock.ACTOR_ID);
 
-                    processInstance.run();
+                    processInstance.run();//启动流程实例并开始运行
                     return processInstance;
                 } catch (EngineException ex) {
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -93,18 +92,18 @@ public class AComplexJump {
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
 
-        List tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IToken> tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
         assertEquals(1,tokenList.size());
-        IToken token = (IToken)tokenList.get(0);
+        IToken token =  tokenList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "AComplexJump", "AComplexJump.Activity1.Task1");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "AComplexJump", "AComplexJump.Activity1.Task1");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
-        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+        assertEquals(new Integer(ITaskInstance.RUNNING), workItemList.get(0).getState());
 
-        workItemId_1 = ((IWorkItem) workItemList.get(0)).getId();
+        workItemId_1 = workItemList.get(0).getId();
 
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -113,7 +112,7 @@ public class AComplexJump {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(workItemId_1);
-                    paymentTaskWorkItem.complete("this is a comments");
+                    paymentTaskWorkItem.complete("this is a comments");  //结束第一个activity节点
                 } catch (EngineException ex) {
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (KernelException ex) {
@@ -130,6 +129,7 @@ public class AComplexJump {
         assertNotNull(tokenList);
         assertEquals(1,tokenList.size());
         
+        //找到activity2的工单
         workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "AComplexJump", "AComplexJump.Activity2.Task2");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
@@ -147,7 +147,8 @@ public class AComplexJump {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     IWorkItem workItem2 = workflowSession.findWorkItemById(workItemId_2);
-                    workItem2.claim();
+                    workItem2.claim();//签收
+                    //直接由activity2节点，自由流到activity12
                     workflowSession.completeWorkItemAndJumpToEx(workItemId_2, "AComplexJump.Activity12", null, "testJumpFromAct2ToAct12");
                 } catch (EngineException ex) {
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -161,7 +162,7 @@ public class AComplexJump {
         List tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
         assertEquals(4,tokenList.size());
-        
+        //Synchronizer4 的token数量为1，而且容量为1 并且是dead状态
         tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), "AComplexJump.Synchronizer4");
         assertNotNull(tokenList);
         assertEquals(1,tokenList.size());

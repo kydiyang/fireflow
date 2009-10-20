@@ -17,8 +17,6 @@
 
 package org.fireflow.engine.taskinstance;
 
-import org.fireflow.engine.taskinstance.IAssignable;
-import org.fireflow.engine.taskinstance.IAssignmentHandler;
 import org.fireflow.engine.EngineException;
 import org.fireflow.kernel.KernelException;
 

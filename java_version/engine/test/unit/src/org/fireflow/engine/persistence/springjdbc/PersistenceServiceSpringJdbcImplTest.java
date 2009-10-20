@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
@@ -30,16 +29,16 @@ public class PersistenceServiceSpringJdbcImplTest {
     SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //----------variable-------------------------------
-    private static String workflowDefinitionId4Goods_Deliver_Process_ID = null;
-    private static Integer theLatestVersionNumber4Goods_Deliver_Process_ID = null;
-    
-    private static String Goods_Deliver_Process_ID = null;
-    private static String JumpTo_ID = null;
-    private static String aliveProcessInstanceId = null;//用于测试findProcessInstanceById和findAliveProcessInstanceById();
-    private static String aliveTaskInstanceId = null;
-    private static ITaskInstance taskInstance = null;
-    private static String tokenId = null;
-    private static String workItemId = null;
+//    private static String workflowDefinitionId4Goods_Deliver_Process_ID = null;
+//    private static Integer theLatestVersionNumber4Goods_Deliver_Process_ID = null;
+//    
+//    private static String Goods_Deliver_Process_ID = null;
+//    private static String JumpTo_ID = null;
+//    private static String aliveProcessInstanceId = null;//用于测试findProcessInstanceById和findAliveProcessInstanceById();
+//    private static String aliveTaskInstanceId = null;
+//    private static ITaskInstance taskInstance = null;
+//    private static String tokenId = null;
+//    private static String workItemId = null;
     //--------constant----------------------------
     final String processId = "ProcessId_4_Test";
     final String activityId = "ActivityId_4_Test";

@@ -17,14 +17,17 @@
 
 package org.fireflow.engine.calendar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 import java.util.Properties;
+
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.Duration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

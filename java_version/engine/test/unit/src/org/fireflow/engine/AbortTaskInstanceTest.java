@@ -30,7 +30,7 @@ public class AbortTaskInstanceTest {
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
-    private final static String mobile = null;//"123123123123";
+//    private final static String mobile = null;//"123123123123";
 
     //-----variables-----------------
     static IProcessInstance currentProcessInstance = null;
@@ -84,12 +84,12 @@ public class AbortTaskInstanceTest {
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance.A");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance.A");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         
 
-        List workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "AbortTaskInstance", "AbortTaskInstance.A.TaskA");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "AbortTaskInstance", "AbortTaskInstance.A.TaskA");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
@@ -151,14 +151,14 @@ public class AbortTaskInstanceTest {
             }
         });    	
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance.B");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance.B");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         int taskInstanceState = ((ITaskInstance)taskInstanceList.get(0)).getState();
         assertEquals(ITaskInstance.CANCELED,taskInstanceState);
         
         
-        List workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "AbortTaskInstance", "AbortTaskInstance.C.TaskC");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "AbortTaskInstance", "AbortTaskInstance.C.TaskC");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());

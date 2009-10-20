@@ -5,12 +5,9 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import junit.framework.TestCase;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 import org.fireflow.engine.calendar.DefaultCalendarService;
 import org.fireflow.model.Duration;
 

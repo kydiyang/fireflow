@@ -16,6 +16,12 @@
  */
 package org.fireflow.engine.persistence.hibernate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -24,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkItem;
@@ -50,7 +57,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import static org.junit.Assert.*;
 
 /**
  *

@@ -16,24 +16,26 @@
  */
 package org.fireflow.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.Test;
+
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import static org.junit.Assert.*;
 
 /**
  *

@@ -19,6 +19,7 @@ package org.fireflow.engine.persistence.hibernate;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.hibernate.HibernateException;
@@ -40,7 +41,8 @@ public class FireWorkflowHelperDao extends HibernateDaoSupport implements IFireW
     public void clearAllTables(){
         this.getHibernateTemplate().execute(new HibernateCallback(){
 
-            public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+            @SuppressWarnings("unchecked")
+			public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
                 String selectHql4ProcessInstance = "from org.fireflow.engine.impl.ProcessInstance";
 //                String deleteHql4ProcessInstance = "delete from org.fireflow.engine.impl.ProcessInstance";
                 String deleteHql4TaskInstance = "delete from org.fireflow.engine.impl.TaskInstance";
