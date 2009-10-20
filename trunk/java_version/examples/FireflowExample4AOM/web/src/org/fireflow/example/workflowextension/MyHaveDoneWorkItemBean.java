@@ -28,7 +28,7 @@ public class MyHaveDoneWorkItemBean extends BasicManagedBean {
 
 	@SuppressWarnings("unchecked")
 	@Bind(id = "grid", attribute = "value")
-	private List data = (List) this.doQueryMyHaveDoneWorkItems();
+	private List data = null;//(List) this.doQueryMyHaveDoneWorkItems()
 
 	@Bind(id = "grid")
 	private UIDataGrid grid;
@@ -90,6 +90,12 @@ public class MyHaveDoneWorkItemBean extends BasicManagedBean {
 			e.printStackTrace();
 		}
 		return datas;
+	}
+
+	public List getData() {
+		if(data == null)
+			data = this.doQueryMyHaveDoneWorkItems();
+		return data;
 	}
 
 }
