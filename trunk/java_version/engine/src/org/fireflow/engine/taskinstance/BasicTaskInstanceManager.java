@@ -1182,13 +1182,11 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		// 首先检查是否可以正确跳转
 		
 
-		WorkflowProcess workflowProcess = workItem.getTaskInstance()
-				.getWorkflowProcess();
+		WorkflowProcess workflowProcess = workItem.getTaskInstance().getWorkflowProcess();
 		String thisActivityId = workItem.getTaskInstance().getActivityId();
 		TaskInstance thisTaskInst = (TaskInstance) workItem.getTaskInstance();
-		
-		boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId,
-		targetActivityId);	
+		//如果是在同一条执行线上，那么可以直接跳过去，只是重复判断了是否在同一条执行线上
+		boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId,targetActivityId);	
 		if (isInSameLine){
 			this.completeWorkItemAndJumpTo(workItem, targetActivityId, comments);
 			return;
@@ -1227,14 +1225,13 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		// 4)检查当前的activity instance是否可以结束
-		if (Activity.ALL.equals(workItem.getTaskInstance().getActivity()
-				.getCompletionStrategy())) {
+		if (Activity.ALL.equals(workItem.getTaskInstance().getActivity().getCompletionStrategy())) {
 
 			Integer aliveTaskInstanceCount4ThisActivity = persistenceService
 					.getAliveTaskInstanceCountForActivity(workItem
 							.getTaskInstance().getProcessInstanceId(), workItem
 							.getTaskInstance().getActivityId());
-			if (aliveTaskInstanceCount4ThisActivity.intValue() > 1) {// 大于2表明当前Activity不可以complete
+			if (aliveTaskInstanceCount4ThisActivity.intValue() > 1) {// 大于1表明当前Activity不可以complete
 				throw new EngineException(
 						thisTaskInst.getProcessInstanceId(),
 						thisTaskInst.getWorkflowProcess(),
@@ -1245,15 +1242,15 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		
 		//4)首先检查目标状态M是否存在冲突,如果存在冲突则不允许跳转；如果不存在冲突，则需要调整token
 		List<IToken> allTokens = persistenceService.findTokensForProcessInstance(thisTaskInst.getProcessInstanceId(), null);
-		WorkflowProcess thisProcess = thisTaskInst.getWorkflowProcess();
-		List<String> aliveActivityIdsAfterJump = new ArrayList<String>();
+		WorkflowProcess thisProcess = thisTaskInst.getWorkflowProcess();//找到当前的工作里模型
+		List<String> aliveActivityIdsAfterJump = new ArrayList<String>();//计算跳转后，哪些activity节点复活
 		aliveActivityIdsAfterJump.add(targetActivityId);
 		
 		for (int i=0;allTokens!=null && i<allTokens.size();i++){
 			IToken tokenTmp = allTokens.get(i);
-			IWFElement workflowElement = thisProcess.findWFElementById(tokenTmp.getNodeId());
+			IWFElement workflowElement = thisProcess.findWFElementById(tokenTmp.getNodeId()); //找到拥有此token的工作流元素
 			if ((workflowElement instanceof Activity) && !workflowElement.getId().equals(thisActivityId)){
-				
+				//注意：不能自己跳转到自己，同时此工作流元素是activity类型
 				aliveActivityIdsAfterJump.add(workflowElement.getId());
 				
 				if (thisProcess.isReachable(targetActivityId, workflowElement.getId()) 
@@ -1307,15 +1304,16 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 					trace);
 		}
 
-		//调整token布局
+		//调整token布局 
 		List<Synchronizer> allSynchronizersAndEnds = new ArrayList<Synchronizer>(); 
 		allSynchronizersAndEnds.addAll(thisProcess.getSynchronizers());
 		allSynchronizersAndEnds.addAll(thisProcess.getEndNodes());
 		for (int i=0;i<allSynchronizersAndEnds.size();i++){
 			Synchronizer synchronizer = allSynchronizersAndEnds.get(i);
-			if (synchronizer.getName().equals("Synchronizer4")){
-				System.out.println(synchronizer.getName());
-			}
+//调试代码，注释掉！			
+//			if (synchronizer.getName().equals("Synchronizer4")){
+//				System.out.println(synchronizer.getName());
+//			}
 			int volumn = 0;
 			if (synchronizer instanceof EndNode){
 				volumn = synchronizer.getEnteringTransitions().size();
@@ -1330,7 +1328,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 
 			List<String> incomingTransitionIds = new ArrayList<String>();
 			boolean reachable = false;
-			List<Transition> enteringTrans = synchronizer.getEnteringTransitions();			
+			List<Transition> enteringTrans = synchronizer.getEnteringTransitions();		
 			for (int m=0;m<aliveActivityIdsAfterJump.size();m++){
 				String aliveActivityId = aliveActivityIdsAfterJump.get(m);
 				if (thisProcess.isReachable(aliveActivityId, synchronizer.getId())){					
@@ -1338,7 +1336,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 					reachable = true;
 					for (int j=0;j<enteringTrans.size();j++){
 						trans = enteringTrans.get(j);
-						Node fromNode = (Node)trans.getFromNode();
+						Node fromNode = trans.getFromNode();
 						if (thisProcess.isReachable(aliveActivityId, fromNode.getId())){
 							if (!incomingTransitionIds.contains(trans.getId())){
 								incomingTransitionIds.add(trans.getId());
@@ -1350,7 +1348,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 			if (reachable){
 				tokenTmp.setValue(volumn-(incomingTransitionIds.size()*volumn/enteringTrans.size()));	
 				
-				IToken virtualToken = getJoinInfo(allTokens,synchronizer.getId());
+				IToken virtualToken = getJoinInfo(allTokens,synchronizer.getId()); //获取一个虚拟的综合性token
 				
 				if (virtualToken!=null){
 					persistenceService.deleteTokensForNode(thisTaskInst.getProcessInstanceId(), synchronizer.getId());
