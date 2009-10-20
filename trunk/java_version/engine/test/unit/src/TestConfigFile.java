@@ -1,6 +1,6 @@
 
 import java.io.InputStream;
-import org.fireflow.engine.EngineException;
+
 import org.junit.Test;
 
 /*

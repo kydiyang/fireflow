@@ -3,14 +3,12 @@ package org.fireflow.engine;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
 import org.fireflow.kernel.IToken;

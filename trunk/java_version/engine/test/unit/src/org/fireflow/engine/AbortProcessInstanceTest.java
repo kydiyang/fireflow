@@ -111,19 +111,19 @@ public class AbortProcessInstanceTest {
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
         assertEquals(1, ((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
 
-        List tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IToken> tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
         assertEquals(1, tokenList.size());
         IToken token = (IToken) tokenList.get(0);
         assertEquals(1, token.getStepNumber().intValue());
 
-        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());

@@ -6,6 +6,17 @@
     <import resource="FireflowContext.xml"/>
     <import resource="AllTheProcessHandlers.xml"/>
     
+    
+    <bean id="MyDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="net.sourceforge.jtds.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:jtds:sqlserver://localhost:1433/gjxt;SelectMethod=cursor;charset=GBK;tds=8.0;lastupdatecount=true" />
+		<property name="username" value="sa" />
+		<property name="password" value="sa" />
+	</bean>
+	<!--  
     <bean id="MyDataSource"
 		class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName"
@@ -16,7 +27,7 @@
         </property>
         <property name="username" value="fireflow"></property>
         <property name="password" value="fireflow"></property>
-    </bean>
+    </bean> -->
 
 	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
     <bean id="nativeJdbcExtractor"
@@ -41,7 +52,8 @@
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">
-					org.hibernate.dialect.OracleDialect
+					<!--  org.hibernate.dialect.OracleDialect -->
+					org.hibernate.dialect.SQLServerDialect
                 </prop>
                 <prop key="hibernate.show_sql">true</prop>
             </props>

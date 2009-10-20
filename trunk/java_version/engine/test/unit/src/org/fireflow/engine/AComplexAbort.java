@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
 import org.fireflow.kernel.IToken;
@@ -33,7 +32,7 @@ public class AComplexAbort {
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
-    private final static String mobile = "";//null;//"123123123123";
+//    private final static String mobile = "";//null;//"123123123123";
 
     //-----variables-----------------
 

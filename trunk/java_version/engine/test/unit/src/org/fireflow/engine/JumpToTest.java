@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;

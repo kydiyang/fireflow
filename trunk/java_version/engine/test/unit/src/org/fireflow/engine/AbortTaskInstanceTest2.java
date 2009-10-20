@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.fireflow.engine.taskinstance.AssignToCurrentUserAndCompleteWorkItemHandler;
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
@@ -32,7 +31,7 @@ public class AbortTaskInstanceTest2 {
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
-    private final static String mobile = null;//"123123123123";
+//    private final static String mobile = null;//"123123123123";
 
     //-----variables-----------------
     static IProcessInstance currentProcessInstance = null;
@@ -86,12 +85,12 @@ public class AbortTaskInstanceTest2 {
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.A");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.A");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         
 
-        List workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "AbortTaskInstance2", "AbortTaskInstance2.A.TaskA");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "AbortTaskInstance2", "AbortTaskInstance2.A.TaskA");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
@@ -140,7 +139,7 @@ public class AbortTaskInstanceTest2 {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     ITaskInstance taskInstance = workflowSession.findTaskInstanceById(taskInstanceBId);
                     DynamicAssignmentHandler dynamicHandler = new DynamicAssignmentHandler();
-                    List actorsList = new ArrayList();
+                    List<String> actorsList = new ArrayList<String>();
                     actorsList.add("zhangsan");
                     dynamicHandler.setActorIdsList(actorsList);
                     taskInstance.abort("AbortTaskInstance2.D",dynamicHandler);
@@ -155,7 +154,7 @@ public class AbortTaskInstanceTest2 {
         });    	
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
         
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.B");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.B");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         int taskInstanceState = ((ITaskInstance)taskInstanceList.get(0)).getState();
@@ -169,7 +168,7 @@ public class AbortTaskInstanceTest2 {
         
      
         
-        List workItemList = persistenceService.findTodoWorkItems("zhangsan", "AbortTaskInstance2", "AbortTaskInstance2.D.TaskD");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems("zhangsan", "AbortTaskInstance2", "AbortTaskInstance2.D.TaskD");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
