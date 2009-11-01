@@ -28,6 +28,8 @@ import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.ProcessInstanceTrace;
+import org.fireflow.engine.impl.ProcessInstanceVar;
+import org.fireflow.engine.impl.ProcessInstanceVarPk;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
 import org.fireflow.engine.persistence.IPersistenceService;
@@ -971,5 +973,42 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 		});
 
 		return l;
+    }
+    
+    public List<ProcessInstanceVar> findProcessInstanceVariable(final String processInstanceId){
+		List<ProcessInstanceVar> l = (List<ProcessInstanceVar>)this.getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session arg0)
+					throws HibernateException, SQLException {
+				Criteria c = arg0.createCriteria(ProcessInstanceVar.class);
+			    c.add(Expression.eq("varPrimaryKey.processInstanceId", processInstanceId));
+
+				return c.list();
+			}
+		});
+
+		return l;    	
+    }
+    
+    public ProcessInstanceVar findProcessInstanceVariable(String processInstanceId,String name){
+    	ProcessInstanceVarPk pk = new ProcessInstanceVarPk();
+    	pk.setProcessInstanceId(processInstanceId);
+    	pk.setName(name);
+    	
+    	return (ProcessInstanceVar)this.getHibernateTemplate().get(ProcessInstanceVar.class, pk);
+    }
+    
+    public void updateProcessInstanceVariable(ProcessInstanceVar var){
+    	ProcessInstanceVar oldVar = (ProcessInstanceVar)this.getHibernateTemplate().get(ProcessInstanceVar.class, var.getVarPrimaryKey());
+    	if (oldVar!=null){
+    		oldVar.setValue(var.getValue());
+    	}
+    	else{
+    		saveProcessInstanceVariable(var);
+    	}
+//    	this.getHibernateTemplate().merge(var);
+    }
+    
+    public void saveProcessInstanceVariable(ProcessInstanceVar var){
+    	this.getHibernateTemplate().save(var);
     }
 }

@@ -363,8 +363,8 @@
         <fpdl:Transition Id="AComplexJump.Transition8" From="AComplexJump.Synchronizer3" To="AComplexJump.Activity5" Name="Transition8" DisplayName="">
             <fpdl:Condition></fpdl:Condition>
         </fpdl:Transition>
-        <fpdl:Transition Id="AComplexJump.Transition10" From="AComplexJump.Synchronizer1" To="AComplexJump.Activity6" Name="Transition10" DisplayName="falg==true">
-            <fpdl:Condition>falg==true</fpdl:Condition>
+        <fpdl:Transition Id="AComplexJump.Transition10" From="AComplexJump.Synchronizer1" To="AComplexJump.Activity6" Name="Transition10" DisplayName="flag==true">
+            <fpdl:Condition>flag==true</fpdl:Condition>
         </fpdl:Transition>
         <fpdl:Transition Id="AComplexJump.Transition11" From="AComplexJump.Activity5" To="AComplexJump.Synchronizer4" Name="Transition11" DisplayName="">
             <fpdl:Condition></fpdl:Condition>

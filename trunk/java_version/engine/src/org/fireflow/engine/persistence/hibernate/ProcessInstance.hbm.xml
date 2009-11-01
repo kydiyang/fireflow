@@ -91,11 +91,32 @@
 			column="PROCESSINSTANCE_ID"/> <one-to-many
 			class="org.fireflow.kenel.impl.Token"/> </set>
 		-->
+		<!-- 为了适应spring jdbc以及JPA，流程变量单独建立映射文件，2009-11-01
 		<map lazy="false" cascade="delete" name="processInstanceVariables" table="T_FF_RT_PROCINST_VAR">
 			<key column="PROCESSINSTANCE_ID" />
 			<map-key column="NAME" type="java.lang.String" />
 			<element column="VALUE"
 				type="org.fireflow.engine.persistence.hibernate.ProcessInstanceVariableType" />
 		</map>
+		 -->
+	</class>
+	
+	<class name="org.fireflow.engine.impl.ProcessInstanceVar" table="T_FF_RT_PROCINST_VAR">
+		<composite-id name="varPrimaryKey" class="org.fireflow.engine.impl.ProcessInstanceVarPk">
+   			<key-property
+    			name="processInstanceId"
+    			column="PROCESSINSTANCE_ID"
+    			type="java.lang.String"
+   			/>
+   			<key-property
+    			name="name"
+    			column="NAME"
+    			type="java.lang.String"
+   			/>
+   		</composite-id>
+		<property name="value" type="org.fireflow.engine.persistence.hibernate.ProcessInstanceVariableType" >
+			<column length="255" name="VALUE">
+			</column>
+		</property>
 	</class>
 </hibernate-mapping>

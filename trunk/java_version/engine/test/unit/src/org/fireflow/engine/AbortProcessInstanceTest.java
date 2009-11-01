@@ -56,6 +56,7 @@ public class AbortProcessInstanceTest {
     private final static String mobile = null;//"123123123123";
 
     //-----variables-----------------
+    static String processInstanceId = null;
     static IProcessInstance currentProcessInstance = null;
     static String paymentWorkItemId = null;
     static String prepareGoodsWorkItemId = null;
@@ -108,8 +109,10 @@ public class AbortProcessInstanceTest {
                 return null;
             }
         });
+        
         assertNotNull(currentProcessInstance);
-
+        processInstanceId = currentProcessInstance.getId();
+        
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
         List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
         assertNotNull(taskInstanceList);
@@ -135,6 +138,10 @@ public class AbortProcessInstanceTest {
 
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
+                	IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                	currentProcessInstance  = workflowSession.findProcessInstanceById(processInstanceId);
+                	String mb = (String)currentProcessInstance.getProcessInstanceVariable("mobile");
+                	System.out.println("====the mobile is "+mb);
                     currentProcessInstance.abort();
                 } catch (EngineException ex) {
                     ex.printStackTrace();

@@ -1,5 +1,5 @@
-	/**
-	 * Copyright 2009-2010 wmj2003
+﻿	/**
+	 * Copyright 2009-2010 wmj2003,hanzaihua
 	 * All rights reserved. 
 	 * 
 	 * This program is free software: you can redistribute it and/or modify
@@ -36,35 +36,41 @@ import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.ProcessInstanceTrace;
+import org.fireflow.engine.impl.ProcessInstanceVar;
+import org.fireflow.engine.impl.ProcessInstanceVarPk;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.impl.Token;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.AbstractLobCreatingPreparedStatementCallback;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
 
 
 /**
  * 配置方式如下：
- *	&lt;bean id="persistenceService" class="org.fireflow.engine.persistence.springjdbc.PersistenceServiceSpringJdbcImpl"&gt;<br/>
- *		&lt;property name="dataSource" ref="dataSource" /&gt;<br/>
- *		&lt;property name="lobHandler" ref="defaltLobHandler" /&gt;<br/>
- *	&lt;/bean&gt;<br/>
- *		&lt;bean id="oracleLobHandler"
+ *	<bean id="persistenceService" class="org.fireflow.engine.persistence.springjdbc.PersistenceServiceSpringJdbcImpl"><br/>
+ *		<property name="dataSource" ref="dataSource" /><br/>
+ *		<property name="lobHandler" ref="defaltLobHandler" /><br/>
+ *	</bean><br/>
+ *		<bean id="oracleLobHandler"
  *		class="org.springframework.jdbc.support.lob.OracleLobHandler"
- *		lazy-init="true"&gt;<br/>
- *		&lt;property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" /&gt;<br/>
- *	&lt;/bean&gt;<br/>
- *	&lt;bean id="defaltLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"
- *		lazy-init="true"&gt;<br/>
- *	&lt;/bean&gt;<br/>	
+ *		lazy-init="true"><br/>
+ *		<property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" /><br/>
+ *	</bean><br/>
+ *	<bean id="defaltLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"
+ *		lazy-init="true"><br/>
+ *	</bean><br/>	
  * @author wmj2003
  *
  */
@@ -73,6 +79,8 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	
 
 	    protected RuntimeContext rtCtx = null;
+	    
+	    private boolean show_sql = false;
 
 	    public void setRuntimeContext(RuntimeContext ctx) {
 	        this.rtCtx = ctx;
@@ -82,7 +90,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	        return this.rtCtx;
 	    }
 
-	    private java.sql.Date getSqlDate(final java.util.Date date){
+	    public java.sql.Date getSqlDate(final java.util.Date date){
 	    	if(date == null ){
 	    		return null;
 	    	}else{
@@ -103,56 +111,62 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * Save processInstance
 	     * @param processInstance
 	     */
-	    public void saveOrUpdateProcessInstance(IProcessInstance processInstance) {
+	    @SuppressWarnings("unchecked")
+		public void saveOrUpdateProcessInstance(IProcessInstance processInstance) {
 	    	//首先判断流程实例ID是否为null，如果为null那么create，否则就update
 	    	//同时还要判断流程实例中的变量值，如果存在就更新如果不存在就插入
 	    	
 	    	String processInstanceId = null;
 	    	if(processInstance.getId()==null || processInstance.getId().trim().equals("")){
 	    		//向数据库中插入数据
-	    		StringBuffer SQL = new StringBuffer();
-	    		SQL.append("INSERT ");
-	    		SQL.append("INTO    T_FF_RT_PROCESSINSTANCE ");
-	    		SQL.append("        ( ");
-	    		SQL.append("                id                       , ");
-	    		SQL.append("                process_id               , ");
-	    		SQL.append("                version                  , ");
-	    		SQL.append("                name                     , ");
-	    		SQL.append("                display_name             , ");
+	    		StringBuffer sql = new StringBuffer();
+	    		sql.append("INSERT ");
+	    		sql.append("INTO    T_FF_RT_PROCESSINSTANCE ");
+	    		sql.append("        ( ");
+	    		sql.append("                id                       , ");
+	    		sql.append("                process_id               , ");
+	    		sql.append("                version                  , ");
+	    		sql.append("                name                     , ");
+	    		sql.append("                display_name             , ");
 	    		
-	    		SQL.append("                state                    , ");
-	    		SQL.append("                suspended                , ");
-	    		SQL.append("                creator_id               , ");
-	    		SQL.append("                created_time             , ");
-	    		SQL.append("                started_time             , ");
+	    		sql.append("                state                    , ");
+	    		sql.append("                suspended                , ");
+	    		sql.append("                creator_id               , ");
+	    		sql.append("                created_time             , ");
+	    		sql.append("                started_time             , ");
 	    		
-	    		SQL.append("                expired_time             , ");
-	    		SQL.append("                end_time                 , ");
-	    		SQL.append("                parent_processinstance_id, ");
-	    		SQL.append("                parent_taskinstance_id     ");
-	    		SQL.append("        ) ");
-	    		SQL.append("        VALUES ");
-	    		SQL.append("        ( ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
+	    		sql.append("                expired_time             , ");
+	    		sql.append("                end_time                 , ");
+	    		sql.append("                parent_processinstance_id, ");
+	    		sql.append("                parent_taskinstance_id     ");
+	    		sql.append("        ) ");
+	    		sql.append("        VALUES ");
+	    		sql.append("        ( ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
 	    		
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
 	    		
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ?, ");
-	    		SQL.append("                ? ");
-	    		SQL.append("        )");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ?, ");
+	    		sql.append("                ? ");
+	    		sql.append("        )");
+	    		
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
 	    		processInstanceId = java.util.UUID.randomUUID().toString().replace("-", "");
 	    		((ProcessInstance)processInstance).setId(processInstanceId); //给流程实例赋值
-	    		super.getJdbcTemplate().update(SQL.toString()
+	    		super.getJdbcTemplate().update(sql.toString()
 	    	    		,new Object[]{
 	    			processInstanceId,
 	    	    	processInstance.getProcessId(),
@@ -176,28 +190,32 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    		});
 	    	}else{
 	    		//更新数据
-	    	    StringBuffer SQL = new StringBuffer();
-	    	    SQL.append("UPDATE T_FF_RT_PROCESSINSTANCE ");
-	    	    SQL.append("SET     process_id                = ?, ");
-	    	    SQL.append("        version                   = ?, ");
-	    	    SQL.append("        name                      = ?, ");
-	    	    SQL.append("        display_name              = ?, ");
-	    	    SQL.append("        state                     = ?, ");
+	    	    StringBuffer sql = new StringBuffer();
+	    	    sql.append("UPDATE T_FF_RT_PROCESSINSTANCE ");
+	    	    sql.append("SET     process_id                = ?, ");
+	    	    sql.append("        version                   = ?, ");
+	    	    sql.append("        name                      = ?, ");
+	    	    sql.append("        display_name              = ?, ");
+	    	    sql.append("        state                     = ?, ");
 	    	    
-	    	    SQL.append("        suspended                 = ?, ");
-	    	    SQL.append("        creator_id                = ?, ");
-	    	    SQL.append("        created_time              = ?, ");
-	    	    SQL.append("        started_time              = ?, ");
-	    	    SQL.append("        expired_time              = ?, ");
+	    	    sql.append("        suspended                 = ?, ");
+	    	    sql.append("        creator_id                = ?, ");
+	    	    sql.append("        created_time              = ?, ");
+	    	    sql.append("        started_time              = ?, ");
+	    	    sql.append("        expired_time              = ?, ");
 	    	    
-	    	    SQL.append("        end_time                  = ?, ");
-	    	    SQL.append("        parent_processinstance_id = ?, ");
-	    	    SQL.append("        parent_taskinstance_id    = ?  ");
-	    	    SQL.append("WHERE   ID                        =?");
+	    	    sql.append("        end_time                  = ?, ");
+	    	    sql.append("        parent_processinstance_id = ?, ");
+	    	    sql.append("        parent_taskinstance_id    = ?  ");
+	    	    sql.append("WHERE   ID                        =?");
+	    	    
+	    	    if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
 	    	    
 	    	    processInstanceId = processInstance.getId();
 	    	    
-	    	    super.getJdbcTemplate().update(SQL.toString()
+	    	    super.getJdbcTemplate().update(sql.toString()
 	    	    		,new Object[]{
 	    	    	processInstance.getProcessId(),
 	    	    	processInstance.getVersion(),
@@ -223,20 +241,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	    	Types.TIME,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR
 	    	    });
 	    	}
-	    	//操作流程实例变量
-	    	Map<String,Object> map = processInstance.getProcessInstanceVariables();
-	    	
-	    	if(map!=null && map.keySet().size()>0){//map不为空，且map中有值
-	   
-	    		Iterator<String> iterator = map.keySet().iterator();
-
-	    		while(iterator.hasNext()){
-		    		String name = iterator.next();
-		    		Object value = map.get(name);
-		    		saveOrUpdateProcessInstanceVar(processInstanceId,name,value.getClass().getName()+"#"+value);
-	    		}
-	    	}
-	    	
+	
 	    }
 	    
 	    /**
@@ -245,22 +250,27 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @param name
 	     * @param value
 	     */
-	    private void saveOrUpdateProcessInstanceVar(String processInstanceId,String name,Object value){
+	    /* 该方法被public void saveProcessInstanceVariable(ProcessInstanceVar var)和
+	     * public void updateProcessInstanceVariable(ProcessInstanceVar var)替代，2009-11-1，非也
+	    public void saveOrUpdateProcessInstanceVar(String processInstanceId,String name,Object value){
 	    	//首先根据processINstanceId和name查询是否存在对应的记录，不存在插入，存在更新
 	    	if(super.getJdbcTemplate().queryForInt("select count(*) from t_ff_rt_procinst_var where processinstance_id=? and name=? "
 	    			,new Object[]{processInstanceId,name} ,new int[] {Types.VARCHAR,Types.VARCHAR})==0){
 	    		//插入
-	    		
-	       		super.getJdbcTemplate().update("insert into t_ff_rt_procinst_var(processinstance_id,name,value )values (?,?,?)"
-	    	    		,new Object[]{processInstanceId,name,value});
-    	
+	    		try{
+		       		super.getJdbcTemplate().update("insert into t_ff_rt_procinst_var(processinstance_id,name,value )values (?,?,?)"
+		    	    		,new Object[]{processInstanceId,name,value});
+	    		}catch(Exception e){
+	    			e.printStackTrace();
+	    			//TODO  先插入，然后再查询，然后在插入，这个时候事务并没有提交，查询的结果==0为什么？
+	    		}
 	    	}else{
 	    		//更新
 	       		super.getJdbcTemplate().update("update t_ff_rt_procinst_var set value=? where processinstance_id=? and name=? "
 	    	    		,new Object[]{value,processInstanceId,name});	    		
 	    	}
 	    }
-	    
+	    */
 	    //更新任务实例表
 	    
 	    /* (non-Javadoc)
@@ -273,44 +283,49 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	String taskInstanceId = null;
 	    	if(taskInstance.getId()==null || taskInstance.getId().trim().equals("")){
 
-		    	StringBuffer SQL = new StringBuffer();
-		    	SQL.append("INSERT ");
-		    	SQL.append("INTO    t_ff_rt_taskinstance ");
-		    	SQL.append("        ( ");
-		    	SQL.append("                id                 , ");
-		    	SQL.append("                biz_type           , ");//从哪里获取？
-		    	SQL.append("                task_id            , ");
-		    	SQL.append("                activity_id        , ");
-		    	SQL.append("                name               , ");
+		    	StringBuffer sql = new StringBuffer();
+		    	sql.append("INSERT ");
+		    	sql.append("INTO    t_ff_rt_taskinstance ");
+		    	sql.append("        ( ");
+		    	sql.append("                id                 , ");
+		    	sql.append("                biz_type           , ");
+		    	sql.append("                task_id            , ");
+		    	sql.append("                activity_id        , ");
+		    	sql.append("                name               , ");
 		    	
-		    	SQL.append("                display_name       , ");
-		    	SQL.append("                state              , ");
-		    	SQL.append("                suspended          , ");
-		    	SQL.append("                task_type          , ");
-		    	SQL.append("                created_time       , ");
+		    	sql.append("                display_name       , ");
+		    	sql.append("                state              , ");
+		    	sql.append("                suspended          , ");
+		    	sql.append("                task_type          , ");
+		    	sql.append("                created_time       , ");
 		    	
-		    	SQL.append("                started_time       , ");
-		    	SQL.append("                expired_time       , ");
-		    	SQL.append("                end_time           , ");
-		    	SQL.append("                assignment_strategy, ");
-		    	SQL.append("                processinstance_id , ");
+		    	sql.append("                started_time       , ");
+		    	sql.append("                expired_time       , ");
+		    	sql.append("                end_time           , ");
+		    	sql.append("                assignment_strategy, ");
+		    	sql.append("                processinstance_id , ");
 		    	
-		    	SQL.append("                process_id         , ");		    	
-		    	SQL.append("                version            , ");
-		    	SQL.append("                target_activity_id   , ");
-		    	SQL.append("                from_activity_id   , ");
-		    	SQL.append("                step_number        , ");
+		    	sql.append("                process_id         , ");		    	
+		    	sql.append("                version            , ");
+		    	sql.append("                target_activity_id   , ");
+		    	sql.append("                from_activity_id   , ");
+		    	sql.append("                step_number        , ");
 		    	
-		    	SQL.append("                can_be_withdrawn ");
-		    	SQL.append("        ) ");
-		    	SQL.append("        VALUES ");
-		    	SQL.append("        ( ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?  )");
+		    	sql.append("                can_be_withdrawn ");
+		    	sql.append("        ) ");
+		    	sql.append("        VALUES ");
+		    	sql.append("        ( ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?  )");
+		    	
+		    	if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+		    	
 		    	taskInstanceId = java.util.UUID.randomUUID().toString().replace("-", "");
 		    	
 		    	((TaskInstance)taskInstance).setId(taskInstanceId);//给taskinstance设置id
-		    	super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+		    	super.getJdbcTemplate().update(sql.toString(),new Object[]{
 		    		taskInstanceId,
-		    		"",//TODO  biz_type 暂时设置为空
+		    		taskInstance.getClass().getName(),//TODO  biz_type由中TaskInstance.hbm.xml文件中的discriminator属性指定，这里为具体类名
 		    		taskInstance.getTaskId(),
 		    		taskInstance.getActivityId(),
 		    		taskInstance.getName(),
@@ -347,38 +362,42 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	    	
 	    	    });
 	    	}else{
-	    		StringBuffer SQL = new StringBuffer();
-	    		SQL.append("UPDATE t_ff_rt_taskinstance ");
-	    		SQL.append("SET  ");
-	    		SQL.append("        biz_type            = ?, ");
-	    		SQL.append("        task_id             = ?, ");
-	    		SQL.append("        activity_id         = ?, ");
-	    		SQL.append("        name                = ?, ");
+	    		StringBuffer sql = new StringBuffer();
+	    		sql.append("UPDATE t_ff_rt_taskinstance ");
+	    		sql.append("SET  ");
+	    		sql.append("        biz_type            = ?, ");
+	    		sql.append("        task_id             = ?, ");
+	    		sql.append("        activity_id         = ?, ");
+	    		sql.append("        name                = ?, ");
 	    		
-	    		SQL.append("        display_name        = ?, ");
-	    		SQL.append("        state               = ?, ");
-	    		SQL.append("        suspended           = ?, ");
-	    		SQL.append("        task_type           = ?, ");
-	    		SQL.append("        created_time        = ?, ");
+	    		sql.append("        display_name        = ?, ");
+	    		sql.append("        state               = ?, ");
+	    		sql.append("        suspended           = ?, ");
+	    		sql.append("        task_type           = ?, ");
+	    		sql.append("        created_time        = ?, ");
 	    		
-	    		SQL.append("        started_time        = ?, ");
-	    		SQL.append("       	expired_time        = ?, ");
-	    		SQL.append("        end_time            = ?, ");
-	    		SQL.append("        assignment_strategy = ?, ");
-	    		SQL.append("        processinstance_id  = ?, ");
+	    		sql.append("        started_time        = ?, ");
+	    		sql.append("       	expired_time        = ?, ");
+	    		sql.append("        end_time            = ?, ");
+	    		sql.append("        assignment_strategy = ?, ");
+	    		sql.append("        processinstance_id  = ?, ");
 	    		
-	    		SQL.append("        process_id          = ?, ");	    		
-	    		SQL.append("        version             = ?, ");
-	    		SQL.append("        target_activity_id  = ?, ");
-	    		SQL.append("        from_activity_id    = ?, ");
-	    		SQL.append("        step_number         = ?, ");
+	    		sql.append("        process_id          = ?, ");	    		
+	    		sql.append("        version             = ?, ");
+	    		sql.append("        target_activity_id  = ?, ");
+	    		sql.append("        from_activity_id    = ?, ");
+	    		sql.append("        step_number         = ?, ");
 	    		
-	    		SQL.append("        can_be_withdrawn    = ? ");
+	    		sql.append("        can_be_withdrawn    = ? ");
 	    		
-	    		SQL.append("WHERE   ID                  = ? ");
+	    		sql.append("WHERE   ID                  = ? ");
 	    		
-	    		super.getJdbcTemplate().update(SQL.toString(),new Object[]{
-	    			"",
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
+	    		super.getJdbcTemplate().update(sql.toString(),new Object[]{
+	    			taskInstance.getClass().getName(),//TODO  biz_type由中TaskInstance.hbm.xml文件中的discriminator属性指定，这里为具体类名
 	    			taskInstance.getTaskId(),
 	    			taskInstance.getActivityId(),
 	    			taskInstance.getName(),
@@ -426,25 +445,30 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    public void saveOrUpdateWorkItem(IWorkItem workitem) {
 	    	String workItemId = null;
 	    	if(workitem.getId()==null  || workitem.getId().trim().equals("")){
-	    		StringBuffer SQL = new StringBuffer();
-	    		SQL.append("INSERT ");
-	    		SQL.append("INTO    t_ff_rt_workitem ");
-	    		SQL.append("        ( ");
-	    		SQL.append("                id          , ");
-	    		SQL.append("                state       , ");
-	    		SQL.append("                created_time, ");
-	    		SQL.append("                claimed_time, ");
-	    		SQL.append("                end_time    , ");
+	    		StringBuffer sql = new StringBuffer();
+	    		sql.append("INSERT ");
+	    		sql.append("INTO    t_ff_rt_workitem ");
+	    		sql.append("        ( ");
+	    		sql.append("                id          , ");
+	    		sql.append("                state       , ");
+	    		sql.append("                created_time, ");
+	    		sql.append("                claimed_time, ");
+	    		sql.append("                end_time    , ");
 	    		
-	    		SQL.append("                actor_id    , ");
-	    		SQL.append("                taskinstance_id, ");
-	    		SQL.append("                comments ");
-	    		SQL.append("        ) ");
-	    		SQL.append("        VALUES ");
-	    		SQL.append("        ( ?,?,?,?,? ,?,?,?)");
+	    		sql.append("                actor_id    , ");
+	    		sql.append("                taskinstance_id, ");
+	    		sql.append("                comments ");
+	    		sql.append("        ) ");
+	    		sql.append("        VALUES ");
+	    		sql.append("        ( ?,?,?,?,? ,?,?,?)");
+	    		
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
 	    		workItemId = java.util.UUID.randomUUID().toString().replace("-", "");
 	    		((WorkItem)workitem).setId(workItemId);
-	    		super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+	    		super.getJdbcTemplate().update(sql.toString(),new Object[]{
 	    			workItemId,
 	    			workitem.getState(),
 	    			getSqlDate(workitem.getCreatedTime()),	    	    	
@@ -463,17 +487,22 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	    });
 	    		
 	    	}else{
-	    		StringBuffer SQL = new StringBuffer();
-	    		SQL.append("UPDATE t_ff_rt_workitem ");
-	    		SQL.append("SET     state           = ?, ");
-	    		SQL.append("        created_time    = ?, ");
-	    		SQL.append("        claimed_time    = ?, ");
-	    		SQL.append("        end_time        = ?, ");
-	    		SQL.append("        actor_id        = ?, ");
-	    		SQL.append("        taskinstance_id = ?, ");
-	    		SQL.append("        comments = ? ");
-	    		SQL.append("WHERE   ID              = ? ");
-	    		super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+	    		StringBuffer sql = new StringBuffer();
+	    		sql.append("UPDATE t_ff_rt_workitem ");
+	    		sql.append("SET     state           = ?, ");
+	    		sql.append("        created_time    = ?, ");
+	    		sql.append("        claimed_time    = ?, ");
+	    		sql.append("        end_time        = ?, ");
+	    		sql.append("        actor_id        = ?, ");
+	    		sql.append("        taskinstance_id = ?, ");
+	    		sql.append("        comments = ? ");
+	    		sql.append("WHERE   ID              = ? ");
+	    		
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
+	    		super.getJdbcTemplate().update(sql.toString(),new Object[]{
 	    			workitem.getState(),
 	    			getSqlDate(workitem.getCreatedTime()),	    	    	
 	    	    	getSqlDate(workitem.getClaimedTime()),	   
@@ -498,24 +527,29 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    public void saveOrUpdateToken(IToken token) {
 	    	String tokenId = null;
 	    	if(token.getId()==null || token.getId().trim().equals("")){
-	    		StringBuffer SQL = new StringBuffer();
-	    		SQL.append("INSERT ");
-	    		SQL.append("INTO    t_ff_rt_token ");
-	    		SQL.append("        ( ");
-	    		SQL.append("                id                , ");
-	    		SQL.append("                alive             , ");
-	    		SQL.append("                value             , ");
-	    		SQL.append("                node_id           , ");
-	    		SQL.append("                processinstance_id, ");
+	    		StringBuffer sql = new StringBuffer();
+	    		sql.append("INSERT ");
+	    		sql.append("INTO    t_ff_rt_token ");
+	    		sql.append("        ( ");
+	    		sql.append("                id                , ");
+	    		sql.append("                alive             , ");
+	    		sql.append("                value             , ");
+	    		sql.append("                node_id           , ");
+	    		sql.append("                processinstance_id, ");
 	    		
-	    		SQL.append("                step_number       , ");
-	    		SQL.append("                from_activity_id ");
-	    		SQL.append("        ) ");
-	    		SQL.append("        VALUES ");
-	    		SQL.append("        ( ?,?,?,?,? ,?,? )");
+	    		sql.append("                step_number       , ");
+	    		sql.append("                from_activity_id ");
+	    		sql.append("        ) ");
+	    		sql.append("        VALUES ");
+	    		sql.append("        ( ?,?,?,?,? ,?,? )");
+	    		
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
 	    		tokenId = java.util.UUID.randomUUID().toString().replace("-", "");
 	    		((Token)token).setId(tokenId);
-	    		super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+	    		super.getJdbcTemplate().update(sql.toString(),new Object[]{
 	    			tokenId,
 	    			token.isAlive()==true?1:0,
 	    			token.getValue(),
@@ -531,18 +565,22 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	    	
 	    	    });
 	    	}else{
-	    		StringBuffer SQL = new StringBuffer();
-	    		SQL.append("UPDATE t_ff_rt_token   ");
-	    		SQL.append("SET     alive				= ?, ");
-	    		SQL.append("        value   			= ?, ");
-	    		SQL.append("        node_id    			= ?, ");
-	    		SQL.append("        processinstance_id	= ?, ");
-	    		SQL.append("        step_number        	= ?, ");
+	    		StringBuffer sql = new StringBuffer();
+	    		sql.append("UPDATE t_ff_rt_token   ");
+	    		sql.append("SET     alive				= ?, ");
+	    		sql.append("        value   			= ?, ");
+	    		sql.append("        node_id    			= ?, ");
+	    		sql.append("        processinstance_id	= ?, ");
+	    		sql.append("        step_number        	= ?, ");
 	    		
-	    		SQL.append("        from_activity_id 	= ?  ");
-	    		SQL.append("WHERE   ID = ? ");
+	    		sql.append("        from_activity_id 	= ?  ");
+	    		sql.append("WHERE   ID = ? ");
 	    		
-	    		super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
+	    		super.getJdbcTemplate().update(sql.toString(),new Object[]{
 
 	    			token.isAlive()==true?1:0,
 	    			token.getValue(),
@@ -636,8 +674,10 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @see org.fireflow.engine.persistence.IPersistenceService#lockTaskInstance(java.lang.String)
 	     */
 	    public void lockTaskInstance(String taskInstanceId){
-	    	//TODO  这里使用的是sqlserver 的代码
-	    	String sql = "select * from t_ff_rt_taskinstance with (updlock, rowlock) where id=? ";
+	    	//这里使用的是sqlserver 的代码
+	    	//String sql = "select * from t_ff_rt_taskinstance with (updlock, rowlock) where id=? ";
+	    	//以下是oracle中的语句
+	    	String sql = "select * from t_ff_rt_taskinstance where id=? for update ";
 	    	super.getJdbcTemplate().queryForObject(sql,new Object[]{taskInstanceId}, new TaskInstanceRowMapper() );
 	    }
 	    
@@ -734,7 +774,15 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     */
 	    public void abortTaskInstance(final TaskInstance taskInstance) {
 	    	String sql = "update t_ff_rt_taskinstance set state=? ,end_time=? where id=? and (state=0 or state=1)";
-	    	super.getJdbcTemplate().update(sql,new Object[]{IWorkItem.CANCELED,getSqlDate(rtCtx.getCalendarService().getSysDate()),taskInstance.getId()});
+	    	super.getJdbcTemplate().update(sql,new Object[]{ITaskInstance.CANCELED,getSqlDate(rtCtx.getCalendarService().getSysDate()),taskInstance.getId()});
+	    	
+	    	//将与之关联的WorkItem取消掉
+	    	String workItemSql = " update t_ff_rt_workitem set state="+IWorkItem.CANCELED+",end_time=?  "
+	    	+" where taskinstance_id =? ";
+	    	super.getJdbcTemplate().update(workItemSql,new Object[]{rtCtx.getCalendarService().getSysDate(),taskInstance.getId()});
+
+	    	
+	    	taskInstance.setState(ITaskInstance.CANCELED);
 	    }
 
 	    /* (non-Javadoc)
@@ -808,19 +856,23 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	}
 	    }
 
+	    /*
+	     * ProcessInstance和ProcessInstanceVar的关系作了调整，不需要该方法
+	     * 2009-11-1,非也
+	     * 
 	    @SuppressWarnings("unchecked")
 		private Map<String,Object> getVarMap(String processInstanceId) {
 	    	String varSql  = "select * from t_ff_rt_procinst_var where processinstance_id=? ";
-	    	List l = super.getJdbcTemplate().query(varSql,new Object[]{processInstanceId},new ProcessInstanceVarRowMapper());
+	    	List list = super.getJdbcTemplate().query(varSql,new Object[]{processInstanceId},new ProcessInstanceVarRowMapper());
 	    	
 	    	Map<String,Object> resultMap = new HashMap<String,Object>();
 	    	
-	    	if(l!=null && l.size()>0){//map不为空，且map中有值
-	    		int LEN = l.size();
+	    	if(list!=null && list.size()>0){//map不为空，且map中有值
+	    		int LEN = list.size();
 	    		for(int i=0;i<LEN;i++){
-	    			ProcessInstanceVar  processInstanceVar =  (ProcessInstanceVar)l.get(i);
+	    			ProcessInstanceVar  processInstanceVar =  (ProcessInstanceVar)list.get(i);
 		    		
-		    		resultMap.put(processInstanceVar.getName(), getObject(processInstanceVar.getValue()));
+		    		resultMap.put(processInstanceVar.getName(), processInstanceVar.getValue());
 		    		if(log.isDebugEnabled()){
 		    			log.debug(processInstanceVar.getName()+"="+processInstanceVar.getValue());
 		    		}
@@ -833,45 +885,16 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	
 	    	return resultMap;
 	    }
+	    	     */
 	    
-//	    public static void main(String[] args){
+	    public static void main(String[] args){
 //	    	PersistenceServiceSpringJdbcImpl t = new PersistenceServiceSpringJdbcImpl();
 //	    	System.out.println(t.getObject("java.lang.String#000100"));
 //	    	System.out.println(t.getSqlDate(new java.util.Date()));
-//	    	//测试通过后，需要将这两个方法设置为private类型。
-//	    }
-//	    
-	    private Object getObject(String value){
-	    	if (value == null)
-				return null;
-			int index = value.indexOf("#");
-			if (index == -1) {
-				return null;
-			}
-			String type = value.substring(0, index);
-			String strValue = value.substring(index + 1);
-			if (type.equals(String.class.getName())) {
-				return strValue;
-			}
-			if (strValue == null || strValue.trim().equals("")) {
-				return null;
-			}
-			if (type.equals(Integer.class.getName())) {
-				return new Integer(strValue);
-			} else if (type.equals(Long.class.getName())) {
-				return new Long(strValue);
-			} else if (type.equals(Float.class.getName())) {
-				return new Float(strValue);
-			} else if (type.equals(Double.class.getName())) {
-				return new Double(strValue);
-			} else if (type.equals(Boolean.class.getName())) {
-				return new Boolean(strValue);
-			} else if (type.equals(java.util.Date.class.getName())) {
-				return new java.util.Date(new Long(strValue));
-			} else {
-				throw new HibernateException("Fireflow不支持数据类型" + type);
-			}
+	    	//测试通过后，需要将这两个方法设置为private类型。
 	    }
+	    
+
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#findProcessInstancesByProcessId(java.lang.String)
 	     */
@@ -884,10 +907,11 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	if(l==null || l.size()<1){
 	    		return null;
 	    	}
-	    	
-	    	for(IProcessInstance iProcessInstance:l){
-	    		iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
-	    	}
+	    	//变量不需要同时查询出来，在第一次使用的时候查询，2009-11-1，非也
+	    	//
+//	    	for(IProcessInstance iProcessInstance:l){
+//	    		iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
+//	    	}
 	    	
 	    	return l;
 
@@ -907,9 +931,10 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    		return null;
 	    	}
 	    	
-	    	for(IProcessInstance iProcessInstance:l){
-	    		iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
-	    	}
+	    	//变量不需要同时查询出来，在第一次使用的时候查询，2009-11-1，非也
+//	    	for(IProcessInstance iProcessInstance:l){
+//	    		iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
+//	    	}
 	    	
 	    	return l;
 
@@ -922,7 +947,10 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	String sql = "select * from t_ff_rt_processinstance where id=?  ";
 	    	
 	    	IProcessInstance iProcessInstance = (IProcessInstance) super.getJdbcTemplate().queryForObject(sql,new Object[]{id}, new ProcessInstanceRowMapper());
-	    	iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
+	    	
+	    	//变量不需要同时查询出来，在第一次使用的时候查询，2009-11-1，非也
+//	    	iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
+	    	
 	    	return iProcessInstance;
 	    }
 
@@ -936,7 +964,8 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	
 	    	IProcessInstance iProcessInstance = (IProcessInstance) super.getJdbcTemplate().queryForObject(sql,new Object[]{id}, new ProcessInstanceRowMapper());
 	    	
-	    	iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
+	    	//变量不需要同时查询出来，在第一次使用的时候查询，2009-11-1，非也
+//	    	iProcessInstance.setProcessInstanceVariables(getVarMap(iProcessInstance.getId()));
 	    	return iProcessInstance;
 	    }
 
@@ -976,7 +1005,12 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	        	sql.append("id,definition_type,process_id,name,display_name,");
 	        	sql.append("description,version,state,upload_user,upload_time,");
 	        	sql.append("publish_user,publish_time,process_content )") ;
-	        	sql.append(" VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?)"); 
+	        	sql.append(" VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?)");
+	        	
+	        	if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	        	
 	            super.getJdbcTemplate().execute(sql.toString(), 
 	              new AbstractLobCreatingPreparedStatementCallback(this.lobHandler) { 
 	                  protected void setValues(PreparedStatement ps,LobCreator lobCreator) 
@@ -991,10 +1025,10 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	                    ps.setInt(7,workflowDef.getVersion());
 	                    ps.setInt(8, workflowDef.getState()==true?1:0);
 	                    ps.setString(9,workflowDef.getUploadUser());
-	                    ps.setDate(10,(java.sql.Date)workflowDef.getUploadTime());
+	                    ps.setDate(10,getSqlDate(workflowDef.getUploadTime()));
 
 	                    ps.setString(11,workflowDef.getPublishUser());
-	                    ps.setDate(12,(java.sql.Date)workflowDef.getPublishTime());
+	                    ps.setDate(12,getSqlDate(workflowDef.getPublishTime()));
 	                    lobCreator.setClobAsString(ps, 13, workflowDef.getProcessContent()); 
 	                  } 
 	                }); 
@@ -1005,7 +1039,12 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	        	sql.append("set definition_type=?,process_id=?,name=?,display_name=?,");
 	        	sql.append("description=?,version=?,state=?,upload_user=?,upload_time=?,");
 	        	sql.append("publish_user=?,publish_time=?,process_content=? ") ;
-	        	sql.append(" where id=? "); 
+	        	sql.append(" where id=? ");
+	        	
+	        	if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	        	
 	            super.getJdbcTemplate().execute(sql.toString(), 
 	              new AbstractLobCreatingPreparedStatementCallback(this.lobHandler) { 
 	                  protected void setValues(PreparedStatement ps,LobCreator lobCreator) 
@@ -1020,10 +1059,10 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	                    ps.setInt(6,workflowDef.getVersion());
 	                    ps.setInt(7, workflowDef.getState()==true?1:0);
 	                    ps.setString(8,workflowDef.getUploadUser());
-	                    ps.setDate(9,(java.sql.Date)workflowDef.getUploadTime());
+	                    ps.setDate(9,getSqlDate(workflowDef.getUploadTime()));
 
 	                    ps.setString(10,workflowDef.getPublishUser());
-	                    ps.setDate(11,(java.sql.Date)workflowDef.getPublishTime());
+	                    ps.setDate(11,getSqlDate(workflowDef.getPublishTime()));
 	                    lobCreator.setClobAsString(ps, 12, workflowDef.getProcessContent()); 
 	                    
 	                    ps.setString(13, workflowDef.getId());
@@ -1037,7 +1076,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @see org.fireflow.engine.persistence.IPersistenceService#findTheLatestVersionNumber(java.lang.String)
 	     */
 	    public Integer findTheLatestVersionNumber(final String processId) {
-	    	String sql =" select max(version) from t_ff_df_workflowdf where process_id=? and state=1 ";
+	    	String sql =" select max(version) from t_ff_df_workflowdef where process_id=? and state=1 ";
 	    	return super.getJdbcTemplate().queryForInt(sql,new Object[]{processId});
 
 	    }
@@ -1046,7 +1085,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @see org.fireflow.engine.persistence.IPersistenceService#findTheLatestVersionNumberIgnoreState(java.lang.String)
 	     */
 	    public Integer findTheLatestVersionNumberIgnoreState(final String processId){
-	    	String sql =" select max(version) from t_ff_df_workflowdf where process_id=? ";
+	    	String sql =" select max(version) from t_ff_df_workflowdef where process_id=? ";
 	    	return super.getJdbcTemplate().queryForInt(sql,new Object[]{processId});  	
 	    }
 
@@ -1054,7 +1093,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @see org.fireflow.engine.persistence.IPersistenceService#findWorkflowDefinitionById(java.lang.String)
 	     */
 	    public WorkflowDefinition findWorkflowDefinitionById(String id) {
-	    	String sql =" select * from t_f_df_workflowdf where id=? ";
+	    	String sql =" select * from t_ff_df_workflowdef where id=? ";
 	    	
 	    	return (WorkflowDefinition)super.getJdbcTemplate().queryForObject(sql,new Object[]{id},new  RowMapper() { 
 	            public Object mapRow(ResultSet rs, int rowNum) throws SQLException { 
@@ -1088,7 +1127,11 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(final String processId, final int version) {
 	    	
 
-	    	String sql =" select * from t_f_df_workflowdf where process_id=? and version=? ";
+	    	String sql =" select * from t_ff_df_workflowdef where process_id=? and version=? ";
+	    	
+	    	if(show_sql){
+    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+    		}
 	    	
 	    	return (WorkflowDefinition)super.getJdbcTemplate().queryForObject(sql,new Object[]{processId,version},new  RowMapper() { 
 	            public Object mapRow(ResultSet rs, int rowNum) throws SQLException { 
@@ -1128,7 +1171,11 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     */
 	    @SuppressWarnings("unchecked")
 		public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(final String processId) {
-	    	String sql =" select * from t_f_df_workflowdf where process_id=?  ";
+	    	String sql =" select * from t_ff_df_workflowdef where process_id=?  ";
+	    	
+	    	if(show_sql){
+    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+    		}
 	    	
 	    	return super.getJdbcTemplate().query(sql,new Object[]{processId},new  RowMapper() { 
 	            public Object mapRow(ResultSet rs, int rowNum) throws SQLException { 
@@ -1400,16 +1447,28 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @see org.fireflow.engine.persistence.IPersistenceService#suspendProcessInstance(org.fireflow.engine.impl.ProcessInstance)
 	     */
 	    public void suspendProcessInstance(final ProcessInstance processInstance) {
-	    	String sql = " update t_ff_rt_taskinstance set suspended=1 where processinstance_id=? ";
-	    	super.getJdbcTemplate().queryForInt(sql,new Object[]{processInstance.getId()});
+	    	String sql = " update t_ff_rt_processinstance set suspended=1 where id=? ";
+	    	super.getJdbcTemplate().update(sql,new Object[]{processInstance.getId()});
+	    	
+	    	//挂起对应的TaskInstance
+	    	String sql2 = " update t_ff_rt_taskinstance set suspended=1 where processinstance_id=? ";
+	    	super.getJdbcTemplate().update(sql2,new Object[]{processInstance.getId()});
+	    	
+	    	processInstance.setSuspended(true);
 	    }
 
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#restoreProcessInstance(org.fireflow.engine.impl.ProcessInstance)
 	     */
 	    public void restoreProcessInstance(final ProcessInstance processInstance) {
-	    	String sql = " update t_ff_rt_taskinstance set suspended=0 where processinstance_id=? ";
-	    	super.getJdbcTemplate().queryForInt(sql,new Object[]{processInstance.getId()});	    
+	    	String sql = " update t_ff_rt_processinstance set suspended=0 where id=? ";
+	    	super.getJdbcTemplate().update(sql,new Object[]{processInstance.getId()});	
+	    	
+	    	//恢复对应的TaskInstance
+	    	String sql2 = " update t_ff_rt_taskinstance set suspended=0 where processinstance_id=? ";
+	    	super.getJdbcTemplate().update(sql2,new Object[]{processInstance.getId()});	  
+	    	
+	    	processInstance.setSuspended(false);
 	    }
 
 	    /* (non-Javadoc)
@@ -1430,8 +1489,11 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	+" where taskinstance_id in (select a.id  from t_ff_rt_taskinstance a,t_ff_rt_workitem b where a.id=b.taskinstance_id and a.processinstance_id=? ) and (state=0 or state=1) ";
 	    	super.getJdbcTemplate().update(workItemSql,new Object[]{getSqlDate(now),processInstance.getId()});
 	    	//删除所有的token
-	    	String tokenSql =" delete form t_ff_rt_token where processinstance_id=?  ";
+	    	String tokenSql =" delete from t_ff_rt_token where processinstance_id=?  ";
 	    	super.getJdbcTemplate().update(tokenSql,new Object[]{processInstance.getId()});
+	    	
+	    	//数据库操作成功后，更新对象的状态
+	    	processInstance.setState(IProcessInstance.CANCELED);
 
 	    }
 
@@ -1441,36 +1503,36 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    public void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace) {
 	    	String processInstanceTraceId = null;
 	        if(processInstanceTrace.getId()==null){
-	        	StringBuffer SQL = new StringBuffer();
-	        	SQL.append("INSERT ");
-	        	SQL.append("INTO    t_ff_hist_trace ");
-	        	SQL.append("        ( ");
-	        	SQL.append("                id                , ");
-	        	SQL.append("                processinstance_id, ");
-	        	SQL.append("                step_number       , ");
-	        	SQL.append("                minor_number      , ");
-	        	SQL.append("                type              , ");
+	        	StringBuffer sql = new StringBuffer();
+	        	sql.append("INSERT ");
+	        	sql.append("INTO    t_ff_hist_trace ");
+	        	sql.append("        ( ");
+	        	sql.append("                id                , ");
+	        	sql.append("                processinstance_id, ");
+	        	sql.append("                step_number       , ");
+	        	sql.append("                minor_number      , ");
+	        	sql.append("                type              , ");
 	        	
-	        	SQL.append("                edge_id           , ");
-	        	SQL.append("                from_node_id      , ");
-	        	SQL.append("                to_node_id ");
-	        	SQL.append("        ) ");
-	        	SQL.append("        VALUES ");
-	        	SQL.append("        ( ");
-	        	SQL.append("                ? , ");
-	        	SQL.append("                ? , ");
-	        	SQL.append("                ? , ");
-	        	SQL.append("                ? , ");
-	        	SQL.append("                ? , ");
+	        	sql.append("                edge_id           , ");
+	        	sql.append("                from_node_id      , ");
+	        	sql.append("                to_node_id ");
+	        	sql.append("        ) ");
+	        	sql.append("        VALUES ");
+	        	sql.append("        ( ");
+	        	sql.append("                ? , ");
+	        	sql.append("                ? , ");
+	        	sql.append("                ? , ");
+	        	sql.append("                ? , ");
+	        	sql.append("                ? , ");
 	        	
-	        	SQL.append("                ? , ");
-	        	SQL.append("                ? , ");
-	        	SQL.append("                ? ");
-	        	SQL.append("        )");
+	        	sql.append("                ? , ");
+	        	sql.append("                ? , ");
+	        	sql.append("                ? ");
+	        	sql.append("        )");
 	        	
 	        	processInstanceTraceId = java.util.UUID.randomUUID().toString().replace("-", "");
 	        	processInstanceTrace.setId(processInstanceTraceId);
-	        	super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+	        	super.getJdbcTemplate().update(sql.toString(),new Object[]{
 	        		processInstanceTraceId,
 	        		processInstanceTrace.getProcessInstanceId(),
 	        		processInstanceTrace.getStepNumber(),
@@ -1487,20 +1549,20 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	    	
 	    	    });
 	        }else{
-	        	StringBuffer SQL = new StringBuffer();
-	        	SQL.append("UPDATE t_ff_hist_trace ");
-	        	SQL.append("SET     processinstance_id = ?, ");
-	        	SQL.append("        step_number        = ?, ");
-	        	SQL.append("        minor_number       = ?, ");
-	        	SQL.append("        type               = ?, ");
-	        	SQL.append("        edge_id            = ?, ");
+	        	StringBuffer sql = new StringBuffer();
+	        	sql.append("UPDATE t_ff_hist_trace ");
+	        	sql.append("SET     processinstance_id = ?, ");
+	        	sql.append("        step_number        = ?, ");
+	        	sql.append("        minor_number       = ?, ");
+	        	sql.append("        type               = ?, ");
+	        	sql.append("        edge_id            = ?, ");
 	        	
-	        	SQL.append("        from_node_id       = ?, ");
-	        	SQL.append("        to_node_id         = ?  ");
+	        	sql.append("        from_node_id       = ?, ");
+	        	sql.append("        to_node_id         = ?  ");
 	        	
-	        	SQL.append("WHERE   ID                 = ?  ");
+	        	sql.append("WHERE   ID                 = ?  ");
 	        	
-	        	super.getJdbcTemplate().update(SQL.toString(),new Object[]{
+	        	super.getJdbcTemplate().update(sql.toString(),new Object[]{
 
 	        		processInstanceTrace.getProcessInstanceId(),
 	        		processInstanceTrace.getStepNumber(),
@@ -1530,46 +1592,172 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	
 			return super.getJdbcTemplate().query(sql,new Object[]{processInstanceId}, new ProcessInstanceTraceRowMapper());
 	    }
+
+	    public List<ProcessInstanceVar> findProcessInstanceVariable(final String processInstanceId){
+	    	
+	    	String varSql  = "select * from t_ff_rt_procinst_var where processinstance_id=? ";
+	    	List<ProcessInstanceVar> list = (List<ProcessInstanceVar>)super.getJdbcTemplate().query(varSql,new Object[]{processInstanceId},new ProcessInstanceVarRowMapper());
+
+
+			return list;    	
+	    }
+	    
+	    public ProcessInstanceVar findProcessInstanceVariable(String processInstanceId,String name){
+	    	String varSql  = "select * from t_ff_rt_procinst_var where processinstance_id=? and name=?";
+	    	List<ProcessInstanceVar> list = (List<ProcessInstanceVar>)super.getJdbcTemplate().query(varSql,new Object[]{processInstanceId,name},new ProcessInstanceVarRowMapper());
+	    	
+	    	if (list==null || list.size()==0){
+	    		return null;
+	    	}else{
+	    		return list.get(0);
+	    	}
+	    }
+	    
+	    public void updateProcessInstanceVariable(ProcessInstanceVar var){
+	    	String sql = "update t_ff_rt_procinst_var set value=? where processinstance_id=? and name=? ";
+    		if(show_sql){
+    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+    		}
+       		super.getJdbcTemplate().update(sql
+    	    		,new Object[]{object2String(var.getValue()),
+       						var.getProcessInstanceId(),
+    		    			var.getName()
+    		    			});	  
+	    }
+	    
+	    public void saveProcessInstanceVariable(ProcessInstanceVar var){
+	    	StringBuffer sql = new StringBuffer();
+	    		sql.append("INSERT ");
+	    		sql.append("INTO    t_ff_rt_procinst_var ");
+	    		sql.append("        ( ");
+	    		sql.append("                processInstance_id                , ");
+	    		sql.append("                name             , ");
+	    		sql.append("                value             ");
+	    		sql.append("        ) ");
+	    		sql.append("        VALUES ");
+	    		sql.append("        ( ?,?,? )");
+	    		
+	    		if(show_sql){
+	    			System.out.println("FIREWORKFLOW_JDCB:" + sql.toString());
+	    		}
+	    		
+	    		super.getJdbcTemplate().update(sql.toString(),new Object[]{
+	    			var.getProcessInstanceId(),
+	    			var.getName(),
+	    			object2String(var.getValue())
+		    	},new int[]{
+	    			Types.VARCHAR,	    	    	
+	    	    	Types.VARCHAR,
+	    	    	Types.VARCHAR
+	    	    	
+	    	    });
+	    }	    
+
+		private String object2String(Object arg1){
+			if (arg1 == null) {
+				return null;
+			}
+			String type = arg1.getClass().getName();
+			if (type.equals(String.class.getName())) {
+				return type + "#" + arg1;
+			} else if (type.equals(Integer.class.getName())
+					|| type.equals(Long.class.getName())) {
+				return type + "#" + arg1;
+			} else if (type.equals(Float.class.getName())
+					|| type.equals(Double.class.getName())) {
+				return type + "#" + arg1;
+			} else if (type.equals(Boolean.class.getName())) {
+				return type + "#" + arg1;
+			} else if (type.equals(java.util.Date.class.getName())) {
+				return type + "#" + ((Date) arg1).getTime();
+			} else {
+				throw new RuntimeException("Fireflow不支持数据类型" + type);
+			}
+		}
+
+		public boolean isShow_sql() {
+			return show_sql;
+		}
+
+		public void setShow_sql(boolean show_sql) {
+			this.show_sql = show_sql;
+		}
+	    
 	}
 
-class ProcessInstanceVar {
-	private String processInstanceId;
-	private String name;
-	private String value;
-	public String getProcessInstanceId() {
-		return processInstanceId;
-	}
-	public void setProcessInstanceId(String processInstanceId) {
-		this.processInstanceId = processInstanceId;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getValue() {
-		return value;
-	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
-	
-}
+//class ProcessInstanceVar {
+//	private String processInstanceId;
+//	private String name;
+//	private String value;
+//	public String getProcessInstanceId() {
+//		return processInstanceId;
+//	}
+//	public void setProcessInstanceId(String processInstanceId) {
+//		this.processInstanceId = processInstanceId;
+//	}
+//	public String getName() {
+//		return name;
+//	}
+//	public void setName(String name) {
+//		this.name = name;
+//	}
+//	public String getValue() {
+//		return value;
+//	}
+//	public void setValue(String value) {
+//		this.value = value;
+//	}
+//	
+//	
+//}
 
 class ProcessInstanceVarRowMapper implements RowMapper{
 	public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 		ProcessInstanceVar processInstanceVar = new ProcessInstanceVar();		
-
-		processInstanceVar.setProcessInstanceId(rs.getString("processinstance_id"));
+		ProcessInstanceVarPk pk = new ProcessInstanceVarPk();
+		pk.setProcessInstanceId(rs.getString("processinstance_id"));
+		pk.setName(rs.getString("name"));
+		processInstanceVar.setVarPrimaryKey(pk);
 		
-		processInstanceVar.setName(rs.getString("name"));
-		processInstanceVar.setValue(rs.getString("value"));
+		String valueStr = rs.getString("value");
+		Object valueObj = getObject(valueStr);
+		processInstanceVar.setValue(valueObj);
 		
 		return processInstanceVar;
 		
 	}
+	
+    public Object getObject(String value){
+    	if (value == null)
+			return null;
+		int index = value.indexOf("#");
+		if (index == -1) {
+			return null;
+		}
+		String type = value.substring(0, index);
+		String strValue = value.substring(index + 1);
+		if (type.equals(String.class.getName())) {
+			return strValue;
+		}
+		if (strValue == null || strValue.trim().equals("")) {
+			return null;
+		}
+		if (type.equals(Integer.class.getName())) {
+			return new Integer(strValue);
+		} else if (type.equals(Long.class.getName())) {
+			return new Long(strValue);
+		} else if (type.equals(Float.class.getName())) {
+			return new Float(strValue);
+		} else if (type.equals(Double.class.getName())) {
+			return new Double(strValue);
+		} else if (type.equals(Boolean.class.getName())) {
+			return new Boolean(strValue);
+		} else if (type.equals(java.util.Date.class.getName())) {
+			return new java.util.Date(new Long(strValue));
+		} else {
+			throw new RuntimeException("Fireflow不支持数据类型" + type);
+		}
+    }	
 }
 
 /**
@@ -1637,7 +1825,7 @@ class TaskInstanceRowMapper implements RowMapper {
 	public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 		TaskInstance taskInstance = new TaskInstance();
 		taskInstance.setId(rs.getString("id"));
-		//TODO wmj2003 20090922  没有给biz_type赋值 是否需要给基于jdbc的数据增加 setBizType()方法？
+		//20090922 wmj2003 没有给biz_type赋值 是否需要给基于jdbc的数据增加 setBizType()方法？
 		taskInstance.setTaskId(rs.getString("task_id"));
 		taskInstance.setActivityId(rs.getString("activity_id"));
 		taskInstance.setName(rs.getString("name"));

@@ -18,6 +18,7 @@ package org.fireflow.engine.kernelextensions;
 
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.persistence.IPersistenceService;
+import org.fireflow.kernel.ISynchronizerInstance;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.NodeInstanceEvent;
@@ -42,15 +43,23 @@ public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
 
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException {
+    	//同步器节点的监听器触发条件，是在离开这个节点的时候
+        if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_LEAVING) {
+            ISynchronizerInstance syncInst = (ISynchronizerInstance) e.getSource();
+            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+            //删除同步器节点的token
+            persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().getId());
+
+        }    	
     	//如果节点实例结束，就触发
         if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED) {
             // 执行ProcessInstance的complete操作
 
             IToken tk = e.getToken();
 
-            EndNodeInstance syncInst = (EndNodeInstance) e.getSource();
-            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
-            persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().getId());
+//            EndNodeInstance syncInst = (EndNodeInstance) e.getSource();
+//            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+//            persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().getId());
             ProcessInstance currentProcessInstance = (ProcessInstance) tk.getProcessInstance();
             currentProcessInstance.complete();
         }

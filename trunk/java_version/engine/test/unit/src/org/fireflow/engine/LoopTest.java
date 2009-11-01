@@ -92,9 +92,13 @@ public class LoopTest {
                     processInstance.run();
                     return processInstance;
                 } catch (EngineException ex) {
+                	ex.printStackTrace();
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (KernelException ex) {
+                	ex.printStackTrace();
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }catch(Exception ex){
+                	ex.printStackTrace();
                 }
                 return null;
             }
@@ -131,14 +135,18 @@ public class LoopTest {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Loop.xml
-                    IWorkItem workItem = workflowSession.findWorkItemById(workItem1Id);
+                    IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
 //                    IProcessInstance processInstance = runtimeContext.getPersistenceService().findProcessInstanceById(currentProcessInstance.getId());
-                    workItem.claim();
-                    workItem.complete();
+                    workItem1.claim();
+                    workItem1.complete();
                 } catch (EngineException ex) {
+                	ex.printStackTrace();
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (KernelException ex) {
+                	ex.printStackTrace();
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }catch(Exception ex){
+                	ex.printStackTrace();
                 }
                 return null;
             }
@@ -175,7 +183,7 @@ public class LoopTest {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Loop.xml
                     IWorkItem workItem = workflowSession.findWorkItemById(workItem1Id);
-                    IProcessInstance processInstance = runtimeContext.getPersistenceService().findProcessInstanceById(currentProcessInstance.getId());
+                    IProcessInstance processInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
                     processInstance.setProcessInstanceVariable("loopFlag", 2);
                     workItem.complete();
                 } catch (EngineException ex) {
@@ -262,7 +270,7 @@ public class LoopTest {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Loop.xml
                     IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
-                    IProcessInstance processInstance = runtimeContext.getPersistenceService().findProcessInstanceById(currentProcessInstance.getId());;
+                    IProcessInstance processInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
                     processInstance.setProcessInstanceVariable("loopFlag", 4);
                     workItem.complete();
                 } catch (EngineException ex) {
@@ -365,7 +373,7 @@ public class LoopTest {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Loop.xml
                     IWorkItem workItem = workflowSession.findWorkItemById(workItem3Id);
-                    IProcessInstance processInstance = runtimeContext.getPersistenceService().findProcessInstanceById(currentProcessInstance.getId());
+                    IProcessInstance processInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
                     processInstance.setProcessInstanceVariable("loopFlag", 5);
                     workItem.complete();
                 } catch (EngineException ex) {
@@ -441,10 +449,10 @@ public class LoopTest {
 
         List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
-        assertEquals(2, tokensList.size());
+        assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
-        IToken token2 = (IToken)tokensList.get(1);
-        assertEquals(15,token.getStepNumber().intValue()+token2.getStepNumber().intValue());
+//        IToken token2 = (IToken)tokensList.get(1);
+        assertEquals(8,token.getStepNumber().intValue());
 
         workItem5Id = ((IWorkItem) workItemList.get(0)).getId();
 
@@ -479,7 +487,7 @@ public class LoopTest {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
                     //启动"/workflowdefinition/Loop.xml
                     IWorkItem workItem = workflowSession.findWorkItemById(workItem5Id);
-                    IProcessInstance processInstance = runtimeContext.getPersistenceService().findProcessInstanceById(currentProcessInstance.getId());
+                    IProcessInstance processInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
                     processInstance.setProcessInstanceVariable("loopFlag", 6);
                     workItem.complete();
                 } catch (EngineException ex) {

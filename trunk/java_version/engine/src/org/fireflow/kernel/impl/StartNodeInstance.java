@@ -119,6 +119,7 @@ public class StartNodeInstance extends AbstractNodeInstance implements
             token.setFromActivityId(tk.getFromActivityId());
             token.setStepNumber(tk.getStepNumber()+1); //步骤号+1
             
+            
             boolean alive = transInst.take(token);//触发弧线的token
             if (alive) {
                 activiateDefaultCondition = false;

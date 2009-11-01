@@ -92,22 +92,21 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 			KernelException {
 		// TODO Auto-generated method stub
 		final String wfprocessId = workflowProcessId;
-		return (IProcessInstance) this.execute(new IWorkflowSessionCallback() {
+		
+		final WorkflowDefinition workflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(wfprocessId);
+		final WorkflowProcess wfProcess = workflowDef.getWorkflowProcess();
+
+		if (wfProcess == null) {
+			throw new RuntimeException(
+					"Workflow process NOT found,id=[" + wfprocessId
+							+ "]");
+		}
+		IProcessInstance processInstance =  (IProcessInstance) this.execute(new IWorkflowSessionCallback() {
 
 			public Object doInWorkflowSession(RuntimeContext ctx)
 					throws EngineException, KernelException {
 
-				WorkflowDefinition workflowDef = ctx.getDefinitionService()
-						.getTheLatestVersionOfWorkflowDefinition(wfprocessId);
-				WorkflowProcess wfProcess = null;
 
-				wfProcess = workflowDef.getWorkflowProcess();
-
-				if (wfProcess == null) {
-					throw new RuntimeException(
-							"Workflow process NOT found,id=[" + wfprocessId
-									+ "]");
-				}
 
 				ProcessInstance processInstance = new ProcessInstance();
 				processInstance.setCreatorId(creatorId);
@@ -125,101 +124,101 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 				ctx.getPersistenceService().saveOrUpdateProcessInstance(
 						processInstance);
 				
-				// 初始化流程变量
-				List<DataField> datafields = wfProcess.getDataFields();
-				for (int i = 0; datafields != null && i < datafields.size(); i++) {
-					DataField df =  datafields.get(i);
-					if (df.getDataType().equals(DataField.STRING)) {
-						if (df.getInitialValue() != null) {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), df.getInitialValue());
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), "");
-						}
-					} else if (df.getDataType().equals(DataField.INTEGER)) {
-						if (df.getInitialValue() != null) {
-							try {
-								Integer intValue = new Integer(df
-										.getInitialValue());
-								processInstance.setProcessInstanceVariable(df
-										.getName(), intValue);
-							} catch (Exception e) {
-							}
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), new Integer(0));
-						}
-					} else if (df.getDataType().equals(DataField.LONG)) {
-						if (df.getInitialValue() != null) {
-							try {
-								Long longValue = new Long(df.getInitialValue());
-								processInstance.setProcessInstanceVariable(df
-										.getName(), longValue);
-							} catch (Exception e) {
-							}
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), new Long(0));
-						}
-					} else if (df.getDataType().equals(DataField.FLOAT)) {
-						if (df.getInitialValue() != null) {
-							Float floatValue = new Float(df.getInitialValue());
-							processInstance.setProcessInstanceVariable(df
-									.getName(), floatValue);
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), new Float(0));
-						}
-					} else if (df.getDataType().equals(DataField.DOUBLE)) {
-						if (df.getInitialValue() != null) {
-							Double doubleValue = new Double(df
-									.getInitialValue());
-							processInstance.setProcessInstanceVariable(df
-									.getName(), doubleValue);
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), new Double(0));
-						}
-					} else if (df.getDataType().equals(DataField.BOOLEAN)) {
-						if (df.getInitialValue() != null) {
-							Boolean booleanValue = new Boolean(df
-									.getInitialValue());
-							processInstance.setProcessInstanceVariable(df
-									.getName(), booleanValue);
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), Boolean.FALSE);
-						}
-					} else if (df.getDataType().equals(DataField.DATETIME)) {
-						// TODO 需要完善一下
-						if (df.getInitialValue() != null
-								&& df.getDataPattern() != null) {
-							try {
-								SimpleDateFormat dFormat = new SimpleDateFormat(
-										df.getDataPattern());
-								Date dateTmp = dFormat.parse(df
-										.getInitialValue());
-								processInstance.setProcessInstanceVariable(df
-										.getName(), dateTmp);
-							} catch (Exception e) {
-								processInstance.setProcessInstanceVariable(df
-										.getName(), null);
-								e.printStackTrace();
-							}
-						} else {
-							processInstance.setProcessInstanceVariable(df
-									.getName(), null);
-						}
-					}
-				}
-
-				ctx.getPersistenceService().saveOrUpdateProcessInstance(
-						processInstance);
-
 				return processInstance;
 			}
 		});
+		
+		// 初始化流程变量
+		processInstance.setProcessInstanceVariables(new HashMap<String, Object>());
+		
+		List<DataField> datafields = wfProcess.getDataFields();
+		for (int i = 0; datafields != null && i < datafields.size(); i++) {
+			DataField df =  datafields.get(i);
+			if (df.getDataType().equals(DataField.STRING)) {
+				if (df.getInitialValue() != null) {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), df.getInitialValue());
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), "");
+				}
+			} else if (df.getDataType().equals(DataField.INTEGER)) {
+				if (df.getInitialValue() != null) {
+					try {
+						Integer intValue = new Integer(df
+								.getInitialValue());
+						processInstance.setProcessInstanceVariable(df
+								.getName(), intValue);
+					} catch (Exception e) {
+					}
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), new Integer(0));
+				}
+			} else if (df.getDataType().equals(DataField.LONG)) {
+				if (df.getInitialValue() != null) {
+					try {
+						Long longValue = new Long(df.getInitialValue());
+						processInstance.setProcessInstanceVariable(df
+								.getName(), longValue);
+					} catch (Exception e) {
+					}
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), new Long(0));
+				}
+			} else if (df.getDataType().equals(DataField.FLOAT)) {
+				if (df.getInitialValue() != null) {
+					Float floatValue = new Float(df.getInitialValue());
+					processInstance.setProcessInstanceVariable(df
+							.getName(), floatValue);
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), new Float(0));
+				}
+			} else if (df.getDataType().equals(DataField.DOUBLE)) {
+				if (df.getInitialValue() != null) {
+					Double doubleValue = new Double(df
+							.getInitialValue());
+					processInstance.setProcessInstanceVariable(df
+							.getName(), doubleValue);
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), new Double(0));
+				}
+			} else if (df.getDataType().equals(DataField.BOOLEAN)) {
+				if (df.getInitialValue() != null) {
+					Boolean booleanValue = new Boolean(df
+							.getInitialValue());
+					processInstance.setProcessInstanceVariable(df
+							.getName(), booleanValue);
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), Boolean.FALSE);
+				}
+			} else if (df.getDataType().equals(DataField.DATETIME)) {
+				// TODO 需要完善一下
+				if (df.getInitialValue() != null
+						&& df.getDataPattern() != null) {
+					try {
+						SimpleDateFormat dFormat = new SimpleDateFormat(
+								df.getDataPattern());
+						Date dateTmp = dFormat.parse(df
+								.getInitialValue());
+						processInstance.setProcessInstanceVariable(df
+								.getName(), dateTmp);
+					} catch (Exception e) {
+						processInstance.setProcessInstanceVariable(df
+								.getName(), null);
+						e.printStackTrace();
+					}
+				} else {
+					processInstance.setProcessInstanceVariable(df
+							.getName(), null);
+				}
+			}
+		}
+		return processInstance;
 	}
 
 	public IProcessInstance createProcessInstance(String workflowProcessId,
