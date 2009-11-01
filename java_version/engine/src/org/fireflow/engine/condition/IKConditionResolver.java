@@ -11,7 +11,7 @@ public class IKConditionResolver implements IConditionResolver {
 
 	public boolean resolveBooleanExpression(Map<String ,Object> vars, String elExpression)
 			throws Exception {
-		System.out.println("-----====------IK Expression---Expression is "+elExpression);
+//		System.out.println("-----====------IK Expression---Expression is "+elExpression);
 		List<Variable> variables = new ArrayList<Variable>();
 		String[] keys = vars.keySet().toArray(new String[vars.size()]);
 		for (int i=0;keys!=null && i<keys.length;i++){

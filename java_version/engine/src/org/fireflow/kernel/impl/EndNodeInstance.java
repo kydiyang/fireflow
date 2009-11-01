@@ -145,8 +145,16 @@ public class EndNodeInstance extends AbstractNodeInstance implements
         event2.setToken(tk);
         event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
         fireNodeEvent(event2);
+        
+        //在此事件监听器中，删除原有的token
+        NodeInstanceEvent event4 = new NodeInstanceEvent(this);
+        event4.setToken(tk);
+        event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
+        fireNodeEvent(event4);
+        
         //首先必须检查是否有满足条件的循环
         boolean doLoop = false;//表示是否有满足条件的循环，false表示没有，true表示有。
+
         if (joinPoint.getAlive()) {
             IToken tokenForLoop = null;
 
@@ -157,7 +165,9 @@ public class EndNodeInstance extends AbstractNodeInstance implements
                 tokenForLoop.setFromActivityId(joinPoint.getFromActivityId());
 
             for (int i = 0; i < this.leavingLoopInstances.size(); i++) {
+            	
                 ILoopInstance loopInstance = this.leavingLoopInstances.get(i);
+
                 doLoop = loopInstance.take(tokenForLoop);
                 if (doLoop) {
                     break;

@@ -96,6 +96,10 @@
 		<property name="dataSource" >
 			<ref bean="MyDataSource"></ref>
 		</property>  
+		<property name="lobHandler" ref="oracleLobHandler" />
+		<property name="show_sql">
+			<value>true</value>
+		</property>
     </bean>    
    
     

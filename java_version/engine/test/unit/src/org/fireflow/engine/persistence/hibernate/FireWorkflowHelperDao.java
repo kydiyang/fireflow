@@ -43,11 +43,16 @@ public class FireWorkflowHelperDao extends HibernateDaoSupport implements IFireW
 
             @SuppressWarnings("unchecked")
 			public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
+            	String deleteHql4ProcessInstanceVar = "delete from org.fireflow.engine.impl.ProcessInstanceVar ";
+            	
                 String selectHql4ProcessInstance = "from org.fireflow.engine.impl.ProcessInstance";
 //                String deleteHql4ProcessInstance = "delete from org.fireflow.engine.impl.ProcessInstance";
                 String deleteHql4TaskInstance = "delete from org.fireflow.engine.impl.TaskInstance";
                 String deleteHql4WorkItem = "delete from org.fireflow.engine.impl.WorkItem";
                 String deleteHql4Token = "delete from org.fireflow.kernel.impl.Token";
+                
+                Query query4ProcessInstanceVar = arg0.createQuery(deleteHql4ProcessInstanceVar);
+                query4ProcessInstanceVar.executeUpdate();
 
                 Query query4ProcessInstance = arg0.createQuery(selectHql4ProcessInstance);
                 List processInstanceList = query4ProcessInstance.list();

@@ -63,7 +63,11 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     private Date expiredTime = null;
     private String parentProcessInstanceId = null;
     private String parentTaskInstanceId = null;
-    private Map<String, Object> processInstanceVariables = new HashMap<String, Object>();
+
+    //null表示尚未初始化
+    private Map<String, Object> processInstanceVariables = null;//new HashMap<String, Object>();
+    
+    
     protected transient RuntimeContext rtCtx = null;
     protected transient IWorkflowSession workflowSession = null;
 
@@ -273,6 +277,17 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     }
 
     public Map<String ,Object> getProcessInstanceVariables() {
+		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+    	if (processInstanceVariables==null){
+    		//通过数据库查询进行初始化
+    		List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.getId());
+    		processInstanceVariables = new HashMap<String ,Object>();
+    		if (allVars!=null && allVars.size()!=0){
+    			for (ProcessInstanceVar theVar :allVars){
+    				processInstanceVariables.put(theVar.getVarPrimaryKey().getName(), theVar.getValue());
+    			}
+    		}
+    	}    	    	
         return processInstanceVariables;
     }
 
@@ -282,11 +297,44 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     }
 
     public Object getProcessInstanceVariable(String name) {
+		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+    	if (processInstanceVariables==null){
+    		//通过数据库查询进行初始化
+    		List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.getId());
+    		processInstanceVariables = new HashMap<String ,Object>();
+    		if (allVars!=null && allVars.size()!=0){
+    			for (ProcessInstanceVar theVar :allVars){
+    				processInstanceVariables.put(theVar.getVarPrimaryKey().getName(), theVar.getValue());
+    			}
+    		}
+    	}    	
         return processInstanceVariables.get(name);
     }
 
-    public void setProcessInstanceVariable(String name, Object var) {
-        processInstanceVariables.put(name, var);
+    public void setProcessInstanceVariable(String name, Object value) {
+		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+    	if (processInstanceVariables==null){
+    		//通过数据库查询进行初始化
+    		List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.getId());
+    		processInstanceVariables = new HashMap<String ,Object>();
+    		if (allVars!=null && allVars.size()!=0){
+    			for (ProcessInstanceVar theVar :allVars){
+    				processInstanceVariables.put(theVar.getVarPrimaryKey().getName(), theVar.getValue());
+    			}
+    		}
+    	}
+    	ProcessInstanceVar procInstVar = new ProcessInstanceVar();
+    	ProcessInstanceVarPk pk = new ProcessInstanceVarPk();
+    	pk.setProcessInstanceId(this.getId());
+    	pk.setName(name);
+    	procInstVar.setVarPrimaryKey(pk);
+    	procInstVar.setValue(value);
+    	if (processInstanceVariables.containsKey(name)){
+    		persistenceService.updateProcessInstanceVariable(procInstVar);
+    	}else{
+    		persistenceService.saveProcessInstanceVariable(procInstVar);
+    	}
+        processInstanceVariables.put(name, value);
     }
 
     public WorkflowProcess getWorkflowProcess() throws EngineException {

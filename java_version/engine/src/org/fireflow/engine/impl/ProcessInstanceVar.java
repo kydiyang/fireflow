@@ -17,7 +17,7 @@
 package org.fireflow.engine.impl;
 
 /**
- * @deprecated 
+ * 
  * @author 非也,nychen2000@163.com
  */
 public class ProcessInstanceVar {
@@ -32,14 +32,20 @@ public class ProcessInstanceVar {
         this.varPrimaryKey = varPrimaryKey;
     }
 
-
+    public String getName(){
+    	return varPrimaryKey==null?null:varPrimaryKey.getName();
+    }
+    
+    public String getProcessInstanceId(){
+    	return varPrimaryKey==null?null:varPrimaryKey.getProcessInstanceId();
+    }
 
     public Object getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void setValue(Object v) {
+        this.value = v;
     }
     
 

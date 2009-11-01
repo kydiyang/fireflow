@@ -25,6 +25,7 @@ import org.fireflow.engine.IWorkItem;
 import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.ProcessInstanceTrace;
+import org.fireflow.engine.impl.ProcessInstanceVar;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.kernel.IToken;
 
@@ -116,8 +117,25 @@ public interface IPersistenceService extends IRuntimeContextAware{
     public void restoreProcessInstance(ProcessInstance processInstance);
 
     
+    /******************************************************************************/
+    /************                                                        **********/
+    /************            与流程变量相关的持久化方法                    **********/    
+    /************            Persistence methods for process instance    **********/
+    /************                                                        **********/    
+    /******************************************************************************/    
     
+    /**
+     * 查询流程实例的所有变量
+     * @param processInstanceId 流程实例的Id
+     * @return 流程实例的所有变量
+     */
+    public List<ProcessInstanceVar> findProcessInstanceVariable(String processInstanceId);
     
+    public ProcessInstanceVar findProcessInstanceVariable(String processInstanceId,String name);
+    
+    public void updateProcessInstanceVariable(ProcessInstanceVar var);
+    
+    public void saveProcessInstanceVariable(ProcessInstanceVar var);
     
     /******************************************************************************/
     /************                                                        **********/

@@ -1,4 +1,12 @@
 #############################################################
+###  org-fireflow-engine-1.0.0-release-build09??.jar    ###
+#############################################################
+1、济南-聚灵(QQ 229849534)优化了代码，删除了一些垃圾和deprecated方法
+2、修正了EndNodeInstance中的一个错误，将NodeInstanceEvent.NODEINSTANCE_LEAVING事件发布出去，
+       并在该事件中删除相应的token。该错误会导致Loop的死循环（见http://www.fireflow.org/viewthread.php?tid=587&extra=page%3D2）
+       
+
+#############################################################
 ###  org-fireflow-engine-1.0.0-release-build091008.jar    ###
 #############################################################
 1、增加IWorkItem.jumpToEx(...)方法，取消了当前环节和目标环节必须在同一条执行线的限制，使得自由流更加自由

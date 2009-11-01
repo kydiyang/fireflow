@@ -16,11 +16,13 @@
  */
 package org.fireflow.engine.impl;
 
+import java.io.Serializable;
+
 /**
- * @deprecated 
+ * 
  * @author chennieyun
  */
-public class ProcessInstanceVarPk {
+public class ProcessInstanceVarPk implements Serializable{
     String processInstanceId = null;
     String name = null;
     public String getName() {
@@ -40,24 +42,35 @@ public class ProcessInstanceVarPk {
     }
     
     public boolean equals(Object obj){
-        if (obj==this)return true;
-        if (!(obj instanceof ProcessInstanceVarPk))return false;
-        ProcessInstanceVarPk var = (ProcessInstanceVarPk)obj;
-        if (var.getProcessInstanceId()!=null && var.getProcessInstanceId().equals(this.processInstanceId)
-                && var.getName()!=null && var.getName().equals(this.name)
-                ){
-            return true;
-        }else{
-            return false;
-        }
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProcessInstanceVarPk other = (ProcessInstanceVarPk) obj;
+		if (name == null)
+		{
+			if (other.name != null)
+				return false;
+		}
+		else if (!name.equals(other.name))
+			return false;
+		if (processInstanceId == null)
+		{
+			if (other.processInstanceId != null)
+				return false;
+		}
+		else if (!processInstanceId.equals(other.processInstanceId))
+			return false;
+		return true;
     }
     
     public int hashCode(){
-        String compositeId = this.name+this.processInstanceId;
-        if (compositeId==null){
-            return super.hashCode();
-        }else{
-            return (compositeId).hashCode();
-        }
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((processInstanceId == null) ? 0 : processInstanceId.hashCode());
+		return result;
     }    
 }

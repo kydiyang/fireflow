@@ -76,6 +76,7 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
      * @see org.fireflow.kernel.IEdgeInstance#take(org.fireflow.kernel.IToken)
      */
     public boolean take(IToken token) throws KernelException {
+
         boolean oldAlive = token.isAlive();
 
         EdgeInstanceEvent e = new EdgeInstanceEvent(this);
@@ -96,6 +97,7 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
         }else{//否则流转到下一个节点
 
             INodeInstance nodeInst = this.getLeavingNodeInstance();
+
             token.setValue(this.getWeight());
             nodeInst.fire(token);
             return newAlive;

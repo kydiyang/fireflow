@@ -198,6 +198,7 @@ public class ProcessInstanceVariableType implements UserType {
 			throws HibernateException, SQLException {
 		if (arg1 == null) {
 			arg0.setString(arg2, null);
+			return;
 		}
 		String type = arg1.getClass().getName();
 		if (type.equals(String.class.getName())) {

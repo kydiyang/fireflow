@@ -118,11 +118,13 @@ public class AComplexAbort {
             protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                 try {
                     IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(workItemId_1);
-                    paymentTaskWorkItem.complete("this is a comments");
+                    IWorkItem workItem_1 = workflowSession.findWorkItemById(workItemId_1);
+                    workItem_1.complete("this is a comments");
                 } catch (EngineException ex) {
+                	ex.printStackTrace();
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (KernelException ex) {
+                	ex.printStackTrace();
                     Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
