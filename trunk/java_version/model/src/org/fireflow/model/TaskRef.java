@@ -66,8 +66,6 @@ public class TaskRef extends AbstractWFElement {
 
     }
 
-
-
     @Override
     public String toString() {
         return referencedTask.toString();

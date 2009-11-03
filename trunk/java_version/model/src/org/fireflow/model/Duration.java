@@ -50,11 +50,9 @@ package org.fireflow.model;
 
 import java.io.Serializable;
 
-
-//@author Anthony Eden
-//Updated by nychen2000
-
 /**
+ * @author Anthony Eden 
+ * Updated by nychen2000
  * 时间间隔
  */
 @SuppressWarnings("serial")
@@ -79,8 +77,6 @@ public class Duration implements Serializable {
     public Duration(int value, String unit) {
         this.value = value;
         this.unit = unit;
-
-//        log.debug("Duration(" + value + ", " + unit + ")");
     }
     
     /**
@@ -132,16 +128,10 @@ public class Duration implements Serializable {
     public long getDurationInMilliseconds(String defaultUnit) {
         int value = getValue();
         String unit = getUnit(defaultUnit);
-
-        //log.debug("Duration value: " + value);
-        //log.debug("Duration unit: " + unit);
-        //log.debug("Unit in MS: " + unit.toMilliseconds());
-
         if (value == 0) {
             return value;
         } else {
             long duration = value * toMilliseconds(unit);
-            //log.debug("Duration in MS: " + duration);
             return duration;
         }
     }

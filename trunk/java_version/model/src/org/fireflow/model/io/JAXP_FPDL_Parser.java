@@ -64,6 +64,9 @@ import org.xml.sax.SAXException;
  */
 public class JAXP_FPDL_Parser implements IFPDLParser {
 
+    /* (non-Javadoc)
+     * @see org.fireflow.model.io.IFPDLParser#parse(java.io.InputStream)
+     */
     public WorkflowProcess parse(InputStream in) throws IOException, FPDLParserException {
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -93,6 +96,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param document
+     * @return
+     * @throws FPDLParserException
+     */
     protected WorkflowProcess parse(Document document) throws FPDLParserException {
 
         Element workflowProcessElement = document.getDocumentElement();
@@ -146,6 +154,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
 
     }
 
+    /**
+     * @param listeners
+     * @param element
+     */
     protected void loadEventListeners(List<EventListener> listeners, Element element) {
         listeners.clear();
         if (element == null) {
@@ -165,6 +177,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadStartNode(WorkflowProcess wp, Element element)
             throws FPDLParserException {
         if (element == null) {
@@ -179,6 +196,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         wp.setStartNode(startNode);
     }
 
+    /**
+     * @param wp
+     * @param endNodes
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadEndNodes(WorkflowProcess wp, List<EndNode> endNodes,
             Element element) throws FPDLParserException {
         endNodes.clear();
@@ -199,6 +222,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param synchronizers
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadSynchronizers(WorkflowProcess wp, List<Synchronizer> synchronizers,
             Element element) throws FPDLParserException {
         synchronizers.clear();
@@ -222,10 +251,15 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param activities
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadActivities(WorkflowProcess wp, List<Activity> activities,
             Element element) throws FPDLParserException {
         if (element == null) {
-            // log.debug("Activites element was null");
             return;
         }
 
@@ -252,6 +286,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param workflowProcess
+     * @param parent
+     * @param taskRefs
+     * @param taskRefsElement
+     */
     protected void loadTaskRefs(WorkflowProcess workflowProcess, IWFElement parent, List<TaskRef> taskRefs, Element taskRefsElement) {
         taskRefs.clear();
         if (taskRefsElement == null) {
@@ -271,6 +311,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param parent
+     * @param tasks
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadTasks(IWFElement parent, List<Task> tasks, Element element)
             throws FPDLParserException {
         tasks.clear();
@@ -285,6 +331,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param parent
+     * @param taskElement
+     * @return
+     * @throws FPDLParserException
+     */
     protected Task createTask(IWFElement parent, Element taskElement)
             throws FPDLParserException {
         Task task = null;
@@ -339,6 +391,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
 
     }
 
+    /**
+     * @param performerElement
+     * @return
+     */
     protected Participant createPerformer(Element performerElement) {
         if (performerElement == null) {
             return null;
@@ -352,6 +408,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return part;
     }
 
+    /**
+     * @param subFlowElement
+     * @return
+     */
     protected SubWorkflowProcess createSubWorkflowProcess(Element subFlowElement) {
         if (subFlowElement == null) {
             return null;
@@ -367,6 +427,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return subFlow;
     }
 
+    /**
+     * @param applicationElement
+     * @return
+     */
     protected Application createApplication(Element applicationElement) {
         if (applicationElement == null) {
             return null;
@@ -380,6 +444,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return app;
     }
 
+    /**
+     * @param formElement
+     * @return
+     */
     protected Form createForm(Element formElement) {
         if (formElement == null) {
             return null;
@@ -392,6 +460,10 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return form;
     }
 
+    /**
+     * @param durationElement
+     * @return
+     */
     protected Duration createDuration(Element durationElement) {
         if (durationElement == null) {
             return null;
@@ -413,6 +485,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return duration;
     }
 
+    /**
+     * @param wp
+     * @param loopElement
+     * @return
+     * @throws FPDLParserException
+     */
     protected Loop createLoop(WorkflowProcess wp, Element loopElement)
             throws FPDLParserException {
         String fromNodeId = loopElement.getAttribute(FROM);
@@ -440,6 +518,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return loop;
     }
 
+    /**
+     * @param wp
+     * @param loopsElement
+     * @throws FPDLParserException
+     */
     protected void loadLoops(WorkflowProcess wp, Element loopsElement) throws FPDLParserException {
         if (loopsElement == null) {
             return;
@@ -464,6 +547,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadTransitions(WorkflowProcess wp, Element element)
             throws FPDLParserException {
 
@@ -474,6 +562,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         loadTransitions(wp, Util4JAXPParser.children(element, TRANSITION));
     }
 
+    /**
+     * @param wp
+     * @param elements
+     * @throws FPDLParserException
+     */
     protected void loadTransitions(WorkflowProcess wp, List<Element> elements)
             throws FPDLParserException {
         List<Transition> transitions = wp.getTransitions();
@@ -522,6 +615,13 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @param nodeMap
+     * @return
+     * @throws FPDLParserException
+     */
     protected Transition createTransition(WorkflowProcess wp, Element element, Map<String,Node> nodeMap)
             throws FPDLParserException {
         String fromNodeId = element.getAttribute(FROM);
@@ -549,6 +649,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return transition;
     }
 
+    /**
+     * @param wp
+     * @param dataFields
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadDataFields(WorkflowProcess wp, List<DataField> dataFields,
             Element element) throws FPDLParserException {
 
@@ -565,6 +671,12 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         }
     }
 
+    /**
+     * @param wp
+     * @param element
+     * @return
+     * @throws FPDLParserException
+     */
     protected DataField createDataField(WorkflowProcess wp, Element element)
             throws FPDLParserException {
         if (element == null) {
@@ -584,6 +696,11 @@ public class JAXP_FPDL_Parser implements IFPDLParser {
         return dataField;
     }
 
+    /**
+     * @param extendedAttributes
+     * @param element
+     * @throws FPDLParserException
+     */
     protected void loadExtendedAttributes(Map<String, String> extendedAttributes,
             Element element) throws FPDLParserException {
 

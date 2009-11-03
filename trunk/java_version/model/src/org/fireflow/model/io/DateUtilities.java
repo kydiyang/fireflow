@@ -68,14 +68,16 @@ public class DateUtilities{
     private static final DateUtilities dateUtilities = new DateUtilities();
     private List<SimpleDateFormat> formats;
 
-    /** Construct a new DateUtilities class. */
-
+    /**
+     * Construct a new DateUtilities class.
+     */
     private DateUtilities(){
         resetFormats();
     }
 
-    /** Reset the supported formats to the default set. */
-
+    /** 
+     * Reset the supported formats to the default set. 
+     */
     public void resetFormats(){
         formats = new ArrayList<SimpleDateFormat>();
 
@@ -91,22 +93,20 @@ public class DateUtilities{
         formats.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
-    /** Get an instance of the DateUtilities class.
-
-        @return A DateUtilities instance
-    */
-
+    /** 
+     * Get an instance of the DateUtilities class.
+     * @return A DateUtilities instance
+     */
     public static DateUtilities getInstance(){
         return dateUtilities;
     }
 
-    /** Parse the specified date String.
-
-        @param dateString The date String
-        @return The Date object
-        @throws ParseException If the date format is not supported
-    */
-
+    /** 
+     * Parse the specified date String.
+     * @param dateString The date String
+     * @return The Date object
+     * @throws ParseException If the date format is not supported
+     */
     public Date parse(String dateString) throws ParseException{
         Iterator<SimpleDateFormat> iter = formats.iterator();
         while(iter.hasNext()){
@@ -119,11 +119,10 @@ public class DateUtilities{
         throw new ParseException("Unsupported date format", -1);
     }
 
-    /** Return a List of date formats to try.
-
-        @return A List of DateFormat objects
-    */
-
+    /** 
+     * Return a List of date formats to try.
+     * @return A List of DateFormat objects
+     */
     public List<SimpleDateFormat> getFormats(){
         return formats;
     }

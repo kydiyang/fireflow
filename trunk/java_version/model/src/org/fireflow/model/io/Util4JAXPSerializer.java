@@ -38,37 +38,34 @@ public class Util4JAXPSerializer {
         return (Element)parent.appendChild(child);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to <br>
+     * the given parent element and return the child element.  This method <br>
+     * will use the namespace of the parent element for the child element's namespace.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, Date value){
         return addElement(w3cDoc,parent, name, value, null);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, Date value,
-    Date defaultValue){
+    		Date defaultValue){
         Element child = null;
 
         if(value == null){
@@ -83,48 +80,37 @@ public class Util4JAXPSerializer {
         return child;
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, String value){
         return addElement(w3cDoc,parent, name, value, null);
     }
 
-//    static Element addElement(Element parent,String name,CDATA value){
-//        org.w3c.dom.
-//      Element child = null;
-//
-//      child = addElement(parent, name);
-//      child.add(value);
-//
-//      return child;
-//
-//    }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
 
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, String value,
-    String defaultValue){
+    		String defaultValue){
         Element child = null;
 
         if(value == null){
@@ -139,37 +125,35 @@ public class Util4JAXPSerializer {
         return child;
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, URL value){
         return addElement(w3cDoc,parent, name, value, null);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, URL value,
-    URL defaultValue){
+    		URL defaultValue){
         Element child = null;
 
         if(value == null){
@@ -184,36 +168,35 @@ public class Util4JAXPSerializer {
         return child;
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, Duration value){
         return addElement(w3cDoc,parent, name, value, null);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Document w3cDoc,Element parent, String name, Duration value,
-    Duration defaultValue){
+    		Duration defaultValue){
         Element child = null;
 
         if(value == null){

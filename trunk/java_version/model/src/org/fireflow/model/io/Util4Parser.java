@@ -65,33 +65,32 @@ import org.dom4j.QName;
 */
 public class Util4Parser {
 
-    //private static final DateFormat STANDARD_DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    /**
+     * 私有构造方法
+     */
     private Util4Parser() {
         // no op
     }
 
-    /** Return the child element with the given name.  The element must be in
-     the same name space as the parent element.
-
-     @param element The parent element
-     @param name The child element name
-     @return The child element
+    /** 
+     * Return the child element with the given name.  The element must be in
+     * the same name space as the parent element.
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child element
      */
-
     public static Element child(Element element, String name) {
     	Element child = element.element(new QName(name, element.getNamespace()));
         return child;
     }
 
-    /** Return the child elements with the given name.  The elements must be in
-     the same name space as the parent element.
-
-     @param element The parent element
-     @param name The child element name
-     @return The child elements
+    /** 
+     * Return the child elements with the given name.  The elements must be in
+     * the same name space as the parent element.
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child elements
      */
-
     @SuppressWarnings("unchecked")
 	public static List<Element> children(Element element, String name) {
         if (element==null){
@@ -102,20 +101,25 @@ public class Util4Parser {
 
     // Conversion
 
-    /** Return the value of the child element with the given name.  The element
-     must be in the same name space as the parent element.
-
-     @param element The parent element
-     @param name The child element name
-     @return The child element value
+    /** 
+     * Return the value of the child element with the given name.  The element
+     * must be in the same name space as the parent element.
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child element value
      */
-
     public static String elementAsString(Element element, String name) {
         String s = element.elementTextTrim(
             new QName(name, element.getNamespace()));
         return (s == null || s.length() == 0) ? null : s;
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     * @throws FPDLParserException
+     */
     public static Date elementAsDate(Element element, String name) throws
         FPDLParserException {
         String text = elementAsString(element, name);
@@ -125,12 +129,16 @@ public class Util4Parser {
 
         try {
             return DateUtilities.getInstance().parse(text);
-            //return STANDARD_DF.parse(text);
         } catch (ParseException e) {
             throw new FPDLParserException("Error parsing date: " + text, e);
         }
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     */
     public static int elementAsInteger(Element element, String name) {
         String text = elementAsString(element, name);
         if (text == null) {
@@ -140,6 +148,11 @@ public class Util4Parser {
         return Integer.parseInt(text);
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     */
     public static boolean elementAsBoolean(Element element, String name) {
         String text = elementAsString(element, name);
         if (text == null) {
@@ -149,6 +162,12 @@ public class Util4Parser {
         return new Boolean(text).booleanValue();
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     * @throws FPDLParserException
+     */
     public static URL elementAsURL(Element element, String name) throws
         FPDLParserException {
         String text = elementAsString(element, name);

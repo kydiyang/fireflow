@@ -53,17 +53,6 @@ public class FormTask extends Task{
      */
     public static final String ANY = "ANY";
 
-//被mignjie.mj注释掉 20091018 
-//    /**
-//     * @deprecated
-//     */
-//    public static final String MANUAL = "MANUAL";
-//    /**
-//     * @deprecated
-//     */
-//    public static final String AUTOMATIC = "AUTOMATIC";
-//
-
     
     //----------Form Task 的属性
     /**
@@ -96,8 +85,6 @@ public class FormTask extends Task{
      */
     protected Form listForm = null;
 
-
-//    protected String startMode = MANUAL ;//启动模式，启动模式没有意义，application和subflow自动启动，Form一般情况下签收时启动，如果需要自动启动则在assignable接口中实现。
 
     public FormTask(){
         this.setType(FORM);
@@ -156,9 +143,6 @@ public class FormTask extends Task{
         this.defaultView = defaultView;
     }
 
-
-
-
     public Form getEditForm() {
         return editForm;
     }
@@ -182,7 +166,5 @@ public class FormTask extends Task{
     public void setListForm(Form listForm) {
         this.listForm = listForm;
     }
-
-
 
 }

@@ -37,8 +37,6 @@ import org.fireflow.model.net.Transition;
 @SuppressWarnings("serial")
 public class WorkflowProcess extends AbstractWFElement {
 
-	// 子元素
-	// private List formalParameters = new ArrayList();
 	/**
 	 * 流程数据项，运行时转换为流程变量进行存储。
 	 */
@@ -131,8 +129,6 @@ public class WorkflowProcess extends AbstractWFElement {
 	 */
 	protected String subflowTaskInstanceCompletionEvaluator = null;
 
-	// private int version =
-	// 1;//version在流程定义中不需要，只有在流程存储中需要，每次updatge数据库，都需要增加Version值
 	/**
 	 * 构造函数
 	 * 
@@ -144,9 +140,6 @@ public class WorkflowProcess extends AbstractWFElement {
 		super(null, name);
 	}
 
-	// public List getFormalParameters() {
-	// return formalParameters;
-	// }
 	/**
 	 * 返回所有的流程数据项
 	 * 
@@ -182,14 +175,6 @@ public class WorkflowProcess extends AbstractWFElement {
 	public List<Transition> getTransitions() {
 		return transitions;
 	}
-
-	// public int getVersion() {
-	// return version;
-	// }
-	//
-	// public void setVersion(int version) {
-	// this.version = version;
-	// }
 
 	/**
 	 * 返回开始节点

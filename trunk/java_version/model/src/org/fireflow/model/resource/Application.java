@@ -27,13 +27,15 @@ public class Application extends AbstractResource {
 	 * 后台程序的类名。
 	 */
 	private String handler = null;
+	
 	public Application(String name) {
 		this.setName(name);
-		// TODO Auto-generated constructor stub
 	}
+	
 	public String getHandler() {
 		return handler;
 	}
+	
 	public void setHandler(String handler) {
 		this.handler = handler;
 	}

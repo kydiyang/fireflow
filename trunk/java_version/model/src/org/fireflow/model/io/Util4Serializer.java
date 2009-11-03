@@ -62,65 +62,66 @@ import org.dom4j.QName;
 import org.fireflow.model.Duration;
 
 
-/** Dom4J XPDL Serializer utility class.
-
-    @author Anthony Eden
+/** 
+ * Dom4J XPDL Serializer utility class.
+ * @author Anthony Eden
  * Updated by nychen2000
-*/
-
+ */
 class Util4Serializer{
 
     /* ISO standard date format. */
     private static final DateFormat STANDARD_DF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
-    /** Noop constructor. */
-
+    /** 
+     * Noop constructor. 
+     *
+     */
     private Util4Serializer(){
         // no op
     }
 
-    /** Add a child element with the specific name to the given parent
-        element and return the child element.  This method will use the
-        namespace of the parent element for the child element's namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name to the given parent
+     * element and return the child element.  This method will use the
+     * namespace of the parent element for the child element's namespace.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @return The child element
+     */
     static Element addElement(Element parent, String name){
         return parent.addElement(new QName(name, parent.getNamespace()));
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, Date value){
         return addElement(parent, name, value, null);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is used.  
+     * If the value is null then this method will not add the child
+     * element and will return null.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, Date value,
     Date defaultValue){
         Element child = null;
@@ -137,21 +138,28 @@ class Util4Serializer{
         return child;
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, String value){
         return addElement(parent, name, value, null);
     }
 
+    /**
+     * 
+     * @param parent
+     * @param name
+     * @param value
+     * @return
+     */
     static Element addElement(Element parent,String name,CDATA value){
 
       Element child = null;
@@ -163,20 +171,20 @@ class Util4Serializer{
 
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, String value,
     String defaultValue){
         Element child = null;
@@ -193,35 +201,35 @@ class Util4Serializer{
         return child;
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, URL value){
         return addElement(parent, name, value, null);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /**
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, URL value,
     URL defaultValue){
         Element child = null;
@@ -238,35 +246,35 @@ class Util4Serializer{
         return child;
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, Duration value){
         return addElement(parent, name, value, null);
     }
 
-    /** Add a child element with the specific name and the given value to
-        the given parent element and return the child element.  This method
-        will use the namespace of the parent element for the child element's
-        namespace.  If the given value is null then the default value is
-        used.  If the value is null then this method will not add the child
-        element and will return null.
-
-        @param parent The parent element
-        @param name The new child element name
-        @param value The value
-        @param defaultValue The default value (if the value is null)
-        @return The child element
-    */
-
+    /** 
+     * Add a child element with the specific name and the given value to
+     * the given parent element and return the child element.  This method
+     * will use the namespace of the parent element for the child element's
+     * namespace.  If the given value is null then the default value is
+     * used.  If the value is null then this method will not add the child
+     * element and will return null.
+     * 
+     * @param parent The parent element
+     * @param name The new child element name
+     * @param value The value
+     * @param defaultValue The default value (if the value is null)
+     * @return The child element
+     */
     static Element addElement(Element parent, String name, Duration value,
     Duration defaultValue){
         Element child = null;
@@ -282,18 +290,23 @@ class Util4Serializer{
 
         return child;
     }
+    /**
+     * 
+     * @param element
+     * @param name
+     * @return
+     */
     public static Element child(Element element, String name) {
         return element.element(new QName(name, element.getNamespace()));
     }
 
-    /** Return the child elements with the given name.  The elements must be in
-     the same name space as the parent element.
-
-     @param element The parent element
-     @param name The child element name
-     @return The child elements
+    /** 
+     * Return the child elements with the given name.  The elements must be in
+     * the same name space as the parent element.
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child elements
      */
-
     @SuppressWarnings("unchecked")
 	public static List children(Element element, String name) {
         return element.elements(new QName(name, element.getNamespace()));
@@ -301,20 +314,27 @@ class Util4Serializer{
 
     // Conversion
 
-    /** Return the value of the child element with the given name.  The element
-     must be in the same name space as the parent element.
-
-     @param element The parent element
-     @param name The child element name
-     @return The child element value
+    /** 
+     * Return the value of the child element with the given name.  The element
+     * must be in the same name space as the parent element.
+     * 
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child element value
      */
-
     public static String elementAsString(Element element, String name) {
         String s = element.elementTextTrim(
             new QName(name, element.getNamespace()));
         return (s == null || s.length() == 0) ? null : s;
     }
 
+    /**
+     * 
+     * @param element
+     * @param name
+     * @return
+     * @throws FPDLParserException
+     */
     public static Date elementAsDate(Element element, String name) throws
         FPDLParserException {
         String text = elementAsString(element, name);
@@ -330,6 +350,12 @@ class Util4Serializer{
         }
     }
 
+    /**
+     * 
+     * @param element
+     * @param name
+     * @return
+     */
     public static int elementAsInteger(Element element, String name) {
         String text = elementAsString(element, name);
         if (text == null) {
@@ -338,65 +364,4 @@ class Util4Serializer{
 
         return Integer.parseInt(text);
     }
-
-    /*
-    public static boolean elementAsBoolean(Element element, String name) {
-        String text = elementAsString(element, name);
-        if (text == null) {
-            return false;
-        }
-
-        return new Boolean(text).booleanValue();
-    }
-
-    public static URL elementAsURL(Element element, String name) throws
-        FPDLParserException {
-        String text = elementAsString(element, name);
-        if (text == null) {
-            return null;
-        }
-
-        try {
-            return new URL(text);
-        } catch (MalformedURLException e) {
-            throw new FPDLParserException("Invalid URL: " + text, e);
-        }
-    }
-
-    public static Duration elementAsDuration(Element element, String name)
-        throws FPDLParserException {
-        String text = elementAsString(element, name);
-        if (text == null) {
-            return null;
-        }
-
-        try {
-            return Duration.parse(text);
-        } catch (NumberFormatException e) {
-            throw new FPDLParserException("Error parsing duration", e);
-        }
-    }
-
-    public static DurationUnit elementAsDurationUnit(Element element,
-        String name) throws FPDLParserException {
-        String text = elementAsString(element, name);
-        if (text == null) {
-            return null;
-        }
-
-        try {
-            return DurationUnit.fromString(text);
-        } catch (NumberFormatException e) {
-            throw new FPDLParserException("Error parsing duration unit", e);
-        }
-    }
-    */
-    
-//    public static boolean isNotEmpty(String s){
-//    	if (s==null || s.trim().equals("")){
-//    		return false;
-//    	}else{
-//    		return true;
-//    	}
-//    }
 }

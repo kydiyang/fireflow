@@ -63,6 +63,9 @@ public abstract class AbstractWFElement implements IWFElement, Serializable {
      */
     private Map<String, String> extendedAttributes;
 
+    /**
+     * 构造方法
+     */
     public AbstractWFElement(){
         
     }

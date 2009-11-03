@@ -91,6 +91,9 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
     public static final String DEFAULT_VENDOR = "\u975E\u4E5F";
 
 
+    /* (non-Javadoc)
+     * @see org.fireflow.model.io.IFPDLSerializer#serialize(org.fireflow.model.WorkflowProcess, java.io.OutputStream)
+     */
     public void serialize(WorkflowProcess workflowProcess, OutputStream out)
             throws IOException, FPDLSerializerException {
 
@@ -107,6 +110,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
     }
 
 
+    /**
+     * @param workflowProcess
+     * @return
+     * @throws FPDLSerializerException
+     */
     public Document workflowProcessToDom(WorkflowProcess workflowProcess)
             throws FPDLSerializerException {
         DocumentFactory df = new DocumentFactory();
@@ -171,6 +179,12 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    /**
+     * @param workflowProcess
+     * @return
+     * @throws IOException
+     * @throws FPDLSerializerException
+     */
     public String workflowProcessToXMLString(WorkflowProcess workflowProcess)
             throws IOException, FPDLSerializerException {
         Document dom = workflowProcessToDom(workflowProcess);
@@ -185,6 +199,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    /**
+     * @param eventListeners
+     * @param parentElement
+     */
     protected void writeEventListeners(List<EventListener> eventListeners, Element parentElement) {
         if (eventListeners == null || eventListeners.size() == 0) {
             return;
@@ -201,6 +219,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param dataFields
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeDataFields(List<DataField> dataFields, Element parent)
             throws FPDLSerializerException {
 
@@ -231,6 +254,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param endNodes
+     * @param parent
+     */
     protected void writeEndNodes(List<EndNode> endNodes, Element parent) {
         Element endNodesElement = Util4Serializer.addElement(parent, END_NODES);
         Iterator<EndNode> iter = endNodes.iterator();
@@ -240,6 +267,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param endNode
+     * @param parent
+     */
     protected void writeEndNode(EndNode endNode, Element parent) {
         Element endNodeElement = Util4Serializer.addElement(parent, END_NODE);
         endNodeElement.addAttribute(ID, endNode.getId());
@@ -252,6 +283,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    /**
+     * @param startNode
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeStartNode(StartNode startNode, Element parent)
             throws FPDLSerializerException {
         if (startNode == null) {
@@ -268,6 +304,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         writeExtendedAttributes(startNode.getExtendedAttributes(), startElement);
     }
 
+    /**
+     * @param synchronizers
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeSynchronizers(List<Synchronizer> synchronizers, Element parent)
             throws FPDLSerializerException {
         if (synchronizers == null || synchronizers.size() == 0) {
@@ -283,6 +324,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param synchronizer
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeSynchronizer(Synchronizer synchronizer, Element parent)
             throws FPDLSerializerException {
         Element synchronizerElement = Util4Serializer.addElement(parent,
@@ -297,6 +343,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
                 synchronizerElement);
     }
 
+    /**
+     * @param activities
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeActivities(List<Activity> activities, Element parent)
             throws FPDLSerializerException {
 
@@ -313,6 +364,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param activity
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeActivity(Activity activity, Element parent)
             throws FPDLSerializerException {
 
@@ -332,6 +388,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         writeTaskRefs(activity.getTaskRefs(), activityElement);
     }
 
+    /**
+     * @param taskRefs
+     * @param parent
+     */
     protected void writeTaskRefs(List<TaskRef> taskRefs, Element parent) {
         Element taskRefsElement = Util4Serializer.addElement(parent, TASKREFS);
         Iterator<TaskRef>  iter = taskRefs.iterator();
@@ -342,6 +402,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param tasks
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeTasks(List<Task> tasks, Element parent)
             throws FPDLSerializerException {
         Element tasksElement = Util4Serializer.addElement(parent, TASKS);
@@ -352,6 +417,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param task
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeTask(Task task, Element parent)
             throws FPDLSerializerException {
         Element taskElement = Util4Serializer.addElement(parent, TASK);
@@ -400,6 +470,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         writeExtendedAttributes(task.getExtendedAttributes(), taskElement);
     }
 
+    /**
+     * @param duration
+     * @param parent
+     */
     protected void writeDuration(Duration duration, Element parent) {
         if (duration == null) {
             return;
@@ -410,6 +484,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         durationElement.addAttribute(IS_BUSINESS_TIME, Boolean.toString(duration.isBusinessTime()));
     }
 
+    /**
+     * @param formName
+     * @param form
+     * @param parent
+     */
     protected void writeForm(String formName, Form form, Element parent) {
         if (form == null) {
             return;
@@ -422,6 +501,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Util4Serializer.addElement(editFormElement, URI, form.getUri());
     }
 
+    /**
+     * @param loops
+     * @param parent
+     */
     protected void writeLoops(List<Loop> loops, Element parent) {
         if (loops == null || loops.size() == 0) {
             return;
@@ -450,6 +533,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param transitions
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeTransitions(List<Transition> transitions, Element parent)
             throws FPDLSerializerException {
 
@@ -466,6 +554,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         }
     }
 
+    /**
+     * @param transition
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeTransition(Transition transition, Element parent)
             throws FPDLSerializerException {
 
@@ -485,6 +578,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
                 transitionElement);
     }
 
+    /**
+     * @param extendedAttributes
+     * @param parent
+     * @return
+     */
     protected Element writeExtendedAttributes(Map<String,String> extendedAttributes,
             Element parent) {
 
@@ -495,8 +593,6 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
         Element extendedAttributesElement =
                 Util4Serializer.addElement(parent,
                 EXTENDED_ATTRIBUTES);
-//                        parent
-//				.addElement(EXTENDED_ATTRIBUTES);
 
         Iterator<String> keys = extendedAttributes.keySet().iterator();
         while (keys.hasNext()) {
@@ -516,6 +612,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    /**
+     * @param participant
+     * @param parent
+     */
     protected void writePerformer(Participant participant, Element parent) {
         if (participant == null) {
             return;
@@ -534,6 +634,10 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    /**
+     * @param subWorkflowProcess
+     * @param parent
+     */
     protected void writeSubWorkflowProcess(SubWorkflowProcess subWorkflowProcess, Element parent) {
         if (subWorkflowProcess == null) {
             return;
@@ -551,6 +655,11 @@ public class Dom4JFPDLSerializer implements IFPDLSerializer {
 
     }
 
+    /**
+     * @param application
+     * @param parent
+     * @throws FPDLSerializerException
+     */
     protected void writeApplication(Application application, Element parent)
             throws FPDLSerializerException {
 

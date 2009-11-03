@@ -26,28 +26,11 @@ import org.fireflow.model.resource.Application;
  */
 @SuppressWarnings("serial")
 public class ToolTask extends Task{
-//被mingjie.mj注释掉 20091018 
-//    /**
-//     * TOOL类型的任务执行方式之一：异步执行
-//     * @deprecated
-//     */
-//    public static final String ASYNCHR = "ASYNCHR";
-//
-//    /**
-//     * TOOL类型的任务执行方式之二：同步执行
-//     * @deprecated
-//     */
-//    public static final String SYNCHR = "SYNCHR";
-    
+
     /**
      * 任务所引用的应用程序对象。
      */
     protected Application application = null;
-// 被mingjie.mj注释掉 20091018      
-//    /**
-//     * @deprecated
-//     */
-//    protected String execution = SYNCHR;//缺省情况下是同步执行
 
     public ToolTask(){
         this.setType(TOOL);
@@ -75,24 +58,4 @@ public class ToolTask extends Task{
     public void setApplication(Application application) {
         this.application = application;
     }
-// 被mingjie.mj注释掉 20091018  
-//    /**
-//     * 返回TOOL类型的任务执行策略，取值为ASYNCHR或者SYNCHR<br/>
-//     * 意义不大，已经被废除
-//     * @deprecated
-//     * @return
-//     */
-//    public String getExecution() {
-//        return execution;
-//    }
-//
-//    /**
-//     * 设置TOOL类型的任务执行策略，取值为ASYNCHR或者SYNCHR<br/>
-//     * 意义不大，已经被废除
-//     * @deprecated
-//     * @param execution
-//     */
-//    public void setExecution(String execution) {
-//        this.execution = execution;
-//    }
 }

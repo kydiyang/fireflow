@@ -12,7 +12,8 @@ import org.fireflow.model.WorkflowProcess;
  */
 public interface IFPDLParser extends FPDLNames{
 
-    /** Parse the given InputStream into a WorkflowProcess object.<br/>
+    /** 
+     * Parse the given InputStream into a WorkflowProcess object.<br/>
      * 将输入流解析成为一个WorkflowProcess对象。
      * @param in The InputStream
      * @throws IOException Any I/O Exception
