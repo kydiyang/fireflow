@@ -9,7 +9,7 @@ import org.dom4j.DocumentFactory;
 import org.dom4j.util.SingletonStrategy;
 
 /**
- *
+ * 这个类有用吗？mingjie.mj 20091102
  * @author chennieyun
  */
 public class MySigleton4DocumentFactory implements SingletonStrategy {

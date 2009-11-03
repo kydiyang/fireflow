@@ -33,8 +33,8 @@ import org.w3c.dom.NodeList;
  */
 public class Util4JAXPParser {
     /**
-     * Return the first child element with the given name,The elements must be in
-     the same name space as the parent element.
+     * Return the first child element with the given name,<br>
+     * The elements must be in the same name space as the parent element.
      * @param element
      * @param name
      * @return
@@ -56,19 +56,14 @@ public class Util4JAXPParser {
     		}
     	}
     	return null;
-    	//以下代码逻辑错误！20090519
-//        NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(),name);
-//        if (nodeList!=null && nodeList.getLength()>0){
-//            return (Element)nodeList.item(0);
-//        }
-//        return null;
     }
 
-    /** Return the child elements with the given name.  The elements must be in
-     the same name space as the parent element.
-     @param element The parent element
-     @param name The child element name
-     @return The child elements
+    /** 
+     * Return the child elements with the given name.  <br>
+     * The elements must be inthe same name space as the parent element.
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child elements
      */
     public static List<Element> children(Element element, String name) {
         List<Element> result = new ArrayList<Element>();
@@ -88,22 +83,17 @@ public class Util4JAXPParser {
     			result.add((Element)child);
     		}
     	}        
-    	//以下代码逻辑错误！20090519
-//      NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(),name);    	
-//        for (int i=0;nodeList!=null && i<nodeList.getLength();i++){
-//            result.add(nodeList.item(i));
-//        }
         return result;
     }
 
     // Conversion
 
-    /** Return the value of the child element with the given name.  The element
-     must be in the same name space as the parent element.
-
-     @param element The parent element
-     @param name The child element name
-     @return The child element value
+    /** 
+     * Return the value of the child element with the given name.  <br>
+     * The element must be in the same name space as the parent element.
+     * @param element The parent element
+     * @param name The child element name
+     * @return The child element value
      */
     public static String elementAsString(Element element, String name) {
         Element child = child(element, name);
@@ -114,6 +104,12 @@ public class Util4JAXPParser {
         }
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     * @throws FPDLParserException
+     */
     public static Date elementAsDate(Element element, String name) throws
         FPDLParserException {
         String text = elementAsString(element, name);
@@ -129,6 +125,11 @@ public class Util4JAXPParser {
         }
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     */
     public static int elementAsInteger(Element element, String name) {
         String text = elementAsString(element, name);
         if (text == null) {
@@ -138,6 +139,11 @@ public class Util4JAXPParser {
         return Integer.parseInt(text);
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     */
     public static boolean elementAsBoolean(Element element, String name) {
         String text = elementAsString(element, name);
         if (text == null) {
@@ -147,6 +153,12 @@ public class Util4JAXPParser {
         return new Boolean(text).booleanValue();
     }
 
+    /**
+     * @param element
+     * @param name
+     * @return
+     * @throws FPDLParserException
+     */
     public static URL elementAsURL(Element element, String name) throws
         FPDLParserException {
         String text = elementAsString(element, name);

@@ -93,6 +93,9 @@ import org.xml.sax.SAXException;
 public class Dom4JFPDLParser implements IFPDLParser {
 
 
+    /* (non-Javadoc)
+     * @see org.fireflow.model.io.IFPDLParser#parse(java.io.InputStream)
+     */
     public WorkflowProcess parse(InputStream in) throws IOException,
             FPDLParserException {
         try {
@@ -119,6 +122,12 @@ public class Dom4JFPDLParser implements IFPDLParser {
 //        return parse(new InputStreamReader(in));
     }
 
+    /**
+     * 解析流程定义文件
+     * @param document
+     * @return
+     * @throws FPDLParserException
+     */
     @SuppressWarnings("static-access")
 	protected WorkflowProcess parse(Document document) throws FPDLParserException {
         Element workflowProcessElement = document.getRootElement();

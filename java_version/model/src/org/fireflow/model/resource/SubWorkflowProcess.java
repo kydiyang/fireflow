@@ -15,6 +15,9 @@ public class SubWorkflowProcess extends AbstractResource {
 	 */
     private String workflowProcessId = null;
 
+    /**
+     * @param name
+     */
     public SubWorkflowProcess(String name) {
         this.setName(name);
     }
