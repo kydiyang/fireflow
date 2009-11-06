@@ -9,6 +9,9 @@ import org.wltea.expression.datameta.Variable;
 
 public class IKConditionResolver implements IConditionResolver {
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.condition.IConditionResolver#resolveBooleanExpression(java.util.Map, java.lang.String)
+	 */
 	public boolean resolveBooleanExpression(Map<String ,Object> vars, String elExpression)
 			throws Exception {
 //		System.out.println("-----====------IK Expression---Expression is "+elExpression);

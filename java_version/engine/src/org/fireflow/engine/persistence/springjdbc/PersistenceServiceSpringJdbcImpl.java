@@ -96,15 +96,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	}else{
 	    		return new java.sql.Date(date.getTime());
 	    	}
-	    }
-//	    private String getSqlDate(final java.util.Date date){
-//	    	if(date == null ){
-//	    		return null;
-//	    	}else{
-//	    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//	    		return sdf.format(date);
-//	    	}
-//	    }	    
+	    }    
 	    
 	    /**
 	     * 流程实例
@@ -243,35 +235,6 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    	}
 	
 	    }
-	    
-	    /**
-	     * 保存或者更新流程实例变量
-	     * @param processInstanceId
-	     * @param name
-	     * @param value
-	     */
-	    /* 该方法被public void saveProcessInstanceVariable(ProcessInstanceVar var)和
-	     * public void updateProcessInstanceVariable(ProcessInstanceVar var)替代，2009-11-1，非也
-	    public void saveOrUpdateProcessInstanceVar(String processInstanceId,String name,Object value){
-	    	//首先根据processINstanceId和name查询是否存在对应的记录，不存在插入，存在更新
-	    	if(super.getJdbcTemplate().queryForInt("select count(*) from t_ff_rt_procinst_var where processinstance_id=? and name=? "
-	    			,new Object[]{processInstanceId,name} ,new int[] {Types.VARCHAR,Types.VARCHAR})==0){
-	    		//插入
-	    		try{
-		       		super.getJdbcTemplate().update("insert into t_ff_rt_procinst_var(processinstance_id,name,value )values (?,?,?)"
-		    	    		,new Object[]{processInstanceId,name,value});
-	    		}catch(Exception e){
-	    			e.printStackTrace();
-	    			//TODO  先插入，然后再查询，然后在插入，这个时候事务并没有提交，查询的结果==0为什么？
-	    		}
-	    	}else{
-	    		//更新
-	       		super.getJdbcTemplate().update("update t_ff_rt_procinst_var set value=? where processinstance_id=? and name=? "
-	    	    		,new Object[]{value,processInstanceId,name});	    		
-	    	}
-	    }
-	    */
-	    //更新任务实例表
 	    
 	    /* (non-Javadoc)
 	     * @see org.fireflow.engine.persistence.IPersistenceService#saveTaskInstance(org.fireflow.engine.ITaskInstance)
@@ -674,7 +637,7 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	     * @see org.fireflow.engine.persistence.IPersistenceService#lockTaskInstance(java.lang.String)
 	     */
 	    public void lockTaskInstance(String taskInstanceId){
-	    	//这里使用的是sqlserver 的代码
+	    	//这里使用的是sqlserver 的代码 ,这段代码不要删除！
 	    	//String sql = "select * from t_ff_rt_taskinstance with (updlock, rowlock) where id=? ";
 	    	//以下是oracle中的语句
 	    	String sql = "select * from t_ff_rt_taskinstance where id=? for update ";
@@ -854,44 +817,6 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    		}
 	    		return l;
 	    	}
-	    }
-
-	    /*
-	     * ProcessInstance和ProcessInstanceVar的关系作了调整，不需要该方法
-	     * 2009-11-1,非也
-	     * 
-	    @SuppressWarnings("unchecked")
-		private Map<String,Object> getVarMap(String processInstanceId) {
-	    	String varSql  = "select * from t_ff_rt_procinst_var where processinstance_id=? ";
-	    	List list = super.getJdbcTemplate().query(varSql,new Object[]{processInstanceId},new ProcessInstanceVarRowMapper());
-	    	
-	    	Map<String,Object> resultMap = new HashMap<String,Object>();
-	    	
-	    	if(list!=null && list.size()>0){//map不为空，且map中有值
-	    		int LEN = list.size();
-	    		for(int i=0;i<LEN;i++){
-	    			ProcessInstanceVar  processInstanceVar =  (ProcessInstanceVar)list.get(i);
-		    		
-		    		resultMap.put(processInstanceVar.getName(), processInstanceVar.getValue());
-		    		if(log.isDebugEnabled()){
-		    			log.debug(processInstanceVar.getName()+"="+processInstanceVar.getValue());
-		    		}
-	    		}
-	    	}else{
-	    		if(log.isDebugEnabled()){
-	    			log.debug("流程实例"+processInstanceId+"获取到的流程变量为空！");
-	    		}
-	    	}
-	    	
-	    	return resultMap;
-	    }
-	    	     */
-	    
-	    public static void main(String[] args){
-//	    	PersistenceServiceSpringJdbcImpl t = new PersistenceServiceSpringJdbcImpl();
-//	    	System.out.println(t.getObject("java.lang.String#000100"));
-//	    	System.out.println(t.getSqlDate(new java.util.Date()));
-	    	//测试通过后，需要将这两个方法设置为private类型。
 	    }
 	    
 
@@ -1685,32 +1610,6 @@ public class PersistenceServiceSpringJdbcImpl  extends JdbcDaoSupport implements
 	    
 	}
 
-//class ProcessInstanceVar {
-//	private String processInstanceId;
-//	private String name;
-//	private String value;
-//	public String getProcessInstanceId() {
-//		return processInstanceId;
-//	}
-//	public void setProcessInstanceId(String processInstanceId) {
-//		this.processInstanceId = processInstanceId;
-//	}
-//	public String getName() {
-//		return name;
-//	}
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//	public String getValue() {
-//		return value;
-//	}
-//	public void setValue(String value) {
-//		this.value = value;
-//	}
-//	
-//	
-//}
-
 class ProcessInstanceVarRowMapper implements RowMapper{
 	public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 		ProcessInstanceVar processInstanceVar = new ProcessInstanceVar();		
@@ -1894,34 +1793,6 @@ class TokenRowMapper implements RowMapper {
 		token.setFromActivityId(rs.getString("from_activity_id"));
 		
 		return token;
-	}
-}
-
-/**
- * 工作流定义。（共13个字段） 暂时没有使用到，都是使用匿名类实现的，否则无法读取lob
- * @author wmj2003
- *
- */
-class WorkFlowDefinitionInfoRowMapper implements RowMapper{
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-		WorkflowDefinition workFlowDefinition  = new WorkflowDefinition();
-		workFlowDefinition.setId(rs.getString("id"));
-		workFlowDefinition.setDefinitionType(rs.getString("definition_type"));
-		workFlowDefinition.setProcessId(rs.getString("process_id"));
-		workFlowDefinition.setName(rs.getString("name"));
-		workFlowDefinition.setDisplayName(rs.getString("display_name"));
-		
-		workFlowDefinition.setDescription(rs.getString("description"));
-		workFlowDefinition.setVersion(rs.getInt("version"));
-		workFlowDefinition.setState(rs.getInt("state")==1?true:false);
-		workFlowDefinition.setUploadUser(rs.getString("upload_user"));
-		workFlowDefinition.setUploadTime(rs.getDate("upload_time"));
-
-		workFlowDefinition.setPublishUser(rs.getString("publish_user"));
-		workFlowDefinition.setPublishTime(rs.getDate("publish_time"));
-		//这里不保存process_context
-		
-		return workFlowDefinition;
 	}
 }
 

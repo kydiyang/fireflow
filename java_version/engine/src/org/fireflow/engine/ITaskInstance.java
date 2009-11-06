@@ -43,11 +43,7 @@ public interface ITaskInstance {
 	 * 运行状态
 	 */
 	public static final int RUNNING = 1;
-
-	/**
-	 * 被挂起
-	 */
-	// public static final int SUSPENDED = 3;
+	
 	/**
 	 * 已经结束
 	 */
@@ -86,7 +82,6 @@ public interface ITaskInstance {
 	 */
 	public String getDisplayName();
 
-	// public IProcessInstance getProcessInstance();
 
 	/**
 	 * 返回对应的流程实例Id
@@ -269,5 +264,5 @@ public interface ITaskInstance {
 	 * @throws KernelException
 	 */
 	public void abortEx(String targetActivityId,DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException;
-	// public Set getWorkItems() ;
+
 }

@@ -50,6 +50,7 @@ public class WorkflowDefinition extends WorkflowDefinitionInfo{
     }
 
     /**
+     * 获取业务流程对象
      * @return
      * @throws RuntimeException
      */

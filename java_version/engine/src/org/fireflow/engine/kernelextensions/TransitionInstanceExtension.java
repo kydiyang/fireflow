@@ -80,7 +80,7 @@ public class TransitionInstanceExtension implements IKernelExtension,
 //            return true;
 //        }
 
-        // TODO通过计算transition上的表达式来确定alive的值
+        // 通过计算transition上的表达式来确定alive的值
 
         IConditionResolver elResolver = this.rtCtx.getConditionResolver();
         Boolean b = elResolver.resolveBooleanExpression(vars, condition);

@@ -152,6 +152,9 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         this.actorId = actorId;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#withdraw()
+     */
     public IWorkItem withdraw() throws EngineException, KernelException {
     	if (this.workflowSession==null){
     		new EngineException(this.getTaskInstance().getProcessInstanceId(),
@@ -168,10 +171,16 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     }
 
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#reject()
+     */
     public void reject()throws EngineException, KernelException{
         reject(this.getComments());
     }
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#reject(java.lang.String)
+     */
     public void reject(String comments) throws EngineException, KernelException {
     	if (this.workflowSession==null){
     		new EngineException(this.getTaskInstance().getProcessInstanceId(),
@@ -187,16 +196,25 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         taskInstanceMgr.rejectWorkItem(this,comments);
     }
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#complete()
+     */
     public void complete() throws EngineException, KernelException {
         complete(null,this.getComments());
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#complete(java.lang.String)
+     */
     public void complete(String comments) throws EngineException, KernelException {
         complete(null,comments);
     }
 
 
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkItem#complete(org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
+	 */
 	public void complete(DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
 			throws EngineException, KernelException {
     	if (this.workflowSession==null){
@@ -225,10 +243,16 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         taskInstanceManager.completeWorkItem(this, null,comments);
 	}
 	
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#reassignTo(java.lang.String)
+     */
     public IWorkItem reassignTo(String actorId) throws EngineException{
         return reassignTo(actorId, this.getComments());
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#reassignTo(java.lang.String, java.lang.String)
+     */
     public IWorkItem reassignTo(String actorId, String comments) throws EngineException{
     	if (this.workflowSession==null){
     		new EngineException(this.getTaskInstance().getProcessInstanceId(),
@@ -245,11 +269,8 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         return manager.reassignWorkItemTo(this, actorId, comments);
     }
 
-
-    /**
-     * 签收
-     * @throws org.fireflow.engine.EngineException
-     * @throws org.fireflow.kenel.KenelException
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#claim()
      */
     public IWorkItem claim() throws EngineException, KernelException {
     	if (this.workflowSession==null){
@@ -282,16 +303,25 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
 
 
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#jumpTo(java.lang.String)
+     */
     public void jumpTo(String activityId) throws EngineException, KernelException {
         jumpTo(activityId, null, this.getComments());
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#jumpTo(java.lang.String, java.lang.String)
+     */
     public void jumpTo(String activityId, String comments) throws EngineException, KernelException {
         jumpTo(activityId, null, comments);
     }
 
  
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#jumpTo(java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
+     */
     public void jumpTo(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments) throws EngineException, KernelException {
     	if (this.workflowSession==null){
     		new EngineException(this.getTaskInstance().getProcessInstanceId(),
@@ -310,6 +340,9 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         taskInstanceManager.completeWorkItemAndJumpTo(this, targetActivityId,comments);
     }
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkItem#jumpToEx(java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
+     */
     public void jumpToEx(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments) throws EngineException, KernelException {
     	if (this.workflowSession==null){
     		new EngineException(this.getTaskInstance().getProcessInstanceId(),
@@ -328,10 +361,16 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         taskInstanceManager.completeWorkItemAndJumpToEx(this, targetActivityId,comments);
     }   
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkflowSessionAware#getCurrentWorkflowSession()
+     */
     public IWorkflowSession getCurrentWorkflowSession() {
         return this.workflowSession;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IWorkflowSessionAware#setCurrentWorkflowSession(org.fireflow.engine.IWorkflowSession)
+     */
     public void setCurrentWorkflowSession(IWorkflowSession session) {
         this.workflowSession = session;
         if (this.taskInstance!=null){

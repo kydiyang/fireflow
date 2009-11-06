@@ -131,10 +131,22 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public List<ProcessInstanceVar> findProcessInstanceVariable(String processInstanceId);
     
+    /**
+     * 
+     * @param processInstanceId
+     * @param name
+     * @return
+     */
     public ProcessInstanceVar findProcessInstanceVariable(String processInstanceId,String name);
     
+    /**
+     * @param var
+     */
     public void updateProcessInstanceVariable(ProcessInstanceVar var);
     
+    /**
+     * @param var
+     */
     public void saveProcessInstanceVariable(ProcessInstanceVar var);
     
     /******************************************************************************/

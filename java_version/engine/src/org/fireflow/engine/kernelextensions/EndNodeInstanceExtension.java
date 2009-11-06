@@ -41,6 +41,9 @@ public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
         return EndNodeInstance.Extension_Target_Name;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.kernelextensions.SynchronizerInstanceExtension#onNodeInstanceEventFired(org.fireflow.kernel.event.NodeInstanceEvent)
+     */
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException {
     	//同步器节点的监听器触发条件，是在离开这个节点的时候
