@@ -49,6 +49,9 @@ public class ActivityInstanceExtension implements IKernelExtension,
     }
 
     
+    /* (non-Javadoc)
+     * @see org.fireflow.kernel.event.INodeInstanceEventListener#onNodeInstanceEventFired(org.fireflow.kernel.event.NodeInstanceEvent)
+     */
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException {
         if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_FIRED) {

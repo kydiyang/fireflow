@@ -99,6 +99,9 @@ public class LoopInstanceExtension implements IKernelExtension,
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.kernel.event.IEdgeInstanceEventListener#onEdgeInstanceEventFired(org.fireflow.kernel.event.EdgeInstanceEvent)
+	 */
 	public void onEdgeInstanceEventFired(EdgeInstanceEvent e)
 			throws KernelException {
 

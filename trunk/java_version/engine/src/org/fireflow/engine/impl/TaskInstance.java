@@ -102,23 +102,6 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         this.processInsatance = workflowProcessInsatnce;
     }
 
-//	public TaskInstance(String taskId, String activityId, String name,
-//			String displayName, Integer state, Date createdTime, Date startedTime,
-//			Date expiredTime, Date endTime, Boolean asignToEveryone,
-//			ProcessInstance workflowProcessInsatnceId, Set workItems) {
-//		this.taskId = taskId;
-//		this.activityId = activityId;
-//		this.name = name;
-//		this.label = displayName;
-//		this.state = state;
-//		this.createdTime = createdTime;
-//		this.startedTime = startedTime;
-//		this.expiredTime = expiredTime;
-//		this.endTime = endTime;
-//		this.asignToEveryone = asignToEveryone;
-//		this.processInsatnce = workflowProcessInsatnceId;
-//		this.workItems = workItems;
-//	}
     public String getId() {
         return this.id;
     }
@@ -221,6 +204,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
 
     
 
+    /**
+     * @return
+     */
     public IProcessInstance getAliveProcessInstance() {
     	if (this.processInsatance==null){
     		if (this.rtCtx!=null){
@@ -239,47 +225,20 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         } 
         return this.processInsatance;
     }
-
-    /*
-    public void setProcessInstance(
-    IProcessInstance processInsatnce) {
-    this.processInsatnce = processInsatnce;
-    if (this.processInsatnce!=null ){
-    this.processInstanceId = this.processInsatnce.getId();
-    }else {
-    this.processInstanceId = null;
-    }
-    }
-     */
-//	public Set getWorkItems() {
-//		return this.workItems;
-//	}
-//
-//	public void setWorkItems(Set workItems) {
-//		this.workItems = workItems;
-//	}
-    /**
-     * "asign"这个单词写错了，将会被废除。（20090830）
-     * @deprecated
-     */
-    public IWorkItem asignToActor(String id) throws EngineException, KernelException {
-        return assignToActor(id);
-    }    
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.IAssignable#assignToActor(java.lang.String)
+     */
     public IWorkItem assignToActor(String id) throws EngineException, KernelException {
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         WorkItem wi = taskInstanceMgr.createWorkItem(this.workflowSession,this.getAliveProcessInstance(),this, id);    	
         return wi;
     }
 
-    /**
-     * "asign"这个单词写错了，将会被废除。（20090830）
-     * @deprecated
-     */    
-    public List<IWorkItem> asignToActors(List<String> ids) throws EngineException, KernelException {
-       return assignToActors(ids);
-    }
     
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.taskinstance.IAssignable#assignToActors(java.util.List)
+     */
     public List<IWorkItem> assignToActors(List<String> ids) throws EngineException, KernelException {
         //task应该有一个标志(asignToEveryone)，表明asign的规则 (?)
         List<IWorkItem> workItemList = new ArrayList<IWorkItem>();
@@ -292,6 +251,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         return workItemList;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.ITaskInstance#getTask()
+     */
     public Task getTask() throws EngineException {
     	if (rtCtx==null)System.out.println("====Inside taskInstance rtCtx is null");
     	IDefinitionService definitionService = rtCtx.getDefinitionService();
@@ -305,6 +267,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
 
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.ITaskInstance#getActivity()
+     */
     public Activity getActivity() throws EngineException {
         WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
         if (workflowDef == null) {
@@ -313,6 +278,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         return (Activity) workflowDef.getWorkflowProcess().findWFElementById(this.getActivityId());
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.ITaskInstance#getWorkflowProcess()
+     */
     public WorkflowProcess getWorkflowProcess() throws EngineException {
         WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
         if (workflowDef == null) {
@@ -322,12 +290,21 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         return workflowDef.getWorkflowProcess();
     }
 
+    /**
+     * @throws EngineException
+     * @throws KernelException
+     */
     public final void start() throws EngineException, KernelException {
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         taskInstanceMgr.startTaskInstance(workflowSession, this.getAliveProcessInstance(), this);
 //        taskInstanceMgr.startTaskInstance(this);
     }
 
+    /**
+     * @param targetActivityInstance
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void complete(IActivityInstance targetActivityInstance) throws EngineException, KernelException {
         ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
         taskInstanceMgr.completeTaskInstance(workflowSession,  this.getAliveProcessInstance(), this, targetActivityInstance);
@@ -408,6 +385,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         this.fromActivityId = fromActivityId;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.ITaskInstance#suspend()
+     */
     public void suspend() throws EngineException {
         if (this.state==ITaskInstance.COMPLETED || this.state==ITaskInstance.CANCELED){
             throw new EngineException(this.getAliveProcessInstance(),this.getTask(),"The task instance can not be suspended,the state of this task instance is "+this.state);
@@ -420,6 +400,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         persistenceService.saveOrUpdateTaskInstance(this);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.ITaskInstance#restore()
+     */
     public void restore() throws EngineException {
         if (this.state==ITaskInstance.COMPLETED || this.state==ITaskInstance.CANCELED){
             throw new EngineException(this.getAliveProcessInstance(),this.getTask(),"The task instance can not be restored,the state of this task instance is "+this.state);
@@ -432,17 +415,26 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         persistenceService.saveOrUpdateTaskInstance(this);
     }
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.ITaskInstance#abort()
+	 */
 	public void abort() throws EngineException, KernelException {
 		abort(null);
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.ITaskInstance#abort(java.lang.String)
+	 */
 	public void abort(String targetActivityId)
 			throws EngineException, KernelException {
 		abort(targetActivityId,null);
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.ITaskInstance#abort(java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler)
+	 */
 	public void abort(String targetActivityId,
 			DynamicAssignmentHandler dynamicAssignmentHandler)
 			throws EngineException, KernelException {
@@ -475,6 +467,9 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     	
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.ITaskInstance#abortEx(java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler)
+	 */
 	public void abortEx(String targetActivityId,DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException{
 		
     	if (this.workflowSession==null){
@@ -504,12 +499,4 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         taskInstanceMgr.abortTaskInstanceEx(this.workflowSession, this.getAliveProcessInstance(), this, targetActivityId);
     			
 	}
-  
-//    public String getTokenId() {
-//        return tokenId;
-//    }
-//
-//    public void setTokenId(String tokenId) {
-//        this.tokenId = tokenId;
-//    }
 }

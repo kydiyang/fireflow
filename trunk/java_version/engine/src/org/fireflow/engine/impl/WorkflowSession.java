@@ -64,20 +64,18 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		this.dynamicAssignmentHandler = handler;
 	}
 
+	/**
+	 * @return
+	 */
 	public DynamicAssignmentHandler consumeCurrentDynamicAssignmentHandler() {
 		DynamicAssignmentHandler handler = this.dynamicAssignmentHandler;
 		this.dynamicAssignmentHandler = null;
 		return handler;
 	}
 
-	/**
-	 * @deprecated
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#createProcessInstance(java.lang.String, org.fireflow.engine.ITaskInstance)
 	 */
-	public IProcessInstance createProcessInstance(String workflowProcessName)
-			throws EngineException, KernelException {
-		return _createProcessInstance(workflowProcessName, null, null, null);
-	}
-
 	public IProcessInstance createProcessInstance(String workflowProcessName,
 			ITaskInstance parentTaskInstance) throws EngineException,
 			KernelException {
@@ -86,11 +84,19 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 				parentTaskInstance.getId());
 	}
 
+	/**
+	 * @param workflowProcessId
+	 * @param creatorId
+	 * @param parentProcessInstanceId
+	 * @param parentTaskInstanceId
+	 * @return
+	 * @throws EngineException
+	 * @throws KernelException
+	 */
 	protected IProcessInstance _createProcessInstance(String workflowProcessId,
 			final String creatorId, final String parentProcessInstanceId,
 			final String parentTaskInstanceId) throws EngineException,
 			KernelException {
-		// TODO Auto-generated method stub
 		final String wfprocessId = workflowProcessId;
 		
 		final WorkflowDefinition workflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(wfprocessId);
@@ -221,11 +227,17 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return processInstance;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#createProcessInstance(java.lang.String, java.lang.String)
+	 */
 	public IProcessInstance createProcessInstance(String workflowProcessId,
 			final String creatorId) throws EngineException, KernelException {
 		return _createProcessInstance(workflowProcessId, creatorId, null, null);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findWorkItemById(java.lang.String)
+	 */
 	public IWorkItem findWorkItemById(String id) {
 		final String workItemId = id;
 		try {
@@ -298,6 +310,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return runtimeContext;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findTaskInstanceById(java.lang.String)
+	 */
 	public ITaskInstance findTaskInstanceById(String id) {
 		final String taskInstanceId = id;
 		try {
@@ -321,6 +336,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findMyTodoWorkItems(java.lang.String)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<IWorkItem> findMyTodoWorkItems(final String actorId) {
 		List<IWorkItem> result = null;
@@ -343,6 +361,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findMyTodoWorkItems(java.lang.String, java.lang.String)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<IWorkItem> findMyTodoWorkItems(final String actorId,
 			final String processInstanceId) {
@@ -366,6 +387,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findMyTodoWorkItems(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<IWorkItem> findMyTodoWorkItems(final String actorId,
 			final String processId, final String taskId) {
@@ -436,6 +460,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 //		return result;
 //	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#claimWorkItem(java.lang.String)
+	 */
 	public IWorkItem claimWorkItem(final String workItemId)
 			throws EngineException, KernelException {
 		IWorkItem result = null;
@@ -444,6 +471,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItem(java.lang.String)
+	 */
 	public void completeWorkItem(String workItemId) throws EngineException,
 			KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
@@ -451,12 +481,18 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItem(java.lang.String, java.lang.String)
+	 */
 	public void completeWorkItem(String workItemId, String comments)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
 		wi.complete(comments);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItem(java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
+	 */
 	public void completeWorkItem(String workItemId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
 			throws EngineException, KernelException {
@@ -465,6 +501,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItemAndJumpTo(java.lang.String, java.lang.String)
+	 */
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId) throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);
@@ -472,6 +511,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItemAndJumpTo(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId, String comments) throws EngineException,
 			KernelException {
@@ -479,6 +521,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.jumpTo(targetActivityId, comments);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItemAndJumpTo(java.lang.String, java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
+	 */
 	public void completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
@@ -487,6 +532,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.jumpTo(targetActivityId, dynamicAssignmentHandler, comments);
 
 	}
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#completeWorkItemAndJumpToEx(java.lang.String, java.lang.String, org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
+	 */
 	public void completeWorkItemAndJumpToEx(String workItemId,
 			String targetActivityId,
 			DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
@@ -495,6 +543,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		wi.jumpToEx(targetActivityId, dynamicAssignmentHandler, comments);
 
 	}
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findProcessInstanceById(java.lang.String)
+	 */
 	public IProcessInstance findProcessInstanceById(final String id) {
 		try {
 			return (IProcessInstance) this
@@ -518,6 +569,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findProcessInstancesByProcessId(java.lang.String)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<IProcessInstance> findProcessInstancesByProcessId(
 			final String processId) {
@@ -543,6 +597,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findProcessInstancesByProcessIdAndVersion(java.lang.String, java.lang.Integer)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(
 			final String processId, final Integer version) {
@@ -569,6 +626,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#findTaskInstancesForProcessInstance(java.lang.String, java.lang.String)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ITaskInstance> findTaskInstancesForProcessInstance(
 			final String processInstanceId, final String activityId) {
@@ -595,6 +655,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#reassignWorkItemTo(java.lang.String, java.lang.String)
+	 */
 	public IWorkItem reassignWorkItemTo(String workItemId, String actorId)
 			throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
@@ -602,12 +665,18 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#reassignWorkItemTo(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public IWorkItem reassignWorkItemTo(String workItemId, String actorId,
 			String comments) throws EngineException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
 		return workItem.reassignTo(actorId, comments);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#rejectWorkItem(java.lang.String)
+	 */
 	public void rejectWorkItem(String workItemId) throws EngineException,
 			KernelException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
@@ -615,12 +684,18 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#rejectWorkItem(java.lang.String, java.lang.String)
+	 */
 	public void rejectWorkItem(String workItemId, String comments)
 			throws EngineException, KernelException {
 		IWorkItem workItem = this.findWorkItemById(workItemId);
 		workItem.reject(comments);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#restoreProcessInstance(java.lang.String)
+	 */
 	public IProcessInstance restoreProcessInstance(String processInstanceId)
 			throws EngineException {
 		IProcessInstance processInstance = this
@@ -629,6 +704,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return processInstance;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#restoreTaskInstance(java.lang.String)
+	 */
 	public ITaskInstance restoreTaskInstance(String taskInstanceId)
 			throws EngineException {
 		ITaskInstance taskInst = this.findTaskInstanceById(taskInstanceId);
@@ -636,6 +714,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return taskInst;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#suspendProcessInstance(java.lang.String)
+	 */
 	public IProcessInstance suspendProcessInstance(String processInstanceId)
 			throws EngineException {
 		IProcessInstance processInstance = this
@@ -644,6 +725,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return processInstance;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#suspendTaskInstance(java.lang.String)
+	 */
 	public ITaskInstance suspendTaskInstance(String taskInstanceId)
 			throws EngineException {
 		ITaskInstance taskInst = this.findTaskInstanceById(taskInstanceId);
@@ -651,6 +735,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return taskInst;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.IWorkflowSession#withdrawWorkItem(java.lang.String)
+	 */
 	public IWorkItem withdrawWorkItem(final String workItemId)
 			throws EngineException, KernelException {
 		IWorkItem wi = this.findWorkItemById(workItemId);

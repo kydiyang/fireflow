@@ -46,7 +46,7 @@ public interface ICalendarService extends IRuntimeContextAware{
     public boolean isBusinessDay(Date d);
 
     /**
-     * 获得系统时间
+     * 获得系统当前时间
      * @return
      */
     public Date getSysDate();

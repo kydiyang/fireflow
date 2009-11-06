@@ -40,8 +40,12 @@ public class StartNodeInstanceExtension extends SynchronizerInstanceExtension {
         return StartNodeInstance.Extension_Target_Name;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.kernelextensions.SynchronizerInstanceExtension#onNodeInstanceEventFired(org.fireflow.kernel.event.NodeInstanceEvent)
+     */
     public void onNodeInstanceEventFired(NodeInstanceEvent e)
             throws KernelException, EngineException {
+    	//开始节点，不需要做任何处理！
 //        System.out.println("==Inside StartNode Extension....");
     }
 }

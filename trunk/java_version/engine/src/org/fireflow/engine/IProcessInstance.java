@@ -42,10 +42,6 @@ public interface IProcessInstance {
      */
     public static final int RUNNING = 1;
 
-    /**
-     * 被挂起（确实不应该放在状态中）
-     */
-//    public static final int SUSPENDED = 3;
 
     /**
      * 已经结束
