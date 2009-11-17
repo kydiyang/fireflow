@@ -47,8 +47,9 @@ public class JAXP_FPDL_SerializerTest {
         JAXP_FPDL_Parser instance = new JAXP_FPDL_Parser();
 
         WorkflowProcess workflowProcess1 = instance.parse(in);
-
-        File f = new File("d:/tmp/example_workflow_tmp.xml");
+        
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        File f = new File(tmpDir+"example_workflow_tmp.xml");
         FileOutputStream out = new FileOutputStream(f);
         JAXP_FPDL_Serializer ser = new JAXP_FPDL_Serializer();
         ser.serialize(workflowProcess1, out);
@@ -87,8 +88,9 @@ public class JAXP_FPDL_SerializerTest {
         JAXP_FPDL_Parser instance = new JAXP_FPDL_Parser();
 
         WorkflowProcess workflowProcess1 = instance.parse(in);
-
-        File f = new File("d:/tmp/MyFirstProcess_tmp.xml");
+        
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        File f = new File(tmpDir+"MyFirstProcess_tmp.xml");
         FileOutputStream out = new FileOutputStream(f);
         JAXP_FPDL_Serializer ser = new JAXP_FPDL_Serializer();
         ser.serialize(workflowProcess1, out);
