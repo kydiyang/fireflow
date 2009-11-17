@@ -46,8 +46,10 @@ public class Dom4JFPDLSerializerTest {
         Dom4JFPDLParser instance = new Dom4JFPDLParser();
 
         WorkflowProcess workflowProcess1 = instance.parse(in);
-
-        File f = new File("d:/tmp/example_workflow_tmp.xml");
+        
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        
+        File f = new File(tmpDir+"example_workflow_tmp.xml");
         FileOutputStream out = new FileOutputStream(f);
         Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
         ser.serialize(workflowProcess1, out);
@@ -86,8 +88,10 @@ public class Dom4JFPDLSerializerTest {
         Dom4JFPDLParser instance = new Dom4JFPDLParser();
 
         WorkflowProcess workflowProcess1 = instance.parse(in);
-
-        File f = new File("d:/tmp/MyFirstProcess_tmp.xml");
+        
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        
+        File f = new File(tmpDir+"MyFirstProcess_tmp.xml");
         FileOutputStream out = new FileOutputStream(f);
         Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
         ser.serialize(workflowProcess1, out);
