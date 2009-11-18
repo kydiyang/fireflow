@@ -28,7 +28,7 @@ import org.fireflow.model.WorkflowProcess;
  * 活动状态包括：INITIALIZED,RUNNING,SUSPENDED<br>
  * 非活动状态包括：COMPLETED,CANCELED
  * @author 非也,nychen2000@163.com
- *
+ * @author lifw555@gmail.com
  */
 public interface IProcessInstance {
 
@@ -61,38 +61,37 @@ public interface IProcessInstance {
     public void run() throws EngineException, KernelException;
 
     /**
-     * return the process instance's Id.
+     * 主键
      * @return
      */
     public String getId();
 
     /**
-     * return the process instance's name,which equals to the workflow process's name
+     * 流程实例的name（与流程定义的name相同）
      * @return
      */
     public String getName();
 
     /**
-     * return the process instance's display-name ，
-     * which equals to the workflow process's  display-name.
+     * 流程实例的DisplayName（与流程定义的DisplayName相同）
      * @return
      */
     public String getDisplayName();
 
     /**
-     * return the workflow process's id
+     * 流程定义的id
      * @return
      */
     public String getProcessId();
 
     /**
+     * 流程实例的状态
      * @return
      */
     public Integer getState();
 
     /**
-     * return the workflow process's version.
-     * 
+     * 流程定义的Version
      * @return
      */
     public Integer getVersion();
