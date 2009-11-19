@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
-	<classpathentry excluding="**/.svn/" kind="src" output="test/unit/bin" path="test/unit/src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="libs_4_unit_test/junit-4.6.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
