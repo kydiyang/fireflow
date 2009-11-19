@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- 已经不需要该表 -->
+<hibernate-mapping>
+  <class name="org.fireflow.engine.impl.JoinPoint" table="T_FF_RT_JOINPOINT">
+    <id name="id" type="java.lang.String">
+      <column length="50" name="ID"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="synchronizerId" type="java.lang.String" update="false">
+      <column length="200" name="SYNCHRONIZER_ID" not-null="true"/>
+    </property>
+    <property name="value" type="java.lang.Integer">
+      <column name="VALUE"/>
+    </property>
+    <property name="alive" type="java.lang.Boolean">
+      <column name="ALIVE"/>
+    </property>
+    <property name="processInstanceId" type="java.lang.String">
+      <column length="50" name="PROCESSINSTANCE_ID"  not-null="true"/>
+    </property>
+  </class>
+</hibernate-mapping>

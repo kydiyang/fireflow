@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org-fireflow-model" basedir="." default="zip-file">
+	<tstamp>
+		<format property="buildnumber" pattern="yyMMdd" />
+	</tstamp>
+
+	<property name="version" value="1.0.0-release-build${buildnumber}" />
+
+	<property name="src" value="src" />
+	<property name="bin" value="bin" />
+	<property name="target" value="target" />
+	<property name="libs" value="libs" />
+
+	<property name="src.dir" location="${basedir}/${src}" />
+	<property name="build.dir" location="${basedir}/${bin}" />
+	<property name="target.dir" location="${basedir}/${target}" />
+	<property name="lib.dir" location="${basedir}/${libs}" />
+
+	<property environment="env" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target.version" value="1.6" />
+	<property name="source.version" value="1.6" />
+
+	<path id="libs">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="${build.dir}/classes" />
+		<delete dir="${target.dir}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${target.dir}/classes" />
+		<copy includeemptydirs="false" todir="${build.dir}/classes">
+			<fileset dir="${src.dir}" excludes="**/*.launch, **/*.java" />
+		</copy>
+	</target>
+
+	<target depends="init" name="compile">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac encoding="utf-8" debug="true" debuglevel="${debuglevel}" destdir="${build.dir}/classes" source="${source.version}" target="${target.version}">
+			<src path="${src.dir}" />
+			<classpath refid="libs" />
+		</javac>
+	</target>
+
+	<target name="javadoc">
+		<javadoc encoding="utf-8" charset="utf-8" source="${source}" sourcepath="${src.dir}" destdir="${target.dir}/apidoc" access="public" author="true" use="true" version="true" splitindex="true" doctitle="test" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.fireflow.*" verbose="true">
+			<classpath refid="libs" />
+		</javadoc>
+	</target>
+
+	<target depends="compile,javadoc" name="build">
+		<copy includeemptydirs="false" todir="${target.dir}/classes">
+			<fileset dir="${build.dir}/classes" />
+		</copy>
+	</target>
+
+	<target name="jar" depends="build">
+		<jar jarfile="${target.dir}/${ant.project.name}-${version}.jar">
+			<fileset dir="${target.dir}/classes">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+		<jar jarfile="${target.dir}/${ant.project.name}-${version}-sourcecode.jar">
+			<fileset dir="${src.dir}">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+		<jar jarfile="${target.dir}/${ant.project.name}-${version}-javadoc.jar">
+			<fileset dir="${target.dir}/apidoc">
+				<include name="**/**" />
+			</fileset>
+		</jar>
+		<copy includeemptydirs="false" todir="${target.dir}">
+			<fileset dir="${basedir}">
+				<include name="change_logs.txt" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="zip-file" depends="jar">
+		<zip destfile="${target.dir}/Fire_Workflow_Model.zip" basedir="${target.dir}" includes="*.jar,change_logs.txt">
+		</zip>
+	</target>
+</project>
