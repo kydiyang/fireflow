@@ -12,5 +12,13 @@
 	<artifactId>fireflow-engine</artifactId>
 	<packaging>jar</packaging>
 	<name>fireflow-engine</name>
-
+	
+	<dependencies>
+		<!-- module dependence -->
+		<dependency>
+			<groupId>org.fireflow</groupId>
+			<artifactId>fireflow-model</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
 </project>
