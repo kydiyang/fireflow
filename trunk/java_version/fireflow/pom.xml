@@ -45,10 +45,18 @@
 		<IKExpression.version>2.1.2</IKExpression.version>
 
 		<dom4j.version>1.6.1</dom4j.version>
+		
+		<hsqldb.version>1.8.0.7</hsqldb.version>
 	</properties>
 	
 	<dependencies>
 		<!-- other dependence -->
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>${hsqldb.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.wltea.expression</groupId>
 			<artifactId>IKExpression</artifactId>
