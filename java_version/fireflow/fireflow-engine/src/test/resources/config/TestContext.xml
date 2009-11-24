@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+    <import resource="FireflowContext.xml"/>
+    <import resource="AllTheProcessHandlers.xml"/>
+    
+    <!-- hsqldb -->
+    <bean id="MyDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:fireflow" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+	
+    <!--  ms sqlserver
+    <bean id="MyDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="net.sourceforge.jtds.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:jtds:sqlserver://localhost:1433/gjxt;SelectMethod=cursor;charset=GBK;tds=8.0;lastupdatecount=true" />
+		<property name="username" value="sa" />
+		<property name="password" value="sa" />
+	</bean>
+	 -->
+	 
+	<!-- oracle
+    <bean id="MyDataSource"
+		class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName"
+			value="oracle.jdbc.OracleDriver">
+        </property>
+        <property name="url"
+			value="jdbc:oracle:thin:@localhost:1521:orcl">
+        </property>
+        <property name="username" value="fireflow"></property>
+        <property name="password" value="fireflow"></property>
+    </bean> 
+	 -->
+	
+	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
+    <bean id="nativeJdbcExtractor"
+		class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"
+		lazy-init="true" />
+    <bean id="oracleLobHandler"
+		class="org.springframework.jdbc.support.lob.OracleLobHandler"
+		lazy-init="true">
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" />
+    </bean>
+
+
+    	<!-- session factory, 指定了lobHandler -->
+    <bean id="MyHibernateSessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource">
+            <ref bean="MyDataSource" />
+        </property>
+        <property name="lobHandler">
+            <ref bean="oracleLobHandler" />
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">
+					org.hibernate.dialect.OracleDialect 
+					<!--  org.hibernate.dialect.SQLServerDialect -->
+                </prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+        <property name="mappingResources">
+            <list>
+                <value>
+					org/fireflow/engine/persistence/hibernate/ProcessInstanceTrace.hbm.xml
+                </value>               
+                <value>
+					org/fireflow/engine/persistence/hibernate/ProcessInstance.hbm.xml
+                </value>
+                <value>
+					org/fireflow/engine/persistence/hibernate/TaskInstance.hbm.xml
+                </value>
+                <value>
+					org/fireflow/engine/persistence/hibernate/Token.hbm.xml
+                </value>
+                <value>
+					org/fireflow/engine/persistence/hibernate/WorkItem.hbm.xml
+                </value>
+                <value>
+					org/fireflow/engine/persistence/hibernate/WorkflowDefinition.hbm.xml
+                </value>
+                <value>
+					org/fireflow/engine/persistence/hibernate/WorkflowDefinitionInfo.hbm.xml
+                </value>                
+            </list>
+        </property>
+    </bean>
+
+	<!--  hibernate  -->
+    <bean id="hTransactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref bean="MyHibernateSessionFactory" />
+        </property>
+    </bean>
+    
+	<!--事务管理器-->
+	<bean id="jdbcTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="MyDataSource"/>
+	</bean>    
+
+    <bean id="hibernateTransactionTemplate"  class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager">
+            <ref bean="hTransactionManager"/> 
+        </property>
+    </bean>
+    
+    <bean id="jdbcTransactionTemplate" name="transactionTemplate"  class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager">
+			<ref bean="jdbcTransactionManager"/>
+        </property>
+    </bean>    
+
+    <bean id="FireWorkflowHelperDao_hibernate"  class="org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao">
+        <property name="sessionFactory">
+            <ref bean="MyHibernateSessionFactory" />
+        </property>
+    </bean>
+    
+    <bean id="FireWorkflowHelperDao_jdbc" name="FireWorkflowHelperDao" class="org.fireflow.engine.persistence.springjdbc.FireWorkflowHelperJdbcDao">
+		<property name="dataSource" ref="MyDataSource"/>
+    </bean>    
+    
+
+</beans>
