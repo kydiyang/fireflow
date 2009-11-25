@@ -23,33 +23,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
+import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  *
- * @author 非也
+ * @author 非也,lifw555@gmail.com
  * @version 1.0
  * Created on Apr 11, 2009
  */
-public class AbortProcessInstanceTest {
-
-    private final static String springConfigFile = "config/TestContext.xml";
-    private static ClassPathResource resource = null;
-    private static XmlBeanFactory beanFactory = null;
-    private static TransactionTemplate transactionTemplate = null;
-    private static RuntimeContext runtimeContext = null;
+public class AbortProcessInstanceTest extends FireFlowAbstractTests {
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
@@ -61,27 +53,34 @@ public class AbortProcessInstanceTest {
     static String paymentWorkItemId = null;
     static String prepareGoodsWorkItemId = null;
     static String deliverGoodsWorkItemId = null;
-
+    
+    @Autowired
+    private RuntimeContext runtimeContext = null;
+    
+    @Autowired
+    private TransactionTemplate transactionTemplate = null;
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
-    	try{
-	        resource = new ClassPathResource(springConfigFile);
-	        beanFactory = new XmlBeanFactory(resource);
-	        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-	        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-	
-	        //首先将表中的数据清除
-	        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-	
-	            @Override
-	            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-	            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-	                helperDao.clearAllTables();
-	            }
-	        });
-    	}catch(Exception ex){
-    		ex.printStackTrace();
-    	}
+    	//TODO 数据库自动删除和发布，不需要手动处理
+//    	try{
+//	        resource = new ClassPathResource(springConfigFile);
+//	        beanFactory = new XmlBeanFactory(resource);
+//	        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
+//	        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
+//	
+//	        //首先将表中的数据清除
+//	        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//	
+//	            @Override
+//	            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+//	            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+//	                helperDao.clearAllTables();
+//	            }
+//	        });
+//    	}catch(Exception ex){
+//    		ex.printStackTrace();
+//    	}
     }
 
     /**
@@ -155,14 +154,14 @@ public class AbortProcessInstanceTest {
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
-        assertEquals(new Integer(ITaskInstance.CANCELED), ((ITaskInstance) taskInstanceList.get(0)).getState());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
         assertEquals(1, ((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
 
 
         workItemList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
-        assertEquals(new Integer(ITaskInstance.CANCELED), ((IWorkItem) workItemList.get(0)).getState());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
         
         tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
