@@ -11,9 +11,11 @@ import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.AssignToCurrentUserAndCompleteWorkItemHandler;
+import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
@@ -21,12 +23,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class AbortTaskInstanceTest {
-    private final static String springConfigFile = "config/TestContext.xml";
-    private static ClassPathResource resource = null;
-    private static XmlBeanFactory beanFactory = null;
-    private static TransactionTemplate transactionTemplate = null;
-    private static RuntimeContext runtimeContext = null;
+public class AbortTaskInstanceTest extends FireFlowAbstractTests {
+//    private final static String springConfigFile = "config/TestContext.xml";
+//    private static ClassPathResource resource = null;
+//    private static XmlBeanFactory beanFactory = null;
+//    private static TransactionTemplate transactionTemplate = null;
+//    private static RuntimeContext runtimeContext = null;
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
@@ -39,22 +41,28 @@ public class AbortTaskInstanceTest {
     static String taskInstanceBId = null;
     static String workItemCId = null;
 
+    @Autowired
+    private RuntimeContext runtimeContext = null;
+    
+    @Autowired
+    private TransactionTemplate transactionTemplate = null;
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
-        resource = new ClassPathResource(springConfigFile);
-        beanFactory = new XmlBeanFactory(resource);
-        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-
-        //首先将表中的数据清除
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-                helperDao.clearAllTables();
-            }
-        });
+//        resource = new ClassPathResource(springConfigFile);
+//        beanFactory = new XmlBeanFactory(resource);
+//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
+//        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
+//
+//        //首先将表中的数据清除
+//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//
+//            @Override
+//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+//            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+//                helperDao.clearAllTables();
+//            }
+//        });
     }
     
     /**
