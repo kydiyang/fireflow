@@ -12,7 +12,8 @@ import org.junit.Test;
  * @author chennieyun
  */
 public class TestConfigFile {
-
+	
+	//TODO:这个单元测试的意义在哪？觉得没有用，建议删除（lifw555@gmail.com）
     @Test
     public void testTheConfigFile() {
         String configFileName = "/org/fireflow/engine/kenelextensions/kenel-config.xml";
