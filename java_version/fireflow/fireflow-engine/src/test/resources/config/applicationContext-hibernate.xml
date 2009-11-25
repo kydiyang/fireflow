@@ -10,7 +10,7 @@
 			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-	<!-- hsqldb -->
+	<!-- hsqldb(目前还没有测试通过) -->
 	<!--
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -20,7 +20,7 @@
 		<property name="password" value="" />
 	</bean>
 	 -->
-	<!-- mysql -->
+	<!-- mysql(已经测试，可以进行单元测试) -->
 	<!--  -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -30,7 +30,7 @@
 		<property name="password" value="mysql" />
 	</bean>
 	
-	<!-- oracle  -->
+	<!-- oracle(没有环境，需要别人来进行测试)  -->
 	<!-- 
     <bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource">
@@ -50,7 +50,7 @@
 		<property name="dataSource">
 			<ref bean="dataSource" />
 		</property>
-		<!-- 
+		<!-- oracle 9 需要
 		<property name="lobHandler">
 			<ref bean="oracleLobHandler" />
 		</property>
@@ -61,7 +61,7 @@
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.dialect">
 					org.hibernate.dialect.MySQL5InnoDBDialect
-					<!--
+					<!-- 各种数据库的方言
 					org.hibernate.dialect.HSQLDialect
 					org.hibernate.dialect.OracleDialect 
 					org.hibernate.dialect.SQLServerDialect
