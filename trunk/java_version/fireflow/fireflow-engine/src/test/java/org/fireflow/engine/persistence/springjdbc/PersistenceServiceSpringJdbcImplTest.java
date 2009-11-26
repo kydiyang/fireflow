@@ -5,21 +5,10 @@ import static org.junit.Assert.fail;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.fireflow.engine.RuntimeContext;
-import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
-import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.model.FormTask;
 import org.fireflow.model.Task;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class PersistenceServiceSpringJdbcImplTest extends FireFlowAbstractTests {
 
@@ -62,15 +51,6 @@ public class PersistenceServiceSpringJdbcImplTest extends FireFlowAbstractTests 
     final Boolean alive = Boolean.TRUE;
     final Integer tokenValue = 1;
     final String cancelComments = "Canceled by JUnit Tester";
-
-    @Autowired
-    private RuntimeContext runtimeContext = null;
-    
-    @Autowired
-    private TransactionTemplate transactionTemplate = null;
-    
-    @Autowired
-    private IPersistenceService persistenceService = null;
     
 //    @BeforeClass
 //    public static void setUpClass() throws Exception {

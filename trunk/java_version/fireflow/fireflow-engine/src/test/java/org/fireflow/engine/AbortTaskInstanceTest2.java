@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.AssignToCurrentUserAndCompleteWorkItemHandler;
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
@@ -16,13 +15,8 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
 //    private final static String springConfigFile = "config/TestContext.xml";
@@ -41,13 +35,7 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
     static String workItemBId = null;
     static String taskInstanceBId = null;
     static String workItemCId = null;
-
-    @Autowired
-    private RuntimeContext runtimeContext = null;
-    
-    @Autowired
-    private TransactionTemplate transactionTemplate = null;
-    
+ 
     @BeforeClass
     public static void setUpClass() throws Exception {
 //        resource = new ClassPathResource(springConfigFile);
