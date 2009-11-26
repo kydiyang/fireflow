@@ -30,10 +30,8 @@ import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  *
@@ -53,13 +51,7 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
     static String paymentWorkItemId = null;
     static String prepareGoodsWorkItemId = null;
     static String deliverGoodsWorkItemId = null;
-    
-    @Autowired
-    private RuntimeContext runtimeContext = null;
-    
-    @Autowired
-    private TransactionTemplate transactionTemplate = null;
-    
+       
     @BeforeClass
     public static void setUpClass() throws Exception {
     	//TODO 数据库自动删除和发布，不需要手动处理
@@ -154,14 +146,14 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
-        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+        assertEquals(new Integer(ITaskInstance.CANCELED), ((ITaskInstance) taskInstanceList.get(0)).getState());
         assertEquals(1, ((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
 
 
         workItemList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
-        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+        assertEquals(new Integer(ITaskInstance.CANCELED), ((IWorkItem) workItemList.get(0)).getState());
         
         tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
