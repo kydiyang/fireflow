@@ -26,10 +26,12 @@ import java.util.logging.Logger;
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
+import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
@@ -43,13 +45,13 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version 1.0
  * Created on Mar 11, 2009
  */
-public class FireWorkflowEngineTest {
+public class FireWorkflowEngineTest extends FireFlowAbstractTests {
 
-    private final static String springConfigFile = "config/TestContext.xml";
-    private static ClassPathResource resource = null;
-    private static XmlBeanFactory beanFactory = null;
-    private static TransactionTemplate transactionTemplate = null;
-    private static RuntimeContext runtimeContext = null;
+//    private final static String springConfigFile = "config/TestContext.xml";
+//    private static ClassPathResource resource = null;
+//    private static XmlBeanFactory beanFactory = null;
+//    private static TransactionTemplate transactionTemplate = null;
+//    private static RuntimeContext runtimeContext = null;
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
@@ -61,24 +63,30 @@ public class FireWorkflowEngineTest {
     static String paymentWorkItemId = null;
     static String prepareGoodsWorkItemId = null;
     static String deliverGoodsWorkItemId = null;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        resource = new ClassPathResource(springConfigFile);
-        beanFactory = new XmlBeanFactory(resource);
-        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-
-        //首先将表中的数据清除
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-                helperDao.clearAllTables();
-            }
-        });
-    }
+    
+    @Autowired
+    private RuntimeContext runtimeContext = null;
+    
+    @Autowired
+    private TransactionTemplate transactionTemplate = null;
+    
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
+//        resource = new ClassPathResource(springConfigFile);
+//        beanFactory = new XmlBeanFactory(resource);
+//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
+//        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
+//
+//        //首先将表中的数据清除
+//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//
+//            @Override
+//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+//            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+//                helperDao.clearAllTables();
+//            }
+//        });
+//    }
 
     /**
      * 创建流程实例，并执行实例的run方法。

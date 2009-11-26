@@ -47,8 +47,8 @@ public class AbortTaskInstanceTest extends FireFlowAbstractTests {
     @Autowired
     private TransactionTemplate transactionTemplate = null;
     
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
 //        resource = new ClassPathResource(springConfigFile);
 //        beanFactory = new XmlBeanFactory(resource);
 //        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
@@ -63,7 +63,7 @@ public class AbortTaskInstanceTest extends FireFlowAbstractTests {
 //                helperDao.clearAllTables();
 //            }
 //        });
-    }
+//    }
     
     /**
      * 创建流程实例，并使之执行到B环节。
