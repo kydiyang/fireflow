@@ -40,6 +40,7 @@ import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
 import org.fireflow.engine.persistence.IPersistenceService;
+import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.impl.Token;
 import org.fireflow.model.FormTask;
@@ -51,6 +52,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
@@ -64,13 +66,14 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version 1.0
  * Created on 2009-03-08
  */
-public class PersistenceServiceHibernateImplTest {
+public class PersistenceServiceHibernateImplTest extends FireFlowAbstractTests {
 
-    private final static String springConfigFile = "config/TestContext.xml";
-    private static ClassPathResource resource = null;
-    private static XmlBeanFactory beanFactory = null;
-    private static IPersistenceService persistenceService = null;
-    private static TransactionTemplate transactionTemplate = null;
+//    private final static String springConfigFile = "config/TestContext.xml";
+//    private static ClassPathResource resource = null;
+//    private static XmlBeanFactory beanFactory = null;
+//    private static IPersistenceService persistenceService = null;
+//    private static TransactionTemplate transactionTemplate = null;
+    
     SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //----------variable-------------------------------
@@ -105,32 +108,41 @@ public class PersistenceServiceHibernateImplTest {
     final Integer tokenValue = 1;
     final String cancelComments = "Canceled by JUnit Tester";
 
+    @Autowired
+    private RuntimeContext runtimeContext = null;
+    
+    @Autowired
+    private TransactionTemplate transactionTemplate = null;
+    
+    @Autowired
+    private IPersistenceService persistenceService = null;
+    
     public PersistenceServiceHibernateImplTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        resource = new ClassPathResource(springConfigFile);
-        beanFactory = new XmlBeanFactory(resource);
-        persistenceService = (IPersistenceService) beanFactory.getBean("persistenceService");
-        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-        RuntimeContext rtCtx = (RuntimeContext) beanFactory.getBean("runtimeContext");
-        persistenceService.setRuntimeContext(rtCtx);
-
-        //首先将表中的数据清除
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                FireWorkflowHelperDao helperDao = (FireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-                helperDao.clearAllTables();
-            }
-        });
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
+//        resource = new ClassPathResource(springConfigFile);
+//        beanFactory = new XmlBeanFactory(resource);
+//        persistenceService = (IPersistenceService) beanFactory.getBean("persistenceService");
+//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
+//        RuntimeContext rtCtx = (RuntimeContext) beanFactory.getBean("runtimeContext");
+//        persistenceService.setRuntimeContext(rtCtx);
+//
+//        //首先将表中的数据清除
+//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//
+//            @Override
+//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+//                FireWorkflowHelperDao helperDao = (FireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+//                helperDao.clearAllTables();
+//            }
+//        });
+//    }
+//
+//    @AfterClass
+//    public static void tearDownClass() throws Exception {
+//    }
 
     /**
      * Test of setRuntimeContext method, of class PersistenceServiceHibernateImpl.

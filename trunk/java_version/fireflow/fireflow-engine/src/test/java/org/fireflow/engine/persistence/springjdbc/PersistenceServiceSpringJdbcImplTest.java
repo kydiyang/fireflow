@@ -8,24 +8,27 @@ import java.util.Date;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
+import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.model.FormTask;
 import org.fireflow.model.Task;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class PersistenceServiceSpringJdbcImplTest {
+public class PersistenceServiceSpringJdbcImplTest extends FireFlowAbstractTests {
 
-    private final static String springConfigFile = "config/TestContext.xml";
-    private static ClassPathResource resource = null;
-    private static XmlBeanFactory beanFactory = null;
-    private static IPersistenceService persistenceService = null;
-    private static TransactionTemplate transactionTemplate = null;
+//    private final static String springConfigFile = "config/TestContext.xml";
+//    private static ClassPathResource resource = null;
+//    private static XmlBeanFactory beanFactory = null;
+//    private static IPersistenceService persistenceService = null;
+//    private static TransactionTemplate transactionTemplate = null;
+	
     SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //----------variable-------------------------------
@@ -60,35 +63,44 @@ public class PersistenceServiceSpringJdbcImplTest {
     final Integer tokenValue = 1;
     final String cancelComments = "Canceled by JUnit Tester";
 
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    	try{
-	        resource = new ClassPathResource(springConfigFile);
-	        beanFactory = new XmlBeanFactory(resource);
-	        persistenceService = (IPersistenceService) beanFactory.getBean("jdbcPersistenceService");
-	        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-	        RuntimeContext rtCtx = (RuntimeContext) beanFactory.getBean("runtimeContext");
-	        persistenceService.setRuntimeContext(rtCtx);
-	
-	        //首先将表中的数据清除
-	        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-	
-	            @Override
-	            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-	            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-	                helperDao.clearAllTables();
-	            }
-	        });
-    	}catch(Exception ex){
-    		ex.printStackTrace();
-    	}
-        System.out.println("----setUpClass complete........");
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    @Autowired
+    private RuntimeContext runtimeContext = null;
+    
+    @Autowired
+    private TransactionTemplate transactionTemplate = null;
+    
+    @Autowired
+    private IPersistenceService persistenceService = null;
+    
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
+//    	try{
+//	        resource = new ClassPathResource(springConfigFile);
+//	        beanFactory = new XmlBeanFactory(resource);
+//	        persistenceService = (IPersistenceService) beanFactory.getBean("jdbcPersistenceService");
+//	        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
+//	        RuntimeContext rtCtx = (RuntimeContext) beanFactory.getBean("runtimeContext");
+//	        persistenceService.setRuntimeContext(rtCtx);
+//	
+//	        //首先将表中的数据清除
+//	        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//	
+//	            @Override
+//	            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+//	            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+//	                helperDao.clearAllTables();
+//	            }
+//	        });
+//    	}catch(Exception ex){
+//    		ex.printStackTrace();
+//    	}
+//        System.out.println("----setUpClass complete........");
+//    }
+//
+//    @AfterClass
+//    public static void tearDownClass() throws Exception {
+//    }
+    
 	@Test
 	public void testSaveOrUpdateProcessInstance() {
 		fail("Not yet implemented");

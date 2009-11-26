@@ -12,10 +12,12 @@ import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.AssignmentHandlerMock;
 import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
+import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
@@ -23,12 +25,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class SkipTest {
-    private final static String springConfigFile = "config/TestContext.xml";
-    private static ClassPathResource resource = null;
-    private static XmlBeanFactory beanFactory = null;
-    private static TransactionTemplate transactionTemplate = null;
-    private static RuntimeContext runtimeContext = null;
+public class SkipTest extends FireFlowAbstractTests {
+//    private final static String springConfigFile = "config/TestContext.xml";
+//    private static ClassPathResource resource = null;
+//    private static XmlBeanFactory beanFactory = null;
+//    private static TransactionTemplate transactionTemplate = null;
+//    private static RuntimeContext runtimeContext = null;
 
         //-----variables-----------------
     static IProcessInstance currentProcessInstance = null;
@@ -37,23 +39,29 @@ public class SkipTest {
     static String workItem3Id = null;
     static String workItem5Id = null;
     
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        resource = new ClassPathResource(springConfigFile);
-        beanFactory = new XmlBeanFactory(resource);
-        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-
-        //首先将表中的数据清除
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-                helperDao.clearAllTables();
-            }
-        });
-    }
+    @Autowired
+    private RuntimeContext runtimeContext = null;
+    
+    @Autowired
+    private TransactionTemplate transactionTemplate = null;
+    
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
+//        resource = new ClassPathResource(springConfigFile);
+//        beanFactory = new XmlBeanFactory(resource);
+//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
+//        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
+//
+//        //首先将表中的数据清除
+//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//
+//            @Override
+//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+//            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
+//                helperDao.clearAllTables();
+//            }
+//        });
+//    }
 
     /**
      * 创建流程实例，并执行实例的run方法。
