@@ -39,7 +39,6 @@ import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
-import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.impl.Token;
@@ -48,17 +47,11 @@ import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
 import org.fireflow.model.io.Dom4JFPDLParser;
 import org.fireflow.model.io.FPDLParserException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  *
@@ -107,15 +100,6 @@ public class PersistenceServiceHibernateImplTest extends FireFlowAbstractTests {
     final Boolean alive = Boolean.TRUE;
     final Integer tokenValue = 1;
     final String cancelComments = "Canceled by JUnit Tester";
-
-    @Autowired
-    private RuntimeContext runtimeContext = null;
-    
-    @Autowired
-    private TransactionTemplate transactionTemplate = null;
-    
-    @Autowired
-    private IPersistenceService persistenceService = null;
     
     public PersistenceServiceHibernateImplTest() {
     }
@@ -176,7 +160,8 @@ public class PersistenceServiceHibernateImplTest extends FireFlowAbstractTests {
     /**
      * Test of saveOrUpdateWorkflowDefinition method, of class PersistenceServiceHibernateImpl.
      */
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testSaveOrUpdateWorkflowDefinition() {
         System.out.println("--------saveOrUpdateWorkflowDefinition--------");
         final List<String> workflowProcessFileNames = new ArrayList();

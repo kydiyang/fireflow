@@ -52,9 +52,9 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
     static String prepareGoodsWorkItemId = null;
     static String deliverGoodsWorkItemId = null;
        
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    	//TODO 数据库自动删除和发布，不需要手动处理
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
+//    	//TODO 数据库自动删除和发布，不需要手动处理
 //    	try{
 //	        resource = new ClassPathResource(springConfigFile);
 //	        beanFactory = new XmlBeanFactory(resource);
@@ -73,7 +73,7 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
 //    	}catch(Exception ex){
 //    		ex.printStackTrace();
 //    	}
-    }
+//    }
 
     /**
      * 创建流程实例，并执行实例的run方法。
