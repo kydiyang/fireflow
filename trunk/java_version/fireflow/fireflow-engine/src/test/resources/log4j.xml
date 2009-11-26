@@ -16,6 +16,10 @@
 	</logger>
 	<logger name="org.hibernate">
 		<level value="WARN" />
+	</logger>
+	
+	<logger name="org.fireflow">
+		<level value="DEBUG" />
 	</logger> 
 
 	<root>
