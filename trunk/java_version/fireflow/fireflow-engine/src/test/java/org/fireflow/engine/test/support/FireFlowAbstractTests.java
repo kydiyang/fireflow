@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -30,9 +29,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 // @ContextConfiguration(locations = {"classpath:/config/applicationContext-jpa.xml",
 // 									"classpath:/config/FireflowContext-jpa.xml",
 // 									"classpath:/config/AllTheProcessHandlers.xml" })
-public class FireFlowAbstractTests extends AbstractJUnit4SpringContextTests
+public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringContextTests
 {
-	
 	private static final Logger log = LoggerFactory.getLogger(FireFlowAbstractTests.class);
 
 	@Autowired
@@ -51,8 +49,8 @@ public class FireFlowAbstractTests extends AbstractJUnit4SpringContextTests
 	public void prepareTestData()
 	{
 		log.debug("方法执行前调用初始化测试数据");
-		//setSqlScriptEncoding("UTF-8");
-		//executeSqlScript("classpath:/sql/data4test.sql", false);
+		setSqlScriptEncoding("UTF-8");
+		executeSqlScript("classpath:/sql/data4test.sql", false);
 	}
 
 	@After
