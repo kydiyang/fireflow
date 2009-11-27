@@ -278,6 +278,10 @@ public class FireWorkflowEngineTest extends FireFlowAbstractTests {
         IProcessInstance processInstance = persistenceService.findProcessInstanceById(this.currentProcessInstance.getId());
         assertEquals(new Integer(IProcessInstance.COMPLETED),processInstance.getState());
     }
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }
 
 

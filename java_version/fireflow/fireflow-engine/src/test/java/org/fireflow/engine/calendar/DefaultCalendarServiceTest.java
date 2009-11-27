@@ -54,10 +54,11 @@ public class DefaultCalendarServiceTest {
     @Test
     public void testDateAfter() {
         System.out.println("dateAfter");
-        Date fromDate = null;
-        Duration duration = null;
+        Long temp = System.currentTimeMillis();
+        Date fromDate = new Date(temp);
+        Duration duration = new Duration(60,Duration.SECOND);
         DefaultCalendarService instance = new DefaultCalendarService();
-        Date expResult = null;
+        Date expResult = new Date(temp+60*1000);
         Date result = instance.dateAfter(fromDate, duration);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.

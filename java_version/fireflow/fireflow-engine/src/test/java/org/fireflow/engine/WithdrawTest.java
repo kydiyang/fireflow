@@ -364,5 +364,9 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
     }
-
+    
+    @Test
+    public void clear(){
+ 	   fireWorkflowHelperDao.clearAllTables();
+    }
 }

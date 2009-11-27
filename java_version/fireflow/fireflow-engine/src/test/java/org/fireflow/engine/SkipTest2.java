@@ -119,4 +119,9 @@ public class SkipTest2 extends FireFlowAbstractTests {
         });
 
     }
+   
+   @Test
+   public void clear(){
+	   fireWorkflowHelperDao.clearAllTables();
+   }
 }

@@ -501,4 +501,8 @@ public class LoopTest extends FireFlowAbstractTests {
         assertNotNull(processInstance);
         assertEquals(IProcessInstance.COMPLETED,processInstance.getState().intValue());
     }
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }

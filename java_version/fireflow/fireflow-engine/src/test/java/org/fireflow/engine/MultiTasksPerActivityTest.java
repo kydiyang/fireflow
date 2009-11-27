@@ -151,4 +151,8 @@ public class MultiTasksPerActivityTest extends FireFlowAbstractTests {
         	assertEquals(new Integer(0),new Integer(workItemList.size()));
         }
     }    
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }

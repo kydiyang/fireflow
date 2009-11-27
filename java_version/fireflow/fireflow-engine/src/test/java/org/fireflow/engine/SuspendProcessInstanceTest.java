@@ -291,4 +291,9 @@ public class SuspendProcessInstanceTest extends FireFlowAbstractTests {
             }
         });
     }
+    
+    @Test
+    public void clear(){
+ 	   fireWorkflowHelperDao.clearAllTables();
+    }
 }

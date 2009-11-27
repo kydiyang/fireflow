@@ -353,6 +353,9 @@ public class JumpToTest extends FireFlowAbstractTests {
             }
         });
     }
-
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 
 }
