@@ -160,10 +160,5 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
         assertEquals(0, tokenList.size());
 
 
-    }
-    @Test
-    public void clear(){
-    	fireWorkflowHelperDao.clearAllTables();
-    }
-    
+    }    
 }
