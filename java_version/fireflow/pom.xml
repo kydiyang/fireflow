@@ -367,4 +367,17 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	<repositories>
+		<repository>
+			<id>googlecode</id>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>http://fireflow.googlecode.com/svn/mvnrepo</url>
+		</repository>
+	</repositories>
 </project>
