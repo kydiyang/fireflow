@@ -11,7 +11,7 @@
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
 	<!-- hsqldb(目前还没有测试通过) -->
-	<!--
+	<!-- -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
@@ -19,9 +19,9 @@
 		<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
-	 -->
-	<!-- mysql(已经测试，可以进行单元测试) -->
-	<!--  -->
+	
+	<!-- mysql -->
+	<!-- 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -29,7 +29,7 @@
 		<property name="username" value="root" />
 		<property name="password" value="mysql" />
 	</bean>
-	
+	 -->
 	<!-- oracle(没有环境，需要别人来进行测试)  -->
 	<!-- 
     <bean id="dataSource"
@@ -59,10 +59,10 @@
 			<props>
 				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
 				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.dialect">
-					org.hibernate.dialect.MySQL5InnoDBDialect
+				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect
+					
 					<!-- 各种数据库的方言
-					org.hibernate.dialect.HSQLDialect
+					org.hibernate.dialect.MySQL5InnoDBDialect
 					org.hibernate.dialect.OracleDialect 
 					org.hibernate.dialect.SQLServerDialect
 					-->
