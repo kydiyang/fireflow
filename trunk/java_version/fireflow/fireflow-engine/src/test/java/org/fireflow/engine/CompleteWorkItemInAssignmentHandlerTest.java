@@ -148,4 +148,8 @@ public class CompleteWorkItemInAssignmentHandlerTest extends FireFlowAbstractTes
         workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
         
     }
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }

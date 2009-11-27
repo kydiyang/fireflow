@@ -348,4 +348,8 @@ public class AComplexJump extends FireFlowAbstractTests{
         
         workItemId_8 = ((IWorkItem) workItemList.get(0)).getId();      	
     }       
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }

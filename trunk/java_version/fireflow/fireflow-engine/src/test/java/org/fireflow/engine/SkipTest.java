@@ -145,4 +145,8 @@ public class SkipTest extends FireFlowAbstractTests {
         IToken token = (IToken)tokensList.get(0);
         assertEquals(3,token.getStepNumber().intValue());        
     }
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }

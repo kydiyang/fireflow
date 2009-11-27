@@ -170,4 +170,8 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
         assertEquals(new Integer(IWorkItem.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
         workItemCId = ((IWorkItem) workItemList.get(0)).getId();          
     }
+    @Test
+    public void clear(){
+    	fireWorkflowHelperDao.clearAllTables();
+    }
 }

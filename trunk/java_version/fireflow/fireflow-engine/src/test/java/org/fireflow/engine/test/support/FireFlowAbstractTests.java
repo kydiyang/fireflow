@@ -22,7 +22,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ContextConfiguration(locations = { "classpath:/config/applicationContext-hibernate.xml",
 									"classpath:/config/FireflowContext-hibernate.xml", 
 									"classpath:/config/AllTheProcessHandlers.xml" })
-// jdbc
+//// jdbc
 // @ContextConfiguration(locations = {"classpath:/config/applicationContext-jdbc.xml",
 // 									"classpath:/config/FireflowContext-jdbc.xml",
 // 									"classpath:/config/AllTheProcessHandlers.xml" })
