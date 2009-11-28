@@ -14,8 +14,6 @@ import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
 
@@ -29,24 +27,18 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
     @Test
     public void testStartNewProcess() {
         System.out.println("--------------Start a new process ----------------");
-        IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+        IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("AbortTaskInstance2",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
 
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    //启动"/workflowdefinition/Jump.xml
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("AbortTaskInstance2",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
-
-                    processInstance.run();
-                    return processInstance;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -62,23 +54,16 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
         final String workItemAId = ((IWorkItem) workItemList.get(0)).getId();
         
         //结束Activity A的工作项，使流程流转到B环节
-        transactionTemplate.execute(new TransactionCallback() {
-
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem wi = workflowSession.findWorkItemById(workItemAId);
-                    wi.claim();
-                    wi.complete();
-                    return null;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            }
-        });
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem wi = workflowSession.findWorkItemById(workItemAId);
+            wi.claim();
+            wi.complete();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.B");
         assertNotNull(taskInstanceList);
@@ -98,24 +83,18 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
     @Test
     public void testAbortActivityB() {
     	
-    	IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+    	IProcessInstance currentProcessInstance = null;
+    	try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("AbortTaskInstance2",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
 
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    //启动"/workflowdefinition/Jump.xml
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("AbortTaskInstance2",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
-
-                    processInstance.run();
-                    return processInstance;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -131,23 +110,16 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
         final String workItemAId = ((IWorkItem) workItemList.get(0)).getId();
         
         //结束Activity A的工作项，使流程流转到B环节
-        transactionTemplate.execute(new TransactionCallback() {
-
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem wi = workflowSession.findWorkItemById(workItemAId);
-                    wi.claim();
-                    wi.complete();
-                    return null;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            }
-        });
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem wi = workflowSession.findWorkItemById(workItemAId);
+            wi.claim();
+            wi.complete();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.B");
         assertNotNull(taskInstanceList);
@@ -160,27 +132,19 @@ public class AbortTaskInstanceTest2 extends FireFlowAbstractTests {
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
         //String workItemBId = ((IWorkItem) workItemList.get(0)).getId();        
     	
-        transactionTemplate.execute(new TransactionCallback() {
-
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    ITaskInstance taskInstance = workflowSession.findTaskInstanceById(taskInstanceBId);
-                    DynamicAssignmentHandler dynamicHandler = new DynamicAssignmentHandler();
-                    List<String> actorsList = new ArrayList<String>();
-                    actorsList.add("zhangsan");
-                    dynamicHandler.setActorIdsList(actorsList);
-                    taskInstance.abort("AbortTaskInstance2.D",dynamicHandler);
-                    return null;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            }
-        });    	
-        //IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            ITaskInstance taskInstance = workflowSession.findTaskInstanceById(taskInstanceBId);
+            DynamicAssignmentHandler dynamicHandler = new DynamicAssignmentHandler();
+            List<String> actorsList = new ArrayList<String>();
+            actorsList.add("zhangsan");
+            dynamicHandler.setActorIdsList(actorsList);
+            taskInstance.abort("AbortTaskInstance2.D",dynamicHandler);
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }    	
         
        // List<ITaskInstance> 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "AbortTaskInstance2.B");
