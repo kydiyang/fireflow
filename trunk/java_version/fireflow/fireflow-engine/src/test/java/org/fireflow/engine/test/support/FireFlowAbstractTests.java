@@ -31,6 +31,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 // @ContextConfiguration(locations = {"classpath:/config/applicationContext-jpa.xml",
 // 									"classpath:/config/FireflowContext-jpa.xml",
 // 									"classpath:/config/AllTheProcessHandlers.xml" })
+									
+//如果想将执行的结果存储到数据中，那么继承如下这个基类
+//public class FireFlowAbstractTests extends AbstractJUnit4SpringContextTests
 public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringContextTests
 {
 	private static final Logger log = LoggerFactory.getLogger(FireFlowAbstractTests.class);
