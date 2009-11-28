@@ -109,7 +109,7 @@
         </property>
     </bean>
 
-	<bean id="FireWorkflowHelperDao" class="org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao">
+	<bean id="fireWorkflowHelperDao" class="org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao">
         <property name="sessionFactory">
             <ref bean="sessionFactory" />
         </property>
