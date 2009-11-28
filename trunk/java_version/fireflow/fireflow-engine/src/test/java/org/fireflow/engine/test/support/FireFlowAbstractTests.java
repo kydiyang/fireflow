@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -19,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * 初始化时都是空数据库
  * @author lifw555@gmail.com
  */
+@SuppressWarnings("unused")
 // hibernate
 @ContextConfiguration(locations = { "classpath:/config/applicationContext-hibernate.xml",
 									"classpath:/config/FireflowContext-hibernate.xml", 
@@ -67,17 +69,23 @@ public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringCont
 	
 	/**
 	 * 刷新session中的实体，使之能够在事务内级别受到方法内前边操作的影响
+	 * 只有当继承自AbstractTransactionalJUnit4SpringContextTests.class时，才需要调用refresh这个方法
 	 * @param obj
 	 */
 	protected void refresh(Object obj)
 	{
-		if(fireWorkflowHelperDao instanceof HibernateDaoSupport)
+		String thisName = this.getClass().getSuperclass().getSuperclass().getName();
+		String superName = AbstractTransactionalJUnit4SpringContextTests.class.getName();
+		if(thisName.equals(superName))
 		{
-			((HibernateDaoSupport) fireWorkflowHelperDao).getSessionFactory().getCurrentSession().refresh(obj);
-		}
-		else if(fireWorkflowHelperDao instanceof JdbcDaoSupport)
-		{
-			//jdbc方式实现，什么也不需要做
+			if(fireWorkflowHelperDao instanceof HibernateDaoSupport)
+			{
+				((HibernateDaoSupport) fireWorkflowHelperDao).getSessionFactory().getCurrentSession().refresh(obj);
+			}
+			else if(fireWorkflowHelperDao instanceof JdbcDaoSupport)
+			{
+				//jdbc方式实现，什么也不需要做
+			}
 		}
 	}
 	
