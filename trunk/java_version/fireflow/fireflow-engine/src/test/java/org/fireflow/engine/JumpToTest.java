@@ -33,9 +33,7 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+
 /**
  *
  * @author 非也
@@ -44,35 +42,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
  */
 public class JumpToTest extends FireFlowAbstractTests {
 
-//    private final static String springConfigFile = "config/TestContext.xml";
-//    private static ClassPathResource resource = null;
-//    private static XmlBeanFactory beanFactory = null;
-//    private static TransactionTemplate transactionTemplate = null;
-//    private static RuntimeContext runtimeContext = null;
-
     //-----variables-----------------
-    static IProcessInstance currentProcessInstance = null;
-    static String workItem1Id = null;
-    static String workItem2Id = null;
-    static String workItem5Id = null;
-    
-//    @BeforeClass
-//    public static void setUpClass() throws Exception {
-//        resource = new ClassPathResource(springConfigFile);
-//        beanFactory = new XmlBeanFactory(resource);
-//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-//        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-//
-//        //首先将表中的数据清除
-//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-//
-//            @Override
-//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-//            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-//                helperDao.clearAllTables();
-//            }
-//        });
-//    }
+//    static IProcessInstance currentProcessInstance = null;
+//    static String workItem1Id = null;
+//    static String workItem2Id = null;
+//    static String workItem5Id = null;
 
     /**
      * 创建流程实例，并执行实例的run方法。
@@ -80,160 +54,325 @@ public class JumpToTest extends FireFlowAbstractTests {
     @Test
     public void testStartNewProcess() {
         System.out.println("--------------Start a new process ----------------");
-        currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+        IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    //启动"/workflowdefinition/Jump.xml
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
-
-                    processInstance.run();
-                    return processInstance;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
         assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
         assertEquals(1,taskInst.getStepNumber().intValue());
 
-        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
 
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+        //String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
     }
 
     @Test
     public void testJumpToNextActivity() {
-        System.out.println("--------------Jump To NextActivity ----------------");
-        final List actorIds = new ArrayList();
-        actorIds.add("Zhang");
-        actorIds.add("Li");
-        actorIds.add("Chen");
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+    	IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
-                    DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
-                    dynamicAssignmentHandler.setActorIdsList(actorIds);
-                    dynamicAssignmentHandler.setNeedClaim(true);
-                    workItem1.complete(dynamicAssignmentHandler, "");
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
-        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
-
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(this.currentProcessInstance.getId(), "JumpTo.Activity2");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
         assertNotNull(taskInstanceList);
-        assertEquals(1,taskInstanceList.size());
-        ITaskInstance taskInst = (ITaskInstance)taskInstanceList.get(0);
-        assertEquals(2,taskInst.getStepNumber().intValue());
-        
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertEquals(1, taskInstanceList.size());
+        ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
+        assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
+        assertEquals(1,taskInst.getStepNumber().intValue());
+
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
+        assertEquals(1,token.getStepNumber().intValue());
+
+        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+    	//------------------------------------
+        System.out.println("--------------Jump To NextActivity ----------------");
+        final List<String> actorIds = new ArrayList<String>();
+        actorIds.add("Zhang");
+        actorIds.add("Li");
+        actorIds.add("Chen");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
+            DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+            dynamicAssignmentHandler.setActorIdsList(actorIds);
+            dynamicAssignmentHandler.setNeedClaim(true);
+            workItem1.complete(dynamicAssignmentHandler, "");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
+        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity2");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+        taskInst = (ITaskInstance)taskInstanceList.get(0);
+        assertEquals(2,taskInst.getStepNumber().intValue());
+        
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
         assertEquals(2,token.getStepNumber().intValue());
 
         //JumpTo.Activity2.Task1的所有WorkItem
-        List allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        List<IWorkItem> allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
         assertNotNull(allTodoWorkItemList4Activity2);
         assertEquals(3,allTodoWorkItemList4Activity2.size());
 
-        List todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
+        List<IWorkItem> todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
         assertNotNull(todoWorkItemsList);
         assertEquals(1, todoWorkItemsList.size());
-        workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+        //String workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
     }
 
     @Test(expected=RuntimeException.class)
     public void testJumpFromActivity2ToActivity3(){
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+    	IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
-                    workItem2.claim();
-                    workItem2.jumpTo("JumpTo.Activity3");
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new RuntimeException(ex.getMessage());
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
+        assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
+        assertEquals(1,taskInst.getStepNumber().intValue());
+
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        IToken token = (IToken)tokensList.get(0);
+        assertEquals(1,token.getStepNumber().intValue());
+
+        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+    	//------------------------------------
+        System.out.println("--------------Jump To NextActivity ----------------");
+        final List<String> actorIds = new ArrayList<String>();
+        actorIds.add("Zhang");
+        actorIds.add("Li");
+        actorIds.add("Chen");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
+            DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+            dynamicAssignmentHandler.setActorIdsList(actorIds);
+            dynamicAssignmentHandler.setNeedClaim(true);
+            workItem1.complete(dynamicAssignmentHandler, "");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
+        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity2");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+        taskInst = (ITaskInstance)taskInstanceList.get(0);
+        assertEquals(2,taskInst.getStepNumber().intValue());
+        
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(2,token.getStepNumber().intValue());
+
+        //JumpTo.Activity2.Task1的所有WorkItem
+        List<IWorkItem> allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(allTodoWorkItemList4Activity2);
+        assertEquals(3,allTodoWorkItemList4Activity2.size());
+
+        List<IWorkItem> todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+        //---------------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.claim();
+            workItem2.jumpTo("JumpTo.Activity3");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Test
     public void testJumpFromActivity2ToActivity5(){
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+    	IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
-                    workItem2.claim();
-                    workItem2.jumpTo("JumpTo.Activity5");
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new RuntimeException(ex.getMessage());
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(workItem2Id);
-        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
+        assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
+        assertEquals(1,taskInst.getStepNumber().intValue());
 
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
+        assertEquals(1,token.getStepNumber().intValue());
+
+        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+    	//------------------------------------
+        System.out.println("--------------Jump To NextActivity ----------------");
+        final List<String> actorIds = new ArrayList<String>();
+        actorIds.add("Zhang");
+        actorIds.add("Li");
+        actorIds.add("Chen");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
+            DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+            dynamicAssignmentHandler.setActorIdsList(actorIds);
+            dynamicAssignmentHandler.setNeedClaim(true);
+            workItem1.complete(dynamicAssignmentHandler, "");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
+        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity2");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+        taskInst = (ITaskInstance)taskInstanceList.get(0);
+        assertEquals(2,taskInst.getStepNumber().intValue());
+        
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(2,token.getStepNumber().intValue());
+
+        //JumpTo.Activity2.Task1的所有WorkItem
+        List<IWorkItem> allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(allTodoWorkItemList4Activity2);
+        assertEquals(3,allTodoWorkItemList4Activity2.size());
+
+        List<IWorkItem> todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.claim();
+            workItem2.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem2Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
         assertEquals(3,token.getStepNumber().intValue());
 
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
         assertNotNull(taskInstanceList);
         assertEquals(1,taskInstanceList.size());
 
-        List todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
+        todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
         assertNotNull(todoWorkItemsList);
         assertEquals(1, todoWorkItemsList.size());
-        workItem5Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+        //String workItem5Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
     }
 
     /**
@@ -241,41 +380,140 @@ public class JumpToTest extends FireFlowAbstractTests {
      */
     @Test
     public void testJumpFromActivity5ToActivity2() {
-        System.out.println("--------------Complete WorkItem5 ----------------");
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+    	IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem workItem5 = workflowSession.findWorkItemById(workItem5Id);
-                    workItem5.claim();
-                    workItem5.jumpTo("JumpTo.Activity2");
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(workItem5Id);
-        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
+        assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
+        assertEquals(1,taskInst.getStepNumber().intValue());
 
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
+        assertEquals(1,token.getStepNumber().intValue());
+
+        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+    	//------------------------------------
+        System.out.println("--------------Jump To NextActivity ----------------");
+        final List<String> actorIds = new ArrayList<String>();
+        actorIds.add("Zhang");
+        actorIds.add("Li");
+        actorIds.add("Chen");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
+            DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+            dynamicAssignmentHandler.setActorIdsList(actorIds);
+            dynamicAssignmentHandler.setNeedClaim(true);
+            workItem1.complete(dynamicAssignmentHandler, "");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
+        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity2");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+        taskInst = (ITaskInstance)taskInstanceList.get(0);
+        assertEquals(2,taskInst.getStepNumber().intValue());
+        
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(2,token.getStepNumber().intValue());
+
+        //JumpTo.Activity2.Task1的所有WorkItem
+        List<IWorkItem> allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(allTodoWorkItemList4Activity2);
+        assertEquals(3,allTodoWorkItemList4Activity2.size());
+
+        List<IWorkItem> todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.claim();
+            workItem2.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem2Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(3,token.getStepNumber().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem5Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//-----------------------------------------------
+        System.out.println("--------------Complete WorkItem5 ----------------");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem5 = workflowSession.findWorkItemById(workItem5Id);
+            workItem5.claim();
+            workItem5.jumpTo("JumpTo.Activity2");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem5Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
         assertEquals(4,token.getStepNumber().intValue());
 
-        List workItemsList = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        List<IWorkItem> workItemsList = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
         assertNotNull(workItemsList);
         assertEquals(2,workItemsList.size());
 
-        List todoWorkItemList = persistenceService.findTodoWorkItems("Zhang");
+        List<IWorkItem> todoWorkItemList = persistenceService.findTodoWorkItems("Zhang");
         assertNotNull(todoWorkItemList);
         assertEquals(1,todoWorkItemList.size());
 
@@ -290,38 +528,171 @@ public class JumpToTest extends FireFlowAbstractTests {
      */
     @Test
     public void testJumpFromActivity2ToActivity5_again() {
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+    	IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
-                    workItem2.jumpTo("JumpTo.Activity5");
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new RuntimeException(ex.getMessage());
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(workItem2Id);
-        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
+        assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
+        assertEquals(1,taskInst.getStepNumber().intValue());
 
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
-        assertEquals(6,token.getStepNumber().intValue());
+        assertEquals(1,token.getStepNumber().intValue());
 
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
+        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+    	//------------------------------------
+        System.out.println("--------------Jump To NextActivity ----------------");
+        final List<String> actorIds = new ArrayList<String>();
+        actorIds.add("Zhang");
+        actorIds.add("Li");
+        actorIds.add("Chen");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
+            DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+            dynamicAssignmentHandler.setActorIdsList(actorIds);
+            dynamicAssignmentHandler.setNeedClaim(true);
+            workItem1.complete(dynamicAssignmentHandler, "");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
+        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity2");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+        taskInst = (ITaskInstance)taskInstanceList.get(0);
+        assertEquals(2,taskInst.getStepNumber().intValue());
+        
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(2,token.getStepNumber().intValue());
+
+        //JumpTo.Activity2.Task1的所有WorkItem
+        List<IWorkItem> allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(allTodoWorkItemList4Activity2);
+        assertEquals(3,allTodoWorkItemList4Activity2.size());
+
+        List<IWorkItem> todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.claim();
+            workItem2.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem2Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(3,token.getStepNumber().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
         assertNotNull(taskInstanceList);
         assertEquals(1,taskInstanceList.size());
 
-        List todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
+        todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem5Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//-----------------------------------------------
+        System.out.println("--------------Complete WorkItem5 ----------------");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem5 = workflowSession.findWorkItemById(workItem5Id);
+            workItem5.claim();
+            workItem5.jumpTo("JumpTo.Activity2");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem5Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(4,token.getStepNumber().intValue());
+
+        List<IWorkItem> workItemsList = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(workItemsList);
+        assertEquals(2,workItemsList.size());
+
+        List<IWorkItem> todoWorkItemList = persistenceService.findTodoWorkItems("Zhang");
+        assertNotNull(todoWorkItemList);
+        assertEquals(1,todoWorkItemList.size());
+
+        IWorkItem todoWorkItem = (IWorkItem)todoWorkItemList.get(0);
+        workItem2Id = todoWorkItem.getId();
+    	//-------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem2Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(6,token.getStepNumber().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
         assertNotNull(todoWorkItemsList);
         assertEquals(0, todoWorkItemsList.size());
     }
@@ -331,31 +702,188 @@ public class JumpToTest extends FireFlowAbstractTests {
      */
     @Test (expected=RuntimeException.class)
     public void testJumpFromActivity6ToActivity1(){
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+    	IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/Jump.xml
+            currentProcessInstance = workflowSession.createProcessInstance("JumpTo","fireflowTester");
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    List todoWorkItemsList = workflowSession.findMyTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID);
-                    assertNotNull(todoWorkItemsList);
-                    assertEquals(2,todoWorkItemsList.size());
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertNotNull(currentProcessInstance);
 
-                    IWorkItem workItem6_1 = (IWorkItem)todoWorkItemsList.get(0);
-                    workItem6_1.claim();
-                    workItem6_1.jumpTo("JumpTo.Activity5");
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new RuntimeException(ex.getMessage());
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity1");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        ITaskInstance taskInst = ((ITaskInstance) taskInstanceList.get(0));
+        assertEquals(new Integer(ITaskInstance.RUNNING), taskInst.getState());
+        assertEquals(1,taskInst.getStepNumber().intValue());
+
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        IToken token = (IToken)tokensList.get(0);
+        assertEquals(1,token.getStepNumber().intValue());
+
+        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+    	//------------------------------------
+        System.out.println("--------------Jump To NextActivity ----------------");
+        final List<String> actorIds = new ArrayList<String>();
+        actorIds.add("Zhang");
+        actorIds.add("Li");
+        actorIds.add("Chen");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
+            DynamicAssignmentHandler dynamicAssignmentHandler = new DynamicAssignmentHandler();
+            dynamicAssignmentHandler.setActorIdsList(actorIds);
+            dynamicAssignmentHandler.setNeedClaim(true);
+            workItem1.complete(dynamicAssignmentHandler, "");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        IWorkItem wi = persistenceService.findWorkItemById(workItem1Id);
+        assertEquals(IWorkItem.COMPLETED, wi.getState().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity2");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+        taskInst = (ITaskInstance)taskInstanceList.get(0);
+        assertEquals(2,taskInst.getStepNumber().intValue());
+        
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(2,token.getStepNumber().intValue());
+
+        //JumpTo.Activity2.Task1的所有WorkItem
+        List<IWorkItem> allTodoWorkItemList4Activity2 = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(allTodoWorkItemList4Activity2);
+        assertEquals(3,allTodoWorkItemList4Activity2.size());
+
+        List<IWorkItem> todoWorkItemsList = persistenceService.findTodoWorkItems("Zhang", "JumpTo", "JumpTo.Activity2.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem2Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.claim();
+            workItem2.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem2Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(3,token.getStepNumber().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        String workItem5Id = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//-----------------------------------------------
+        System.out.println("--------------Complete WorkItem5 ----------------");
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem5 = workflowSession.findWorkItemById(workItem5Id);
+            workItem5.claim();
+            workItem5.jumpTo("JumpTo.Activity2");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem5Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(4,token.getStepNumber().intValue());
+
+        List<IWorkItem> workItemsList = persistenceService.findWorkItemsForTask("JumpTo.Activity2.Task1");
+        assertNotNull(workItemsList);
+        assertEquals(2,workItemsList.size());
+
+        List<IWorkItem> todoWorkItemList = persistenceService.findTodoWorkItems("Zhang");
+        assertNotNull(todoWorkItemList);
+        assertEquals(1,todoWorkItemList.size());
+
+        IWorkItem todoWorkItem = (IWorkItem)todoWorkItemList.get(0);
+        workItem2Id = todoWorkItem.getId();
+    	//-------------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+            workItem2.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        wi = persistenceService.findWorkItemById(workItem2Id);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+        token = (IToken)tokensList.get(0);
+        assertEquals(6,token.getStepNumber().intValue());
+
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "JumpTo.Activity5");
+        assertNotNull(taskInstanceList);
+        assertEquals(1,taskInstanceList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(AssignmentHandlerMock.ACTOR_ID, "JumpTo", "JumpTo.Activity5.Task1");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(0, todoWorkItemsList.size());
+    	//--------------------------------------------
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            todoWorkItemsList = workflowSession.findMyTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID);
+            assertNotNull(todoWorkItemsList);
+            assertEquals(2,todoWorkItemsList.size());
+
+            IWorkItem workItem6_1 = (IWorkItem)todoWorkItemsList.get(0);
+            workItem6_1.claim();
+            workItem6_1.jumpTo("JumpTo.Activity5");
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    @Test
-    public void clear(){
-    	fireWorkflowHelperDao.clearAllTables();
-    }
-
 }
