@@ -29,8 +29,6 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 /**
  *
@@ -43,42 +41,28 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
     private final static String mobile = null;//"123123123123";
-
-    //-----variables-----------------
-    static String processInstanceId = null;
-    static IProcessInstance currentProcessInstance = null;
-    static String paymentWorkItemId = null;
-    static String prepareGoodsWorkItemId = null;
-    static String deliverGoodsWorkItemId = null;
-    
+   
     /**
      * 创建流程实例，并执行实例的run方法。
      */
     @Test
     public void testAbortProcessInstance() {
         System.out.println("--------------Start a new process ----------------");
-        currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
-
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
-                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
-                    processInstance.setProcessInstanceVariable("mobile", mobile);
-                    processInstance.run();
-                    return processInstance;
-                } catch (EngineException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (KernelException ex) {
-                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                return null;
-            }
-        });
+        IProcessInstance currentProcessInstance = null;
+        try {
+            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+            //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+            currentProcessInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+            currentProcessInstance.setProcessInstanceVariable("mobile", mobile);
+            currentProcessInstance.run();
+        } catch (EngineException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KernelException ex) {
+            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         assertNotNull(currentProcessInstance);
-        processInstanceId = currentProcessInstance.getId();
+        String processInstanceId = currentProcessInstance.getId();
         
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
         List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
@@ -98,24 +82,18 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
 
-        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+       // String paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
 
         //abort processInstance
-        transactionTemplate.execute(new TransactionCallback() {
-
-            public Object doInTransaction(TransactionStatus arg0) {
-                try {
-                	IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-                	currentProcessInstance  = workflowSession.findProcessInstanceById(processInstanceId);
-                	String mb = (String)currentProcessInstance.getProcessInstanceVariable("mobile");
-                	System.out.println("====the mobile is "+mb);
-                    currentProcessInstance.abort();
-                } catch (EngineException ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-        });
+        try {
+        	IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+        	currentProcessInstance  = workflowSession.findProcessInstanceById(processInstanceId);
+        	String mb = (String)currentProcessInstance.getProcessInstanceVariable("mobile");
+        	System.out.println("====the mobile is "+mb);
+            currentProcessInstance.abort();
+        } catch (EngineException ex) {
+            ex.printStackTrace();
+        }
         
         assertEquals(IProcessInstance.CANCELED,currentProcessInstance.getState().intValue());
         
@@ -139,7 +117,5 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
         tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
         assertEquals(0, tokenList.size());
-
-
     }    
 }
