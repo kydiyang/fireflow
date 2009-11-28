@@ -28,7 +28,6 @@ import org.fireflow.engine.taskinstance.CurrentUserAssignmentHandlerMock;
 import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -51,30 +50,7 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
     static String paymentWorkItemId = null;
     static String prepareGoodsWorkItemId = null;
     static String deliverGoodsWorkItemId = null;
-       
-//    @BeforeClass
-//    public static void setUpClass() throws Exception {
-//    	//TODO 数据库自动删除和发布，不需要手动处理
-//    	try{
-//	        resource = new ClassPathResource(springConfigFile);
-//	        beanFactory = new XmlBeanFactory(resource);
-//	        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-//	        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-//	
-//	        //首先将表中的数据清除
-//	        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-//	
-//	            @Override
-//	            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-//	            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-//	                helperDao.clearAllTables();
-//	            }
-//	        });
-//    	}catch(Exception ex){
-//    		ex.printStackTrace();
-//    	}
-//    }
-
+    
     /**
      * 创建流程实例，并执行实例的run方法。
      */
@@ -140,17 +116,22 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
                 return null;
             }
         });
-
+        
         assertEquals(IProcessInstance.CANCELED,currentProcessInstance.getState().intValue());
-
+        
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        
+        this.refresh(taskInstanceList.get(0));
+       
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         assertEquals(new Integer(ITaskInstance.CANCELED), ((ITaskInstance) taskInstanceList.get(0)).getState());
         assertEquals(1, ((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
 
-
         workItemList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+
+        this.refresh(workItemList.get(0));
+        
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(ITaskInstance.CANCELED), ((IWorkItem) workItemList.get(0)).getState());
