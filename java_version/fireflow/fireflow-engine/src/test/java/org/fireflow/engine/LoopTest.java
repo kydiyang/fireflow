@@ -30,6 +30,7 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
+
 /**
  *
  * @author 非也
@@ -37,14 +38,7 @@ import org.junit.Test;
  * Created on Mar 14, 2009
  */
 public class LoopTest extends FireFlowAbstractTests {
-
-        //-----variables-----------------
-//    static IProcessInstance currentProcessInstance = null;
-//    static String workItem1Id = null;
-//    static String workItem2Id = null;
-//    static String workItem3Id = null;
-//    static String workItem5Id = null;
-    
+  
     /**
      * 创建流程实例，并执行实例的run方法。
      */
