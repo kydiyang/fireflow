@@ -1,13 +1,15 @@
 package org.fireflow.engine.test.support;
 
 import org.fireflow.engine.RuntimeContext;
+import org.fireflow.engine.persistence.IFireWorkflowHelperDao;
 import org.fireflow.engine.persistence.IPersistenceService;
-import org.fireflow.engine.persistence.hibernate.FireWorkflowHelperDao;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -32,7 +34,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringContextTests
 {
 	private static final Logger log = LoggerFactory.getLogger(FireFlowAbstractTests.class);
-
+	
 	@Autowired
 	protected RuntimeContext runtimeContext = null;
 
@@ -43,7 +45,7 @@ public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringCont
 	protected IPersistenceService persistenceService = null;
 
 	@Autowired
-	protected FireWorkflowHelperDao fireWorkflowHelperDao;
+	protected IFireWorkflowHelperDao fireWorkflowHelperDao;
 
 	@Before
 	public void prepareTestData()
@@ -59,4 +61,21 @@ public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringCont
 		// 每个测试方法执行完成后调用
 		log.debug("方法执行后调用");
 	}
+	
+	/**
+	 * 刷新session中的实体，使之能够在事务内级别受到方法内前边操作的影响
+	 * @param obj
+	 */
+	protected void refresh(Object obj)
+	{
+		if(fireWorkflowHelperDao instanceof HibernateDaoSupport)
+		{
+			((HibernateDaoSupport) fireWorkflowHelperDao).getSessionFactory().getCurrentSession().refresh(obj);
+		}
+		else if(fireWorkflowHelperDao instanceof JdbcDaoSupport)
+		{
+			//jdbc方式实现，什么也不需要做
+		}
+	}
+	
 }
