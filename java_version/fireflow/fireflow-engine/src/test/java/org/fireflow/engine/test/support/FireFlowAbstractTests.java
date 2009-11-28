@@ -54,8 +54,8 @@ public class FireFlowAbstractTests extends AbstractTransactionalJUnit4SpringCont
 	public void prepareTestData()
 	{
 		log.debug("方法执行前调用初始化测试数据");
-		setSqlScriptEncoding("UTF-8");
-		executeSqlScript("classpath:/sql/data4test.sql", false);
+		//setSqlScriptEncoding("UTF-8");
+		//executeSqlScript("classpath:/sql/data4test.sql", false);
 	}
 
 	@After
