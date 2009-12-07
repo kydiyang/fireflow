@@ -13,28 +13,36 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 public class CompleteWorkItemInAssignmentHandlerTest extends FireFlowAbstractTests {
-   
+	
     /**
      * 创建流程实例，并执行实例的run方法。
      */
     @Test
     public void testStartNewProcess() {
         System.out.println("--------------Start a new process ----------------");
-        IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Jump.xml
-            currentProcessInstance = workflowSession.createProcessInstance("CompleteWorkItemInAssignmentHandler",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
+        IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
 
-            currentProcessInstance.run();
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/Jump.xml
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("CompleteWorkItemInAssignmentHandler",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
 
-        } catch (EngineException ex) {
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -65,7 +73,7 @@ public class CompleteWorkItemInAssignmentHandlerTest extends FireFlowAbstractTes
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
-        //String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
+       // String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
         
         List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
@@ -78,19 +86,25 @@ public class CompleteWorkItemInAssignmentHandlerTest extends FireFlowAbstractTes
     
     @Test
     public void testClaimAndCompleteWorkItem2(){
-    	IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Jump.xml
-            currentProcessInstance = workflowSession.createProcessInstance("CompleteWorkItemInAssignmentHandler",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
+    	
+    	IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
 
-            currentProcessInstance.run();
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/Jump.xml
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("CompleteWorkItemInAssignmentHandler",AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID);
 
-        } catch (EngineException ex) {
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -115,33 +129,37 @@ public class CompleteWorkItemInAssignmentHandlerTest extends FireFlowAbstractTes
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.COMPLETED), ((IWorkItem) workItemList.get(0)).getState());
-        //String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+       // String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
         
         workItemList = persistenceService.findTodoWorkItems(AssignToCurrentUserAndCompleteWorkItemHandler.ACTOR_ID, "CompleteWorkItemInAssignmentHandler", "CompleteWorkItemInAssignmentHandler.Activity1.Task2");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
-        String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
         
         List<IToken> tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
         IToken token = (IToken)tokensList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
-    	
-        //--------------------------------------       
-        
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
-            workItem2.claim();
-            workItem2.complete();
-        } catch (EngineException ex) {
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+    	//--------------------------------------------
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem workItem2 = workflowSession.findWorkItemById(workItem2Id);
+                    workItem2.claim();
+                    workItem2.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         IWorkItem wi = persistenceService.findWorkItemById(workItem2Id);
         assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
 
@@ -153,8 +171,7 @@ public class CompleteWorkItemInAssignmentHandlerTest extends FireFlowAbstractTes
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
-        //String workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
+       // String workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
         
     }
-
 }

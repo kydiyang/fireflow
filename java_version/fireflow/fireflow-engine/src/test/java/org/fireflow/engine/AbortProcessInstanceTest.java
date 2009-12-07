@@ -77,6 +77,8 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
             }
         });
         
+        this.refresh(currentProcessInstance);
+        
         assertNotNull(currentProcessInstance);
         processInstanceId = currentProcessInstance.getId();
         
@@ -116,6 +118,8 @@ public class AbortProcessInstanceTest extends FireFlowAbstractTests {
                 return null;
             }
         });
+        
+        this.refresh(currentProcessInstance);
         
         assertEquals(IProcessInstance.CANCELED,currentProcessInstance.getState().intValue());
         
