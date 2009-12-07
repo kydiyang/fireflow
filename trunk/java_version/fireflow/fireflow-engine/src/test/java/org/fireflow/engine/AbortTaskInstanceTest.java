@@ -46,6 +46,9 @@ public class AbortTaskInstanceTest extends FireFlowAbstractTests {
                 return null;
             }
         });
+        
+        this.refresh(currentProcessInstance);
+        
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
