@@ -8,6 +8,14 @@
 	<name>fireflow</name>
 	<url>http://www.fireflow.org</url>
 	<version>2.0.0-SNAPSHOT</version>
+	
+	<licenses>
+	  <license>
+	    <name>LGPL</name>
+	    <url>http://www.gnu.org/licenses/lgpl.html</url>
+	  </license>
+	</licenses>
+
 	<modules>
 		<module>fireflow-engine</module>
 		<module>fireflow-model</module>
@@ -48,10 +56,17 @@
 		
 		<hsqldb.version>1.8.0.7</hsqldb.version>
 		<mysql-connector-java.version>5.1.6</mysql-connector-java.version>
+		<jtds.version>1.2</jtds.version>
 	</properties>
 	
 	<dependencies>
 		<!-- other dependence -->
+		<dependency>
+	        <groupId>net.sourceforge.jtds</groupId>
+	        <artifactId>jtds</artifactId>
+	        <version>${jtds.version}</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -310,8 +325,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
