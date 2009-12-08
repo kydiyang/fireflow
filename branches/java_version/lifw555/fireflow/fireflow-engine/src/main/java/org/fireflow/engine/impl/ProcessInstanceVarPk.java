@@ -19,29 +19,38 @@ package org.fireflow.engine.impl;
 import java.io.Serializable;
 
 /**
- * 
- * @author chennieyun
+ * @author chennieyun,lifw555@gmail.com
  */
-public class ProcessInstanceVarPk implements Serializable{
-    String processInstanceId = null;
-    String name = null;
-    public String getName() {
-        return name;
-    }
+public class ProcessInstanceVarPk implements Serializable
+{
+	private static final long serialVersionUID = 1441383685880577012L;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	private String processInstanceId = null;
 
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
+	private String name = null;
 
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-    }
-    
-    public boolean equals(Object obj){
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public String getProcessInstanceId()
+	{
+		return processInstanceId;
+	}
+
+	public void setProcessInstanceId(String processInstanceId)
+	{
+		this.processInstanceId = processInstanceId;
+	}
+
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -64,13 +73,14 @@ public class ProcessInstanceVarPk implements Serializable{
 		else if (!processInstanceId.equals(other.processInstanceId))
 			return false;
 		return true;
-    }
-    
-    public int hashCode(){
+	}
+
+	public int hashCode()
+	{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((processInstanceId == null) ? 0 : processInstanceId.hashCode());
 		return result;
-    }    
+	}
 }

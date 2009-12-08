@@ -16,6 +16,10 @@
  */
 package org.fireflow.engine.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 
  * @author 非也,nychen2000@163.com
@@ -23,6 +27,7 @@ package org.fireflow.engine.impl;
 public class ProcessInstanceVar {
     ProcessInstanceVarPk varPrimaryKey = null;
     String value = null;
+    String valueType = null;
 
     public ProcessInstanceVarPk getVarPrimaryKey() {
         return varPrimaryKey;
@@ -41,6 +46,42 @@ public class ProcessInstanceVar {
     }
 
     public Object getValue() {
+    	if(Integer.class.getName().equals(this.valueType) || int.class.getName().equals(this.valueType))
+    	{ 
+    		return Integer.parseInt(this.value);
+    	}
+    	else if(Long.class.getName().equals(this.valueType) || long.class.getName().equals(this.valueType))
+    	{
+    		return Long.parseLong(this.value);
+    	}
+    	else if(String.class.getName().equals(this.valueType))
+    	{
+    		return this.value;
+    	}
+    	else if(Float.class.getName().equals(this.valueType) || float.class.getName().equals(this.valueType))
+    	{
+    		return Float.parseFloat(this.value);
+    	}
+    	else if(Double.class.getName().equals(this.valueType) || double.class.getName().equals(this.valueType))
+    	{
+    		return Double.parseDouble(this.value);
+    	}
+    	else if(Boolean.class.getName().equals(this.valueType) || boolean.class.getName().equals(this.valueType))
+    	{
+    		return Boolean.parseBoolean(this.value);
+    	}
+    	else if(Date.class.getName().equals(this.valueType))
+    	{
+    		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HHmmss");
+			try
+			{
+				return formatter.parse(this.value);
+			}
+			catch (ParseException e)
+			{
+				return null;
+			}
+    	}
         return value;
     }
 
@@ -48,6 +89,15 @@ public class ProcessInstanceVar {
         this.value = String.valueOf(v);
     }
     
+    public String getValueType()
+	{
+		return valueType;
+	}
+
+	public void setValueType(String valueType)
+	{
+		this.valueType = valueType;
+	}
 
     public boolean equals(Object obj){
         if (this==obj) return true;
