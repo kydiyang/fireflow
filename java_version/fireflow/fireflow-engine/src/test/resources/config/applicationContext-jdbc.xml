@@ -10,8 +10,8 @@
 			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-	<!-- hsqldb(没有测试) -->
-	<!--
+	<!-- hsqldb -->
+	<!-- -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
@@ -19,7 +19,7 @@
 		<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
-	 -->
+	
 	<!-- mysql(没有测试) -->
 	<!-- 
 	<bean id="dataSource"
@@ -44,6 +44,7 @@
         <property name="password" value="fireflow"></property>
     </bean> -->
 	<!--  mssql 在spring中直接配置jdbc链接  测试的时候可以使用！-->
+	<!-- 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
@@ -53,7 +54,7 @@
 		<property name="username" value="sa" />
 		<property name="password" value="sa" />
 	</bean>	    
-	
+	 -->
 	
 	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
     <bean id="nativeJdbcExtractor"
