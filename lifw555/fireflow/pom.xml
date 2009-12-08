@@ -330,6 +330,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- 暂时不用
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
@@ -347,6 +348,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			 -->
 		</plugins>
 	</build>
 	<reporting>
