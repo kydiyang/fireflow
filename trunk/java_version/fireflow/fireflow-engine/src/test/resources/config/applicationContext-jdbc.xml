@@ -31,7 +31,7 @@
 	</bean>
 	 -->
 	<!-- oracle(没有测试)  -->
-	<!--  -->
+	<!--  
     <bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName"
@@ -42,7 +42,17 @@
         </property>
         <property name="username" value="fireflow"></property>
         <property name="password" value="fireflow"></property>
-    </bean> 
+    </bean> -->
+	<!--  mssql 在spring中直接配置jdbc链接  测试的时候可以使用！-->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="net.sourceforge.jtds.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:jtds:sqlserver://localhost:1433/fireflow;SelectMethod=cursor;charset=GBK;tds=8.0;lastupdatecount=true" />
+		<property name="username" value="sa" />
+		<property name="password" value="sa" />
+	</bean>	    
 	
 	
 	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
