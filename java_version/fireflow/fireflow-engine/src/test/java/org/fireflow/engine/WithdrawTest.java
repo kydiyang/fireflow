@@ -19,6 +19,7 @@ package org.fireflow.engine;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -30,11 +31,10 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+
 /**
  * 测试撤销功能，流程仍然采用/workflowdefinition/example_workflow.xml
  * @author 非也
@@ -42,11 +42,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * Created on Mar 14, 2009
  */
 public class WithdrawTest extends FireFlowAbstractTests {
-//    private final static String springConfigFile = "config/TestContext.xml";
-//    private static ClassPathResource resource = null;
-//    private static XmlBeanFactory beanFactory = null;
-//    private static TransactionTemplate transactionTemplate = null;
-//    private static RuntimeContext runtimeContext = null;
 
     //--------constant----------------------
     //客户电话，用于控制是否执行“发送手机短信通知客户收货”。通过设置mobile等于null和非null值分别进行测试。
@@ -58,30 +53,6 @@ public class WithdrawTest extends FireFlowAbstractTests {
     static String paymentWorkItemId = null;
     static String prepareGoodsWorkItemId = null;
     static String deliverGoodsWorkItemId = null;
-    
-    @Autowired
-    private RuntimeContext runtimeContext = null;
-    
-    @Autowired
-    private TransactionTemplate transactionTemplate = null;
-    
-//    @BeforeClass
-//    public static void setUpClass() throws Exception {
-//        resource = new ClassPathResource(springConfigFile);
-//        beanFactory = new XmlBeanFactory(resource);
-//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-//        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-//
-//        //首先将表中的数据清除
-//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-//
-//            @Override
-//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-//            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-//                helperDao.clearAllTables();
-//            }
-//        });
-//    }
 
     /**
      * 创建流程实例，并执行实例的run方法。
@@ -129,6 +100,39 @@ public class WithdrawTest extends FireFlowAbstractTests {
      */
     @Test(expected=RuntimeException.class)
     public void testWithdrawPaymentWorkItem(){
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
         System.out.println("--------------Withdraw Payment WorkItem ----------------");
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -153,6 +157,58 @@ public class WithdrawTest extends FireFlowAbstractTests {
      */
     @Test
     public void testCompletePaymentWorkItem() {
+    	fail("本测试用例没有测试通过，测试用例有问题");
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.withdraw();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex.getMessage());
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    	//----------------------------------------------------------
         System.out.println("--------------Complete Payment WorkItem ----------------");
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -170,7 +226,6 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
 
-        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
         IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
         assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
 
@@ -189,6 +244,87 @@ public class WithdrawTest extends FireFlowAbstractTests {
      */
     @Test
     public void testWithdrawPaymentWorkItem2(){
+    	fail("本测试用例没有测试通过，测试用例有问题");
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.withdraw();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex.getMessage());
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    	//----------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//--------------------------------------------------------
         System.out.println("--------------Withdraw Payment WorkItem After It Has Bean Completed----------------");
         IWorkItem newWorkItem = (IWorkItem)transactionTemplate.execute(new TransactionCallback() {
 
@@ -209,11 +345,11 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
         paymentWorkItemId = newWorkItem.getId();
-        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
         assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
 
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(1, tokensList.size());
 
@@ -240,6 +376,58 @@ public class WithdrawTest extends FireFlowAbstractTests {
      */
     @Test
     public void testCompletePaymentWorkItem2() {
+    	fail("本测试用例没有测试通过，测试用例有问题");
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.withdraw();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex.getMessage());
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    	//----------------------------------------------------------
         System.out.println("--------------Complete Payment WorkItem ----------------");
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -257,7 +445,6 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
 
-        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
         IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
         assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
 
@@ -269,6 +456,79 @@ public class WithdrawTest extends FireFlowAbstractTests {
         assertNotNull(todoWorkItemsList);
         assertEquals(1, todoWorkItemsList.size());
         prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//--------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem After It Has Bean Completed----------------");
+        IWorkItem newWorkItem = (IWorkItem)transactionTemplate.execute(new TransactionCallback() {
+
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    IWorkItem newWorkItem = paymentTaskWorkItem.withdraw();
+
+                    return newWorkItem;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        paymentWorkItemId = newWorkItem.getId();
+        
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List tokensList4Payment = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(tokensList4Payment);
+        assertEquals(1, tokensList4Payment.size());
+        assertEquals(Boolean.TRUE,((IToken)tokensList4Payment.get(0)).isAlive());
+//        assertEquals(((TaskInstance)wi.getTaskInstance()).getTokenId(),((IToken)tokensList4Payment.get(0)).getId());
+
+        List haveDoneWorkItemsList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(haveDoneWorkItemsList);
+        assertEquals(1, haveDoneWorkItemsList.size());
+        IWorkItem prepareGoodsWorkItem = ((IWorkItem) haveDoneWorkItemsList.get(0));
+        prepareGoodsWorkItemId = prepareGoodsWorkItem.getId();
+        assertEquals(new Integer(IWorkItem.CANCELED),prepareGoodsWorkItem.getState());
+        assertEquals(new Integer(ITaskInstance.CANCELED),prepareGoodsWorkItem.getTaskInstance().getState());
+        assertNotNull(prepareGoodsWorkItem.getEndTime());
+        assertNotNull(prepareGoodsWorkItem.getTaskInstance().getEndTime());
+    	//--------------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
     }
 
     /**
@@ -276,6 +536,160 @@ public class WithdrawTest extends FireFlowAbstractTests {
      */
     @Test
     public void testClaimPrepareGoodsWorkItem() {
+    	fail("本测试用例没有测试通过，测试用例有问题");
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.withdraw();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex.getMessage());
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    	//----------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//--------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem After It Has Bean Completed----------------");
+        IWorkItem newWorkItem = (IWorkItem)transactionTemplate.execute(new TransactionCallback() {
+
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    IWorkItem newWorkItem = paymentTaskWorkItem.withdraw();
+
+                    return newWorkItem;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        paymentWorkItemId = newWorkItem.getId();
+        
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List tokensList4Payment = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(tokensList4Payment);
+        assertEquals(1, tokensList4Payment.size());
+        assertEquals(Boolean.TRUE,((IToken)tokensList4Payment.get(0)).isAlive());
+//        assertEquals(((TaskInstance)wi.getTaskInstance()).getTokenId(),((IToken)tokensList4Payment.get(0)).getId());
+
+        List haveDoneWorkItemsList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(haveDoneWorkItemsList);
+        assertEquals(1, haveDoneWorkItemsList.size());
+        IWorkItem prepareGoodsWorkItem = ((IWorkItem) haveDoneWorkItemsList.get(0));
+        prepareGoodsWorkItemId = prepareGoodsWorkItem.getId();
+        assertEquals(new Integer(IWorkItem.CANCELED),prepareGoodsWorkItem.getState());
+        assertEquals(new Integer(ITaskInstance.CANCELED),prepareGoodsWorkItem.getTaskInstance().getState());
+        assertNotNull(prepareGoodsWorkItem.getEndTime());
+        assertNotNull(prepareGoodsWorkItem.getTaskInstance().getEndTime());
+    	//--------------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------------------
         System.out.println("--------------Claim Prepare Goods WorkItem ----------------");
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -293,8 +707,7 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
 
-        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
+        wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
         assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
     }
 
@@ -303,6 +716,180 @@ public class WithdrawTest extends FireFlowAbstractTests {
      */
     @Test
     public void testCompletePrepareGoodsWorkItem() {
+    	fail("本测试用例没有测试通过，测试用例有问题");
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.withdraw();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex.getMessage());
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    	//----------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//--------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem After It Has Bean Completed----------------");
+        IWorkItem newWorkItem = (IWorkItem)transactionTemplate.execute(new TransactionCallback() {
+
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    IWorkItem newWorkItem = paymentTaskWorkItem.withdraw();
+
+                    return newWorkItem;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        paymentWorkItemId = newWorkItem.getId();
+        
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List tokensList4Payment = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(tokensList4Payment);
+        assertEquals(1, tokensList4Payment.size());
+        assertEquals(Boolean.TRUE,((IToken)tokensList4Payment.get(0)).isAlive());
+//        assertEquals(((TaskInstance)wi.getTaskInstance()).getTokenId(),((IToken)tokensList4Payment.get(0)).getId());
+
+        List haveDoneWorkItemsList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(haveDoneWorkItemsList);
+        assertEquals(1, haveDoneWorkItemsList.size());
+        IWorkItem prepareGoodsWorkItem = ((IWorkItem) haveDoneWorkItemsList.get(0));
+        prepareGoodsWorkItemId = prepareGoodsWorkItem.getId();
+        assertEquals(new Integer(IWorkItem.CANCELED),prepareGoodsWorkItem.getState());
+        assertEquals(new Integer(ITaskInstance.CANCELED),prepareGoodsWorkItem.getTaskInstance().getState());
+        assertNotNull(prepareGoodsWorkItem.getEndTime());
+        assertNotNull(prepareGoodsWorkItem.getTaskInstance().getEndTime());
+    	//--------------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------------------
+        System.out.println("--------------Claim Prepare Goods WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem prepareGoodsWorkItem = workflowSession.findWorkItemById(prepareGoodsWorkItemId);
+                    prepareGoodsWorkItem.claim();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
+        assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
+    	//------------------------------------------------------------
         System.out.println("--------------Complete Prepare Goods WorkItem ----------------");
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -320,11 +907,10 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
 
-        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        IWorkItem wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
+        wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
         assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
 
-        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(2, tokensList.size());
 
@@ -338,7 +924,7 @@ public class WithdrawTest extends FireFlowAbstractTests {
             assertEquals(Boolean.TRUE,tokenOnEndNode.isAlive());
         }
 
-        List todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.DeliverGoodsActivity.DeliverGoodsTask");
+        todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.DeliverGoodsActivity.DeliverGoodsTask");
         assertNotNull(todoWorkItemsList);
         assertEquals(1, todoWorkItemsList.size());
         deliverGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
@@ -346,6 +932,218 @@ public class WithdrawTest extends FireFlowAbstractTests {
 
     @Test(expected=RuntimeException.class)
     public void testWithdrawPrepareGoodsWorkItem(){
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    //启动"/workflowdefinition/example_workflow.xml"中的“送货流程”
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("Goods_Deliver_Process","fireflowTester");
+                    processInstance.setProcessInstanceVariable("mobile", mobile);
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+
+        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PaymentActivity.Payment_Task");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        paymentWorkItemId = ((IWorkItem) workItemList.get(0)).getId();
+    	//---------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.withdraw();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex.getMessage());
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    	//----------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        IWorkItem wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        List tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//--------------------------------------------------------
+        System.out.println("--------------Withdraw Payment WorkItem After It Has Bean Completed----------------");
+        IWorkItem newWorkItem = (IWorkItem)transactionTemplate.execute(new TransactionCallback() {
+
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    IWorkItem newWorkItem = paymentTaskWorkItem.withdraw();
+
+                    return newWorkItem;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        });
+        paymentWorkItemId = newWorkItem.getId();
+        
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        List tokensList4Payment = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.PaymentActivity");
+        assertNotNull(tokensList4Payment);
+        assertEquals(1, tokensList4Payment.size());
+        assertEquals(Boolean.TRUE,((IToken)tokensList4Payment.get(0)).isAlive());
+//        assertEquals(((TaskInstance)wi.getTaskInstance()).getTokenId(),((IToken)tokensList4Payment.get(0)).getId());
+
+        List haveDoneWorkItemsList = persistenceService.findHaveDoneWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(haveDoneWorkItemsList);
+        assertEquals(1, haveDoneWorkItemsList.size());
+        IWorkItem prepareGoodsWorkItem = ((IWorkItem) haveDoneWorkItemsList.get(0));
+        prepareGoodsWorkItemId = prepareGoodsWorkItem.getId();
+        assertEquals(new Integer(IWorkItem.CANCELED),prepareGoodsWorkItem.getState());
+        assertEquals(new Integer(ITaskInstance.CANCELED),prepareGoodsWorkItem.getTaskInstance().getState());
+        assertNotNull(prepareGoodsWorkItem.getEndTime());
+        assertNotNull(prepareGoodsWorkItem.getTaskInstance().getEndTime());
+    	//--------------------------------------------------------------
+        System.out.println("--------------Complete Payment WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem paymentTaskWorkItem = workflowSession.findWorkItemById(paymentWorkItemId);
+                    paymentTaskWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(paymentWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(1, tokensList.size());
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.PrepareGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        prepareGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//---------------------------------------------------------------------
+        System.out.println("--------------Claim Prepare Goods WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem prepareGoodsWorkItem = workflowSession.findWorkItemById(prepareGoodsWorkItemId);
+                    prepareGoodsWorkItem.claim();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
+        assertEquals(new Integer(IWorkItem.RUNNING), wi.getState());
+    	//------------------------------------------------------------
+        System.out.println("--------------Complete Prepare Goods WorkItem ----------------");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+                    IWorkItem prepareGoodsWorkItem = workflowSession.findWorkItemById(prepareGoodsWorkItemId);
+                    prepareGoodsWorkItem.complete();
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        wi = persistenceService.findWorkItemById(prepareGoodsWorkItemId);
+        assertEquals(new Integer(IWorkItem.COMPLETED), wi.getState());
+
+        tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokensList);
+        assertEquals(2, tokensList.size());
+
+        List tokensListOnEndNode = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), "Goods_Deliver_Process.EndNode1");
+        assertNotNull(tokensListOnEndNode);
+        assertEquals(1, tokensListOnEndNode.size());
+        IToken tokenOnEndNode = (IToken)tokensListOnEndNode.get(0);
+        if (mobile==null){
+            assertEquals(Boolean.FALSE,tokenOnEndNode.isAlive());
+        }else{
+            assertEquals(Boolean.TRUE,tokenOnEndNode.isAlive());
+        }
+
+        todoWorkItemsList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Goods_Deliver_Process", "Goods_Deliver_Process.DeliverGoodsActivity.DeliverGoodsTask");
+        assertNotNull(todoWorkItemsList);
+        assertEquals(1, todoWorkItemsList.size());
+        deliverGoodsWorkItemId = ((IWorkItem) todoWorkItemsList.get(0)).getId();
+    	//--------------------------------------------------------------------------
         System.out.println("--------------Withdraw Payment WorkItem ----------------");
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -364,9 +1162,5 @@ public class WithdrawTest extends FireFlowAbstractTests {
             }
         });
     }
-    
-    @Test
-    public void clear(){
- 	   fireWorkflowHelperDao.clearAllTables();
-    }
+
 }
