@@ -17,16 +17,12 @@
 
 package org.fireflow.engine.calendar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.Date;
 import java.util.Properties;
 
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.Duration;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -40,14 +36,6 @@ public class DefaultCalendarServiceTest {
     public DefaultCalendarServiceTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
     /**
      * Test of dateAfter method, of class DefaultCalendarService.
      */
@@ -58,11 +46,10 @@ public class DefaultCalendarServiceTest {
         Date fromDate = new Date(temp);
         Duration duration = new Duration(60,Duration.SECOND);
         DefaultCalendarService instance = new DefaultCalendarService();
-        Date expResult = new Date(temp+60*1000);
         Date result = instance.dateAfter(fromDate, duration);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
+        Date expResult = new Date(temp+60*1000);
+        assertEquals (expResult, result);
     }
 
     /**
@@ -71,14 +58,15 @@ public class DefaultCalendarServiceTest {
     @Test
     public void testBusinessDateAfter() {
         System.out.println("businessDateAfter");
-        Date fromDate = null;
+        Date fromDate = new Date();
         int totalDurationInMillseconds = 0;
         DefaultCalendarService instance = new DefaultCalendarService();
-        Date expResult = null;
         Date result = instance.businessDateAfter(fromDate, totalDurationInMillseconds);
+        assertNotNull(result);
+       
+        Date expResult = new Date();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
@@ -92,8 +80,6 @@ public class DefaultCalendarServiceTest {
         int expResult = 0;
         int result = instance.getTotalWorkingTime(date);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -107,8 +93,7 @@ public class DefaultCalendarServiceTest {
         boolean expResult = false;
         boolean result = instance.isBusinessDay(d);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
@@ -118,11 +103,16 @@ public class DefaultCalendarServiceTest {
     public void testGetBusinessCalendarProperties() {
         System.out.println("getBusinessCalendarProperties");
         DefaultCalendarService instance = new DefaultCalendarService();
-        Properties expResult = null;
         Properties result = instance.getBusinessCalendarProperties();
+        assertNotNull(result);
+	
+        Properties expResult = new Properties();
+        expResult.put("day_format", "yyyy-MM-dd");
+        expResult.put("hour_format", "HH:mm");
+        expResult.put("hours_of_business_day", "7.5");
+        expResult.put("business_time", "8:30-12:00 & 13:30-17:30");
+        
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -131,11 +121,10 @@ public class DefaultCalendarServiceTest {
     @Test
     public void testSetBusinessCalendarProperties() {
         System.out.println("setBusinessCalendarProperties");
-        Properties props = null;
+        Properties props = new Properties();
         DefaultCalendarService instance = new DefaultCalendarService();
         instance.setBusinessCalendarProperties(props);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
@@ -145,11 +134,11 @@ public class DefaultCalendarServiceTest {
     public void testGetSysDate() {
         System.out.println("getSysDate");
         DefaultCalendarService instance = new DefaultCalendarService();
-        Date expResult = null;
         Date result = instance.getSysDate();
+        assertNotNull(result);
+        
+        Date expResult = new Date();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -161,8 +150,6 @@ public class DefaultCalendarServiceTest {
         RuntimeContext ctx = null;
         DefaultCalendarService instance = new DefaultCalendarService();
         instance.setRuntimeContext(ctx);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -175,8 +162,6 @@ public class DefaultCalendarServiceTest {
         RuntimeContext expResult = null;
         RuntimeContext result = instance.getRuntimeContext();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
 }
