@@ -30,6 +30,8 @@ import org.fireflow.engine.test.support.FireFlowAbstractTests;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.KernelException;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 /**
  *
@@ -45,22 +47,31 @@ public class LoopTest extends FireFlowAbstractTests {
     @Test
     public void testStartNewProcess() {
         System.out.println("--------------Start a new process ----------------");
-        IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Loop.xml
-            currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
-            currentProcessInstance.run();
-        } catch (EngineException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(Exception ex){
-        	ex.printStackTrace();
-        }
+        IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback(){
+
+			public Object doInTransaction(TransactionStatus status)
+			{
+				 try {
+			            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+			            //启动"/workflowdefinition/Loop.xml
+			            IProcessInstance currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
+			            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
+			            currentProcessInstance.run();
+			            return currentProcessInstance;
+			        } catch (EngineException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        } catch (KernelException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        }catch(Exception ex){
+			        	ex.printStackTrace();
+			        }
+			        return null;
+			}
+        	
+        });
+       
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -88,22 +99,31 @@ public class LoopTest extends FireFlowAbstractTests {
     @Test
     public void testCompleteWorkItem1(){
     	
-    	IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Loop.xml
-            currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
-            currentProcessInstance.run();
-        } catch (EngineException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(Exception ex){
-        	ex.printStackTrace();
-        }
+    	final IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback(){
+
+			public Object doInTransaction(TransactionStatus status)
+			{
+				 try {
+			            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+			            //启动"/workflowdefinition/Loop.xml
+			            IProcessInstance currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
+			            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
+			            currentProcessInstance.run();
+			            return currentProcessInstance;
+			        } catch (EngineException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        } catch (KernelException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        }catch(Exception ex){
+			        	ex.printStackTrace();
+			        }
+			        return null;
+			}
+        	
+        });
+    	
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -125,9 +145,15 @@ public class LoopTest extends FireFlowAbstractTests {
         IToken token = (IToken)tokensList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
     	//-------------------------------------
-        try {
+        transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				// TODO Auto-generated method stub 
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
@@ -143,6 +169,10 @@ public class LoopTest extends FireFlowAbstractTests {
         }catch(Exception ex){
         	ex.printStackTrace();
         }
+				return null;
+			}
+		});
+       
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity1");
         assertNotNull(taskInstanceList);
@@ -165,20 +195,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(2,token.getStepNumber().intValue());
 
-        workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem11Id = ((IWorkItem) workItemList.get(0)).getId();
+        transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem1Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 2);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem11Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 2);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
@@ -205,22 +243,30 @@ public class LoopTest extends FireFlowAbstractTests {
 
     @Test
     public void testCompleteWorkItem2(){
-    	IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Loop.xml
-            currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
-            currentProcessInstance.run();
-        } catch (EngineException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(Exception ex){
-        	ex.printStackTrace();
-        }
+    	final IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback(){
+
+			public Object doInTransaction(TransactionStatus status)
+			{
+				 try {
+			            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+			            //启动"/workflowdefinition/Loop.xml
+			            IProcessInstance currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
+			            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
+			            currentProcessInstance.run();
+			            return currentProcessInstance;
+			        } catch (EngineException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        } catch (KernelException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        }catch(Exception ex){
+			        	ex.printStackTrace();
+			        }
+			        return null;
+			}
+        	
+        });
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -242,9 +288,14 @@ public class LoopTest extends FireFlowAbstractTests {
         IToken token = (IToken)tokensList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
     	//-------------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
@@ -260,6 +311,10 @@ public class LoopTest extends FireFlowAbstractTests {
         }catch(Exception ex){
         	ex.printStackTrace();
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity1");
         assertNotNull(taskInstanceList);
@@ -282,22 +337,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(2,token.getStepNumber().intValue());
 
-        workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem11Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem1Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 2);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem11Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 2);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
+				return null;
+			}
+		});
+        
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
@@ -317,9 +378,14 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(3,token.getStepNumber().intValue());
 
-        String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
     	//--------------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
@@ -331,6 +397,10 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
         assertNotNull(taskInstanceList);
@@ -353,20 +423,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(4,token.getStepNumber().intValue());
 
-        workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem21Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 4);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem21Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 4);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity3");
         assertNotNull(taskInstanceList);
@@ -402,22 +480,30 @@ public class LoopTest extends FireFlowAbstractTests {
 
     @Test
     public void testCompleteWorkItem3(){
-    	IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Loop.xml
-            currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
-            currentProcessInstance.run();
-        } catch (EngineException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(Exception ex){
-        	ex.printStackTrace();
-        }
+    	final IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback(){
+
+			public Object doInTransaction(TransactionStatus status)
+			{
+				 try {
+			            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+			            //启动"/workflowdefinition/Loop.xml
+			            IProcessInstance currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
+			            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
+			            currentProcessInstance.run();
+			            return currentProcessInstance;
+			        } catch (EngineException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        } catch (KernelException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        }catch(Exception ex){
+			        	ex.printStackTrace();
+			        }
+			        return null;
+			}
+        	
+        });
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -439,9 +525,14 @@ public class LoopTest extends FireFlowAbstractTests {
         IToken token = (IToken)tokensList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
     	//-------------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
@@ -457,6 +548,10 @@ public class LoopTest extends FireFlowAbstractTests {
         }catch(Exception ex){
         	ex.printStackTrace();
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity1");
         assertNotNull(taskInstanceList);
@@ -479,20 +574,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(2,token.getStepNumber().intValue());
 
-        workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem11Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem1Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 2);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem11Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 2);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
@@ -514,9 +617,14 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(3,token.getStepNumber().intValue());
 
-        String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
     	//--------------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
@@ -528,6 +636,9 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
         assertNotNull(taskInstanceList);
@@ -550,20 +661,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(4,token.getStepNumber().intValue());
 
-        workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem21Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 4);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem21Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 4);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity3");
         assertNotNull(taskInstanceList);
@@ -593,9 +712,14 @@ public class LoopTest extends FireFlowAbstractTests {
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
 
-        String workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
     	//----------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem = workflowSession.findWorkItemById(workItem3Id);
@@ -607,6 +731,10 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity3");
         assertNotNull(taskInstanceList);
@@ -636,20 +764,29 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(6,token.getStepNumber().intValue());
 
-        workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem31Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem3Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 5);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem31Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 5);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
+        
 
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity5");
@@ -677,22 +814,30 @@ public class LoopTest extends FireFlowAbstractTests {
 
     @Test
     public void testCompleteWorkItem5(){
-    	IProcessInstance currentProcessInstance = null;
-        try {
-            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
-            //启动"/workflowdefinition/Loop.xml
-            currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
-            currentProcessInstance.run();
-        } catch (EngineException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KernelException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(Exception ex){
-        	ex.printStackTrace();
-        }
+    	final IProcessInstance currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback(){
+
+			public Object doInTransaction(TransactionStatus status)
+			{
+				 try {
+			            IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+			            //启动"/workflowdefinition/Loop.xml
+			            IProcessInstance currentProcessInstance = workflowSession.createProcessInstance("Loop","fireflowTester");
+			            currentProcessInstance.setProcessInstanceVariable("loopFlag", new Integer(1));
+			            currentProcessInstance.run();
+			            return currentProcessInstance;
+			        } catch (EngineException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        } catch (KernelException ex) {
+			        	ex.printStackTrace();
+			            Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+			        }catch(Exception ex){
+			        	ex.printStackTrace();
+			        }
+			        return null;
+			}
+        	
+        });
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -714,9 +859,14 @@ public class LoopTest extends FireFlowAbstractTests {
         IToken token = (IToken)tokensList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
     	//-------------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem1 = workflowSession.findWorkItemById(workItem1Id);
@@ -732,6 +882,11 @@ public class LoopTest extends FireFlowAbstractTests {
         }catch(Exception ex){
         	ex.printStackTrace();
         }
+				return null;
+			}
+		});
+        
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity1");
         assertNotNull(taskInstanceList);
@@ -754,20 +909,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(2,token.getStepNumber().intValue());
 
-        workItem1Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem11Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem1Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 2);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem11Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 2);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
@@ -789,9 +952,14 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(3,token.getStepNumber().intValue());
 
-        String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
     	//--------------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
@@ -803,6 +971,10 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity2");
         assertNotNull(taskInstanceList);
@@ -825,20 +997,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(4,token.getStepNumber().intValue());
 
-        workItem2Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem21Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem2Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 4);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem21Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());;
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 4);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity3");
         assertNotNull(taskInstanceList);
@@ -868,9 +1048,14 @@ public class LoopTest extends FireFlowAbstractTests {
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
 
-        String workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
     	//----------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem = workflowSession.findWorkItemById(workItem3Id);
@@ -882,6 +1067,10 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity3");
         assertNotNull(taskInstanceList);
@@ -911,20 +1100,28 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(6,token.getStepNumber().intValue());
 
-        workItem3Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem31Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem3Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 5);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem31Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 5);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
 
 
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity5");
@@ -946,9 +1143,14 @@ public class LoopTest extends FireFlowAbstractTests {
         token = (IToken)tokensList.get(0);
         assertEquals(7,token.getStepNumber().intValue());
 
-        String workItem5Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem5Id = ((IWorkItem) workItemList.get(0)).getId();
     	//-------------------------------
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
             IWorkItem workItem = workflowSession.findWorkItemById(workItem5Id);
@@ -960,7 +1162,10 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+				return null;
+			}
+		});
+        
         taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "Loop.Activity5");
         assertNotNull(taskInstanceList);
         assertEquals(2, taskInstanceList.size());
@@ -984,12 +1189,16 @@ public class LoopTest extends FireFlowAbstractTests {
 //        IToken token2 = (IToken)tokensList.get(1);
         assertEquals(8,token.getStepNumber().intValue());
 
-        workItem5Id = ((IWorkItem) workItemList.get(0)).getId();
-
-        try {
+        final String workItem51Id = ((IWorkItem) workItemList.get(0)).getId();
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				 try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem5Id);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem51Id);
 //            IProcessInstance processInstance = runtimeContext.getPersistenceService().findProcessInstanceById(currentProcessInstance.getId());
             workItem.complete();
         } catch (EngineException ex) {
@@ -997,26 +1206,39 @@ public class LoopTest extends FireFlowAbstractTests {
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+       
 
         workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "Loop", "Loop.Activity5.Task5");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(IWorkItem.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
 
-        workItem5Id = ((IWorkItem) workItemList.get(0)).getId();
+        final String workItem511Id = ((IWorkItem) workItemList.get(0)).getId();
         
-        try {
+        this.transactionTemplate.execute(new TransactionCallback()
+		{
+			
+			public Object doInTransaction(TransactionStatus status)
+			{
+				try {
             IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
             //启动"/workflowdefinition/Loop.xml
-            IWorkItem workItem = workflowSession.findWorkItemById(workItem5Id);
-            currentProcessInstance = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
-            currentProcessInstance.setProcessInstanceVariable("loopFlag", 6);
+            IWorkItem workItem = workflowSession.findWorkItemById(workItem511Id);
+            IProcessInstance currentProcessInstance1 = workflowSession.findProcessInstanceById(currentProcessInstance.getId());
+            currentProcessInstance1.setProcessInstanceVariable("loopFlag", 6);
             workItem.complete();
         } catch (EngineException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KernelException ex) {
             Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+				return null;
+			}
+		});
+        
         tokensList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokensList);
         assertEquals(0, tokensList.size());
