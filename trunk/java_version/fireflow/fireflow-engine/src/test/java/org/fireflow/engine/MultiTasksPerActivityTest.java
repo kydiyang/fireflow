@@ -18,37 +18,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 public class MultiTasksPerActivityTest extends FireFlowAbstractTests {
-//    private final static String springConfigFile = "config/TestContext.xml";
-//    private static ClassPathResource resource = null;
-//    private static XmlBeanFactory beanFactory = null;
-//    private static TransactionTemplate transactionTemplate = null;
-//    private static RuntimeContext runtimeContext = null;
 
     //-----variables-----------------
-
     static IProcessInstance currentProcessInstance = null;
     static String workItemId_1 = null;
     static String workItemId_3 = null;
     static String workItemId_4 = null;
     
-//    @BeforeClass
-//    public static void setUpClass() throws Exception {
-//        resource = new ClassPathResource(springConfigFile);
-//        beanFactory = new XmlBeanFactory(resource);
-//        transactionTemplate = (TransactionTemplate) beanFactory.getBean("transactionTemplate");
-//        runtimeContext = (RuntimeContext) beanFactory.getBean("runtimeContext");
-//
-//
-//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-//
-//            @Override
-//            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-//            	IFireWorkflowHelperDao helperDao = (IFireWorkflowHelperDao) beanFactory.getBean("FireWorkflowHelperDao");
-//                helperDao.clearAllTables();
-//            }
-//        });
-//    }
-
     /**
      * �������ʵ��ִ��ʵ���run������
      */
@@ -78,19 +54,19 @@ public class MultiTasksPerActivityTest extends FireFlowAbstractTests {
         assertNotNull(currentProcessInstance);
 
         IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "MultiTasksPerActivity.Activity1");
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "MultiTasksPerActivity.Activity1");
         assertNotNull(taskInstanceList);
         assertEquals(1, taskInstanceList.size());
         assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
         assertEquals(1,((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
 
-        List tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        List<IToken> tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
         assertEquals(1,tokenList.size());
         IToken token = (IToken)tokenList.get(0);
         assertEquals(1,token.getStepNumber().intValue());
 
-        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity1.Task1");
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity1.Task1");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
@@ -102,7 +78,48 @@ public class MultiTasksPerActivityTest extends FireFlowAbstractTests {
     
     @Test
     public void testCompleteWorkitem1() {
-        System.out.println("--------------Start a new process ----------------");
+    	currentProcessInstance = (IProcessInstance) transactionTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus arg0) {
+                try {
+                    IWorkflowSession workflowSession = runtimeContext.getWorkflowSession();
+
+                    //��"/workflowdefinition/example_workflow.xml"�еġ��ͻ���̡�
+                    IProcessInstance processInstance = workflowSession.createProcessInstance("MultiTasksPerActivity",CurrentUserAssignmentHandlerMock.ACTOR_ID);
+
+                    processInstance.run();
+                    return processInstance;
+                } catch (EngineException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (KernelException ex) {
+                    Logger.getLogger(FireWorkflowEngineTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                return null;
+            }
+        });
+        assertNotNull(currentProcessInstance);
+
+        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+        List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "MultiTasksPerActivity.Activity1");
+        assertNotNull(taskInstanceList);
+        assertEquals(1, taskInstanceList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((ITaskInstance) taskInstanceList.get(0)).getState());
+        assertEquals(1,((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
+
+        List<IToken> tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        assertNotNull(tokenList);
+        assertEquals(1,tokenList.size());
+        IToken token = (IToken)tokenList.get(0);
+        assertEquals(1,token.getStepNumber().intValue());
+
+        List<IWorkItem> workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity1.Task1");
+        assertNotNull(workItemList);
+        assertEquals(1, workItemList.size());
+        assertEquals(new Integer(ITaskInstance.RUNNING), ((IWorkItem) workItemList.get(0)).getState());
+
+        workItemId_1 = ((IWorkItem) workItemList.get(0)).getId();
+        //-------------------------------------------
         transactionTemplate.execute(new TransactionCallback() {
 
             public Object doInTransaction(TransactionStatus arg0) {
@@ -124,19 +141,18 @@ public class MultiTasksPerActivityTest extends FireFlowAbstractTests {
         });
         assertNotNull(currentProcessInstance);
 
-        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
-        List taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "MultiTasksPerActivity.Activity3");
+        taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(currentProcessInstance.getId(), "MultiTasksPerActivity.Activity3");
         assertNotNull(taskInstanceList);
         assertEquals(3, taskInstanceList.size());
         assertEquals(new Integer(ITaskInstance.COMPLETED), ((ITaskInstance) taskInstanceList.get(0)).getState());
         assertEquals(2,((ITaskInstance) taskInstanceList.get(0)).getStepNumber().intValue());
 
-        List tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
+        tokenList = persistenceService.findTokensForProcessInstance(currentProcessInstance.getId(), null);
         assertNotNull(tokenList);
         assertEquals(2,tokenList.size());
 
 
-        List workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity3.Task3");
+        workItemList = persistenceService.findTodoWorkItems(CurrentUserAssignmentHandlerMock.ACTOR_ID, "MultiTasksPerActivity", "MultiTasksPerActivity.Activity3.Task3");
         assertNotNull(workItemList);
         assertEquals(1, workItemList.size());
         assertEquals(new Integer(ITaskInstance.INITIALIZED), ((IWorkItem) workItemList.get(0)).getState());
@@ -151,8 +167,5 @@ public class MultiTasksPerActivityTest extends FireFlowAbstractTests {
         	assertEquals(new Integer(0),new Integer(workItemList.size()));
         }
     }    
-    @Test
-    public void clear(){
-    	fireWorkflowHelperDao.clearAllTables();
-    }
+
 }
