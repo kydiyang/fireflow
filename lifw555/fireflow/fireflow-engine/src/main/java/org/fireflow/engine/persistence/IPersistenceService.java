@@ -505,7 +505,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId);
     
-    /******************************** lifw555@gmail.com **********************/
+   /******************************** lifw555@gmail.com **********************/
     
     /**
      * 获得操作员所要操作工单的总数量
@@ -569,7 +569,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
 	/**
 	 * 获得操作员发起的工作流实例列表（分页）
 	 * publishUser如果为null，获取全部
-	 * @param actorId 操作员主键
+	 * @param creatorId 操作员主键
 	 * @param publishUser 流程定义发布者
 	 * @param pageSize 每页显示的条数
 	 * @param pageNumber 当前页数
