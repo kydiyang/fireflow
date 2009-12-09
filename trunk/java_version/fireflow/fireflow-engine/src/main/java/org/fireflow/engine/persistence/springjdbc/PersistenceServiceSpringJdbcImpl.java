@@ -76,7 +76,7 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 		return this.rtCtx;
 	}
 
-	public java.sql.Date getSqlDate(final java.util.Date date)
+	public static java.sql.Timestamp getSqlDateTime(final java.util.Date date)
 	{
 		if (date == null)
 		{
@@ -84,9 +84,9 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 		}
 		else
 		{
-			return new java.sql.Date(date.getTime());
+			return new java.sql.Timestamp(date.getTime());
 		}
-	}
+	}		
 
 	/**
 	 * 流程实例 Save processInstance
@@ -155,14 +155,14 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 							processInstance.getName(), processInstance.getDisplayName(),
 
 							processInstance.getState(), processInstance.isSuspended() == true ? 1 : 0,
-							processInstance.getCreatorId(), getSqlDate(processInstance.getCreatedTime()),
-							getSqlDate(processInstance.getStartedTime()),
+							processInstance.getCreatorId(), getSqlDateTime(processInstance.getCreatedTime()),
+							getSqlDateTime(processInstance.getStartedTime()),
 
-							getSqlDate(processInstance.getExpiredTime()), getSqlDate(processInstance.getEndTime()),
+							getSqlDateTime(processInstance.getExpiredTime()), getSqlDateTime(processInstance.getEndTime()),
 							processInstance.getParentProcessInstanceId(), processInstance.getParentTaskInstanceId() },
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-							Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.TIME, Types.TIME, Types.TIME,
-							Types.TIME, Types.VARCHAR, Types.VARCHAR });
+							Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP, Types.TIMESTAMP,
+							Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR });
 		}
 		else
 		{
@@ -199,17 +199,17 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 							processInstance.getName(), processInstance.getDisplayName(), processInstance.getState(),
 
 							processInstance.isSuspended() == true ? 1 : 0, processInstance.getCreatorId(),
-							getSqlDate(processInstance.getCreatedTime()), getSqlDate(processInstance.getStartedTime()),
-							getSqlDate(processInstance.getExpiredTime()),
+							getSqlDateTime(processInstance.getCreatedTime()), getSqlDateTime(processInstance.getStartedTime()),
+							getSqlDateTime(processInstance.getExpiredTime()),
 
-							getSqlDate(processInstance.getEndTime()), processInstance.getParentProcessInstanceId(),
+							getSqlDateTime(processInstance.getEndTime()), processInstance.getParentProcessInstanceId(),
 							processInstance.getParentTaskInstanceId(), processInstance.getId()
 
 					},
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
-							Types.INTEGER, Types.VARCHAR, Types.TIME, Types.TIME, Types.TIME,
+							Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP, Types.TIMESTAMP,
 
-							Types.TIME, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR });
+							Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR });
 		}
 
 	}
@@ -280,10 +280,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 
 							taskInstance.getDisplayName(), taskInstance.getState(),
 							taskInstance.isSuspended() == true ? 1 : 0, taskInstance.getTaskType(),
-							getSqlDate(taskInstance.getCreatedTime()),
+							getSqlDateTime(taskInstance.getCreatedTime()),
 
-							getSqlDate(taskInstance.getStartedTime()), getSqlDate(taskInstance.getExpiredTime()),
-							getSqlDate(taskInstance.getEndTime()), taskInstance.getAssignmentStrategy(),
+							getSqlDateTime(taskInstance.getStartedTime()), getSqlDateTime(taskInstance.getExpiredTime()),
+							getSqlDateTime(taskInstance.getEndTime()), taskInstance.getAssignmentStrategy(),
 							taskInstance.getProcessInstanceId(),
 
 							taskInstance.getProcessId(), taskInstance.getVersion(), taskInstance.getTargetActivityId(),
@@ -292,9 +292,9 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 							((TaskInstance) taskInstance).getCanBeWithdrawn() == true ? 1 : 0 },
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
 
-					Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.TIME,
+					Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP,
 
-					Types.TIME, Types.TIME, Types.TIME, Types.VARCHAR, Types.VARCHAR,
+					Types.TIMESTAMP, Types.TIMESTAMP, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR,
 
 					Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
 
@@ -348,10 +348,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 
 							taskInstance.getDisplayName(), taskInstance.getState(),
 							taskInstance.isSuspended() == true ? 1 : 0, taskInstance.getTaskType(),
-							getSqlDate(taskInstance.getCreatedTime()),
+							getSqlDateTime(taskInstance.getCreatedTime()),
 
-							getSqlDate(taskInstance.getStartedTime()), getSqlDate(taskInstance.getExpiredTime()),
-							getSqlDate(taskInstance.getEndTime()), taskInstance.getAssignmentStrategy(),
+							getSqlDateTime(taskInstance.getStartedTime()), getSqlDateTime(taskInstance.getExpiredTime()),
+							getSqlDateTime(taskInstance.getEndTime()), taskInstance.getAssignmentStrategy(),
 							taskInstance.getProcessInstanceId(),
 
 							taskInstance.getProcessId(), taskInstance.getVersion(), taskInstance.getTargetActivityId(),
@@ -360,9 +360,9 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 							((TaskInstance) taskInstance).getCanBeWithdrawn() == true ? 1 : 0, taskInstance.getId() },
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
 
-					Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.TIME,
+					Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP,
 
-					Types.TIME, Types.TIME, Types.TIME, Types.VARCHAR, Types.VARCHAR,
+					Types.TIMESTAMP, Types.TIMESTAMP, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR,
 
 					Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
 
@@ -410,11 +410,11 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 			((WorkItem) workitem).setId(workItemId);
 			super.getJdbcTemplate().update(
 					sql.toString(),
-					new Object[] { workItemId, workitem.getState(), getSqlDate(workitem.getCreatedTime()),
-							getSqlDate(workitem.getClaimedTime()), getSqlDate(workitem.getEndTime()),
+					new Object[] { workItemId, workitem.getState(), getSqlDateTime(workitem.getCreatedTime()),
+							getSqlDateTime(workitem.getClaimedTime()), getSqlDateTime(workitem.getEndTime()),
 
 							workitem.getActorId(), workitem.getTaskInstance().getId(), workitem.getComments() },
-					new int[] { Types.VARCHAR, Types.INTEGER, Types.TIME, Types.TIME, Types.TIME,
+					new int[] { Types.VARCHAR, Types.INTEGER, Types.TIMESTAMP, Types.TIMESTAMP, Types.TIMESTAMP,
 
 					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR
 
@@ -441,11 +441,11 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 
 			super.getJdbcTemplate().update(
 					sql.toString(),
-					new Object[] { workitem.getState(), getSqlDate(workitem.getCreatedTime()),
-							getSqlDate(workitem.getClaimedTime()), getSqlDate(workitem.getEndTime()),
+					new Object[] { workitem.getState(), getSqlDateTime(workitem.getCreatedTime()),
+							getSqlDateTime(workitem.getClaimedTime()), getSqlDateTime(workitem.getEndTime()),
 
 							workitem.getActorId(), workitem.getTaskInstance().getId(), workitem.getComments(),
-							workitem.getId() }, new int[] { Types.INTEGER, Types.TIME, Types.TIME, Types.TIME,
+							workitem.getId() }, new int[] { Types.INTEGER, Types.TIMESTAMP, Types.TIMESTAMP, Types.TIMESTAMP,
 
 					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR
 
@@ -585,19 +585,19 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 	public List<ITaskInstance> findTaskInstancesForProcessInstance(final java.lang.String processInstanceId,
 			final String activityId)
 	{
-
+		String orderBy = " order by created_time ";
 		StringBuffer sb = new StringBuffer("");
 		sb.append(" select * from t_ff_rt_taskinstance ");
 		sb.append(" where processinstance_id=? ");
 		if (activityId != null && !activityId.trim().equals(""))
 		{
 			sb.append("  and activity_id=? ");
-			return super.getJdbcTemplate().query(sb.toString(), new Object[] { processInstanceId, activityId },
+			return super.getJdbcTemplate().query(sb.toString()+orderBy, new Object[] { processInstanceId, activityId },
 					new TaskInstanceRowMapper());
 		}
 		else
 		{
-			return super.getJdbcTemplate().query(sb.toString(), new Object[] { processInstanceId },
+			return super.getJdbcTemplate().query(sb.toString()+orderBy, new Object[] { processInstanceId },
 					new TaskInstanceRowMapper());
 		}
 
@@ -613,19 +613,19 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 	public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(final String processInstanceId,
 			final Integer stepNumber)
 	{
-
+		String orderBy =  " order by created_time ";
 		StringBuffer sb = new StringBuffer("");
 		sb.append(" select * from t_ff_rt_taskinstance ");
 		sb.append(" where processinstance_id=? ");
 		if (stepNumber != null)
 		{
 			sb.append("  and step_number=? ");
-			return super.getJdbcTemplate().query(sb.toString(), new Object[] { processInstanceId, stepNumber },
+			return super.getJdbcTemplate().query(sb.toString()+orderBy, new Object[] { processInstanceId, stepNumber },
 					new TaskInstanceRowMapper());
 		}
 		else
 		{
-			return super.getJdbcTemplate().query(sb.toString(), new Object[] { processInstanceId },
+			return super.getJdbcTemplate().query(sb.toString()+orderBy, new Object[] { processInstanceId },
 					new TaskInstanceRowMapper());
 		}
 
@@ -786,7 +786,7 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 		String sql = "update t_ff_rt_taskinstance set state=? ,end_time=? where id=? and (state=0 or state=1)";
 		super.getJdbcTemplate().update(
 				sql,
-				new Object[] { ITaskInstance.CANCELED, getSqlDate(rtCtx.getCalendarService().getSysDate()),
+				new Object[] { ITaskInstance.CANCELED, getSqlDateTime(rtCtx.getCalendarService().getSysDate()),
 						taskInstance.getId() });
 
 		// 将与之关联的WorkItem取消掉
@@ -1063,10 +1063,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 							ps.setInt(7, workflowDef.getVersion());
 							ps.setInt(8, workflowDef.getState() == true ? 1 : 0);
 							ps.setString(9, workflowDef.getUploadUser());
-							ps.setDate(10, getSqlDate(workflowDef.getUploadTime()));
+							ps.setTimestamp(10, getSqlDateTime(workflowDef.getUploadTime()));
 
 							ps.setString(11, workflowDef.getPublishUser());
-							ps.setDate(12, getSqlDate(workflowDef.getPublishTime()));
+							ps.setTimestamp(12, getSqlDateTime(workflowDef.getPublishTime()));
 							lobCreator.setClobAsString(ps, 13, workflowDef.getProcessContent());
 						}
 					});
@@ -1101,10 +1101,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 							ps.setInt(6, workflowDef.getVersion());
 							ps.setInt(7, workflowDef.getState() == true ? 1 : 0);
 							ps.setString(8, workflowDef.getUploadUser());
-							ps.setDate(9, getSqlDate(workflowDef.getUploadTime()));
+							ps.setTimestamp(9, getSqlDateTime(workflowDef.getUploadTime()));
 
 							ps.setString(10, workflowDef.getPublishUser());
-							ps.setDate(11, getSqlDate(workflowDef.getPublishTime()));
+							ps.setTimestamp(11, getSqlDateTime(workflowDef.getPublishTime()));
 							lobCreator.setClobAsString(ps, 12, workflowDef.getProcessContent());
 
 							ps.setString(13, workflowDef.getId());
@@ -1162,10 +1162,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 				workFlowDefinition.setVersion(rs.getInt("version"));
 				workFlowDefinition.setState(rs.getInt("state") == 1 ? true : false);
 				workFlowDefinition.setUploadUser(rs.getString("upload_user"));
-				workFlowDefinition.setUploadTime(rs.getDate("upload_time"));
+				workFlowDefinition.setUploadTime(rs.getTimestamp("upload_time"));
 
 				workFlowDefinition.setPublishUser(rs.getString("publish_user"));
-				workFlowDefinition.setPublishTime(rs.getDate("publish_time"));
+				workFlowDefinition.setPublishTime(rs.getTimestamp("publish_time"));
 				// 读取blob大字段
 				workFlowDefinition.setProcessContent(lobHandler.getClobAsString(rs, "process_content"));
 				return workFlowDefinition;
@@ -1207,10 +1207,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 						workFlowDefinition.setVersion(rs.getInt("version"));
 						workFlowDefinition.setState(rs.getInt("state") == 1 ? true : false);
 						workFlowDefinition.setUploadUser(rs.getString("upload_user"));
-						workFlowDefinition.setUploadTime(rs.getDate("upload_time"));
+						workFlowDefinition.setUploadTime(rs.getTimestamp("upload_time"));
 
 						workFlowDefinition.setPublishUser(rs.getString("publish_user"));
-						workFlowDefinition.setPublishTime(rs.getDate("publish_time"));
+						workFlowDefinition.setPublishTime(rs.getTimestamp("publish_time"));
 						// 读取blob大字段
 						workFlowDefinition.setProcessContent(lobHandler.getClobAsString(rs, "process_content"));
 						return workFlowDefinition;
@@ -1260,10 +1260,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 				workFlowDefinition.setVersion(rs.getInt("version"));
 				workFlowDefinition.setState(rs.getInt("state") == 1 ? true : false);
 				workFlowDefinition.setUploadUser(rs.getString("upload_user"));
-				workFlowDefinition.setUploadTime(rs.getDate("upload_time"));
+				workFlowDefinition.setUploadTime(rs.getTimestamp("upload_time"));
 
 				workFlowDefinition.setPublishUser(rs.getString("publish_user"));
-				workFlowDefinition.setPublishTime(rs.getDate("publish_time"));
+				workFlowDefinition.setPublishTime(rs.getTimestamp("publish_time"));
 				// 读取blob大字段
 				workFlowDefinition.setProcessContent(lobHandler.getClobAsString(rs, "process_content"));
 				return workFlowDefinition;
@@ -1636,18 +1636,18 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 		Date now = rtCtx.getCalendarService().getSysDate();
 		String processSql = " update t_ff_rt_processinstance set state=" + IProcessInstance.CANCELED
 				+ ",end_time=? where id=? ";
-		super.getJdbcTemplate().update(processSql, new Object[] { getSqlDate(now), processInstance.getId() });
+		super.getJdbcTemplate().update(processSql, new Object[] { getSqlDateTime(now), processInstance.getId() });
 
 		// 更新所有的任务实例状态为canceled
 		String taskSql = " update t_ff_rt_taskinstance set state=" + ITaskInstance.CANCELED
 				+ ",end_time=?,can_be_withdrawn=0 " + "  where processinstance_id=? and (state=0 or state=1)";
-		super.getJdbcTemplate().update(taskSql, new Object[] { getSqlDate(now), processInstance.getId() });
+		super.getJdbcTemplate().update(taskSql, new Object[] { getSqlDateTime(now), processInstance.getId() });
 		// 更新所有工作项的状态为canceled
 		String workItemSql = " update t_ff_rt_workitem set state="
 				+ IWorkItem.CANCELED
 				+ ",end_time=?  "
 				+ " where taskinstance_id in (select a.id  from t_ff_rt_taskinstance a,t_ff_rt_workitem b where a.id=b.taskinstance_id and a.processinstance_id=? ) and (state=0 or state=1) ";
-		super.getJdbcTemplate().update(workItemSql, new Object[] { getSqlDate(now), processInstance.getId() });
+		super.getJdbcTemplate().update(workItemSql, new Object[] { getSqlDateTime(now), processInstance.getId() });
 		// 删除所有的token
 		String tokenSql = " delete from t_ff_rt_token where processinstance_id=?  ";
 		super.getJdbcTemplate().update(tokenSql, new Object[] { processInstance.getId() });
