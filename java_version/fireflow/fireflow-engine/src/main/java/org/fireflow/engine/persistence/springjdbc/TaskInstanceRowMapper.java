@@ -24,10 +24,10 @@ public class TaskInstanceRowMapper implements RowMapper {
 		taskInstance.setState(rs.getInt("state"));
 		taskInstance.setSuspended(rs.getInt("suspended") == 1 ? true : false);
 		taskInstance.setTaskType(rs.getString("task_type"));
-		taskInstance.setCreatedTime(rs.getDate("created_time"));
+		taskInstance.setCreatedTime(rs.getTimestamp("created_time"));
 
-		taskInstance.setStartedTime(rs.getDate("started_time"));
-		taskInstance.setEndTime(rs.getDate("end_time"));
+		taskInstance.setStartedTime(rs.getTimestamp("started_time"));
+		taskInstance.setEndTime(rs.getTimestamp("end_time"));
 		taskInstance.setAssignmentStrategy(rs.getString("assignment_strategy"));
 		taskInstance.setProcessInstanceId(rs.getString("processinstance_id"));
 		taskInstance.setProcessId(rs.getString("process_id"));

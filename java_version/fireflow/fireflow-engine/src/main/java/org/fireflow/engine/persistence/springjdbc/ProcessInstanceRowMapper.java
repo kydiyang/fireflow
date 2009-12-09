@@ -23,11 +23,11 @@ public class ProcessInstanceRowMapper implements RowMapper {
 		processInstance.setState(rs.getInt("state"));
 		processInstance.setSuspended(rs.getInt("suspended") == 1 ? true : false);
 		processInstance.setCreatorId(rs.getString("creator_id"));
-		processInstance.setCreatedTime(rs.getDate("created_time"));
-		processInstance.setStartedTime(rs.getDate("started_time"));
+		processInstance.setCreatedTime(rs.getTimestamp("created_time"));
+		processInstance.setStartedTime(rs.getTimestamp("started_time"));
 
-		processInstance.setExpiredTime(rs.getDate("expired_time"));
-		processInstance.setEndTime(rs.getDate("end_time"));
+		processInstance.setExpiredTime(rs.getTimestamp("expired_time"));
+		processInstance.setEndTime(rs.getTimestamp("end_time"));
 		processInstance.setParentProcessInstanceId(rs.getString("parent_processinstance_id"));
 		processInstance.setParentTaskInstanceId(rs.getString("parent_taskinstance_id"));
 

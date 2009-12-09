@@ -17,9 +17,9 @@ public class WorkItemRowMapper implements RowMapper {
 
 		workItem.setId(rs.getString("id"));
 		workItem.setState(rs.getInt("state"));
-		workItem.setCreatedTime(rs.getDate("created_time"));
-		workItem.setClaimedTime(rs.getDate("claimed_time"));
-		workItem.setEndTime(rs.getDate("end_time"));
+		workItem.setCreatedTime(rs.getTimestamp("created_time"));
+		workItem.setClaimedTime(rs.getTimestamp("claimed_time"));
+		workItem.setEndTime(rs.getTimestamp("end_time"));
 
 		workItem.setActorId(rs.getString("actor_id"));
 		workItem.setTaskInstanceId(rs.getString("taskinstance_id"));
