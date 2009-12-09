@@ -16,13 +16,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkItem;
@@ -31,23 +28,17 @@ import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.ProcessInstance;
 import org.fireflow.engine.impl.ProcessInstanceTrace;
 import org.fireflow.engine.impl.ProcessInstanceVar;
-import org.fireflow.engine.impl.ProcessInstanceVarPk;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.impl.WorkItem;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.kernel.IToken;
 import org.fireflow.kernel.impl.Token;
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.AbstractLobCreatingPreparedStatementCallback;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * 配置方式如下： <bean id="persistenceService" class=
@@ -69,7 +60,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  */
 public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements IPersistenceService
 {
-	private static Log log = LogFactory.getLog(PersistenceServiceSpringJdbcImpl.class);
+//	private static Log log = LogFactory.getLog(PersistenceServiceSpringJdbcImpl.class);
 
 	protected RuntimeContext rtCtx = null;
 
@@ -101,7 +92,6 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 	 * 流程实例 Save processInstance
 	 * @param processInstance
 	 */
-	@SuppressWarnings("unchecked")
 	public void saveOrUpdateProcessInstance(IProcessInstance processInstance)
 	{
 		// 首先判断流程实例ID是否为null，如果为null那么create，否则就update
@@ -650,10 +640,10 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 	public void lockTaskInstance(String taskInstanceId)
 	{
 		// 这里使用的是sqlserver 的代码 ,这段代码不要删除！
-		// String sql =
-		// "select * from t_ff_rt_taskinstance with (updlock, rowlock) where id=? ";
+		 String sql =
+		 "select * from t_ff_rt_taskinstance with (updlock, rowlock) where id=? ";
 		// 以下是oracle中的语句
-		String sql = "select * from t_ff_rt_taskinstance where id=? for update ";
+//		String sql = "select * from t_ff_rt_taskinstance where id=? for update ";
 		super.getJdbcTemplate().queryForObject(sql, new Object[] { taskInstanceId }, new TaskInstanceRowMapper());
 	}
 
@@ -1770,6 +1760,7 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 				new ProcessInstanceTraceRowMapper());
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<ProcessInstanceVar> findProcessInstanceVariable(final String processInstanceId)
 	{
 
@@ -1780,6 +1771,7 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	public ProcessInstanceVar findProcessInstanceVariable(String processInstanceId, String name)
 	{
 		String varSql = "select * from t_ff_rt_procinst_var where processinstance_id=? and name=?";
@@ -1927,214 +1919,4 @@ public class PersistenceServiceSpringJdbcImpl extends JdbcDaoSupport implements 
 		return null;
 	}
 
-}
-
-class ProcessInstanceVarRowMapper implements RowMapper
-{
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException
-	{
-		ProcessInstanceVar processInstanceVar = new ProcessInstanceVar();
-		ProcessInstanceVarPk pk = new ProcessInstanceVarPk();
-		pk.setProcessInstanceId(rs.getString("processinstance_id"));
-		pk.setName(rs.getString("name"));
-		processInstanceVar.setVarPrimaryKey(pk);
-
-		String valueStr = rs.getString("value");
-		Object valueObj = getObject(valueStr);
-		processInstanceVar.setValue(valueObj);
-
-		return processInstanceVar;
-
-	}
-
-	public Object getObject(String value)
-	{
-		if (value == null)
-			return null;
-		int index = value.indexOf("#");
-		if (index == -1)
-		{
-			return null;
-		}
-		String type = value.substring(0, index);
-		String strValue = value.substring(index + 1);
-		if (type.equals(String.class.getName()))
-		{
-			return strValue;
-		}
-		if (strValue == null || strValue.trim().equals(""))
-		{
-			return null;
-		}
-		if (type.equals(Integer.class.getName()))
-		{
-			return new Integer(strValue);
-		}
-		else if (type.equals(Long.class.getName()))
-		{
-			return new Long(strValue);
-		}
-		else if (type.equals(Float.class.getName()))
-		{
-			return new Float(strValue);
-		}
-		else if (type.equals(Double.class.getName()))
-		{
-			return new Double(strValue);
-		}
-		else if (type.equals(Boolean.class.getName()))
-		{
-			return new Boolean(strValue);
-		}
-		else if (type.equals(java.util.Date.class.getName()))
-		{
-			return new java.util.Date(new Long(strValue));
-		}
-		else
-		{
-			throw new RuntimeException("Fireflow不支持数据类型" + type);
-		}
-	}
-}
-
-/**
- * 共14个字段
- * @author wmj2003
- */
-class ProcessInstanceTraceRowMapper implements RowMapper
-{
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException
-	{
-		ProcessInstanceTrace processInstanceTrace = new ProcessInstanceTrace();
-
-		processInstanceTrace.setId(rs.getString("id"));
-		processInstanceTrace.setProcessInstanceId(rs.getString("processinstance_id"));
-		processInstanceTrace.setStepNumber(rs.getInt("step_number"));
-		processInstanceTrace.setMinorNumber(rs.getInt("minor_number"));
-		processInstanceTrace.setType(rs.getString("type"));
-
-		processInstanceTrace.setEdgeId(rs.getString("edge_id"));
-		processInstanceTrace.setFromNodeId(rs.getString("from_node_id"));
-		processInstanceTrace.setToNodeId(rs.getString("to_node_id"));
-
-		return processInstanceTrace;
-
-	}
-}
-
-/**
- * 共14个字段
- * @author wmj2003
- */
-class ProcessInstanceRowMapper implements RowMapper
-{
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException
-	{
-		ProcessInstance processInstance = new ProcessInstance();
-
-		processInstance.setId(rs.getString("id"));
-		processInstance.setProcessId(rs.getString("process_id"));
-		processInstance.setVersion(rs.getInt("version"));
-		processInstance.setName(rs.getString("name"));
-		processInstance.setDisplayName(rs.getString("display_name"));
-
-		processInstance.setState(rs.getInt("state"));
-		processInstance.setSuspended(rs.getInt("suspended") == 1 ? true : false);
-		processInstance.setCreatorId(rs.getString("creator_id"));
-		processInstance.setCreatedTime(rs.getDate("created_time"));
-		processInstance.setStartedTime(rs.getDate("started_time"));
-
-		processInstance.setExpiredTime(rs.getDate("expired_time"));
-		processInstance.setEndTime(rs.getDate("end_time"));
-		processInstance.setParentProcessInstanceId(rs.getString("parent_processinstance_id"));
-		processInstance.setParentTaskInstanceId(rs.getString("parent_taskinstance_id"));
-
-		return processInstance;
-
-	}
-}
-
-/**
- * taskinstance 映射(共21个字段)
- * @author wmj2003
- */
-class TaskInstanceRowMapper implements RowMapper
-{
-
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException
-	{
-		TaskInstance taskInstance = new TaskInstance();
-		taskInstance.setId(rs.getString("id"));
-		// 20090922 wmj2003 没有给biz_type赋值 是否需要给基于jdbc的数据增加 setBizType()方法？
-		taskInstance.setTaskId(rs.getString("task_id"));
-		taskInstance.setActivityId(rs.getString("activity_id"));
-		taskInstance.setName(rs.getString("name"));
-
-		taskInstance.setDisplayName(rs.getString("display_name"));
-		taskInstance.setState(rs.getInt("state"));
-		taskInstance.setSuspended(rs.getInt("suspended") == 1 ? true : false);
-		taskInstance.setTaskType(rs.getString("task_type"));
-		taskInstance.setCreatedTime(rs.getDate("created_time"));
-
-		taskInstance.setStartedTime(rs.getDate("started_time"));
-		taskInstance.setEndTime(rs.getDate("end_time"));
-		taskInstance.setAssignmentStrategy(rs.getString("assignment_strategy"));
-		taskInstance.setProcessInstanceId(rs.getString("processinstance_id"));
-		taskInstance.setProcessId(rs.getString("process_id"));
-
-		taskInstance.setVersion(rs.getInt("version"));
-		taskInstance.setTargetActivityId(rs.getString("target_activity_id"));
-		taskInstance.setFromActivityId(rs.getString("from_activity_id"));
-		taskInstance.setStepNumber(rs.getInt("step_number"));
-		taskInstance.setCanBeWithdrawn(rs.getInt("can_be_withdrawn") == 1 ? true : false);
-
-		return taskInstance;
-	}
-}
-
-/**
- * 共8个字段
- * @author wmj2003
- */
-class WorkItemRowMapper implements RowMapper
-{
-
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException
-	{
-		WorkItem workItem = new WorkItem();
-
-		workItem.setId(rs.getString("id"));
-		workItem.setState(rs.getInt("state"));
-		workItem.setCreatedTime(rs.getDate("created_time"));
-		workItem.setClaimedTime(rs.getDate("claimed_time"));
-		workItem.setEndTime(rs.getDate("end_time"));
-
-		workItem.setActorId(rs.getString("actor_id"));
-		workItem.setTaskInstanceId(rs.getString("taskinstance_id"));
-		workItem.setComments(rs.getString("comments"));
-		return workItem;
-	}
-}
-
-/**
- * 共7个字段
- * @author wmj2003
- */
-class TokenRowMapper implements RowMapper
-{
-
-	public Object mapRow(ResultSet rs, int rowNum) throws SQLException
-	{
-		Token token = new Token();
-		token.setId(rs.getString("id"));
-		token.setAlive(rs.getInt("alive") == 1 ? true : false);
-		token.setValue(rs.getInt("value"));
-		token.setNodeId(rs.getString("node_id"));
-		token.setProcessInstanceId(rs.getString("processinstance_id"));
-
-		token.setStepNumber(rs.getInt("step_number"));
-		token.setFromActivityId(rs.getString("from_activity_id"));
-
-		return token;
-	}
 }
