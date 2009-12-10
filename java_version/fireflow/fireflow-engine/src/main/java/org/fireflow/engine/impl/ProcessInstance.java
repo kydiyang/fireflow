@@ -329,6 +329,8 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     	pk.setName(name);
     	procInstVar.setVarPrimaryKey(pk);
     	procInstVar.setValue(value);
+    	procInstVar.setValueType(value.getClass().getName());
+    	
     	if (processInstanceVariables.containsKey(name)){
     		persistenceService.updateProcessInstanceVariable(procInstVar);
     	}else{
