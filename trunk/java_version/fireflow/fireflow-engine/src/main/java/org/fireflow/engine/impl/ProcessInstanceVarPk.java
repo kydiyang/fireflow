@@ -23,7 +23,10 @@ import java.io.Serializable;
  * @author chennieyun
  */
 public class ProcessInstanceVarPk implements Serializable{
-    String processInstanceId = null;
+    
+	private static final long serialVersionUID = 1441383685880577012L;
+	
+	String processInstanceId = null;
     String name = null;
     public String getName() {
         return name;
