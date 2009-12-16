@@ -109,8 +109,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 	public final void createTaskInstances(IToken token,
 			IActivityInstance activityInstance) throws EngineException,
 			KernelException {
-
-		// TODO Auto-generated method stub
+		
 		Activity activity = activityInstance.getActivity();
 		IPersistenceService persistenceService = rtCtx.getPersistenceService();
 		ICalendarService calService = rtCtx.getCalendarService();

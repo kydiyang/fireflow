@@ -53,9 +53,7 @@ public class StartNodeInstance extends AbstractNodeInstance implements
     // private boolean alive = false;
     public StartNodeInstance(StartNode startNd) {
         this.startNode = startNd;
-        volume = startNode.getLeavingTransitions().size();
-//  start 节点容量 ==输出弧的数量
-//		System.out.println(" startnode's volume is "+volume);
+        volume = startNode.getLeavingTransitions().size();//  start 节点容量 ==输出弧的数量
     }
 
     public String getId() {
@@ -101,7 +99,7 @@ public class StartNodeInstance extends AbstractNodeInstance implements
         fireNodeEvent(event4);
 
 
-        boolean activiateDefaultCondition = true;//激活默认弧线的标志
+        boolean activateDefaultCondition = true;//激活默认弧线的标志
         ITransitionInstance defaultTransInst = null;
         //找到所有开始节点的输出弧 
         for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.size(); i++) {
@@ -122,13 +120,13 @@ public class StartNodeInstance extends AbstractNodeInstance implements
             
             boolean alive = transInst.take(token);//触发弧线的token
             if (alive) {
-                activiateDefaultCondition = false;
+                activateDefaultCondition = false;
             }
 
         }
         if (defaultTransInst != null) {//如果defaultTransInst!=null ，走的是default值的弧线 
             Token token = new Token();
-            token.setAlive(activiateDefaultCondition);//设置token为dead
+            token.setAlive(activateDefaultCondition);//设置token为dead
             token.setProcessInstance(processInstance);
             token.setFromActivityId(token.getFromActivityId());
             token.setStepNumber(tk.getStepNumber()+1);

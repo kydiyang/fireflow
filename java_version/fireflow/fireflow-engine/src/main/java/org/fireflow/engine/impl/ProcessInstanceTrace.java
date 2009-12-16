@@ -49,8 +49,6 @@ public class ProcessInstanceTrace implements Serializable{
         this.id = id;
     }
 
-
-
     public String getEdgeId() {
         return edgeId;
     }

@@ -22,29 +22,30 @@ import java.io.Serializable;
  * 
  * @author chennieyun
  */
-public class ProcessInstanceVarPk implements Serializable{
-    
+public class ProcessInstanceVarPk implements Serializable {
+
 	private static final long serialVersionUID = 1441383685880577012L;
-	
+
 	String processInstanceId = null;
-    String name = null;
-    public String getName() {
-        return name;
-    }
+	String name = null;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-    }
-    
-    public boolean equals(Object obj){
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
+	}
+
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -52,28 +53,27 @@ public class ProcessInstanceVarPk implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessInstanceVarPk other = (ProcessInstanceVarPk) obj;
-		if (name == null)
-		{
+		if (name == null) {
 			if (other.name != null)
 				return false;
-		}
-		else if (!name.equals(other.name))
+		} else if (!name.equals(other.name))
 			return false;
-		if (processInstanceId == null)
-		{
+		if (processInstanceId == null) {
 			if (other.processInstanceId != null)
 				return false;
-		}
-		else if (!processInstanceId.equals(other.processInstanceId))
+		} else if (!processInstanceId.equals(other.processInstanceId))
 			return false;
 		return true;
-    }
-    
-    public int hashCode(){
+	}
+
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((processInstanceId == null) ? 0 : processInstanceId.hashCode());
+		result = prime
+				* result
+				+ ((processInstanceId == null) ? 0 : processInstanceId
+						.hashCode());
 		return result;
-    }    
+	}
 }

@@ -85,10 +85,11 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	}
 
 	/**
-	 * @param workflowProcessId
-	 * @param creatorId
-	 * @param parentProcessInstanceId
-	 * @param parentTaskInstanceId
+	 * 创建一个新的流程实例 (create a new process instance )
+	 * @param workflowProcessId  流程定义ID
+	 * @param creatorId  创建人ID
+	 * @param parentProcessInstanceId  父流程实例ID
+	 * @param parentTaskInstanceId     父任务实例ID
 	 * @return
 	 * @throws EngineException
 	 * @throws KernelException
