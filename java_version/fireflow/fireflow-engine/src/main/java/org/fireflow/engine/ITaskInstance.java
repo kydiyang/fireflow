@@ -163,13 +163,6 @@ public interface ITaskInstance {
 	public String getTaskType();
 
 	/**
-	 * 取消该任务（保留，未实现） 这个方法暂时取消，因为abort无清晰的无二义性的业务含义。（2009-04-12）
-	 * 
-	 * @throws org.fireflow.engine.EngineException
-	 * @throws org.fireflow.kenel.KenelException
-	 */
-	// public void abort() throws EngineException,KernelException;
-	/**
 	 * 返回任务是里对应的环节
 	 * 
 	 * @return

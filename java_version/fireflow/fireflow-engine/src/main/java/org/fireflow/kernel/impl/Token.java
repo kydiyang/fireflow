@@ -39,7 +39,6 @@ public class Token implements IToken {
 
     private String fromActivityId = null;
 
-//    private transient IProcessInstance processInstance = null;
     //20090908 
     private transient Map<String ,IProcessInstance> contextInfo = new HashMap<String ,IProcessInstance>();
 

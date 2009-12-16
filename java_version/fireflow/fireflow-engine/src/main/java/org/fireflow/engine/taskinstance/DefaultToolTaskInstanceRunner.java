@@ -81,7 +81,7 @@ public class DefaultToolTaskInstanceRunner implements ITaskInstanceRunner{
 
         ITaskInstanceManager taskInstanceManager = runtimeContext.getTaskInstanceManager();
         taskInstanceManager.completeTaskInstance(currentSession, processInstance, taskInstance, null);
-//        taskInstanceManager.completeTaskInstance(taskInstance, null);
+
     }
 
 }

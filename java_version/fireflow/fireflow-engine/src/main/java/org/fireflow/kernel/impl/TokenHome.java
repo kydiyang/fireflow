@@ -19,7 +19,7 @@ import org.hibernate.criterion.Example;
  * @author Hibernate Tools
  */
 public class TokenHome {
-//TODO  mingjie.mj 20091018 这个类的存在有用吗？
+//TODO  mingjie.mj 20091018 这个类的存在有用吗？是否删除它？
 	private static final Log log = LogFactory.getLog(TokenHome.class);
 
 	private final SessionFactory sessionFactory = getSessionFactory();

@@ -59,6 +59,12 @@ public class KernelException extends Exception {
      */
     String workflowElementDisplayName = null;
 
+    /**
+     * 构造方法
+     * @param processInstance
+     * @param workflowElement
+     * @param errMsg
+     */
     public KernelException(IProcessInstance processInstance, IWFElement workflowElement, String errMsg) {
         super(errMsg);
         if (processInstance != null) {

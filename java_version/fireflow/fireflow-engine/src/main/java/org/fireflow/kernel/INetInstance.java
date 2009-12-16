@@ -16,20 +16,15 @@
  */
 package org.fireflow.kernel;
 
-// import org.fireflow.engine.IRuntimeContext;
 import org.fireflow.engine.IProcessInstance;
 import org.fireflow.model.WorkflowProcess;
 
 /**
  * ProcessInstance负责和外部运行环境（RuntimeContext)沟通
  * 
- * @author chennieyun 是否应该叫做WorkflowNetInstance?
+ * @author chennieyun 
  */
 public interface INetInstance {
-	// public void setRuntimeContext(IRuntimeContext rtCtx);
-	//	
-	// public IRuntimeContext getRuntimeContext();
-
 	/**
 	 * @return
 	 */
@@ -40,7 +35,6 @@ public interface INetInstance {
 	 */
 	public Integer getVersion();
 
-	// TODO 实参-形参如何体现？通过Context?
 	/**
 	 * 启动工作流的实例 
 	 * @param processInstance
@@ -56,11 +50,13 @@ public interface INetInstance {
 	public void complete() throws KernelException;
 
 	/**
+	 * 
 	 * @return
 	 */
 	public WorkflowProcess getWorkflowProcess();
 
 	/**
+	 * 
 	 * @param wfElementId
 	 * @return
 	 */

@@ -33,6 +33,7 @@ public interface IToken {
 	 * 前驱activityid的分隔符为"&"
 	 */
 	public static final String FROM_ACTIVITY_ID_SEPARATOR = "&";
+	
 	public static final String FROM_START_NODE = "FROM_START_NODE";
 
 	/**
@@ -77,7 +78,10 @@ public interface IToken {
 	 */
 	public Integer getValue();
 
-	// 通过alive标志来判断nodeinstance是否要fire
+	/**
+	 * 通过alive标志来判断nodeinstance是否要fire
+	 * @return
+	 */
 	public Boolean isAlive();
 
 	/**

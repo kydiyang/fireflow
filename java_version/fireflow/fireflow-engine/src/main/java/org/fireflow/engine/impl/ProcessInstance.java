@@ -140,6 +140,13 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         this.parentProcessInstanceId = parentProcessInstanceId;
     }
 
+    /**
+     * 
+     * @param synchInst
+     * @param token
+     * @return
+     * @throws EngineException
+     */
     public IJoinPoint createJoinPoint(ISynchronizerInstance synchInst, IToken token) throws EngineException {
 
         int enterTransInstanceCount = synchInst.getEnteringTransitionInstances().size();
@@ -210,47 +217,12 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
 
             return resultJoinPoint;
         }
-    /*
-    if (enterTransInstanceCount == 1) {
-    // 生成一个不存储到数据库中的JoinPoint
-    resultJoinPoint = new JoinPoint();
-    resultJoinPoint.addValue(token.getValue());
-
-    if (token.isAlive()) {
-    resultJoinPoint.setAlive(true);
-    }
-    resultJoinPoint.setProcessInstance(this);
-    return resultJoinPoint;
-    } else {
-    // 1、首先从数据库中查询，看看是否已经存在该JoinPoint
-    //对于循环的情况,此处会存在一些问题...
-    IPersistenceService persistenceService = rtCtx.getPersistenceService();
-    List<IJoinPoint> joinPointList = persistenceService.findJoinPointsForProcessInstance(this.getId(), synchInst.getSynchronizer().getId());
-    IJoinPoint joinPoint = null;
-    if (joinPointList != null && joinPointList.size() > 0) {
-    joinPoint = joinPointList.get(0);
-    }
-    if (joinPoint != null) {
-    resultJoinPoint = joinPoint;
-    resultJoinPoint.setProcessInstance(this);
-    } else {
-    // 2、生成一个存储到数据库中的joinPoint
-    resultJoinPoint = new JoinPoint();
-    resultJoinPoint.setProcessInstance(this);
-    resultJoinPoint.setSynchronizerId(synchInst.getSynchronizer().getId());
-    }
-    resultJoinPoint.addValue(token.getValue());
-
-    if (token.isAlive()) {
-    resultJoinPoint.setAlive(true);
+   
     }
 
-    persistenceService.saveOrUpdateJoinPoint(resultJoinPoint);
-    return resultJoinPoint;
-    }
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#run()
      */
-    }
-
     public void run() throws EngineException, KernelException {
         if (this.getState().intValue() != IProcessInstance.INITIALIZED) {
             throw new EngineException(this.getId(),
@@ -276,6 +248,9 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         netInstance.run(this);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#getProcessInstanceVariables()
+     */
     public Map<String ,Object> getProcessInstanceVariables() {
 		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
     	if (processInstanceVariables==null){
@@ -296,6 +271,9 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
 //        processInstanceVariables.putAll(vars);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#getProcessInstanceVariable(java.lang.String)
+     */
     public Object getProcessInstanceVariable(String name) {
 		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
     	if (processInstanceVariables==null){
@@ -311,6 +289,9 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         return processInstanceVariables.get(name);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#setProcessInstanceVariable(java.lang.String, java.lang.Object)
+     */
     public void setProcessInstanceVariable(String name, Object value) {
 		IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
     	if (processInstanceVariables==null){
@@ -339,12 +320,14 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         processInstanceVariables.put(name, value);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#getWorkflowProcess()
+     */
     public WorkflowProcess getWorkflowProcess() throws EngineException {
         WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
         WorkflowProcess workflowProcess = null;
 
         workflowProcess = workflowDef.getWorkflowProcess();
-
 
         return workflowProcess;
     }
@@ -425,6 +408,9 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#abort()
+     */
     public void abort() throws EngineException {
         if (this.state.intValue() == IProcessInstance.COMPLETED || this.state.intValue() == IProcessInstance.CANCELED) {
             throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be aborted,the state of this process instance is " + this.getState());
@@ -492,6 +478,9 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         this.suspended = isSuspended;
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#suspend()
+     */
     public void suspend() throws EngineException {
         if (this.state == IProcessInstance.COMPLETED || this.state == IProcessInstance.CANCELED) {
             throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be suspended,the state of this process instance is " + this.state);
@@ -503,6 +492,9 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         persistenceService.suspendProcessInstance(this);
     }
 
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.IProcessInstance#restore()
+     */
     public void restore() throws EngineException {
         if (this.state == IProcessInstance.COMPLETED || this.state == IProcessInstance.CANCELED) {
             throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be restored,the state of this process instance is " + this.state);

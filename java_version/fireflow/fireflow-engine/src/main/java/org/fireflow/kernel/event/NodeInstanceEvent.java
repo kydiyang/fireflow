@@ -35,7 +35,6 @@ public class NodeInstanceEvent extends EventObject {
 	int eventType = -1;
 	private IToken token = null;
 
-	@SuppressWarnings("unused")
 	private NodeInstanceEvent(){
 		super(null);
 	}

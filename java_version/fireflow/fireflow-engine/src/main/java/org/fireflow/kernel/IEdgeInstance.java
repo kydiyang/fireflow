@@ -35,10 +35,8 @@ public interface IEdgeInstance {
 	 */
 	public int getWeight();
 
-	// public void setWeight(int i);
-
 	/**
-	 * wangmj 输出到那个节点的实例
+	 * 获取输出到达的节点实例
 	 * 
 	 * @return
 	 */

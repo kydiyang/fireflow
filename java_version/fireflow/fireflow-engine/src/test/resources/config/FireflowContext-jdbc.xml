@@ -14,8 +14,9 @@
 			<ref bean="persistenceService" />
 		</property>
 		<property name="conditionResolver">
-
-			<ref local="ikConditionResolver" />
+			<ref local="conditionResolver" />
+			<!-- 
+			<ref local="ikConditionResolver" /> -->
 		</property>
 		<property name="calendarService">
 			<ref local="calendarService" />
@@ -100,7 +101,7 @@
 			<ref bean="dataSource"></ref>
 		</property>
 		<property name="show_sql">
-			<value>true</value>
+			<value>false</value>
 		</property>
 		
 		<!-- oracle 9 需要 --> 

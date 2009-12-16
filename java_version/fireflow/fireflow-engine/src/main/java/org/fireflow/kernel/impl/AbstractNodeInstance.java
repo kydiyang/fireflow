@@ -83,24 +83,7 @@ public abstract class AbstractNodeInstance implements INodeInstance,IPlugable {
 	public List<INodeInstanceEventListener> getEventListeners(){
 		return eventListeners;
 	}
-	
-	/**
-	 * 在token进入的时候触发，实际上是通过event的类型来触发的
-	 * @param event
-	 * @throws KernelException
-	 */
-//	public void fireNodeEnteredEvent(NodeInstanceEvent event)throws KernelException{
-//		for (int i=0;i<this.eventListeners.size();i++){
-//			INodeInstanceEventListener listener = this.eventListeners.get(i);
-//			listener.onNodeInstanceEventFired(event);
-//		}
-//	}
-//	public void fireNodeLeavingEvent(NodeInstanceEvent event) throws KernelException{
-//		for (int i=0;i<this.eventListeners.size();i++){
-//			INodeInstanceEventListener listener = this.eventListeners.get(i);
-//			listener.onNodeInstanceEventFired(event);
-//		}
-//	}	
+		
 	/**
 	 * wangmj  20090914 增加统一的触发方法，实现类中根据事件的不同而进行触发
 	 * @param event

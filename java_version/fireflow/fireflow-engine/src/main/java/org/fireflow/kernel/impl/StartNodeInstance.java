@@ -47,10 +47,9 @@ public class StartNodeInstance extends AbstractNodeInstance implements
         Extension_Point_Names.add(Extension_Point_NodeInstanceEventListener);
     }
     private int volume = 0;// 即节点的容量
-    // private int tokenValue = 0;
+
     private StartNode startNode = null;
 
-    // private boolean alive = false;
     public StartNodeInstance(StartNode startNd) {
         this.startNode = startNd;
         volume = startNode.getLeavingTransitions().size();//  start 节点容量 ==输出弧的数量
@@ -160,8 +159,6 @@ public class StartNodeInstance extends AbstractNodeInstance implements
     // TODO extesion是单态还是多实例？单态应该效率高一些。
     public void registExtension(IKernelExtension extension)
             throws RuntimeException {
-        // System.out.println("====extension class is
-        // "+extension.getClass().getName());
         if (!Extension_Target_Name.equals(extension.getExtentionTargetName())) {
             throw new RuntimeException(
                     "Error:When construct the StartNodeInstance,the Extension_Target_Name is mismatching");
@@ -184,9 +181,4 @@ public class StartNodeInstance extends AbstractNodeInstance implements
     public Synchronizer getSynchronizer() {
         return this.startNode;
     }
-
-//    private boolean determineTheAliveOfToken(ITransitionInstance transInst) {
-//        // TODO通过计算transition上的表达式来确定alive的值
-//        return true;
-//    }
 }

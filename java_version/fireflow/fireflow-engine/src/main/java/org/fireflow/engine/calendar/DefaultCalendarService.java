@@ -415,8 +415,7 @@ public class DefaultCalendarService implements ICalendarService {
         return (int) (d2.getTime() - d1.getTime());
 
     }
-//    private int getDurationInMilliseconds
-
+    
     public boolean isBusinessDay(Date d) {
         if (d == null) {
             return false;

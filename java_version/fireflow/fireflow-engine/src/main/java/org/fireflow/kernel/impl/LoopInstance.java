@@ -125,7 +125,7 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
     public void registExtension(IKernelExtension extension) throws RuntimeException {
         if (!Extension_Target_Name.equals(extension.getExtentionTargetName())) {
             return;
-    }
+        }
         if (Extension_Point_LoopInstanceEventListener.equals(extension.getExtentionPointName())) {
             if (extension instanceof IEdgeInstanceEventListener) {
                 this.eventListeners.add((IEdgeInstanceEventListener) extension);

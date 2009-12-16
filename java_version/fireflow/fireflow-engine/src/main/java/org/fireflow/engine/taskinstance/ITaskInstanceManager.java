@@ -125,7 +125,7 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
     public void completeWorkItem(IWorkItem workItem,IActivityInstance targetActivityInstance,String comments)throws EngineException, KernelException ;
 
     /**
-     * 
+     * 结束工单并跳转
      * @param workItem
      * @param targetActivityId
      * @param nextActorIds
@@ -135,6 +135,14 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
      */
     public void completeWorkItemAndJumpTo(IWorkItem workItem,String targetActivityId, String comments) throws EngineException, KernelException ;
 
+    /**
+     * 结束工单并跳转（超级）
+     * @param workItem
+     * @param targetActivityId
+     * @param comments
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void completeWorkItemAndJumpToEx(IWorkItem workItem,String targetActivityId, String comments) throws EngineException, KernelException ;
 
     /**
@@ -146,6 +154,13 @@ public interface ITaskInstanceManager extends IRuntimeContextAware {
      */
     public IWorkItem withdrawWorkItem(IWorkItem workItem) throws EngineException, KernelException ;
 
+    /**
+     * 拒收
+     * @param workItem
+     * @param comments
+     * @throws EngineException
+     * @throws KernelException
+     */
     public void rejectWorkItem(IWorkItem workItem,String comments) throws  EngineException, KernelException ;
 
     /**

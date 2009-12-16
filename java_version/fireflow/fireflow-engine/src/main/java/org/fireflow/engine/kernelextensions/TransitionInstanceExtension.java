@@ -61,24 +61,6 @@ public class TransitionInstanceExtension implements IKernelExtension,
      * @return
      */
     private boolean determineTheAliveOfToken(Map<String ,Object> vars, String condition) throws Exception{
-//        System.out.println("Inside SynchronizerInstance.DeterminTheAliveOfToken():: joinPoint.getAlive =" + joinPoint.getAlive());
-//        if (!joinPoint.getAlive()) {
-//            return false;
-//        }
-//        Set<String> nextTransitionInstanceNames = joinPoint.getAppointedTransitionNames();
-//        if (nextTransitionInstanceNames.size() > 0) {
-//            Iterator nextTransNamesIterator = nextTransitionInstanceNames.iterator();
-//            while (nextTransNamesIterator.hasNext()) {
-//                String transName = (String) nextTransNamesIterator.next();
-//                if (transName.equals(transInst.getTransition().getName())) {
-//                    return true;
-//                }
-//            }
-//        }
-//
-//        if (transInst.getTransition().getCondition() == null || transInst.getTransition().getCondition().trim().equals("")) {
-//            return true;
-//        }
 
         // 通过计算transition上的表达式来确定alive的值
 

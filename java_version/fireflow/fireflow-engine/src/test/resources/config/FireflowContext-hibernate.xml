@@ -14,8 +14,9 @@
 			<ref bean="persistenceService" />
 		</property>
 		<property name="conditionResolver">
-
-			<ref local="ikConditionResolver" />
+			<ref local="conditionResolver" />
+			<!-- 
+			<ref local="ikConditionResolver" /> -->
 		</property>
 		<property name="calendarService">
 			<ref local="calendarService" />
