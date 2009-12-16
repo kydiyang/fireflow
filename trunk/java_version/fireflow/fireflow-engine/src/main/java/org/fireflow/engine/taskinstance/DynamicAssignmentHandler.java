@@ -78,6 +78,5 @@ public class DynamicAssignmentHandler implements IAssignmentHandler{
     public void setNeedClaim(boolean needSign) {
         this.needClaim = needSign;
     }
-
     
 }

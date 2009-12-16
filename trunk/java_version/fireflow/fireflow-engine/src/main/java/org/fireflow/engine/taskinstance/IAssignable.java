@@ -51,5 +51,4 @@ public interface IAssignable {
      */
     public List<IWorkItem> assignToActors(List<String> actorIds) throws EngineException,KernelException;
     
-
 }

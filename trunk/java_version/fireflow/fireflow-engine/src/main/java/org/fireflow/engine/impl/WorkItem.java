@@ -76,6 +76,14 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         this.taskInstance = taskInstance;
     }
 
+    /**
+     * @param state
+     * @param createdTime
+     * @param signedTm
+     * @param endTime
+     * @param comments
+     * @param taskInstance
+     */
     public WorkItem(Integer state, Date createdTime, Date signedTm,
             Date endTime, String comments, TaskInstance taskInstance) {
         this.state = state;
@@ -210,8 +218,6 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
         complete(null,comments);
     }
 
-
-
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.IWorkItem#complete(org.fireflow.engine.taskinstance.DynamicAssignmentHandler, java.lang.String)
 	 */
@@ -302,7 +308,6 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     }
 
 
-
     /* (non-Javadoc)
      * @see org.fireflow.engine.IWorkItem#jumpTo(java.lang.String)
      */
@@ -316,7 +321,6 @@ public class WorkItem implements IWorkItem, IRuntimeContextAware, IWorkflowSessi
     public void jumpTo(String activityId, String comments) throws EngineException, KernelException {
         jumpTo(activityId, null, comments);
     }
-
  
 
     /* (non-Javadoc)

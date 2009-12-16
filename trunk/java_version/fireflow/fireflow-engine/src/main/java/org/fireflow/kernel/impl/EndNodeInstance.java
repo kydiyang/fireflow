@@ -66,8 +66,6 @@ public class EndNodeInstance extends AbstractNodeInstance implements
     public EndNodeInstance(EndNode endNd) {
         this.endNode = endNd;
         this.volume = this.endNode.getEnteringTransitions().size();
-
-//		System.out.println("endnode's volume is "+volume);
     }
 
     /*

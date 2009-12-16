@@ -104,6 +104,5 @@ public class ProcessInstanceTrace implements Serializable{
     public void setMinorNumber(Integer minorNumber) {
         this.minorNumber = minorNumber;
     }
-
-    
+ 
 }

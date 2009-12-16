@@ -191,6 +191,15 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 	}
 
+	/**
+	 * 
+	 * @param currentSession
+	 * @param processInstance
+	 * @param task
+	 * @param activity
+	 * @return
+	 * @throws EngineException
+	 */
 	public ITaskInstance createTaskInstance(IWorkflowSession currentSession,
 			IProcessInstance processInstance, Task task, Activity activity)
 			throws EngineException {
@@ -395,6 +404,12 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 	}
 
+	/**
+	 * 
+	 * @param taskInstance
+	 * @return
+	 * @throws EngineException
+	 */
 	protected boolean activityInstanceCanBeCompleted(ITaskInstance taskInstance)
 			throws EngineException {
 		IPersistenceService persistenceService = this.rtCtx
@@ -668,18 +683,15 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 							+ "对应的token.alive=false，因此无法完成complete操作");
 		}
 
-		// INetInstance netInstance =
-		// rtCtx.getKernelManager().getNetInstance(taskInstance.getProcessId(),
-		// taskInstance.getVersion());
-		// Object obj =
-		// netInstance.getWFElementInstance(taskInstance.getActivityId());
-
 		token.setProcessInstance(processInstance);
 
 		thisActivityInstance.complete(token, targetActivityInstance);
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#abortTaskInstanceEx(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance, java.lang.String)
+	 */
 	public final void abortTaskInstanceEx(IWorkflowSession currentSession,
 			IProcessInstance processInstance, ITaskInstance thisTaskInst,
 			String targetActivityId) throws EngineException, KernelException {
@@ -828,12 +840,6 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 							+ "对应的token.alive=false，因此无法完成complete操作");
 		}
 
-		// INetInstance netInstance =
-		// rtCtx.getKernelManager().getNetInstance(taskInstance.getProcessId(),
-		// taskInstance.getVersion());
-		// Object obj =
-		// netInstance.getWFElementInstance(taskInstance.getActivityId());
-
 		token.setProcessInstance(processInstance);
 
 		//调整token布局
@@ -920,6 +926,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#createWorkItem(org.fireflow.engine.IWorkflowSession, org.fireflow.engine.IProcessInstance, org.fireflow.engine.ITaskInstance, java.lang.String)
+	 */
 	public final WorkItem createWorkItem(IWorkflowSession currentSession,
 			IProcessInstance processInstance, ITaskInstance taskInstance,
 			String actorId) throws EngineException {
@@ -952,6 +961,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		return wi;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#claimWorkItem(java.lang.String, java.lang.String)
+	 */
 	public final IWorkItem claimWorkItem(String workItemId,
 			String taskInstanceId) throws EngineException, KernelException {
 		IPersistenceService persistenceService = rtCtx.getPersistenceService();
@@ -1011,11 +1023,12 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
 		return workItem;
-		// 不需要做这个工作,2009-03-21
-		// ((TaskInstance) workItem.getTaskInstance()).start();
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#completeWorkItem(org.fireflow.engine.IWorkItem, org.fireflow.kernel.IActivityInstance, java.lang.String)
+	 */
 	public void completeWorkItem(IWorkItem workItem,
 			IActivityInstance targetActivityInstance, String comments)
 			throws EngineException, KernelException {
@@ -1066,12 +1079,12 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 				.complete(targetActivityInstance);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#completeWorkItemAndJumpTo(org.fireflow.engine.IWorkItem, java.lang.String, java.lang.String)
+	 */
 	public void completeWorkItemAndJumpTo(IWorkItem workItem,
 			String targetActivityId, String comments) throws EngineException,
 			KernelException {
-//这个变量并没有被使用		
-//		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
-//				.getCurrentWorkflowSession();
 		// 首先检查是否可以正确跳转
 		// 1）检查是否在同一个“执行线”上
 		WorkflowProcess workflowProcess = workItem.getTaskInstance()
@@ -1174,12 +1187,8 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 	public void completeWorkItemAndJumpToEx(IWorkItem workItem,
 			String targetActivityId, String comments) throws EngineException,
 			KernelException {
-//		WorkflowSession workflowSession = (WorkflowSession) ((IWorkflowSessionAware) workItem)
-//				.getCurrentWorkflowSession();
 		
-		
-		// 首先检查是否可以正确跳转
-		
+		// 首先检查是否可以正确跳转	
 
 		WorkflowProcess workflowProcess = workItem.getTaskInstance().getWorkflowProcess();
 		String thisActivityId = workItem.getTaskInstance().getActivityId();
@@ -1309,10 +1318,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		allSynchronizersAndEnds.addAll(thisProcess.getEndNodes());
 		for (int i=0;i<allSynchronizersAndEnds.size();i++){
 			Synchronizer synchronizer = allSynchronizersAndEnds.get(i);
-//调试代码，注释掉！			
-//			if (synchronizer.getName().equals("Synchronizer4")){
-//				System.out.println(synchronizer.getName());
-//			}
+
 			int volumn = 0;
 			if (synchronizer instanceof EndNode){
 				volumn = synchronizer.getEnteringTransitions().size();
@@ -1416,6 +1422,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
         return virtualToken;
 	} 
 	
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#rejectWorkItem(org.fireflow.engine.IWorkItem, java.lang.String)
+	 */
 	public void rejectWorkItem(IWorkItem workItem, String comments)
 			throws EngineException, KernelException {
 		Activity thisActivity = workItem.getTaskInstance().getActivity();
@@ -1591,6 +1600,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#withdrawWorkItem(org.fireflow.engine.IWorkItem)
+	 */
 	public IWorkItem withdrawWorkItem(IWorkItem workItem)
 			throws EngineException, KernelException {
 		Activity thisActivity = workItem.getTaskInstance().getActivity();
@@ -1620,8 +1632,6 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 							+ thisActivity.getId() + "] is 'ALL'");
 		}
 
-		// Activity targetActivity = null;
-		// List targetActivityList = new ArrayList();
 		IPersistenceService persistenceService = this.rtCtx
 				.getPersistenceService();
 		List<ITaskInstance> targetTaskInstancesList = null;
@@ -1629,9 +1639,6 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 				.findTaskInstancesForProcessInstanceByStepNumber(
 						thisTaskInstance.getProcessInstanceId(),
 						thisTaskInstance.getStepNumber() + 1);
-
-		// String targetActivityId =
-		// workItem.getTaskInstance().getTargetActivityId();
 
 		// 如果targetTaskInstancesList为空或size 等于0,则表示流程实例执行了汇聚操作。
 		if (targetTaskInstancesList == null
@@ -1804,6 +1811,9 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.taskinstance.ITaskInstanceManager#reassignWorkItemTo(org.fireflow.engine.IWorkItem, java.lang.String, java.lang.String)
+	 */
 	public IWorkItem reassignWorkItemTo(IWorkItem workItem, String actorId,
 			String comments) {
 		WorkItem newWorkItem = new WorkItem();
@@ -1821,10 +1831,18 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		return newWorkItem;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public ITaskInstanceCompletionEvaluator getDefaultFormTaskInstanceCompletionEvaluator() {
 		return defaultFormTaskInstanceCompletionEvaluator;
 	}
 
+	/**
+	 * 
+	 * @param defaultFormTaskInstanceCompletionEvaluator
+	 */
 	public void setDefaultFormTaskInstanceCompletionEvaluator(
 			ITaskInstanceCompletionEvaluator defaultFormTaskInstanceCompletionEvaluator) {
 		this.defaultFormTaskInstanceCompletionEvaluator = defaultFormTaskInstanceCompletionEvaluator;

@@ -45,7 +45,6 @@ public class TransitionInstance extends EdgeInstance implements ITransitionInsta
 
     private transient Transition transition = null;
 
-
     public TransitionInstance(Transition t) {
         transition = t;
     }
@@ -72,7 +71,7 @@ public class TransitionInstance extends EdgeInstance implements ITransitionInsta
                 SynchronizerInstance synchronizerInstance = (SynchronizerInstance) enteringNodeInstance;
                 int weight = synchronizerInstance.getVolume() / enteringNodeInstance.getLeavingTransitionInstances().size();
                 return weight;
-//如果弧线的后继结点 是 task结点，那么弧线的权值=前驱同步器结点的容量/输出弧线的数量
+                //如果弧线的后继结点 是 task结点，那么弧线的权值=前驱同步器结点的容量/输出弧线的数量
             } else if (leavingNodeInstance instanceof SynchronizerInstance) {
                 SynchronizerInstance synchronizerInstance = (SynchronizerInstance) leavingNodeInstance;
                 int weight = synchronizerInstance.getVolume() / leavingNodeInstance.getEnteringTransitionInstances().size();
@@ -101,7 +100,6 @@ public class TransitionInstance extends EdgeInstance implements ITransitionInsta
         token.setValue(this.getWeight());//获取到弧线上的权值
         boolean alive = token.isAlive();
 
-
         nodeInst.fire(token);//节点触发
 
         return alive;
@@ -122,9 +120,9 @@ public class TransitionInstance extends EdgeInstance implements ITransitionInsta
     }
 
     public void registExtension(IKernelExtension extension) throws RuntimeException {
-        if (!Extension_Target_Name.equals(extension.getExtentionTargetName())) {
+    	if (!Extension_Target_Name.equals(extension.getExtentionTargetName())) {
             return;
-       }
+    	}
         if (Extension_Point_TransitionInstanceEventListener.equals(extension.getExtentionPointName())) {
             if (extension instanceof IEdgeInstanceEventListener) {
                 this.eventListeners.add((IEdgeInstanceEventListener) extension);

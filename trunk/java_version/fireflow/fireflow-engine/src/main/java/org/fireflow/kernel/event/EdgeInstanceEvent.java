@@ -32,7 +32,6 @@ public class EdgeInstanceEvent extends EventObject {
     int eventType = -1;
     private IToken token = null;
 
-    @SuppressWarnings("unused")
 	private EdgeInstanceEvent() {
         super(null);
     }

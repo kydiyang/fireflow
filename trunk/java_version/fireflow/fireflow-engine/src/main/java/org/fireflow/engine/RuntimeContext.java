@@ -31,6 +31,7 @@ import org.fireflow.kernel.KernelManager;
  * RuntimeContext也是业务代码调用工作流引擎的入口，通过runtimeContext.getWorkflowSession()获得IWorkflowSession 对象，
  * 然后通过IWorkflowSession调用各种工作流实例对象及其API。<br/>
  * 
+ * context管理的各种服务
  * @author 非也,nychen2000@163.com
  *
  */
@@ -40,7 +41,7 @@ public class RuntimeContext {
      * 是否已经初始化
      */
     private boolean isInitialized = false;
-    //context管理的各种服务
+    
     /**
      * 转移条件表达式解析服务
      */
@@ -211,5 +212,4 @@ public class RuntimeContext {
         this.enableTrace = enableTrace;
     }
 
-    
 }

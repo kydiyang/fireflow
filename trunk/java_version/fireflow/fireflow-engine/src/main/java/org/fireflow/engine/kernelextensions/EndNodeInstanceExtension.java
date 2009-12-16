@@ -59,10 +59,7 @@ public class EndNodeInstanceExtension extends SynchronizerInstanceExtension {
             // 执行ProcessInstance的complete操作
 
             IToken tk = e.getToken();
-
-//            EndNodeInstance syncInst = (EndNodeInstance) e.getSource();
-//            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
-//            persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().getId());
+            
             ProcessInstance currentProcessInstance = (ProcessInstance) tk.getProcessInstance();
             currentProcessInstance.complete();
         }

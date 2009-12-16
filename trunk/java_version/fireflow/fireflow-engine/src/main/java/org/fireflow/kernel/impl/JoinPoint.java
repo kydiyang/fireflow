@@ -34,7 +34,7 @@ public class JoinPoint implements IJoinPoint,
 	private Integer value;
 	private Boolean alive = Boolean.FALSE;
 	private String processInstanceId = null;
-	// private Set<String> appointedTransitionNames = new HashSet<String>(0);
+
 	private transient IProcessInstance processInstance;
 
 	private Integer stepNumber = null;
@@ -48,13 +48,6 @@ public class JoinPoint implements IJoinPoint,
 		this.processInstance = processInstance;
 	}
 
-	/*
-	 * public JoinPoint(String synchronizerID, Integer value, Boolean alive, Set<String>
-	 * appointedTransitionNames, ProcessInstance processInstance) {
-	 * this.synchronizerId = synchronizerID; this.value = value; this.alive =
-	 * alive; // this.appointedTransitionNames = appointedTransitionNames;
-	 * this.processInstance = processInstance; }
-	 */
 	public String getId() {
 		return this.id;
 	}
@@ -95,15 +88,6 @@ public class JoinPoint implements IJoinPoint,
 		this.alive = alive;
 	}
 
-	// public Set<String> getAppointedTransitionNames() {
-	// return this.appointedTransitionNames;
-	// }
-	//
-	// public void setAppointedTransitionNames(Set<String>
-	// appointedTransitionNames) {
-	// this.appointedTransitionNames = appointedTransitionNames;
-	// }
-
 	public IProcessInstance getProcessInstance() {
 		return this.processInstance;
 	}
@@ -140,7 +124,4 @@ public class JoinPoint implements IJoinPoint,
 	public void setFromActivityId(String s) {
 		this.fromActivityId = s;
 	}
-	// public void addAppointedTransitionNames(Set<String> arg){
-	// appointedTransitionNames.addAll(arg);
-	// }
 }

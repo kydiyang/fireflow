@@ -34,7 +34,6 @@ import org.fireflow.model.WorkflowProcess;
  */
 public class KernelManager implements IRuntimeContextAware {
 
-//    private HashMap<String,Object> wfElementInstanceMap = new HashMap<String,Object>();
     /**
      * 工作流网实例
      */
@@ -104,7 +103,6 @@ public class KernelManager implements IRuntimeContextAware {
         WorkflowProcess workflowProcess = null;
         workflowProcess = workflowDef.getWorkflowProcess();//解析fpdl
 
-//		Map nodeInstanceMap = new HashMap();
         if (workflowProcess == null ){
         	throw new KernelException(null,null,"The WorkflowProcess property of WorkflowDefinition[processId="+workflowDef.getProcessId()+"] is null. ");
         }
@@ -113,12 +111,11 @@ public class KernelManager implements IRuntimeContextAware {
         	throw new KernelException(null,null,validateMsg);
         }
         NetInstance netInstance = new NetInstance(workflowProcess, kernelExtensions);
-//        netInstance.setWorkflowProcess(workflowProcess);
+
         netInstance.setVersion(workflowDef.getVersion());//设置版本号
         //map的key的组成规则：流程定义ID_V_版本号
         netInstanceMap.put(workflowDef.getProcessId() + "_V_" + workflowDef.getVersion(), netInstance);
 
-//		netInstance.setRtCxt(new RuntimeContext());
         return netInstance;
     }
 

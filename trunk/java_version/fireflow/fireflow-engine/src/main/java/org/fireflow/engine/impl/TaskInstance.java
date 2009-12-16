@@ -62,11 +62,11 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     private String processInstanceId = null;
     private String processId = null;
     private Integer version = null;
-//	private Set workItems = new HashSet(0);
+
     private String taskType = null;
     private String targetActivityId = null;
     private String fromActivityId = null;
-//    private String tokenId = null;
+
     private Integer stepNumber = null;
 
     private Boolean canBeWithdrawn = true;
@@ -201,11 +201,8 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         this.suspended = suspended;
     }
 
-
-    
-
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see org.fireflow.engine.ITaskInstance#getAliveProcessInstance()
      */
     public IProcessInstance getAliveProcessInstance() {
     	if (this.processInsatance==null){
@@ -291,6 +288,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     }
 
     /**
+     * 
      * @throws EngineException
      * @throws KernelException
      */
@@ -301,6 +299,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     }
 
     /**
+     * 
      * @param targetActivityInstance
      * @throws EngineException
      * @throws KernelException
@@ -311,16 +310,6 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
 //        taskInstanceMgr.completeTaskInstance(this, targetActivityInstance);
     }
 
-/*
-    public IWorkItem asignToActor(String id, boolean needClaim) throws EngineException, KernelException {
-        ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
-        WorkItem wi = taskInstanceMgr.createWorkItem(this, id);
-        if (!needClaim) {
-            wi.claim();
-        }
-        return wi;
-    }
-*/
     public IWorkflowSession getCurrentWorkflowSession() {
         return this.workflowSession;
     }

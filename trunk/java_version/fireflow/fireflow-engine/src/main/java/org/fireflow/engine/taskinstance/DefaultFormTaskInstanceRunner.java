@@ -53,7 +53,7 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
 
                 DynamicAssignmentHandler dynamicAssignmentHandler = ((WorkflowSession)currentSession).consumeCurrentDynamicAssignmentHandler();
                 FormTask task = (FormTask)taskInstance.getTask();
-                // performer(id,name,type,handler)
+
                 Participant performer = task.getPerformer();//获取到form的执行者
                 if (performer == null || performer.getAssignmentHandler().trim().equals("")) {
                     throw new EngineException(processInstance,
@@ -116,7 +116,6 @@ public class DefaultFormTaskInstanceRunner implements ITaskInstanceRunner {
                 IBeanFactory beanFactory = runtimeContext.getBeanFactory();
                 //从spring中获取到对应任务的Performer，创建工单
                 IAssignmentHandler assignmentHandler = (IAssignmentHandler) beanFactory.getBean(part.getAssignmentHandler());
-//                ((IAssignmentHandler) assignmentHandler).assign((IAssignable) taskInstance, part.getName());
                 //modified by wangmj 20090904
                 assignmentHandler.assign((IAssignable) taskInstance, part.getName());
             }

@@ -64,12 +64,7 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         int a = synchronizer.getEnteringTransitions().size();
         int b = synchronizer.getLeavingTransitions().size();
         volume = a * b;
-        //added by wangmj 20090905
-		System.out.println("synchronizer "+synchronizer.getName()+"'s volume is "+volume);
     }
-
-
-
     /* (non-Javadoc)
      * @see org.fireflow.kernel.INodeInstance#fire(org.fireflow.kernel.IToken)
      */

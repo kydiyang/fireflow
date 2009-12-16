@@ -25,7 +25,7 @@ import org.fireflow.kernel.INodeInstance;
 import org.fireflow.kernel.event.IEdgeInstanceEventListener;
 
 /**
- * wangmj  实现edge的公共方法 
+ * wangmj  实现edge的公共方法 ，边有两种，一是transition，二是loop。
  * @author 非也
  * @version 1.0
  * Created on Mar 18, 2009

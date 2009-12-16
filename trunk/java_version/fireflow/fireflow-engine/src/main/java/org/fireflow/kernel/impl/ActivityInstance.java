@@ -74,12 +74,6 @@ public class ActivityInstance extends AbstractNodeInstance implements
             event.setToken(token);
             event.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);//token 被触发
             fireNodeEvent(event);
-
-            //如果没有task,即该activity是一个dummy activity，则直接complete
-            //注释:2009-06-01,complete工作被移植到了BasicTaskInstanceManager.createTaskInstances(...)
-//            if (this.getActivity().getTasks().size() == 0) {
-//                this.complete(token, null);
-//            }
         } else {//如果token是dead状态，那么就直接结束当前节点。
             this.complete(token, null);
         }

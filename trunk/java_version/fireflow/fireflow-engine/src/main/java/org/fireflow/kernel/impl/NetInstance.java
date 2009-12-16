@@ -183,7 +183,6 @@ public class NetInstance implements INetInstance {
         this.version = v;
     }
 
-
     /* (non-Javadoc)
      * @see org.fireflow.kernel.INetInstance#run(org.fireflow.engine.IProcessInstance)
      */
@@ -203,7 +202,6 @@ public class NetInstance implements INetInstance {
         token.setFromActivityId(IToken.FROM_START_NODE); //从哪个节点来 "FROM_START_NODE" 规定的节点。
 
         //注意这里并没有保存token
-
         startNodeInstance.fire(token);//启动开始节点 
     }
 
@@ -219,8 +217,6 @@ public class NetInstance implements INetInstance {
     	
     }
 
-
-
     public WorkflowProcess getWorkflowProcess() {
         return workflowProcess;
     }
@@ -232,7 +228,6 @@ public class NetInstance implements INetInstance {
     public void setStartNodeInstance(StartNodeInstance startNodeInstance) {
         this.startNodeInstance = startNodeInstance;
     }
-
 
     public Object getWFElementInstance(String wfElementId) {
         return wfElementInstanceMap.get(wfElementId);

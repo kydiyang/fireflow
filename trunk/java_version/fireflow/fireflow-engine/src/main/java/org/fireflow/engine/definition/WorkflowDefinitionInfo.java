@@ -9,8 +9,8 @@ import java.util.Date;
  */
 public class WorkflowDefinitionInfo {
 	public static final String FPDL_PROCESS = "FPDL";
-	public static final String XPDL_PROCESS = "XPDL";
-	public static final String BPEL_PROCESS = "BPEL";
+	public static final String XPDL_PROCESS = "XPDL";//从未用到
+	public static final String BPEL_PROCESS = "BPEL";//从未用到
     protected String id; //主键
     protected String processId;//流程id
     protected String name; //流程英文名称

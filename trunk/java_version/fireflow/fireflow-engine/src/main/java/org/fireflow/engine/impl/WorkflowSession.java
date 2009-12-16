@@ -435,32 +435,6 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 		return processInstance;
 	}
 
-//	 public IWorkItem claimWorkItem(final String workItemId,
-//			final String taskInstanceId) throws EngineException,
-//			KernelException {
-//		IWorkItem result = null;
-//		try {
-//			result = (IWorkItem) this.execute(new IWorkflowSessionCallback() {
-//
-//				public Object doInWorkflowSession(RuntimeContext ctx)
-//						throws EngineException, KernelException {
-//					ITaskInstanceManager taskInstanceMgr = ctx
-//							.getTaskInstanceManager();
-//					IWorkItem workItem = taskInstanceMgr.claimWorkItem(
-//							workItemId, taskInstanceId);
-//					return workItem;
-//				}
-//			});
-//		} catch (EngineException ex) {
-//			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
-//					null, ex);
-//		} catch (KernelException ex) {
-//			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
-//					null, ex);
-//		}
-//		return result;
-//	}
-
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.IWorkflowSession#claimWorkItem(java.lang.String)
 	 */

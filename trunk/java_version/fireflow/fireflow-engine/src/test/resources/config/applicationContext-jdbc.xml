@@ -53,7 +53,7 @@
 			value="jdbc:jtds:sqlserver://localhost:1433/fireflow;SelectMethod=cursor;charset=GBK;tds=8.0;lastupdatecount=true" />
 		<property name="username" value="sa" />
 		<property name="password" value="sa" />
-	</bean>	    
+	</bean>
 	 -->
 	
 	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
