@@ -1402,7 +1402,8 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 
         for (int i = 0; i < tokensList.size(); i++) {
             IToken _token = (IToken) tokensList.get(i);
-            virtualToken.setValue(virtualToken.getValue()+_token.getValue());
+            //Fixed by wmj2003  http://www.fireflow.org/viewthread.php?tid=1040&extra=page%3D1
+            virtualToken.setValue(virtualToken.getValue()==null?0:virtualToken.getValue()+_token.getValue());
             if (_token.isAlive()) {
             	virtualToken.setAlive(true);
                 String oldFromActivityId = virtualToken.getFromActivityId();
