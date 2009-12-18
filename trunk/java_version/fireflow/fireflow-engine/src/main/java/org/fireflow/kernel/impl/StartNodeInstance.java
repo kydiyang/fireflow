@@ -102,11 +102,11 @@ public class StartNodeInstance extends AbstractNodeInstance implements
         ITransitionInstance defaultTransInst = null;
         //找到所有开始节点的输出弧 
         for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.size(); i++) {
-            ITransitionInstance transInst = leavingTransitionInstances.get(i);
+            ITransitionInstance transInst = leavingTransitionInstances.get(i); //开始节点的边的类型只能是transition
             String condition = transInst.getTransition().getCondition();
             //如果弧线的条件！=null 并且 =“default” ，那么弧线实例就是default的弧线了。
             if (condition != null && condition.equals(ConditionConstant.DEFAULT)) {
-                defaultTransInst = transInst;
+                defaultTransInst = transInst;//记录default转移线，其他条件都未false，才执行它
                 continue;
             }
 

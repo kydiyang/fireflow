@@ -113,8 +113,6 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 			public Object doInWorkflowSession(RuntimeContext ctx)
 					throws EngineException, KernelException {
 
-
-
 				ProcessInstance processInstance = new ProcessInstance();
 				processInstance.setCreatorId(creatorId);
 				processInstance.setProcessId(wfProcess.getId());

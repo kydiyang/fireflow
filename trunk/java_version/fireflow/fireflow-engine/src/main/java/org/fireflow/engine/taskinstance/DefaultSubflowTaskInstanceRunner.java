@@ -149,7 +149,7 @@ public class DefaultSubflowTaskInstanceRunner implements ITaskInstanceRunner {
                 }
             }
         }
-        //TODO wmj2003 创建子流程实例，并插入流程实例变量。
+        //TODO 应将下面这句删除！这里还需要吗？应该直接subProcessInstance.run()就可以了。
         runtimeContext.getPersistenceService().saveOrUpdateProcessInstance(subProcessInstance);
         subProcessInstance.run();
     }

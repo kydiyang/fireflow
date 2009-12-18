@@ -60,7 +60,7 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
         if (weight==0){
             if (leavingNodeInstance instanceof SynchronizerInstance){
                 weight=((SynchronizerInstance)this.leavingNodeInstance).getVolume();
-                  //如果后继结点是同步器节点，那么权值=后继结点的容量
+                  //如果后继结点是同步器节点，那么权值=后继结点的容量（这样就可以直接执行后继activity了）
             }else if (leavingNodeInstance instanceof StartNodeInstance){
                 weight = ((StartNodeInstance)this.leavingNodeInstance).getVolume();
                 //如果后继结点是开始节点，那么权值=开始节点的容量
@@ -88,7 +88,6 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
             listener.onEdgeInstanceEventFired(e);
         }
 
-
         boolean newAlive = token.isAlive();
 
         if (!newAlive){//循环条件不满足，则恢复token的alive标示
@@ -99,7 +98,7 @@ public class LoopInstance extends EdgeInstance implements ILoopInstance ,IPlugab
             INodeInstance nodeInst = this.getLeavingNodeInstance();
 
             token.setValue(this.getWeight());
-            nodeInst.fire(token);
+            nodeInst.fire(token);//触发同步器节点
             return newAlive;
         }
     }
