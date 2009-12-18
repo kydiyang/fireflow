@@ -10,15 +10,14 @@
 			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-	<!-- hsqldb -->
-	<!-- -->
+	<!-- hsqldb 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		<property name="url" value="jdbc:hsqldb:mem:fireflow" />
 		<property name="username" value="sa" />
 		<property name="password" value="" />
-	</bean>
+	</bean>-->
 	
 	<!-- mysql(没有测试) -->
 	<!-- 
@@ -44,7 +43,7 @@
         <property name="password" value="fireflow"></property>
     </bean> -->
 	<!--  mssql 在spring中直接配置jdbc链接  测试的时候可以使用！-->
-	<!-- 
+
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
@@ -54,7 +53,7 @@
 		<property name="username" value="sa" />
 		<property name="password" value="sa" />
 	</bean>
-	 -->
+
 	
 	<!-- 本地jdbc连接抽取器和oracle lobhandler类 用于存取流程定义文件 -->
     <bean id="nativeJdbcExtractor"
@@ -65,15 +64,15 @@
 		lazy-init="true">
         <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" />
     </bean>
-	
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true"/>
 	<!--事务管理器-->
-	<bean id="jdbcTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource"/>
 	</bean> 
 	
 	<bean id="jdbcTransactionTemplate" name="transactionTemplate"  class="org.springframework.transaction.support.TransactionTemplate">
         <property name="transactionManager">
-			<ref bean="jdbcTransactionManager"/>
+			<ref bean="transactionManager"/>
         </property>
     </bean>
     
