@@ -72,7 +72,7 @@ public class ActivityInstance extends AbstractNodeInstance implements
         if (token.isAlive()) {//如果token是活动的，那么就保存token，并创建taskinstance
             NodeInstanceEvent event = new NodeInstanceEvent(this);
             event.setToken(token);
-            event.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);//token 被触发
+            event.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);//token 被触发,创建taskinstance，等待
             fireNodeEvent(event);
         } else {//如果token是dead状态，那么就直接结束当前节点。
             this.complete(token, null);
@@ -92,12 +92,6 @@ public class ActivityInstance extends AbstractNodeInstance implements
         token.setFromActivityId(this.getActivity().getId());
 
         if (targetActivityInstance != null) {
-            /*为什么要新建一个Token?似乎没有必要。20090122
-            Token newtoken = new Token();
-            newtoken.setAlive(token.isAlive());
-            newtoken.setProcessInstance(token.getProcessInstance());
-            targetActivityInstance.fire(newtoken);
-             */
             token.setStepNumber(token.getStepNumber() + 1);
             targetActivityInstance.fire(token);
         } else {
@@ -108,7 +102,7 @@ public class ActivityInstance extends AbstractNodeInstance implements
             }
         }
 
-        if (token.isAlive()) { //TODO wmj2003 20090914 按理说，这是的token的状态肯定是dead，那么为什么要处理呢？
+        if (token.isAlive()) { 
             NodeInstanceEvent event = new NodeInstanceEvent(this);
             event.setToken(token);
             event.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED); //token completed

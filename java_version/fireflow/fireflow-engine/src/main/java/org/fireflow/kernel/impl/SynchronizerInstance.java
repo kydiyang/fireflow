@@ -86,7 +86,7 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
             int value = joinPoint.getValue();
             log.debug("The volume of " + this.toString() + " is " + volume);
             log.debug("The value of " + this.toString() + " is " + value);
-            if (value > volume) {
+            if (value > volume) {//如果value大于同步器容量，那说明出错了
                 KernelException exception = new KernelException(tk.getProcessInstance(),
                         this.getSynchronizer(),
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
@@ -96,7 +96,7 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
                 return;  
             }
         }
-
+        //如果汇聚点的容量和同步器节点的容量相同
         IProcessInstance processInstance = tk.getProcessInstance();
         // Synchronize的fire条件应该只与joinPoint的value有关（value==volume），与alive无关
         NodeInstanceEvent event2 = new NodeInstanceEvent(this);
@@ -110,7 +110,8 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
         event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
         fireNodeEvent(event4);
 
-        //首先必须检查是否有满足条件的循环
+        //首先必须检查是否有满足条件的循环，loop比transition有更高的优先级，
+        //（只能够有一个loop的条件为true，流程定义的时候需要注意）
         boolean doLoop = false;//表示是否有满足条件的循环，false表示没有，true表示有。
         if (joinPoint.getAlive()) {
             IToken tokenForLoop = new Token(); // 产生新的token
@@ -163,7 +164,7 @@ public class SynchronizerInstance extends AbstractNodeInstance implements
 
         NodeInstanceEvent event3 = new NodeInstanceEvent(this);
         event3.setToken(tk);
-        event3.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
+        event3.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED); //触发同步器节点的监听事件，删除所有和同步器节点相关的token
         fireNodeEvent(event3);
     }
 

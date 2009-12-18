@@ -29,7 +29,7 @@ import org.fireflow.kernel.IJoinPoint;
 public class JoinPoint implements IJoinPoint,
 		java.io.Serializable {
 
-	private String id;
+	private String id; //TODO wmj2003 这个id有用吗？
 	private String synchronizerId;
 	private Integer value;
 	private Boolean alive = Boolean.FALSE;

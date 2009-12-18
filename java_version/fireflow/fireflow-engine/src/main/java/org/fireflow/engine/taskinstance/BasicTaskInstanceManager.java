@@ -186,7 +186,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 					taskInstance);
 
 		}
-		if (createdTaskInstanceCount == 0) {
+		if (createdTaskInstanceCount == 0) { //如果是空activity，哪么直接结束
 			activityInstance.complete(token, null);
 		}
 	}

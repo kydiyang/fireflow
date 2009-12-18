@@ -141,7 +141,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     }
 
     /**
-     * 
+     * 生成joinPoint 
      * @param synchInst
      * @param token
      * @return
@@ -150,7 +150,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     public IJoinPoint createJoinPoint(ISynchronizerInstance synchInst, IToken token) throws EngineException {
 
         int enterTransInstanceCount = synchInst.getEnteringTransitionInstances().size();
-        if (enterTransInstanceCount == 0) {
+        if (enterTransInstanceCount == 0) {//检查流程定义是否合法，同步器节点必须有输入边
 
             throw new EngineException(this.getId(), this.getWorkflowProcess(),
                     synchInst.getSynchronizer().getId(), "The process definition [" + this.getName() + "] is invalid，the synchronizer[" + synchInst.getSynchronizer() + "] has no entering transition");
@@ -186,10 +186,12 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
                 if (!tokensMap.containsKey(tmpFromActivityId)) {
                     tokensMap.put(tmpFromActivityId, tmpToken);
                 } else {
+                	//TODO  ====下面的代码有意义吗？===start===wmj2003
                     IToken tmpToken2 = tokensMap.get(tmpFromActivityId);
                     if (tmpToken2.getStepNumber() > tmpToken.getStepNumber()) {
                         tokensMap.put(tmpFromActivityId, tmpToken2);
                     }
+                   //TODO  ====下面的代码有意义吗？===end===wmj2003
                 }
             }
 
@@ -198,7 +200,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
             for (int i = 0; i < tokensList.size(); i++) {
                 IToken _token = tokensList.get(i);
                 resultJoinPoint.addValue(_token.getValue());
-                if (_token.isAlive()) {
+                if (_token.isAlive()) {//如果token的状态是alive
                     resultJoinPoint.setAlive(true);
                     String oldFromActivityId = resultJoinPoint.getFromActivityId();
                     if (oldFromActivityId == null || oldFromActivityId.trim().equals("")) {
@@ -230,7 +232,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
                     this.getProcessId(), "The state of the process instance is " + this.getState() + ",can not run it ");
         }
 
-        INetInstance netInstance = (INetInstance) rtCtx.getKernelManager().getNetInstance(this.getProcessId(), this.getVersion());
+        INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(this.getProcessId(), this.getVersion());
         if (netInstance == null) {
             throw new EngineException(this.getId(),
                     this.getWorkflowProcess(),
@@ -245,7 +247,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         this.setState(IProcessInstance.RUNNING);
         this.setStartedTime(rtCtx.getCalendarService().getSysDate());
         rtCtx.getPersistenceService().saveOrUpdateProcessInstance(this);
-        netInstance.run(this);
+        netInstance.run(this);//运行工作流网实例,从startnode开始
     }
 
     /* (non-Javadoc)

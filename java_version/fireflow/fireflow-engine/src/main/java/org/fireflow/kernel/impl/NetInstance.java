@@ -47,7 +47,7 @@ public class NetInstance implements INetInstance {
     private StartNodeInstance startNodeInstance = null;
 
     private Map<String, Object> wfElementInstanceMap = new HashMap<String, Object>();
-
+    
     protected List<INodeInstanceEventListener> eventListeners = new ArrayList<INodeInstanceEventListener>();
 
     /**
