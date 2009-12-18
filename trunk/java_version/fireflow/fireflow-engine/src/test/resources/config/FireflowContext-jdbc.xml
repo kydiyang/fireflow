@@ -93,7 +93,7 @@
 	<!--
 		************ TaskInstance Manager End***************************
 	-->
-
+	
 	<!-- **************Persistence Begin******************** -->
 	<bean id="persistenceService" name="persistenceService"
 		      class="org.fireflow.engine.persistence.springjdbc.PersistenceServiceSpringJdbcImpl">
@@ -104,8 +104,7 @@
 			<value>false</value>
 		</property>
 		
-		<!-- oracle 9 需要 --> 
-		<property name="lobHandler" ref="oracleLobHandler" />
+		<property name="lobHandler" ref="lobHandler" />
 		
     </bean>
 
