@@ -22,7 +22,7 @@ import org.fireflow.engine.ITaskInstance;
 import org.fireflow.engine.IWorkflowSession;
 import org.fireflow.engine.RuntimeContext;
 import org.fireflow.model.Task;
-import org.fireflow.model.net.Activity;
+import org.fireflow.model.process.Activity;
 
 /**
  * 任务实例创建器

@@ -31,10 +31,10 @@ import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.impl.TaskInstance;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.kernel.KernelException;
-import org.fireflow.model.DataField;
 import org.fireflow.model.SubflowTask;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
+import org.fireflow.model.data.DataField;
 import org.fireflow.model.resource.SubWorkflowProcess;
 
 /**

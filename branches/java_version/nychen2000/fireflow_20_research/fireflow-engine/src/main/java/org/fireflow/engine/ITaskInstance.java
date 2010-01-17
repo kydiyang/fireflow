@@ -22,7 +22,7 @@ import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.net.Activity;
+import org.fireflow.model.process.Activity;
 
 /**
  * 任务实例<br>

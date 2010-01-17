@@ -16,7 +16,7 @@
  */
 package org.fireflow.kernel;
 
-import org.fireflow.model.net.Transition;
+import org.fireflow.model.process.Transition;
 
 /**
  * @author 非也

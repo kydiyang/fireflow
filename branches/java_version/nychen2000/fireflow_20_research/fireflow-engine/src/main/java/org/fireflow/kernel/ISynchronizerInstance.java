@@ -16,7 +16,7 @@
  */
 package org.fireflow.kernel;
 
-import org.fireflow.model.net.Synchronizer;
+import org.fireflow.model.process.Synchronizer;
 
 /**
  * Synchronizer的行为特征是：消耗掉输入的token并产生输出token

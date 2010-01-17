@@ -28,8 +28,8 @@ import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
 import org.fireflow.kernel.plugin.IKernelExtension;
-import org.fireflow.model.net.StartNode;
-import org.fireflow.model.net.Synchronizer;
+import org.fireflow.model.process.StartNode;
+import org.fireflow.model.process.Synchronizer;
 
 /**
  * @author 非也

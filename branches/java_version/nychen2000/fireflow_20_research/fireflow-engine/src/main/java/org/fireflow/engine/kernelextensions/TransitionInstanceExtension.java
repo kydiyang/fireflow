@@ -32,8 +32,8 @@ import org.fireflow.kernel.event.IEdgeInstanceEventListener;
 import org.fireflow.kernel.impl.TransitionInstance;
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.IWFElement;
-import org.fireflow.model.net.Activity;
-import org.fireflow.model.net.Transition;
+import org.fireflow.model.process.Activity;
+import org.fireflow.model.process.Transition;
 
 /**
  *

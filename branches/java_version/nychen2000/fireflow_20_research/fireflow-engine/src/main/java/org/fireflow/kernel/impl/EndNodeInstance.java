@@ -31,8 +31,8 @@ import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
 import org.fireflow.kernel.plugin.IKernelExtension;
-import org.fireflow.model.net.EndNode;
-import org.fireflow.model.net.Synchronizer;
+import org.fireflow.model.process.EndNode;
+import org.fireflow.model.process.Synchronizer;
 
 /**
  * @author 非也,nychen2000@163.com

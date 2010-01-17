@@ -29,12 +29,12 @@ import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.net.Activity;
-import org.fireflow.model.net.EndNode;
-import org.fireflow.model.net.Loop;
-import org.fireflow.model.net.StartNode;
-import org.fireflow.model.net.Synchronizer;
-import org.fireflow.model.net.Transition;
+import org.fireflow.model.process.Activity;
+import org.fireflow.model.process.EndNode;
+import org.fireflow.model.process.Loop;
+import org.fireflow.model.process.StartNode;
+import org.fireflow.model.process.Synchronizer;
+import org.fireflow.model.process.Transition;
 
 /**
  * @author 非也

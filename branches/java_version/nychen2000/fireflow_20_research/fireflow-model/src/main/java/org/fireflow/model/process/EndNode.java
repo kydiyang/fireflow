@@ -14,33 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.model.net;
+package org.fireflow.model.process;
 
 import java.util.List;
 
 import org.fireflow.model.WorkflowProcess;
 
 /**
- * 开始节点
+ * 结束节点
  * @author 非也,nychen2000@163.com
  */
 @SuppressWarnings("serial")
-public class StartNode extends Synchronizer {
+public class EndNode extends Synchronizer {
 
-    static final String name = "START_NODE";
-
-    public StartNode() {
+    public EndNode() {
     }
 
-    public StartNode(WorkflowProcess workflowProcess) {
+    public EndNode(WorkflowProcess workflowProcess, String name) {
         super(workflowProcess, name);
     }
 
     /**
-     * 返回null值，表示无输入弧
+     * 返回null。表示无输出弧。
      */
     @Override
-    public List<Transition> getEnteringTransitions() {
+    public List<Transition> getLeavingTransitions() {
         return null;
     }
 }

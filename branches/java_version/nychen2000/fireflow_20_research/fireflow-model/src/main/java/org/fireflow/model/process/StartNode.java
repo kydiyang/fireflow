@@ -14,23 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.model.net;
+package org.fireflow.model.process;
 
-import org.fireflow.model.AbstractWFElement;
+import java.util.List;
+
 import org.fireflow.model.WorkflowProcess;
 
 /**
- * 工作流网的节点。
+ * 开始节点
  * @author 非也,nychen2000@163.com
- *
  */
 @SuppressWarnings("serial")
-public class Node extends AbstractWFElement {
+public class StartNode extends Synchronizer {
 
-    public Node() {
+    static final String name = "START_NODE";
+
+    public StartNode() {
     }
 
-    public Node(WorkflowProcess workflowProcess, String name) {
+    public StartNode(WorkflowProcess workflowProcess) {
         super(workflowProcess, name);
+    }
+
+    /**
+     * 返回null值，表示无输入弧
+     */
+    @Override
+    public List<Transition> getEnteringTransitions() {
+        return null;
     }
 }

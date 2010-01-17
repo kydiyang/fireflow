@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.fireflow.model.net;
+package org.fireflow.model.process;
 
 
 import org.fireflow.model.WorkflowProcess;
