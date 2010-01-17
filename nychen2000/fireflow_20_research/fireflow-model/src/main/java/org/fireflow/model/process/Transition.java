@@ -3,7 +3,7 @@
  * All rights reserved. 
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation。
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,31 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.model.net;
-
-import java.util.List;
+package org.fireflow.model.process;
 
 import org.fireflow.model.WorkflowProcess;
 
 /**
- * 结束节点
+ * 流程转移
  * @author 非也,nychen2000@163.com
  */
 @SuppressWarnings("serial")
-public class EndNode extends Synchronizer {
+public class Transition extends Edge {
 
-    public EndNode() {
+    public Transition() {
     }
 
-    public EndNode(WorkflowProcess workflowProcess, String name) {
+    public Transition(WorkflowProcess workflowProcess, String name) {
         super(workflowProcess, name);
     }
 
-    /**
-     * 返回null。表示无输出弧。
-     */
-    @Override
-    public List<Transition> getLeavingTransitions() {
-        return null;
+    public Transition(WorkflowProcess workflowProcess, String name, Node fromNode, Node toNode) {
+        super(workflowProcess, name);
+        this.fromNode = fromNode;
+        this.toNode = toNode;
     }
 }

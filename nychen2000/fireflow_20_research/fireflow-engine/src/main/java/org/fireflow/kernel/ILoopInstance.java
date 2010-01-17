@@ -17,7 +17,7 @@
 
 package org.fireflow.kernel;
 
-import org.fireflow.model.net.Loop;
+import org.fireflow.model.process.Loop;
 
 /**
  *

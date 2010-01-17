@@ -37,8 +37,8 @@ import org.fireflow.engine.definition.WorkflowDefinition;
 import org.fireflow.engine.persistence.IPersistenceService;
 import org.fireflow.engine.taskinstance.DynamicAssignmentHandler;
 import org.fireflow.kernel.KernelException;
-import org.fireflow.model.DataField;
 import org.fireflow.model.WorkflowProcess;
+import org.fireflow.model.data.DataField;
 
 /**
  * @author chennieyun

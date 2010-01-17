@@ -28,7 +28,7 @@ import org.fireflow.kernel.event.EdgeInstanceEvent;
 import org.fireflow.kernel.event.IEdgeInstanceEventListener;
 import org.fireflow.kernel.plugin.IKernelExtension;
 import org.fireflow.kernel.plugin.IPlugable;
-import org.fireflow.model.net.Loop;
+import org.fireflow.model.process.Loop;
 
 /**
  *

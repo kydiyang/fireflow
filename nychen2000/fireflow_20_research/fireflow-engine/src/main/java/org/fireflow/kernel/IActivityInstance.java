@@ -16,7 +16,7 @@
  */
 package org.fireflow.kernel;
 
-import org.fireflow.model.net.Activity;
+import org.fireflow.model.process.Activity;
 
 
 /**

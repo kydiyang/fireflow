@@ -52,11 +52,11 @@ import org.fireflow.model.FormTask;
 import org.fireflow.model.IWFElement;
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.net.Activity;
-import org.fireflow.model.net.EndNode;
-import org.fireflow.model.net.Node;
-import org.fireflow.model.net.Synchronizer;
-import org.fireflow.model.net.Transition;
+import org.fireflow.model.process.Activity;
+import org.fireflow.model.process.EndNode;
+import org.fireflow.model.process.Node;
+import org.fireflow.model.process.Synchronizer;
+import org.fireflow.model.process.Transition;
 import org.springframework.beans.BeanUtils;
 
 /**

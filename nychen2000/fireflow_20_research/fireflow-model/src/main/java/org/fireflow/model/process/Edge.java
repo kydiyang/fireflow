@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.fireflow.model.net;
+package org.fireflow.model.process;
 
 import org.fireflow.model.AbstractWFElement;
 import org.fireflow.model.WorkflowProcess;

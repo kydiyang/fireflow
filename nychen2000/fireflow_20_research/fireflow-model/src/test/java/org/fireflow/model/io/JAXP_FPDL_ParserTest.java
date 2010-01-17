@@ -9,9 +9,9 @@ import java.io.InputStream;
 
 import org.fireflow.model.Task;
 import org.fireflow.model.WorkflowProcess;
-import org.fireflow.model.net.Activity;
-import org.fireflow.model.net.Loop;
-import org.fireflow.model.net.Synchronizer;
+import org.fireflow.model.process.Activity;
+import org.fireflow.model.process.Loop;
+import org.fireflow.model.process.Synchronizer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

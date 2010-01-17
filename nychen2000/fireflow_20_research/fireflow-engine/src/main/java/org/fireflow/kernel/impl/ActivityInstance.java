@@ -28,7 +28,7 @@ import org.fireflow.kernel.KernelException;
 import org.fireflow.kernel.event.INodeInstanceEventListener;
 import org.fireflow.kernel.event.NodeInstanceEvent;
 import org.fireflow.kernel.plugin.IKernelExtension;
-import org.fireflow.model.net.Activity;
+import org.fireflow.model.process.Activity;
 
 /**
  * @author 非也

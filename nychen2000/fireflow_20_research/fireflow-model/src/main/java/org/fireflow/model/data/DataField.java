@@ -14,7 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.model;
+package org.fireflow.model.data;
+
+import org.fireflow.model.AbstractWFElement;
+import org.fireflow.model.WorkflowProcess;
 
 /**
  * 流程变量
