@@ -785,7 +785,8 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	public void saveProcessInstanceVariable(ProcessInstanceVar var)
 	{
 		// 保存，如果主键冲突，则抛出异常
-		this.em.persist(var);
+		//this.em.persist(var);
+		this.em.merge(var);
 	}
 
 	public void updateProcessInstanceVariable(ProcessInstanceVar var)
