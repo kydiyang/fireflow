@@ -834,7 +834,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		Query query = em.createQuery(hsql);
 
 		query.setParameter(1, new Integer(IWorkItem.COMPLETED));
-		query.setParameter(2, new Integer(IWorkItem.CANCELED));
+		query.setParameter(2, new Integer(IWorkItem.COMPLETED));
 		query.setParameter("actorId", actorId);
 
 		int index = (pageNumber - 1)*pageSize;
@@ -930,7 +930,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		Query query = em.createQuery(hsql);
 
 		query.setParameter(1, new Integer(IWorkItem.COMPLETED));
-		query.setParameter(2, new Integer(IWorkItem.CANCELED));
+		query.setParameter(2, new Integer(IWorkItem.COMPLETED));
 		query.setParameter("actorId", actorId);
 
 		Object result = query.getSingleResult();
