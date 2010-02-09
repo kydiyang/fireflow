@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springframework.net"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.net
+        http://www.springframework.net/xsd/spring-objects.xsd">
+
+  <object id="runtimeContext"
+        type="ISM.FireWorkflow.Engine.RuntimeContext, ISM.FireWorkflow" 
+        init-method="initialize">
+    <property name="taskInstanceManager">
+      <ref local="taskInstanceManager"/>
+    </property>
+    <property name="definitionService">
+      <ref local="definitionService"/>
+    </property>
+    <property name="persistenceService">
+      <ref local="persistenceService"/>
+    </property>
+    <property name="conditionResolver">
+      <ref local="conditionResolver"/>
+    </property>
+    <property name="calendarService">
+      <ref local="calendarService"/>
+    </property>
+    <property name="beanFactory">
+      <ref local="springBeanFactory"/>
+    </property>
+    <property name="kernelManager">
+      <ref local="kernelManager"/>
+    </property>
+    <property name="enableTrace">
+      <value>true</value>
+    </property>
+  </object>
+
+  <!-- ************ TaskInstance Manager Begin*************************** -->
+  <object id="taskInstanceManager"
+        type="ISM.FireWorkflow.Engine.Taskinstance.BasicTaskInstanceManager, ISM.FireWorkflow">
+    <property name="defaultTaskInstanceCreator">
+      <ref local="defaultTaskInstanceCreator"/>
+    </property>
+
+    <property name="defaultFormTaskInstanceRunner">
+      <ref local="defaultFormTaskInstanceRunner"/>
+    </property>
+    <property name="defaultToolTaskInstanceRunner">
+      <ref local="defaultToolTaskInstanceRunner"/>
+    </property>
+    <property name="defaultSubflowTaskInstanceRunner">
+      <ref local="defaultSubflowTaskInstanceRunner"/>
+    </property>
+
+    <property name="defaultFormTaskInstanceCompletionEvaluator">
+      <ref local="defaultFormTaskInstanceCompletionEvaluator"/>
+    </property>
+    <property name="defaultToolTaskInstanceCompletionEvaluator">
+      <ref local="defaultToolTaskInstanceCompletionEvaluator"/>
+    </property>
+    <property name="defaultSubflowTaskInstanceCompletionEvaluator">
+      <ref local="defaultSubflowTaskInstanceCompletionEvaluator"/>
+    </property>
+
+    <property name="defaultTaskInstanceEventListener">
+      <ref local="defaultTaskInstanceEventListener"/>
+    </property>
+  </object>
+  <object id="defaultTaskInstanceCreator" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultTaskInstanceCreator, ISM.FireWorkflow">
+  </object>
+
+  <object id="defaultFormTaskInstanceRunner" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultFormTaskInstanceRunner, ISM.FireWorkflow">
+  </object>
+  <object id="defaultToolTaskInstanceRunner" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultToolTaskInstanceRunner, ISM.FireWorkflow">
+  </object>
+  <object id="defaultSubflowTaskInstanceRunner" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultSubflowTaskInstanceRunner, ISM.FireWorkflow">
+  </object>
+
+  <object id="defaultFormTaskInstanceCompletionEvaluator" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultFormTaskInstanceCompletionEvaluator, ISM.FireWorkflow">
+  </object>
+  <object id="defaultToolTaskInstanceCompletionEvaluator" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultToolTaskInstanceCompletionEvaluator, ISM.FireWorkflow">
+  </object>
+  <object id="defaultSubflowTaskInstanceCompletionEvaluator" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultSubflowTaskInstanceCompletionEvaluator, ISM.FireWorkflow">
+  </object>
+  <object id="defaultTaskInstanceEventListener" type="ISM.FireWorkflow.Engine.Taskinstance.DefaultTaskInstanceEventListener, ISM.FireWorkflow">
+  </object>
+
+  <!-- ************ TaskInstance Manager End*************************** -->
+
+  <!-- **************Persistence Begin******************** -->
+  <object id="persistenceService"
+        type="ISM.FireWorkflow.Engine.Persistence.Hibernate.PersistenceServiceHibernateImpl, ISM.FireWorkflow">
+    <!--
+        <property name="sessionFactory">
+    			<ref object="MyHibernateSessionFactory" />
+    		</property>
+    		-->
+  </object>
+  <!-- ***************Persistence End******************* -->
+
+
+
+  <!-- **************workflow Definitions Begin*******  -->
+  <object id="definitionService"
+  type="ISM.FireWorkflow.Engine.Definition.DefinitionService4FileSystem, ISM.FireWorkflow">
+    <property name="definitionFiles">
+      <list>
+        <value>
+          <!-- /org/fireflow/example/workflowdefinition/demo_workflow.xml -->
+        </value>
+      </list>
+    </property>
+  </object>
+  <!-- **************workflow Definitions End*******  -->
+
+
+
+  <!-- **************CalendarService Begin******************** -->
+  <object id="calendarService"
+  type="ISM.FireWorkflow.Engine.Calendar.DefaultCalendarService, ISM.FireWorkflow">
+  </object>
+  <!-- ***************CalendarService End******************* -->
+
+
+  <object id="conditionResolver" type="ISM.FireWorkflow.Engine.Condition.ConditionResolver, ISM.FireWorkflow">
+  </object>
+
+
+  <object id="springBeanFactory" type="ISM.FireWorkflow.Engine.Beanfactory.SpringBeanFactory, ISM.FireWorkflow">
+  </object>
+
+  <!-- **************Kernel Manager Begin*************** -->
+  <object id="kernelManager"
+        type="ISM.FireWorkflow.Kernel.KernelManager, ISM.FireWorkflow">
+    <property name="kernelExtensions">
+      <dictionary>
+        <entry key="ISM.FireWorkflow.Kernel.Impl.StartNodeInstance, ISM.FireWorkflow">
+          <list>
+            <ref local="startNodeInstanceEventListenser"/>
+          </list>
+        </entry>
+        <entry key="ISM.FireWorkflow.Kernel.Impl.ActivityInstance, ISM.FireWorkflow">
+          <list>
+            <ref local="activityInstanceEventListener"/>
+          </list>
+        </entry>
+        <entry key="ISM.FireWorkflow.Kernel.Impl.SynchronizerInstance, ISM.FireWorkflow">
+          <list>
+            <ref local="synchronizerInstanceEventListenser"/>
+          </list>
+        </entry>
+        <entry key="ISM.FireWorkflow.Kernel.Impl.EndNodeInstance, ISM.FireWorkflow">
+          <list>
+            <ref local="endNodeInstanceEventListenser"/>
+          </list>
+        </entry>
+        <entry key="ISM.FireWorkflow.Kernel.Impl.TransitionInstance, ISM.FireWorkflow">
+          <list>
+            <ref local="transitionInstanceEventListenser"/>
+          </list>
+        </entry>
+        <entry key="ISM.FireWorkflow.Kernel.Impl.LoopInstance, ISM.FireWorkflow">
+          <list>
+            <ref local="loopInstanceEventListenser"/>
+          </list>
+        </entry>
+      </dictionary>
+    </property>
+  </object>
+  <!-- **************Kernel Manager End*************** -->
+
+  <!-- kernel extensions (begin) -->
+  <object id="startNodeInstanceEventListenser"
+      type="ISM.FireWorkflow.Engine.Kernelextensions.StartNodeInstanceExtension, ISM.FireWorkflow">
+  </object>
+  <object id="activityInstanceEventListener"
+      type="ISM.FireWorkflow.Engine.Kernelextensions.ActivityInstanceExtension, ISM.FireWorkflow">
+  </object>
+  <object id="synchronizerInstanceEventListenser"
+      type="ISM.FireWorkflow.Engine.Kernelextensions.SynchronizerInstanceExtension, ISM.FireWorkflow">
+  </object>
+  <object id="endNodeInstanceEventListenser"
+      type="ISM.FireWorkflow.Engine.Kernelextensions.EndNodeInstanceExtension, ISM.FireWorkflow">
+  </object>
+  <object id="transitionInstanceEventListenser"
+      type="ISM.FireWorkflow.Engine.Kernelextensions.TransitionInstanceExtension, ISM.FireWorkflow">
+  </object>
+  <object id="loopInstanceEventListenser"
+      type="ISM.FireWorkflow.Engine.Kernelextensions.LoopInstanceExtension, ISM.FireWorkflow">
+  </object>
+
+  <!-- kernel extensions  (end)-->
+</objects>
