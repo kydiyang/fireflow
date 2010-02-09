@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISM.FireWorkflow", "ISM.FireWorkflow\ISM.FireWorkflow.csproj", "{659C1ED2-15A3-435C-9A82-57B56203A847}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication.Test", "..\ConsoleApplication.Test\ConsoleApplication.Test.csproj", "{2421CFD0-41C6-477E-A9EC-7D06C31419FF}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{659C1ED2-15A3-435C-9A82-57B56203A847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{659C1ED2-15A3-435C-9A82-57B56203A847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{659C1ED2-15A3-435C-9A82-57B56203A847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{659C1ED2-15A3-435C-9A82-57B56203A847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2421CFD0-41C6-477E-A9EC-7D06C31419FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2421CFD0-41C6-477E-A9EC-7D06C31419FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2421CFD0-41C6-477E-A9EC-7D06C31419FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2421CFD0-41C6-477E-A9EC-7D06C31419FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
