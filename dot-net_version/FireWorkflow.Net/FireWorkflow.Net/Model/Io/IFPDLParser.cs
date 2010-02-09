@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+namespace FireWorkflow.Net.Model.Io
+{
+    /// <summary>
+    /// FPDL解析器，将一个xml格式的fpdl流程定义文件解析成WorkflowProcess对象。
+    /// </summary>
+    public abstract class IFPDLParser : FPDLNames
+    {
+
+        /// <summary>
+        /// 将输入流解析成为一个WorkflowProcess对象。
+        /// </summary>
+        /// <param name="srin">输入流</param>
+        /// <returns>返回WorkflowProcess对象</returns>
+        public abstract WorkflowProcess parse(Stream srin);
+
+    }
+}
