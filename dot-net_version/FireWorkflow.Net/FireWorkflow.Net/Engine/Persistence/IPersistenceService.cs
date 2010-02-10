@@ -31,11 +31,11 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// otherwise update the existent one.
         /// </summary>
         /// <param name="processInstance"></param>
-        void saveOrUpdateProcessInstance(IProcessInstance processInstance);
+        bool saveOrUpdateProcessInstance(IProcessInstance processInstance);
 
-        //    void saveProcessInstance(IProcessInstance processInstance);
+        //    bool saveProcessInstance(IProcessInstance processInstance);
         //    
-        //    void updateProcessInstance(IProcessInstance processInstance);
+        //    bool updateProcessInstance(IProcessInstance processInstance);
 
         /// <summary>
         /// 通过ID获得“活的”ProcessInstance对象。
@@ -81,19 +81,19 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
         /// </summary>
         /// <param name="processInstance"></param>
-        void abortProcessInstance(ProcessInstance processInstance);
+        bool abortProcessInstance(ProcessInstance processInstance);
 
         /// <summary>
         /// 挂起流程实例
         /// </summary>
         /// <param name="processInstance"></param>
-        void suspendProcessInstance(ProcessInstance processInstance);
+        bool suspendProcessInstance(ProcessInstance processInstance);
 
         /// <summary>
         /// 恢复流程实例
         /// </summary>
         /// <param name="processInstance"></param>
-        void restoreProcessInstance(ProcessInstance processInstance);
+        bool restoreProcessInstance(ProcessInstance processInstance);
 
 
         /******************************************************************************/
@@ -110,14 +110,14 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// otherwise update the existent one. 
         /// </summary>
         /// <param name="taskInstance"></param>
-        void saveOrUpdateTaskInstance(ITaskInstance taskInstance);
+        bool saveOrUpdateTaskInstance(ITaskInstance taskInstance);
 
         /// <summary>
         /// 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。<br/>
         /// "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
         /// </summary>
         /// <param name="taskInstance"></param>
-        void abortTaskInstance(TaskInstance taskInstance);
+        bool abortTaskInstance(TaskInstance taskInstance);
 
         /// <summary>
         /// 返回“活的”TaskInstance。<br/>
@@ -175,7 +175,7 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// 该方法主要用于工单的签收操作，在签收之前先锁定与之对应的TaskInstance。
         /// </summary>
         /// <param name="taskInstanceId"></param>
-        void lockTaskInstance(String taskInstanceId);
+        bool lockTaskInstance(String taskInstanceId);
 
 
         /******************************************************************************/
@@ -190,7 +190,7 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// save or update workitem
         /// </summary>
         /// <param name="workitem"></param>
-        void saveOrUpdateWorkItem(IWorkItem workitem);
+        bool saveOrUpdateWorkItem(IWorkItem workitem);
 
         /// <summary>
         /// 返回任务实例的所有"活的"WorkItem的数量。
@@ -220,7 +220,7 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// 此方法用于签收Workitem时，删除其他Actor的WorkItem
         /// </summary>
         /// <param name="taskInstanceId"></param>
-        void deleteWorkItemsInInitializedState(String taskInstanceId);
+        bool deleteWorkItemsInInitializedState(String taskInstanceId);
 
         /// <summary>
         /// Find workItem by id
@@ -335,7 +335,7 @@ namespace FireWorkflow.Net.Engine.Persistence
 
         /// <summary>Save token</summary>
         /// <param name="token"></param>
-        void saveOrUpdateToken(IToken token);
+        bool saveOrUpdateToken(IToken token);
 
         /// <summary>统计流程任意节点的活动Token的数量。对于Activity节点，该数量只能取值1或者0，大于1表明有流程实例出现异常。</summary>
         Int32 getAliveTokenCountForNode(String processInstanceId, String nodeId);
@@ -356,13 +356,13 @@ namespace FireWorkflow.Net.Engine.Persistence
         List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId);
 
         /// <summary>删除某个节点的所有token</summary>
-        void deleteTokensForNode(String processInstanceId, String nodeId);
+        bool deleteTokensForNode(String processInstanceId, String nodeId);
 
         /// <summary>删除某些节点的所有token</summary>
-        void deleteTokensForNodes(String processInstanceId, List<String> nodeIdsList);
+        bool deleteTokensForNodes(String processInstanceId, List<String> nodeIdsList);
 
         /// <summary>删除token</summary>
-        void deleteToken(IToken token);
+        bool deleteToken(IToken token);
 
         /******************************************************************************/
         /************                                                        **********/
@@ -375,7 +375,7 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// Save or update the workflow definition. The version will be increased automatically when insert a new record.
         /// 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
         /// </summary>
-        void saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef);
+        bool saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef);
 
         /// <summary>
         /// Find the workflow definition by id .
@@ -422,7 +422,7 @@ namespace FireWorkflow.Net.Engine.Persistence
 
 
         /********************************process instance trace info **********************/
-        void saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);
+        bool saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);
         List<String> findProcessInstanceTraces(String processInstanceId);
     }
 }

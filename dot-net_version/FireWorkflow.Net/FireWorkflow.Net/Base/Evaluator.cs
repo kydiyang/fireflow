@@ -32,8 +32,13 @@ namespace FireWorkflow.Net.Base
         }
 
         private void ConstructEvaluator(EvaluatorItem[] items)
-        {
-            ICodeCompiler comp = (new CSharpCodeProvider().CreateCompiler());
+        { 
+            Dictionary<string, string> providerOptions = new Dictionary<string, string>();
+            providerOptions.Add("CompilerVersion", "v3.5");
+            CSharpCodeProvider csp = new CSharpCodeProvider(providerOptions);
+
+
+            ICodeCompiler comp = csp.CreateCompiler();
             CompilerParameters cp = new CompilerParameters();
             cp.ReferencedAssemblies.Add("system.dll");
             cp.ReferencedAssemblies.Add("system.data.dll");

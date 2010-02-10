@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Spring.Context;
 using Spring.Context.Support;
+
 namespace FireWorkflow.Net.Engine.Beanfactory
 {
     /// <summary>用Spring 的IOC容器作为Fire Workflow 的BeanFactory</summary>

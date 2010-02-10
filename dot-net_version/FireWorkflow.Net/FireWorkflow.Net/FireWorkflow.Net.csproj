@@ -117,8 +117,8 @@
     <Compile Include="Engine\Kernelextensions\StartNodeInstanceExtension.cs" />
     <Compile Include="Engine\Kernelextensions\SynchronizerInstanceExtension.cs" />
     <Compile Include="Engine\Kernelextensions\TransitionInstanceExtension.cs" />
-    <Compile Include="Engine\Persistence\Hibernate\PersistenceServiceHibernateImpl.cs" />
     <Compile Include="Engine\Persistence\IPersistenceService.cs" />
+    <Compile Include="Engine\Persistence\IReaderToInfo.cs" />
     <Compile Include="Engine\RuntimeContext.cs" />
     <Compile Include="Engine\RuntimeContextFactory.cs" />
     <Compile Include="Engine\Taskinstance\BasicTaskInstanceManager.cs" />
