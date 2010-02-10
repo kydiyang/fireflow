@@ -106,7 +106,7 @@ namespace FireWorkflow.Net.Engine
         /// </summary>
         public abstract void suspend();// throws EngineException;
 
-        public abstract Boolean? isSuspended();
+        public abstract Boolean? IsSuspended();
 
         /// <summary>
         /// 从挂起状态恢复到挂起前的状态

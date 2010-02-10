@@ -3,12 +3,34 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net", "FireWorkflow.Net\FireWorkflow.Net.csproj", "{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Test", "FireWorkflow.Test\FireWorkflow.Test.csproj", "{FCBF796D-D1DD-4203-81AF-7CC213ABB02A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Persistence.OracleDAL", "FireWorkflow.Net.Persistence.OracleDAL\FireWorkflow.Net.Persistence.OracleDAL.csproj", "{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLL", "DLL", "{F8811A38-DE4D-461A-AB49-9846ABBE975A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spring.net", "Spring.net", "{39A6C033-8565-40D5-B9C4-09B1792CA23C}"
+	ProjectSection(SolutionItems) = preProject
+		DLL\Spring.net\Common.Logging.dll = DLL\Spring.net\Common.Logging.dll
+		DLL\Spring.net\Spring.Core.dll = DLL\Spring.net\Spring.Core.dll
+		DLL\Spring.net\Spring.Core.pdb = DLL\Spring.net\Spring.Core.pdb
+		DLL\Spring.net\Spring.Core.xml = DLL\Spring.net\Spring.Core.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkFow.Net.Tests", "FireWorkFow.Net.Tests\FireWorkFow.Net.Tests.csproj", "{DB706EFD-57CA-4FCE-8DFD-814412096F2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11EE7414-0B1B-4D77-A7E8-BCE1B37B5D61}"
+	ProjectSection(SolutionItems) = preProject
+		FireWorkflow.Net.vsmdi = FireWorkflow.Net.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
 		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = FireWorkflow.Net.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,12 +41,19 @@ Global
 		{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FCBF796D-D1DD-4203-81AF-7CC213ABB02A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FCBF796D-D1DD-4203-81AF-7CC213ABB02A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FCBF796D-D1DD-4203-81AF-7CC213ABB02A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FCBF796D-D1DD-4203-81AF-7CC213ABB02A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{39A6C033-8565-40D5-B9C4-09B1792CA23C} = {F8811A38-DE4D-461A-AB49-9846ABBE975A}
 	EndGlobalSection
 EndGlobal

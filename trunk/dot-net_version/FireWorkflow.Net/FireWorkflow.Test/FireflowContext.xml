@@ -23,7 +23,7 @@
   </object>
   <!-- **************Persistence Begin 实例对象存取服务******************** -->
   <object id="persistenceService"
-        type="FireWorkflow.Net.Engine.Persistence.Hibernate.PersistenceServiceHibernateImpl, FireWorkflow.Net">
+        type="FireWorkflow.Net.Persistence.OracleDAL.PersistenceServiceDAL, FireWorkflow.Net.Persistence.OracleDAL">
     <!--
         <property name="sessionFactory">
     			<ref bean="MyHibernateSessionFactory" />

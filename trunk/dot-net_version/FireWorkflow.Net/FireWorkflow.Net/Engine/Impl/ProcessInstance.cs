@@ -460,7 +460,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.creatorId = s;
         }
 
-        public override  Boolean? isSuspended()
+        public override Boolean? IsSuspended()
         {
             return suspended;
         }
@@ -481,7 +481,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be suspended,the state of this process instance is " + this.state);
             }
-            if (this.isSuspended() != null && (bool)this.isSuspended())
+            if (this.IsSuspended() != null && (bool)this.IsSuspended())
             {
                 return;
             }
@@ -495,7 +495,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be restored,the state of this process instance is " + this.state);
             }
-            if (!(this.isSuspended() != null && (bool)this.isSuspended()))
+            if (!(this.IsSuspended() != null && (bool)this.IsSuspended()))
             {
                 return;
             }

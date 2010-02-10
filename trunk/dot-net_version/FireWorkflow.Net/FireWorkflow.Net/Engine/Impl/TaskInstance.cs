@@ -211,7 +211,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.assignmentStrategy = completionStrategy;
         }
 
-        public override Boolean? isSuspended()
+        public override Boolean? IsSuspended()
         {
             return suspended;
         }
@@ -438,7 +438,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 throw new EngineException(this.getAliveProcessInstance(), this.getTask(), "The task instance can not be suspended,the state of this task instance is " + this.state);
             }
-            if (this.isSuspended() != null && (Boolean)this.isSuspended())
+            if (this.IsSuspended() != null && (Boolean)this.IsSuspended())
             {
                 return;
             }
@@ -453,7 +453,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 throw new EngineException(this.getAliveProcessInstance(), this.getTask(), "The task instance can not be restored,the state of this task instance is " + this.state);
             }
-            if (!(this.isSuspended() != null && (Boolean)this.isSuspended()))
+            if (!(this.IsSuspended() != null && (Boolean)this.IsSuspended()))
             {
                 return;
             }

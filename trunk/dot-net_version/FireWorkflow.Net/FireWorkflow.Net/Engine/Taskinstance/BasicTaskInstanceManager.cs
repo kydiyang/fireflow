@@ -397,7 +397,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         taskInstance.getTaskId(),
                         "Complete task insatance failed.The state of the task insatnce[id=" + taskInstance.getId() + "] is " + taskInstance.getState());
             }
-            if (taskInstance.isSuspended()!=null && (bool)taskInstance.isSuspended())
+            if (taskInstance.IsSuspended()!=null && (bool)taskInstance.IsSuspended())
             {
                 WorkflowProcess process = taskInstance.getWorkflowProcess();
                 throw new EngineException(taskInstance.getProcessInstanceId(), process,
@@ -569,7 +569,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         "Claim work item failed .The state of the correspond task instance is " + workItem.getTaskInstance().getState());
             }
 
-            if (workItem.getTaskInstance().isSuspended() != null && (bool)workItem.getTaskInstance().isSuspended())
+            if (workItem.getTaskInstance().IsSuspended() != null && (bool)workItem.getTaskInstance().IsSuspended())
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
                 throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
@@ -612,7 +612,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         "Complete work item failed . The state of the work item [id=" + workItem.getId() + "] is " + workItem.getState());
             }
 
-            if (workItem.getTaskInstance().isSuspended() != null && (bool)workItem.getTaskInstance().isSuspended())
+            if (workItem.getTaskInstance().IsSuspended() != null && (bool)workItem.getTaskInstance().IsSuspended())
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
                 WorkflowProcess process = thisTaskInst.getWorkflowProcess();
@@ -711,7 +711,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         {
             Activity thisActivity = workItem.getTaskInstance().getActivity();
             TaskInstance thisTaskInstance = (TaskInstance)workItem.getTaskInstance();
-            if (workItem.getState() > 5 || (workItem.getTaskInstance().isSuspended()!=null && (bool)workItem.getTaskInstance().isSuspended()))
+            if (workItem.getState() > 5 || (workItem.getTaskInstance().IsSuspended()!=null && (bool)workItem.getTaskInstance().IsSuspended()))
             {//处于非活动状态,或者被挂起,则不允许reject
                 throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
                         thisTaskInstance.getTaskId(),

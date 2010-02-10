@@ -78,6 +78,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FireWorkflow.Net.Persistence.OracleDAL\FireWorkflow.Net.Persistence.OracleDAL.csproj">
+      <Project>{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}</Project>
+      <Name>FireWorkflow.Net.Persistence.OracleDAL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FireWorkflow.Net\FireWorkflow.Net.csproj">
       <Project>{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}</Project>
       <Name>FireWorkflow.Net</Name>
