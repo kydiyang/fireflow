@@ -1696,108 +1696,141 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
 
         /********************************process instance trace info **********************/
-        /**
-         * 20090923 modified by wmj2003
-         * 根据流程实例ID查找流程实例运行轨迹
-         * @param processInstanceId 流程实例ID
-         * @return
-         */
-        public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId);
+
+        /// <summary>
+        /// 根据流程实例ID查找流程实例运行轨迹
+        /// </summary>
+        /// <param name="processInstanceId">流程实例ID</param>
+        /// <returns></returns>
+        public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId)
+        {
+            List<ProcessInstanceTrace> infos = new List<ProcessInstanceTrace>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_hist_trace where processinstance_id=:1 order by step_number,minor_number";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId)
+                        );
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            ProcessInstanceTrace info = OracleDataReaderToInfo.GetProcessInstanceTrace(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
         /******************************** lifw555@gmail.com **********************/
 
-        /**
-         * 获得操作员所要操作工单的总数量
-         * publishUser如果为null，获取全部
-         * @param actorId 操作员主键 
-         * @param publishUser 流程定义发布者
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public Int32 getTodoWorkItemsCount(String actorId, String publishUser);
+        /// <summary>
+        /// 获得操作员所要操作工单的总数量
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="actorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <returns></returns>
+        public Int32 getTodoWorkItemsCount(String actorId, String publishUser)
+        {
+            return 0;
+        }
 
-        /**
-         * 获得操作员所要操作工单列表（分页）
-         * publishUser如果为null，获取全部
-         * @param actorId 操作员主键
-         * @param publishUser 流程定义发布者
-         * @param pageSize 每页显示的条数
-         * @param pageNumber 当前页数
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber);
+        /// <summary>
+        /// 获得操作员所要操作工单列表（分页）
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="actorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <param name="pageSize">每页显示的条数</param>
+        /// <param name="pageNumber">当前页数</param>
+        /// <returns></returns>
+        public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
+        {
+            return null;
+        }
 
-        /**
-         * 获得操作员完成的工单总数量
-         * publishUser如果为null，获取全部
-         * @param actorId 操作员主键 
-         * @param publishUser 流程定义发布者
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public Int32 getHaveDoneWorkItemsCount(String actorId, String publishUser);
+        /// <summary>
+        /// 获得操作员完成的工单总数量
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="actorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <returns></returns>
+        public Int32 getHaveDoneWorkItemsCount(String actorId, String publishUser)
+        {
+            return 0;
+        }
 
-        /**
-         * 获得操作员完成的工单列表（分页）
-         * publishUser如果为null，获取全部
-         * @param actorId 操作员主键
-         * @param publishUser 流程定义发布者
-         * @param pageSize 每页显示的条数
-         * @param pageNumber 当前页数
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber);
+        /// <summary>
+        /// 获得操作员完成的工单列表（分页）
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="actorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <param name="pageSize">每页显示的条数</param>
+        /// <param name="pageNumber">当前页数</param>
+        /// <returns></returns>
+        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
+        {
+            return null;
+        }
 
-        /**
-         * 获得操作员发起的工作流实例总数量
-         * publishUser如果为null，获取全部
-         * @param actorId 操作员主键
-         * @param publishUser 流程定义发布者
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public Int32 getProcessInstanceCountByCreatorId(String creatorId, String publishUser);
+        /// <summary>
+        /// 获得操作员发起的工作流实例总数量
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="creatorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <returns></returns>
+        public Int32 getProcessInstanceCountByCreatorId(String creatorId, String publishUser)
+        {
+            return 0;
+        }
 
-        /**
-         * 获得操作员发起的工作流实例列表（分页）
-         * publishUser如果为null，获取全部
-         * @param actorId 操作员主键
-         * @param publishUser 流程定义发布者
-         * @param pageSize 每页显示的条数
-         * @param pageNumber 当前页数
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber);
+        /// <summary>
+        /// 获得操作员发起的工作流实例列表（分页）
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="creatorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <param name="pageSize">每页显示的条数</param>
+        /// <param name="pageNumber">当前页数</param>
+        /// <returns></returns>
+        public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber)
+        {
+            return null;
+        }
 
-        /**
-         * 获得工作流发布者发起的所有流程定义的工作流实例总数量
-         * @param publishUser 工作流发布者
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public Int32 getProcessInstanceCountByPublishUser(String publishUser);
+        /// <summary>
+        /// 获得工作流发布者发起的所有流程定义的工作流实例总数量
+        /// </summary>
+        /// <param name="publishUser">工作流发布者</param>
+        /// <returns></returns>
+        public Int32 getProcessInstanceCountByPublishUser(String publishUser)
+        {
+            return 0;
+        }
 
-        /**
-         * 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
-         * @param publishUser 工作流发布者
-         * @param pageSize 每页显示的条数
-         * @param pageNumber 当前页数
-         * @return
-         * @author lifw555@gmail.com
-         * @throws RuntimeException
-         */
-        public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber);
-
-
+        /// <summary>
+        /// 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
+        /// </summary>
+        /// <param name="publishUser">工作流发布者</param>
+        /// <param name="pageSize">每页显示的条数</param>
+        /// <param name="pageNumber">当前页数</param>
+        /// <returns></returns>
+        public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber)
+        {
+            return null;
+        }
     }
 }
