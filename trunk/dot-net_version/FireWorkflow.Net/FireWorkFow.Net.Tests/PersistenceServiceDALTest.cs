@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using FireWorkflow.Net.Engine;
 using FireWorkflow.Net.Engine.Impl;
+using System.Data.OracleClient;
+using FireWorkflow.Net.Engine.Definition;
 
 namespace FireWorkFow.Net.Tests
 {
@@ -69,7 +71,7 @@ namespace FireWorkFow.Net.Tests
         /// <summary>
         ///A test for saveOrUpdateProcessInstance
         ///</summary>
-        [TestMethod()]
+        //[TestMethod()]
         public void saveOrUpdateProcessInstanceTest()
         {
             PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
@@ -88,14 +90,78 @@ namespace FireWorkFow.Net.Tests
             bool actual;
             actual = target.saveOrUpdateProcessInstance(processInstance);
 
-            object ddd = target.findProcessInstancesByProcessId("3051d71da776423bb525e00c5de60775");
-            //processInstance1.setName(DateTime.Now.ToString());
+            ProcessInstance processInstance1 = (ProcessInstance)target.findProcessInstanceById("3377237c170342adad0f1654747b609a");
+            processInstance1.setName(DateTime.Now.ToString());
 
-            //actual = target.saveOrUpdateProcessInstance(processInstance1);
+            actual = target.saveOrUpdateProcessInstance(processInstance1);
 
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
+        /// <summary>
+        ///A test for findAliveProcessInstanceById
+        ///</summary>
+        //[TestMethod()]
+        public void findAliveProcessInstanceByIdTest()
+        {
+            PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
+            string id = "3377237c170342adad0f1654747b609a"; // TODO: Initialize to an appropriate value
+            IProcessInstance expected = null; // TODO: Initialize to an appropriate value
+            IProcessInstance actual;
+            actual = target.findAliveProcessInstanceById(id);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for findProcessInstanceById
+        ///</summary>
+        //[TestMethod()]
+        public void findProcessInstanceByIdTest()
+        {
+            PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
+            string id = "3377237c170342adad0f1654747b609a"; // TODO: Initialize to an appropriate value
+            IProcessInstance expected = null; // TODO: Initialize to an appropriate value
+            IProcessInstance actual;
+            actual = target.findProcessInstanceById(id);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for saveOrUpdateWorkflowDefinition
+        ///</summary>
+        [TestMethod()]
+        public void saveOrUpdateWorkflowDefinitionTest()
+        {
+            PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
+            WorkflowDefinition workflowDef = new WorkflowDefinition(); // TODO: Initialize to an appropriate value
+            workflowDef.setDefinitionType("asdf");
+            workflowDef.setProcessId("ssss");
+            workflowDef.setName("asdfasdf");
+            workflowDef.setState(true);
+            workflowDef.setProcessContent("asdfasdf");
+            bool expected = false; // TODO: Initialize to an appropriate value
+            bool actual;
+            actual = target.saveOrUpdateWorkflowDefinition(workflowDef);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for findWorkflowDefinitionById
+        ///</summary>
+        //[TestMethod()]
+        public void findWorkflowDefinitionByIdTest()
+        {
+            PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
+            string id = "d766dab5222d449998827d75bf59723b"; // TODO: Initialize to an appropriate value
+            WorkflowDefinition expected = null; // TODO: Initialize to an appropriate value
+            WorkflowDefinition actual;
+            actual = target.findWorkflowDefinitionById(id);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
     }
 }

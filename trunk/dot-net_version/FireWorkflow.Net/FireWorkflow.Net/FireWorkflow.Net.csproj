@@ -207,7 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Engine\Definition\关于定义文件的存储.txt" />
-    <Content Include="FireflowContext.xml" />
+    <Content Include="FireflowContext.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

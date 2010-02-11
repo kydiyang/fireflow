@@ -423,6 +423,110 @@ namespace FireWorkflow.Net.Engine.Persistence
 
         /********************************process instance trace info **********************/
         bool saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace);
-        List<String> findProcessInstanceTraces(String processInstanceId);
+
+
+        /********************************process instance trace info **********************/
+        /**
+         * 20090923 modified by wmj2003
+         * 根据流程实例ID查找流程实例运行轨迹
+         * @param processInstanceId 流程实例ID
+         * @return
+         */
+        public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId);
+
+        /******************************** lifw555@gmail.com **********************/
+
+        /**
+         * 获得操作员所要操作工单的总数量
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键 
+         * @param publishUser 流程定义发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getTodoWorkItemsCount(String actorId, String publishUser);
+
+        /**
+         * 获得操作员所要操作工单列表（分页）
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber);
+
+        /**
+         * 获得操作员完成的工单总数量
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键 
+         * @param publishUser 流程定义发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getHaveDoneWorkItemsCount(String actorId, String publishUser);
+
+        /**
+         * 获得操作员完成的工单列表（分页）
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber);
+
+        /**
+         * 获得操作员发起的工作流实例总数量
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getProcessInstanceCountByCreatorId(String creatorId, String publishUser);
+
+        /**
+         * 获得操作员发起的工作流实例列表（分页）
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber);
+
+        /**
+         * 获得工作流发布者发起的所有流程定义的工作流实例总数量
+         * @param publishUser 工作流发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getProcessInstanceCountByPublishUser(String publishUser);
+
+        /**
+         * 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
+         * @param publishUser 工作流发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber);
+
     }
 }
