@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* 
+ * @author 非也,nychen2000@163.com
+ * @Revision 无忧 lwz0721@gmail.com
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -94,12 +98,7 @@ namespace FireWorkflow.Net.Model
 
         #endregion
 
-        /**
-     * 构造函数
-     * @param id
-     * @param name
-     * @param pkg
-     */
+        //构造函数
         public WorkflowProcess(String name)
             : base(null, name)
         {
@@ -107,37 +106,27 @@ namespace FireWorkflow.Net.Model
         //    public List getFormalParameters() {
         //        return formalParameters;
         //    }
-        /**
-         * 返回所有的流程数据项
-         * @return
-         */
+
+        /// <summary>返回所有的流程数据项</summary>
+        /// <returns></returns>
         public List<DataField> getDataFields()
         {
             return dataFields;
         }
 
-        /**
-         * 返回所有的环节
-         * @return
-         */
+        /// <summary>返回所有的环节</summary>
         public List<Activity> getActivities()
         {
             return activities;
         }
 
-        /**
-         * 返回所有的循环
-         * @return
-         */
+        /// <summary>返回所有的循环</summary>
         public List<Loop> getLoops()
         {
             return loops;
         }
 
-        /**
-         * 返回所有的转移
-         * @return
-         */
+        /// <summary>返回所有的转移</summary>
         public List<Transition> getTransitions()
         {
             return transitions;
@@ -151,10 +140,7 @@ namespace FireWorkflow.Net.Model
         //        this.version = version;
         //    }
 
-        /**
-         * 返回开始节点
-         * @return
-         */
+        /// <summary>返回开始节点</summary>
         public StartNode getStartNode()
         {
             return startNode;
@@ -165,73 +151,52 @@ namespace FireWorkflow.Net.Model
             this.startNode = startNode;
         }
 
-        /**
-         * 返回所有的结束节点
-         * @return
-         */
+        /// <summary>返回所有的结束节点</summary>
         public List<EndNode> getEndNodes()
         {
             return endNodes;
         }
 
-        /**
-         * 返回所有的同步器
-         * @return
-         */
+        /// <summary>返回所有的同步器</summary>
         public List<Synchronizer> getSynchronizers()
         {
             return synchronizers;
         }
 
-        /**
-         * 返回所有的全局Task
-         * @return
-         */
+        /// <summary>返回所有的全局Task</summary>
         public List<Task> getTasks()
         {
             return this.tasks;
         }
 
 
-        /**
-         * 保留
-         * @return
-         */
+        //保留
         public String getResourceFile()
         {
             return resourceFile;
         }
 
-        /**
-         * 保留
-         * @return
-         */
+        //保留
         public void setResourceFile(String resourceFile)
         {
             this.resourceFile = resourceFile;
         }
-        /**
-         * 保留
-         * @return
-         */
+
+        //保留
         public String getResourceManager()
         {
             return resourceManager;
         }
-        /**
-         * 保留
-         * @return
-         */
+
+        //保留
         public void setResourceManager(String resourceMgr)
         {
             this.resourceManager = resourceMgr;
         }
 
-        /**
-         * 通过ID查找该流程中的任意元素
-         * @param id 元素的Id
-         * @return 流程元素，如：Activity,Task,Synchronizer等等
-         */
+        /// <summary>通过ID查找该流程中的任意元素</summary>
+        /// <param name="id">元素的Id</param>
+        /// <returns>流程元素，如：Activity,Task,Synchronizer等等</returns>
         public IWFElement findWFElementById(String id)
         {
             if (this.getId().Equals(id))
@@ -323,11 +288,9 @@ namespace FireWorkflow.Net.Model
             return null;
         }
 
-        /**
-         * 通过Id查找任意元素的序列号
-         * @param id 流程元素的id
-         * @return 流程元素的序列号
-         */
+        /// <summary>通过Id查找任意元素的序列号</summary>
+        /// <param name="id">流程元素的id</param>
+        /// <returns>流程元素的序列号</returns>
         public String findSnById(String id)
         {
             IWFElement elem = this.findWFElementById(id);
@@ -338,10 +301,8 @@ namespace FireWorkflow.Net.Model
             return null;
         }
 
-        /**
-         * 验证workflow process是否完整正确。
-         * @return null表示流程正确；否则表示流程错误，返回值是错误原因
-         */
+        /// <summary>验证workflow process是否完整正确。</summary>
+        /// <returns>null表示流程正确；否则表示流程错误，返回值是错误原因</returns>
         public String validate()
         {
             String errHead = "Workflow process is invalid：";
@@ -465,12 +426,8 @@ namespace FireWorkflow.Net.Model
             return null;
         }
 
-        /**
-         * 判断两个Activity是否在同一个执行线上
-         * @param activityId1
-         * @param activityId2
-         * @return true表示在同一个执行线上，false表示不在同一个执行线上
-         */
+        /// <summary>判断两个Activity是否在同一个执行线上</summary>
+        /// <returns>true表示在同一个执行线上，false表示不在同一个执行线上</returns>
         public Boolean isInSameLine(String activityId1, String activityId2)
         {
             Node node1 = (Node)this.findWFElementById(activityId1);

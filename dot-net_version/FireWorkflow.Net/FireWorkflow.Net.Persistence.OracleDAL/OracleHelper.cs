@@ -1,8 +1,12 @@
-﻿using System;
+﻿/* 
+ * @author 无忧lwz0721@gmail.com
+ */
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Data;
 using System.Data.OracleClient;
@@ -18,12 +22,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>引发异常</summary>
         /// <param name="log">异常消息</param>
         /// <param name="commandParameters">OracleParameter对象</param>
-        public static void Log(string log, IList<OracleParameter> commandParameters)
+        public static void Log(string log, params OracleParameter[] commandParameters)
         {
             StringBuilder sb = new StringBuilder();
             if (commandParameters != null)
             {
-                int s = commandParameters.Count;
+                int s = commandParameters.Length;
                 for (int i = 0; i < s; i++)
                 {
                     sb.Append(":");
@@ -45,7 +49,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>创建OracleParameter对象</summary>
         /// <remarks>
         /// e.g.:  
-        ///     IList<OracleParameter> selectParms = { 
+        ///     params OracleParameter[] selectParms = { 
         ///         OracleHelper.NewOracleParameter(":smn01", OracleType.NVarchar22, smn01)
         ///     };
         /// </remarks>
@@ -60,7 +64,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>创建OracleParameter对象</summary>
         /// <remarks>
         /// e.g.:  
-        ///     IList<OracleParameter> selectParms = { 
+        ///     params OracleParameter[] selectParms = { 
         ///         OracleHelper.NewOracleParameter(":smn01", OracleType.NVarchar22, 20, smn01)
         ///     };
         /// </remarks>
@@ -75,7 +79,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>创建OracleParameter对象</summary>
         /// <remarks>
         /// e.g.:  
-        ///     IList<OracleParameter> selectParms = { 
+        ///     params OracleParameter[] selectParms = { 
         ///         OracleHelper.NewOracleParameter(":smn01", OracleType.NVarchar2, 20, ParameterDirection.Output, smn01)
         ///     };
         /// </remarks>
@@ -99,12 +103,19 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             return sp;
         }
 
+        public static OracleTransaction GetOracleTransaction(string connectionString)
+        {
+            OracleConnection conn = new OracleConnection(connectionString);
+            conn.Open();
+            return  conn.BeginTransaction();
+        }
+
         /// <summary>初始化OracleCommand 对象</summary>
         /// <param name="conn">Connection 对象</param>
         /// <param name="cmdType">CommandType 值之一。</param>
         /// <param name="cmdText">已重写。 获取或设置要对数据源执行的 Transact-SQL 语句或存储过程。</param>
         /// <param name="commandParameters">参数</param>
-        private static OracleCommand PrepareCommand(OracleConnection conn, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        private static OracleCommand PrepareCommand(OracleConnection conn, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
 
             //Open the connection if required
@@ -119,7 +130,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             //    cmd.Transaction = trans;
 
             // Bind the parameters passed in
-            if (commandParameters != null && commandParameters.Count > 0)
+            if (commandParameters != null && commandParameters.Length > 0)
             {
                 foreach (OracleParameter parm in commandParameters)
                     cmd.Parameters.Add(parm);
@@ -132,7 +143,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdType">CommandType 值之一。</param>
         /// <param name="cmdText">已重写。 获取或设置要对数据源执行的 Transact-SQL 语句或存储过程。 </param>
         /// <param name="commandParameters">参数</param>
-        private static OracleCommand PrepareCommand(OracleTransaction trans, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        private static OracleCommand PrepareCommand(OracleTransaction trans, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             if (trans == null)
                 throw new ArgumentNullException("transaction");
@@ -165,7 +176,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdText">要执行的Sql语句,或存储过程名称。</param>
         /// <param name="commandParameters">传入或传出的参数值</param>
         /// <returns>针对 Connection 执行 SQL 语句并返回受影响的行数</returns>
-        public static int ExecuteNonQuery(string connectionString, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static int ExecuteNonQuery(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             // Create a new Oracle Connection
             OracleConnection connection = new OracleConnection(connectionString);
@@ -178,7 +189,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdType">the CommandType (stored procedure, text, etc.)</param>
         /// <param name="cmdText">the stored procedure name or PL/SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
-        public static Int32 ExecuteInt32(string connectionString, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static Int32 ExecuteInt32(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             object obj = ExecuteScalar(connectionString, cmdType, cmdText, commandParameters);
             if (obj != null)
@@ -208,7 +219,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdText">要执行的Sql语句,或存储过程名称。</param>
         /// <param name="commandParameters">传入或传出的参数值</param>
         /// <returns>针对 Connection 执行 SQL 语句并返回受影响的行数</returns>
-        public static int ExecuteNonQuery(OracleTransaction trans, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static int ExecuteNonQuery(OracleTransaction trans, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             OracleCommand cmd = PrepareCommand(trans, cmdType, cmdText, commandParameters);
             int val = cmd.ExecuteNonQuery();
@@ -226,7 +237,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="commandText">要执行的Sql语句,或存储过程名称。</param>
         /// <param name="commandParameters">传入或传出的参数值</param>
         /// <returns>针对 Connection 执行 SQL 语句并返回受影响的行数</returns>
-        public static int ExecuteNonQuery(OracleConnection connection, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static int ExecuteNonQuery(OracleConnection connection, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             try
             {
@@ -257,7 +268,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdText">Sql语句或存储过程名</param>
         /// <param name="commandParameters">传入的参数集</param>
         /// <returns>返回OracleDataReader</returns>
-        public static OracleDataReader ExecuteReader(OracleConnection conn, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static OracleDataReader ExecuteReader(OracleConnection conn, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             //Create the command and connection
             //OracleConnection conn = new OracleConnection(connectionString);
@@ -269,7 +280,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 //Execute the query, stating that the connection should close when the resulting datareader has been read
                 OracleDataReader rdr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
                 //rdr[
-                cmd.Parameters.Clear();
+                //cmd.Parameters.Clear();
                 return rdr;
             }
             catch (Exception e)
@@ -286,7 +297,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdText">要执行的Sql语句,或存储过程名称。</param>
         /// <param name="commandParameters">传入或传出的参数值</param>
         /// <returns>放回执行结果集合</returns>
-        public static DataSet ExecuteDataSet(string connectionString, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static DataSet ExecuteDataSet(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             // Create a new Sql command
             OracleConnection connection = new OracleConnection(connectionString);
@@ -319,7 +330,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="cmdText">要执行的Sql语句,或存储过程名称。</param>
         /// <param name="commandParameters">传入或传出的参数值</param>
         /// <returns>放回执行结果集合</returns>
-        public static IList<T> ExecuteInfo<T>(string connectionString, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters) 
+        public static IList<T> ExecuteInfo<T>(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters) 
             where T : IReaderToInfo, new()
         {
             IList<T> Ts = new List<T>();
@@ -370,7 +381,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <returns></returns>
         public static OracleDataReader ExecuteReader(OracleConnection conn,
             int pageIndex, int pageSize, out int totalRecords, string tblName, string fldName, string strCondition, string fldSort,
-            IList<OracleParameter> commandParameters)
+            params OracleParameter[] commandParameters)
         {
             string select = "";
             int PageLowerBound = (pageIndex /*- 1*/) * pageSize;
@@ -434,7 +445,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="commandText">the stored procedure name or PL/SQL command</param>
         /// <param name="commandParameters">an array of OracleParamters used to execute the command</param>
         /// <returns>An object that should be converted to the expected type using Convert.To{Type}</returns>
-        public static object ExecuteScalar(string connectionString, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static object ExecuteScalar(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             OracleConnection connection = new OracleConnection(connectionString);
             return ExecuteScalar(connection, cmdType, cmdText, commandParameters);
@@ -453,7 +464,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="commandText">the stored procedure name or PL/SQL command</param>
         /// <param name="commandParameters">an array of OracleParamters used to execute the command</param>
         /// <returns>An object that should be converted to the expected type using Convert.To{Type}</returns>
-        public static object ExecuteScalar(OracleConnection connection, CommandType cmdType, string cmdText, IList<OracleParameter> commandParameters)
+        public static object ExecuteScalar(OracleConnection connection, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
             try
             {
@@ -486,7 +497,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         ///	<param name="cmdText">The stored procedure name	or PL/SQL command</param>
         ///	<param name="commandParameters">An array of	OracleParamters used to execute the command</param>
         ///	<returns>An	object containing the value	in the 1x1 resultset generated by the command</returns>
-        public static object ExecuteScalar(OracleTransaction transaction, CommandType commandType, string cmdText, IList<OracleParameter> commandParameters)
+        public static object ExecuteScalar(OracleTransaction transaction, CommandType commandType, string cmdText, params OracleParameter[] commandParameters)
         {
             try
             {
@@ -517,7 +528,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="cacheKey">Key value to look up the parameters</param>
         /// <param name="commandParameters">Actual parameters to cached</param>
-        public static void CacheParameters(string cacheKey, IList<OracleParameter> commandParameters)
+        public static void CacheParameters(string cacheKey, params OracleParameter[] commandParameters)
         {
             parmCache[cacheKey] = commandParameters;
         }
@@ -527,18 +538,18 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="cacheKey">Key to look up the parameters</param>
         /// <returns></returns>
-        public static IList<OracleParameter> GetCachedParameters(string cacheKey)
+        public static  OracleParameter[] GetCachedParameters(string cacheKey)
         {
-            IList<OracleParameter> cachedParms = (IList<OracleParameter>)parmCache[cacheKey];
+            OracleParameter[] cachedParms = ( OracleParameter[])parmCache[cacheKey];
 
             if (cachedParms == null)
                 return null;
 
             // If the parameters are in the cache
-            IList<OracleParameter> clonedParms = new OracleParameter[cachedParms.Count];
+            OracleParameter[] clonedParms = new OracleParameter[cachedParms.Length];
 
             // return a copy of the parameters
-            for (int i = 0, j = cachedParms.Count; i < j; i++)
+            for (int i = 0, j = cachedParms.Length; i < j; i++)
                 clonedParms[i] = (OracleParameter)((ICloneable)cachedParms[i]).Clone();
 
             return clonedParms;
@@ -571,8 +582,542 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 return false;
         }
 
+        /// <summary>获取查询对象</summary>
+        /// <param name="queryField">要创建查询的QueryField对象</param>
+        public static QueryInfo GetFormatQuery(QueryField queryField)
+        {
+            //为空返回
+            if (queryField == null) return new QueryInfo();
+            if (queryField.QueryFieldInfos.Count <= 0 && queryField.QueryFieldInfosOr.Count <= 0) return new QueryInfo();
+            //Oracle参数集合
+            IList<OracleParameter> sp = new List<OracleParameter>();
+            //查询SQL合集
+            StringBuilder sb = new StringBuilder();
+            //循环变量
+            int i = 0, j = 0;//, k = 0;
+            //连接方式 "=","LIKE","<","<=",">",">="
+            String fs = "";
+            //值
+            String value = "";
+            String tsql = "";
+            string PN = "";//参数变量
+
+            #region 获取 OR 集合
+            foreach (QueryFieldInfo queryFieldInfo in queryField.QueryFieldInfosOr)
+            {
+                if (string.IsNullOrEmpty(queryFieldInfo.QueryString.Trim())) continue;
+                try
+                {
+                    //设定默认连接方式
+                    fs = "=";
+                    //初始化
+                    tsql = "";
+
+                    //分割多匹配
+                    String[] fgs = queryFieldInfo.QueryString.Split('|');
+
+                    //多匹配循环计数清零；
+                    j = 0;
+                    //初始化
+                    tsql = "";
+                    foreach (String fg in fgs)
+                    {
+                        value = fg.Trim();
+                        //为空退出本次循环
+                        if (String.IsNullOrEmpty(value)) continue;
+                        PN = ":p" + i + "_" + j;
+
+                        //设定默认连接方式
+                        fs = "=";
+
+                        switch (queryFieldInfo.FieldType)
+                        {
+                            #region Guid,String
+                            case CSharpType.Guid:
+                            case CSharpType.String:
+                                if (Regex.IsMatch(value, @"\*|\?"))
+                                {
+                                    fs = "LIKE";
+                                    value = Regex.Replace(value, @"\*", "%");
+                                    value = Regex.Replace(value, @"\?", "_");
+                                }
+                                if (Regex.IsMatch(value, @"^<>|^!="))
+                                {
+                                    if (fs == "LIKE") fs = "NOT LIKE";
+                                    else fs = "<>";
+                                    value = value.Substring(2);
+                                }
+                                //增加查询SQL合集
+                                sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), value));
+                                if (tsql.Length > 0) tsql += " OR ";
+                                tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                break;
+                            #endregion
+                            #region Int16,Int32,Int64,Decimal,Double,Single,Byte
+                            case CSharpType.Int16:
+                            case CSharpType.Int32:
+                            case CSharpType.Decimal:
+                            case CSharpType.Double:
+                            case CSharpType.Single:
+                            case CSharpType.Byte:
+                                if (Regex.IsMatch(value, @"^\d*[.]{0,1}\d*$"))
+                                {
+                                    //增加查询SQL合集
+                                    try
+                                    {
+                                        object tv = GetValue(queryFieldInfo.FieldType, value);
+                                        sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), tv));
+                                        if (tsql.Length > 0) tsql += " OR ";
+                                        tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                    }
+                                    catch { }
+                                }
+                                else
+                                {
+                                    //开始字符有< <= <> != > >=
+                                    if (Regex.IsMatch(value, @"^(<|<=|<>|!=|>|>=)\d*[.]{0,1}\d*$"))
+                                    {
+                                        if (Regex.IsMatch(value, @"^(<=|>=|<>|!=)"))
+                                        {
+                                            //开始字符有 <= <> !=  >=
+                                            fs = value.Substring(0, 2);
+                                            if (fs == "!=") fs = "<>";
+                                            value = value.Substring(2);
+                                        }
+                                        else
+                                        {
+                                            //开始字符有< >
+                                            fs = value.Substring(0, 1);
+                                            value = value.Substring(1);
+                                        }
+                                        //增加查询SQL合集
+                                        try
+                                        {
+                                            object tv = GetValue(queryFieldInfo.FieldType, value);
+                                            sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), tv));
+                                            if (tsql.Length > 0) tsql += " OR ";
+                                            tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                        }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        if (Regex.IsMatch(value, @"^\d*[.]{0,1}\d*[~]{1}\d*[.]{0,1}\d*$"))
+                                        {
+                                            string[] temps = value.Split('~');
+                                            if (temps.Length == 2 && !String.IsNullOrEmpty(temps[0].Trim()) && !String.IsNullOrEmpty(temps[1].Trim()))
+                                            {
+                                                try
+                                                {
+                                                    object tv1 = GetValue(queryFieldInfo.FieldType, temps[0]);
+                                                    object tv2 = GetValue(queryFieldInfo.FieldType, temps[1]);
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "q", GetOracleDbType(queryFieldInfo.FieldType), tv1));
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "h", GetOracleDbType(queryFieldInfo.FieldType), tv2));
+                                                    if (tsql.Length > 0) tsql += " OR ";
+                                                    tsql += string.Format("({0} >= {1}q AND {0} <= {1}h)", queryFieldInfo.FieldName, PN);
+                                                }
+                                                catch { }
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            #endregion
+                            #region DateTime
+                            case CSharpType.DateTime:
+                                if (Regex.IsMatch(value, @"^(1|2)\d{3}-\d{1,2}-\d{1,2}[ ]{0,1}\d{0,2}[:]{0,1}\d{0,2}[:]{0,1}\d{0,2}$"))
+                                {
+                                    //存数字增加查询SQL合集
+                                    try
+                                    {
+                                        DateTime dt = DateTime.Parse(value);
+                                        sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), dt));
+                                        if (tsql.Length > 0) tsql += " OR ";
+                                        tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                    }
+                                    catch { }
+                                }
+                                else
+                                {
+                                    if (Regex.IsMatch(value, @"^(<|<=|<>|!=|>|>=)(1|2)\d{3}-\d{1,2}-\d{1,2}[ ]{0,1}\d{0,2}[:]{0,1}\d{0,2}[:]{0,1}\d{0,2}$"))
+                                    {
+                                        if (Regex.IsMatch(value, @"^(<=|>=|<>|!=)"))
+                                        {
+                                            fs = value.Substring(0, 2);
+                                            if (fs == "!=") fs = "<>";
+                                            value = value.Substring(2);
+                                        }
+                                        else
+                                        {
+                                            fs = value.Substring(0, 1);
+                                            value = value.Substring(1);
+                                        }
+                                        //增加查询SQL合集
+                                        try
+                                        {
+                                            DateTime dt = DateTime.Parse(value);
+                                            sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), dt));
+                                            if (tsql.Length > 0) tsql += " OR ";
+                                            tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                        }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        if (Regex.IsMatch(value, @"^(1|2)\d{3}-\d{1,2}-\d{1,2}[ ]{0,1}\d{0,2}[:]{0,1}\d{0,2}[:]{0,1}\d{0,2}[~]{1}(1|2)\d{3}-\d{1,2}-\d{1,2}[ ]{0,1}\d{0,2}[:]{0,1}\d{0,2}[:]{0,1}\d{0,2}$"))
+                                        {
+                                            string[] temps = value.Split('~');
+
+
+                                            if (temps.Length == 2 && !String.IsNullOrEmpty(temps[0].Trim()) && !String.IsNullOrEmpty(temps[1].Trim()))
+                                            {
+                                                try
+                                                {
+                                                    DateTime dt01 = DateTime.Parse(temps[0]);
+                                                    DateTime dt02 = DateTime.Parse(temps[1]);
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "q", GetOracleDbType(queryFieldInfo.FieldType), dt01));
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "h", GetOracleDbType(queryFieldInfo.FieldType), dt02));
+                                                    if (tsql.Length > 0) tsql += " OR ";
+                                                    tsql += string.Format("({0} >= {1}q AND {0} <= {1}h)", queryFieldInfo.FieldName, PN);
+                                                }
+                                                catch { }
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            #endregion
+                            #region  Boolean
+                            case CSharpType.Boolean:
+                                if (Regex.IsMatch(value, @"^<>|^!="))
+                                {
+                                    fs = "<>";
+                                    value = value.Substring(2);
+                                }
+                                try
+                                {
+                                    bool bt = bool.Parse(value);
+                                    sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), OracleHelper.OraBit(bt)));
+                                    if (tsql.Length > 0) tsql += " OR ";
+                                    tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                }
+                                catch { }
+                                break;
+                            case CSharpType.Char:
+                                if (Regex.IsMatch(value, @"^<>|^!="))
+                                {
+                                    fs = "<>";
+                                    value = value.Substring(2);
+                                }
+                                if (value.Trim().Length == 1)
+                                {
+                                    sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), GetValue(queryFieldInfo.FieldType, value)));
+                                    if (tsql.Length > 0) tsql += " OR ";
+                                    tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                }
+                                break;
+                            #endregion
+                        }
+
+                        //多匹配循环计数加1；
+                        j++;
+                    }
+
+                    //查询不为空添加到 查询SQL合集中
+                    if (!String.IsNullOrEmpty(tsql))
+                    {
+                        if (sb.Length > 0) sb.Append(" OR ");
+                        else sb.Append("(");
+                        sb.AppendFormat("({0})", tsql);
+                    }
+
+                }
+                catch { }
+                //循环总计数加1；
+                i++;
+            }
+            if (sb.Length > 0) sb.Append(")");
+            #endregion
+
+            #region 获取 AND 集合
+            foreach (QueryFieldInfo queryFieldInfo in queryField.QueryFieldInfos)
+            {
+                if (string.IsNullOrEmpty(queryFieldInfo.QueryString.Trim())) continue;
+                try
+                {
+                    //设定默认连接方式
+                    fs = "=";
+                    //初始化
+                    tsql = "";
+
+                    //分割多匹配
+                    String[] fgs = queryFieldInfo.QueryString.Split('|');
+
+                    //多匹配循环计数清零；
+                    j = 0;
+                    //初始化
+                    tsql = "";
+                    foreach (String fg in fgs)
+                    {
+                        value = fg.Trim();
+                        //为空退出本次循环
+                        if (String.IsNullOrEmpty(value)) continue;
+                        PN = ":p" + i + "_" + j;
+
+                        //设定默认连接方式
+                        fs = "=";
+
+                        switch (queryFieldInfo.FieldType)
+                        {
+                            #region Guid,String
+                            case CSharpType.Guid:
+                            case CSharpType.String:
+                                if (Regex.IsMatch(value, @"\*|\?"))
+                                {
+                                    fs = "LIKE";
+                                    value = Regex.Replace(value, @"\*", "%");
+                                    value = Regex.Replace(value, @"\?", "_");
+                                }
+                                if (Regex.IsMatch(value, @"^<>|^!="))
+                                {
+                                    if (fs == "LIKE") fs = "NOT LIKE";
+                                    else fs = "<>";
+                                    value = value.Substring(2);
+                                }
+                                //增加查询SQL合集
+                                sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), value));
+                                if (tsql.Length > 0) tsql += " OR ";
+                                tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                break;
+                            #endregion
+                            #region Int16,Int32,Int64,Decimal,Double,Single,Byte
+                            case CSharpType.Int16:
+                            case CSharpType.Int32:
+                            case CSharpType.Decimal:
+                            case CSharpType.Double:
+                            case CSharpType.Single:
+                            case CSharpType.Byte:
+                                if (Regex.IsMatch(value, @"^\d*[.]{0,1}\d*$"))
+                                {
+                                    //增加查询SQL合集
+                                    try
+                                    {
+                                        object tv = GetValue(queryFieldInfo.FieldType, value);
+                                        sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), tv));
+                                        if (tsql.Length > 0) tsql += " OR ";
+                                        tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                    }
+                                    catch { }
+                                }
+                                else
+                                {
+                                    //开始字符有< <= <> != > >=
+                                    if (Regex.IsMatch(value, @"^(<|<=|<>|!=|>|>=)\d*[.]{0,1}\d*$"))
+                                    {
+                                        if (Regex.IsMatch(value, @"^(<=|>=|<>|!=)"))
+                                        {
+                                            //开始字符有 <= <> !=  >=
+                                            fs = value.Substring(0, 2);
+                                            if (fs == "!=") fs = "<>";
+                                            value = value.Substring(2);
+                                        }
+                                        else
+                                        {
+                                            //开始字符有< >
+                                            fs = value.Substring(0, 1);
+                                            value = value.Substring(1);
+                                        }
+                                        //增加查询SQL合集
+                                        try
+                                        {
+                                            object tv = GetValue(queryFieldInfo.FieldType, value);
+                                            sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), tv));
+                                            if (tsql.Length > 0) tsql += " OR ";
+                                            tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                        }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        if (Regex.IsMatch(value, @"^\d*[.]{0,1}\d*[~]{1}\d*[.]{0,1}\d*$"))
+                                        {
+                                            string[] temps = value.Split('~');
+                                            if (temps.Length == 2 && !String.IsNullOrEmpty(temps[0].Trim()) && !String.IsNullOrEmpty(temps[1].Trim()))
+                                            {
+                                                try
+                                                {
+                                                    object tv1 = GetValue(queryFieldInfo.FieldType, temps[0]);
+                                                    object tv2 = GetValue(queryFieldInfo.FieldType, temps[1]);
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "q", GetOracleDbType(queryFieldInfo.FieldType), tv1));
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "h", GetOracleDbType(queryFieldInfo.FieldType), tv2));
+                                                    if (tsql.Length > 0) tsql += " OR ";
+                                                    tsql += string.Format("({0} >= {1}q AND {0} <= {1}h)", queryFieldInfo.FieldName, PN);
+                                                }
+                                                catch { }
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            #endregion
+                            #region DateTime
+                            case CSharpType.DateTime:
+                                if (Regex.IsMatch(value, @"^(1|2)\d{3}-\d{1,2}-\d{1,2}[ 0-9:]*$"))
+                                {
+                                    //存数字增加查询SQL合集
+                                    try
+                                    {
+                                        DateTime dt = DateTime.Parse(value);
+                                        sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), dt));
+                                        if (tsql.Length > 0) tsql += " OR ";
+                                        tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                    }
+                                    catch { }
+                                }
+                                else
+                                {
+                                    if (Regex.IsMatch(value, @"^(<|<=|<>|!=|>|>=)(1|2)\d{3}-\d{1,2}-\d{1,2}[ 0-9:]*$"))
+                                    {
+                                        if (Regex.IsMatch(value, @"^(<=|>=|<>|!=)"))
+                                        {
+                                            fs = value.Substring(0, 2);
+                                            if (fs == "!=") fs = "<>";
+                                            value = value.Substring(2);
+                                        }
+                                        else
+                                        {
+                                            fs = value.Substring(0, 1);
+                                            value = value.Substring(1);
+                                        }
+                                        //增加查询SQL合集
+                                        try
+                                        {
+                                            DateTime dt = DateTime.Parse(value);
+                                            sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), dt));
+                                            if (tsql.Length > 0) tsql += " OR ";
+                                            tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                        }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        if (Regex.IsMatch(value, @"^(1|2)\d{3}-\d{1,2}-\d{1,2}[ 0-9:]*[~]{1}(1|2)\d{3}-\d{1,2}-\d{1,2}[ 0-9:]*$"))
+                                        {
+                                            string[] temps = value.Split('~');
+
+
+                                            if (temps.Length == 2 && !String.IsNullOrEmpty(temps[0].Trim()) && !String.IsNullOrEmpty(temps[1].Trim()))
+                                            {
+                                                try
+                                                {
+                                                    DateTime dt01 = DateTime.Parse(temps[0]);
+                                                    DateTime dt02 = DateTime.Parse(temps[1]);
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "q", GetOracleDbType(queryFieldInfo.FieldType), dt01));
+                                                    sp.Add(OracleHelper.NewOracleParameter(PN + "h", GetOracleDbType(queryFieldInfo.FieldType), dt02));
+                                                    if (tsql.Length > 0) tsql += " OR ";
+                                                    tsql += string.Format("({0} >= {1}q AND {0} <= {1}h)", queryFieldInfo.FieldName, PN);
+                                                }
+                                                catch { }
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            #endregion
+                            #region  Boolean
+                            case CSharpType.Boolean:
+                                if (Regex.IsMatch(value, @"^<>|^!="))
+                                {
+                                    fs = "<>";
+                                    value = value.Substring(2);
+                                }
+                                try
+                                {
+                                    bool bt = bool.Parse(value);
+                                    sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), OracleHelper.OraBit(bt)));
+                                    if (tsql.Length > 0) tsql += " OR ";
+                                    tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                }
+                                catch { }
+                                break;
+                            case CSharpType.Char:
+                                if (Regex.IsMatch(value, @"^<>|^!="))
+                                {
+                                    fs = "<>";
+                                    value = value.Substring(2);
+                                }
+                                if (value.Trim().Length == 1)
+                                {
+                                    sp.Add(OracleHelper.NewOracleParameter(PN, GetOracleDbType(queryFieldInfo.FieldType), GetValue(queryFieldInfo.FieldType, value)));
+                                    if (tsql.Length > 0) tsql += " OR ";
+                                    tsql += string.Format("{0} {1} {2}", queryFieldInfo.FieldName, fs, PN);
+                                }
+                                break;
+                            #endregion
+                        }
+
+                        //多匹配循环计数加1；
+                        j++;
+                    }
+
+                    //查询不为空添加到 查询SQL合集中
+                    if (!String.IsNullOrEmpty(tsql))
+                    {
+                        if (sb.Length > 0) sb.Append(" AND ");
+                        sb.AppendFormat("({0})", tsql);
+                    }
+
+                }
+                catch { }
+                //循环总计数加1；
+                i++;
+            }
+            #endregion
+
+            return new QueryInfo(sb.ToString(), sp);
+        }
+
+        public static object GetValue(CSharpType _CSharpType, string value)
+        {
+            switch (_CSharpType)
+            {
+                case CSharpType.String: return value;
+                case CSharpType.Int16: return Int16.Parse(value);
+                case CSharpType.Int32: return Int32.Parse(value);
+                case CSharpType.Boolean: return OracleHelper.OraBit(bool.Parse(value));
+                case CSharpType.DateTime: return DateTime.Parse(value);
+                case CSharpType.Decimal: return Decimal.Parse(value);
+                case CSharpType.Guid: return value;
+                case CSharpType.Byte: return Byte.Parse(value);
+                case CSharpType.Char: return value[0];
+                case CSharpType.Double: return Double.Parse(value);
+                case CSharpType.Single: return Single.Parse(value);
+                default: return value;
+            }
+        }
+
+        public static OracleType GetOracleDbType(CSharpType _CSharpType)
+        {
+            switch (_CSharpType)
+            {
+                case CSharpType.String: return OracleType.VarChar;
+                case CSharpType.Int16: return OracleType.Int16;
+                case CSharpType.Int32: return OracleType.Int32;
+                case CSharpType.Boolean: return OracleType.Char;
+                case CSharpType.DateTime: return OracleType.DateTime;
+                case CSharpType.Decimal: return OracleType.Number;
+                case CSharpType.Guid: return OracleType.VarChar;
+                case CSharpType.Byte: return OracleType.Byte;
+                case CSharpType.Char: return OracleType.Char;
+                case CSharpType.Chars: return OracleType.Char;
+                case CSharpType.Double: return OracleType.Double;
+                case CSharpType.Single: return OracleType.Float;
+                default: return OracleType.VarChar;
+            }
+        }
+
         /// <summary>
-        /// 更具DataReader
+        /// 更具DataReader获取属性值
         /// </summary>
         /// <param name="dr"></param>
         public static T ReaderToInfo<T>(IDataReader dr) where T : new()

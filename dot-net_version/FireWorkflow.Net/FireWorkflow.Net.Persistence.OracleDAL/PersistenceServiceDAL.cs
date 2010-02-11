@@ -1,4 +1,7 @@
-﻿using System;
+﻿/* 
+ * @author 无忧lwz0721@gmail.com
+ */
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Data;
@@ -34,10 +37,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /************            Persistence methods for process instance    **********/
         /************                                                        **********/
         /******************************************************************************/
-        //插入或者更新ProcessInstance流程实例
+        /// <summary>
+        /// 插入或者更新ProcessInstance流程实例
+        /// </summary>
         public bool saveOrUpdateProcessInstance(IProcessInstance processInstance)
         {
-            
             if (String.IsNullOrEmpty(processInstance.getId()))
             {
                 String processInstanceId = Guid.NewGuid().ToString().Replace("-","");
@@ -94,160 +98,335 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             }
         }
 
-        //通过ID获得“活的”ProcessInstance对象。
-        //“活的”是指ProcessInstance.state=INITIALIZED Or ProcessInstance.state=STARTED Or ProcessInstance=SUSPENDED的流程实例
+        /// <summary>
+        /// 通过ID获得“活的”ProcessInstance对象。
+        /// “活的”是指ProcessInstance.state=INITIALIZED Or ProcessInstance.state=STARTED Or ProcessInstance=SUSPENDED的流程实例
+        /// </summary>
         public IProcessInstance findAliveProcessInstanceById(String id) {
-            string select = "SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1 and ( state=" + IProcessInstance.INITIALIZED
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1 and ( state=" + IProcessInstance.INITIALIZED
                     + " or state=" + IProcessInstance.RUNNING + ")";
-            OracleConnection conn = new OracleConnection(connectionString);
-            OracleDataReader reader = null;
-            try
-            {
-                OracleParameter[] selectParms = { 
-				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
-				};
-                reader = OracleHelper.ExecuteReader(conn, CommandType.Text, select, selectParms);
-                if (reader.Read())
+                OracleDataReader reader = null;
+                try
                 {
-                    IProcessInstance iProcessInstance = OracleHelper.ReaderToInfo<ProcessInstance>(reader);
-                    return iProcessInstance;
-                }
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-                if (conn.State != ConnectionState.Closed)
-                {
-                    conn.Close();
-                    conn.Dispose();
-                }
-            }
-            return null;        
-        }
-
-         // 通过ID获得ProcessInstance对象。
-         // (Engine没有引用到该方法，提供给业务系统使用，20090303)
-        public IProcessInstance findProcessInstanceById(String id)
-        {
-            string select = "SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1";
-            OracleConnection conn = new OracleConnection(connectionString);
-            OracleDataReader reader = null;
-            try
-            {
-                OracleParameter[] selectParms = { 
-				    OracleHelper.NewOracleParameter(":1", OracleType.VarChar,100, id)
-				};
-                reader = OracleHelper.ExecuteReader(conn, CommandType.Text, select, selectParms);
-                if (reader.Read())
-                {
-                    IProcessInstance iProcessInstance = OracleHelper.ReaderToInfo<ProcessInstance>(reader);
-                    return iProcessInstance;
-                }
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-                if (conn.State != ConnectionState.Closed)
-                {
-                    conn.Close();
-                    conn.Dispose();
-                }
-            }
-            return null;  
-        }
-
-
-        /**
-         * 查找并返回同一个业务流程的所有实例
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param processId The id of the process definition.
-         * @return A list of processInstance
-         */
-        public List<IProcessInstance> findProcessInstancesByProcessId(String processId)
-        {
-            List<IProcessInstance> processInstances = new List<IProcessInstance>();
-            string select = "select * from t_ff_rt_processinstance order by created_time";
-            OracleConnection connection = new OracleConnection(this.connectionString);
-            OracleParameter[] selectParms = { 
-				//OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId)
-		    };
-            OracleDataReader reader = null;
-
-            try
-            {
-                reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, selectParms);
-                if (reader != null)
-                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
                     while (reader.Read())
                     {
-                        IProcessInstance processInstance = OracleHelper.ReaderToInfo<ProcessInstance>(reader);
-                        processInstances.Add(processInstance);
+                        IProcessInstance info = OracleDataReaderToInfo.GetProcessInstance(reader);
+                        return info;
                     }
                 }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 通过ID获得ProcessInstance对象。
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public IProcessInstance findProcessInstanceById(String id)
+        {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
+                    while (reader.Read())
+                    {
+                        IProcessInstance info = OracleDataReaderToInfo.GetProcessInstance(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 查找并返回同一个业务流程的所有实例
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        /// <param name="processId">The id of the process definition.</param>
+        /// <returns>A list of processInstance</returns>
+        public List<IProcessInstance> findProcessInstancesByProcessId(String processId)
+        {
+            List<IProcessInstance> infos = new List<IProcessInstance>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_rt_processinstance where process_id=:1 order by created_time";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId)
+                        );
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IProcessInstance info = OracleDataReaderToInfo.GetProcessInstance(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
+
+        /// <summary>
+        /// 查找并返回同一个指定版本业务流程的所有实例
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        /// <param name="processId">The id of the process definition.</param>
+        /// <param name="version">版本号</param>
+        /// <returns>A list of processInstance</returns>
+        public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId, int version)
+        {
+            List<IProcessInstance> infos = new List<IProcessInstance>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_rt_processinstance where process_id=:1 and version=:2 order by created_time";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId),
+                        OracleHelper.NewOracleParameter(":2", OracleType.Int32, version)
+                        );
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IProcessInstance info = OracleDataReaderToInfo.GetProcessInstance(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
+
+        /// <summary>
+        /// 计算活动的子流程实例的数量
+        /// </summary>
+        /// <param name="taskInstanceId">父TaskInstance的Id</param>
+        /// <returns></returns>
+        public int getAliveProcessInstanceCountForParentTaskInstance(String taskInstanceId)
+        {
+            String select = String.Format("select count(*) from t_ff_rt_processinstance where parent_taskinstance_id=:1 and state in({0},{1})",
+                IProcessInstance.INITIALIZED, IProcessInstance.RUNNING);
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
+		    };
+
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
+
+        /// <summary>
+        /// 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
+        /// </summary>
+        public bool abortProcessInstance(ProcessInstance processInstance)
+        {
+            OracleTransaction transaction = OracleHelper.GetOracleTransaction(this.connectionString);
+            try
+            {
+                // 更新流程状态，设置为canceled
+                DateTime now = rtCtx.getCalendarService().getSysDate();
+                String processSql = "update t_ff_rt_processinstance set state=" + IProcessInstance.CANCELED
+                        + ",end_time=:1 where id=:2 ";
+                int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, processSql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, now),
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+
+                // 更新所有的任务实例状态为canceled
+                String taskSql = " update t_ff_rt_taskinstance set state=" + ITaskInstance.CANCELED
+                        + ",end_time=:1,can_be_withdrawn=0 " + "  where processinstance_id=:2 and (state=0 or state=1)";
+                count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, taskSql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, now),
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                // 更新所有工作项的状态为canceled
+                String workItemSql = " update t_ff_rt_workitem set state="
+                        + IWorkItem.CANCELED
+                        + ",end_time=:1  "
+                        + " where taskinstance_id in (select a.id  from t_ff_rt_taskinstance a,t_ff_rt_workitem b where a.id=b.taskinstance_id and a.processinstance_id=:2 ) and (state=0 or state=1) ";
+                count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, now),
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                // 删除所有的token
+                String tokenSql = " delete from t_ff_rt_token where processinstance_id=:1  ";
+                count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, tokenSql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                // 数据库操作成功后，更新对象的状态
+                processInstance.setState(IProcessInstance.CANCELED);
+
+                transaction.Commit();
+                return true;
+
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
             }
             finally
             {
-                if (reader != null)
+                if (transaction.Connection.State != ConnectionState.Closed)
                 {
-                    reader.Close();
-                    reader = null;
-                }
-                if (connection.State != ConnectionState.Closed)
-                {
-                    connection.Close();
-                    connection = null;
+                    transaction.Connection.Close();
+                    transaction.Dispose();
                 }
             }
-            return processInstances;
-
         }
 
+        /// <summary>
+        /// 挂起流程实例
+        /// </summary>
+        public bool suspendProcessInstance(ProcessInstance processInstance) {
+            OracleTransaction transaction = OracleHelper.GetOracleTransaction(this.connectionString);
+            try
+            {
 
-        /**
-         * 查找并返回同一个指定版本业务流程的所有实例
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param processId The id of the process definition.
-         * @return A list of processInstance
-         */
-        public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId, int version) { throw new NotImplementedException(); }
+                String sql = " update t_ff_rt_processinstance set suspended=1 where id=:1 ";
+                int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
-        /**
-         * 计算活动的子流程实例的数量
-         * @param taskInstanceId 父TaskInstance的Id
-         * @return
-         */
-        public int getAliveProcessInstanceCountForParentTaskInstance(String taskInstanceId) { throw new NotImplementedException(); }
+                // 挂起对应的TaskInstance
+                String sql2 = " update t_ff_rt_taskinstance set suspended=1 where processinstance_id=:1 ";
+                count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql2,
+                    OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
+                processInstance.setSuspended(true);
 
-        /**
-         * 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
-         * @param processInstanceId
-         */
-        public bool abortProcessInstance(ProcessInstance processInstance) { throw new NotImplementedException(); }
+                transaction.Commit();
+                return true;
 
-        /**
-         * 挂起流程实例
-         * @param processInstance
-         */
-        public bool suspendProcessInstance(ProcessInstance processInstance) { throw new NotImplementedException(); }
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
+            finally
+            {
+                if (transaction.Connection.State != ConnectionState.Closed)
+                {
+                    transaction.Connection.Close();
+                    transaction.Dispose();
+                }
+            }
+        }
 
-        /**
-         * 恢复流程实例
-         * @param processInstance
-         */
-        public bool restoreProcessInstance(ProcessInstance processInstance) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 恢复流程实例
+        /// </summary>
+        public bool restoreProcessInstance(ProcessInstance processInstance)
+        {
+            OracleTransaction transaction = OracleHelper.GetOracleTransaction(this.connectionString);
+            try
+            {
+                String sql = " update t_ff_rt_processinstance set suspended=0 where id=:1 ";
+                int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
+                // 恢复对应的TaskInstance
+                String sql2 = " update t_ff_rt_taskinstance set suspended=0 where processinstance_id=:1";
+                count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql2,
+                    OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
+                processInstance.setSuspended(false);
 
+                transaction.Commit();
+                return true;
 
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
+            finally
+            {
+                if (transaction.Connection.State != ConnectionState.Closed)
+                {
+                    transaction.Connection.Close();
+                    transaction.Dispose();
+                }
+            }
+        }
 
         /******************************************************************************/
         /************                                                        **********/
@@ -255,24 +434,24 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /************            Persistence methods for task instance       **********/
         /************                                                        **********/
         /******************************************************************************/
-        /**
-         * 插入或者更新TaskInstance。<br/>
-         * Save or update task instance. If the taskInstance.id is null then insert a new task instance record
-         * and generate a new id for it { throw new NotImplementedException(); }
-         * otherwise update the existent one. 
-         * @param taskInstance
-         */
+
+        /// <summary>
+        /// <para>插入或者更新TaskInstance。</para>
+        /// <para>Save or update task instance. If the taskInstance.id is null then insert a new task instance record</para>
+        /// <para>and generate a new id for it { throw new NotImplementedException(); }</para>
+        /// <para>otherwise update the existent one. </para>
+        /// </summary>
         public bool saveOrUpdateTaskInstance(ITaskInstance taskInstance)
         {
             if (String.IsNullOrEmpty(taskInstance.getId()))
             {
                 string taskInstanceId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_TASKINSTANCE (" +
-				"ID, BIZ_TYPE, TASK_ID, ACTIVITY_ID, NAME, " +
-				"DISPLAY_NAME, STATE, SUSPENDED, TASK_TYPE, CREATED_TIME, " +
-				"STARTED_TIME, EXPIRED_TIME, END_TIME, ASSIGNMENT_STRATEGY, PROCESSINSTANCE_ID, " +
-				"PROCESS_ID, VERSION, TARGET_ACTIVITY_ID, FROM_ACTIVITY_ID, STEP_NUMBER, " +
-				"CAN_BE_WITHDRAWN )VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "ID, BIZ_TYPE, TASK_ID, ACTIVITY_ID, NAME, " +
+                "DISPLAY_NAME, STATE, SUSPENDED, TASK_TYPE, CREATED_TIME, " +
+                "STARTED_TIME, EXPIRED_TIME, END_TIME, ASSIGNMENT_STRATEGY, PROCESSINSTANCE_ID, " +
+                "PROCESS_ID, VERSION, TARGET_ACTIVITY_ID, FROM_ACTIVITY_ID, STEP_NUMBER, " +
+                "CAN_BE_WITHDRAWN )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21)";
     			OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId), 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
@@ -303,11 +482,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             else
             {
                 string update = "UPDATE T_FF_RT_TASKINSTANCE SET " +
-                "BIZ_TYPE=?, TASK_ID=?, ACTIVITY_ID=?, NAME=?, DISPLAY_NAME=?, " +
-                "STATE=?, SUSPENDED=?, TASK_TYPE=?, CREATED_TIME=?, STARTED_TIME=?, " +
-                "EXPIRED_TIME=?, END_TIME=?, ASSIGNMENT_STRATEGY=?, PROCESSINSTANCE_ID=?, PROCESS_ID=?, " +
-                "VERSION=?, TARGET_ACTIVITY_ID=?, FROM_ACTIVITY_ID=?, STEP_NUMBER=?, CAN_BE_WITHDRAWN=?" +
-                " WHERE ID=?";
+                "BIZ_TYPE=:2, TASK_ID=:3, ACTIVITY_ID=:4, NAME=:5, DISPLAY_NAME=:6, " +
+                "STATE=:7, SUSPENDED=:8, TASK_TYPE=:9, CREATED_TIME=:10, STARTED_TIME=:11, " +
+                "EXPIRED_TIME=:12, END_TIME=:13, ASSIGNMENT_STRATEGY=:14, PROCESSINSTANCE_ID=:15, PROCESS_ID=:16, " +
+                "VERSION=:17, TARGET_ACTIVITY_ID=:18, FROM_ACTIVITY_ID=:19, STEP_NUMBER=:20, CAN_BE_WITHDRAWN=:21" +
+                " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
     				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskInstance.getTaskId()), 
@@ -337,74 +516,252 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             }
         }
 
-        /**
-         * 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。<br/>
-         * "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
-         * @param taskInstanceId
-         */
-        public bool abortTaskInstance(TaskInstance taskInstance) { throw new NotImplementedException(); }
-
-        /**
-         * 返回“活的”TaskInstance。<br/>
-         * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
-         * @param id
-         * @return
-         */
-        public ITaskInstance findAliveTaskInstanceById(String id) { throw new NotImplementedException(); }
-
-        /**
-         * 获得activity的“活的”TaskInstance的数量<br/>
-         * “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
-         * @param processInstanceId
-         * @param activityId
-         * @return
-         */
-        public int getAliveTaskInstanceCountForActivity(String processInstanceId, String activityId) { throw new NotImplementedException(); }
-
-        /**
-         * 返回某个Task已经结束的TaskInstance的数量。<br/>
-         * “已经结束”是指TaskInstance.state=COMPLETED。
-         * @param processInstanceId
-         * @param taskId
-         * @return
-         */
-        public int getCompletedTaskInstanceCountForTask(String processInstanceId, String taskId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。
+        /// "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
+        /// </summary>
+        public bool abortTaskInstance(TaskInstance taskInstance)
+        {
+            OracleTransaction transaction = OracleHelper.GetOracleTransaction(connectionString);
+            try
+            {
+                String sql = "update t_ff_rt_taskinstance set state=" + ITaskInstance.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
+                int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, rtCtx.getCalendarService().getSysDate()),
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
 
-        /**
-         * Find the task instance by id
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param id
-         * @return
-         */
-        public ITaskInstance findTaskInstanceById(String id) { throw new NotImplementedException(); }
+                // 将与之关联的WorkItem取消掉
+                String workItemSql = " update t_ff_rt_workitem set state=" + IWorkItem.CANCELED + ",end_time=:1  "
+                        + " where taskinstance_id =:2 ";
+                count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, rtCtx.getCalendarService().getSysDate()),
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.getId())
+                    );
+                if (count <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
-        /**
-         * 查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param processInstanceId  the id of the process instance
-         * @param activityId  if the activityId is null, then return all the taskinstance of the processinstance{ throw new NotImplementedException(); }
-         * @return
-         */
-        public List<ITaskInstance> findTaskInstancesForProcessInstance(String processInstanceId, String activityId) { throw new NotImplementedException(); }
+                taskInstance.setState(ITaskInstance.CANCELED);
 
+                transaction.Commit();
+                return true;
 
-        /**
-         * 查询出同一个stepNumber的所有TaskInstance实例
-         * @param processInstanceId
-         * @param stepNumber
-         * @return
-         */
-        public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(String processInstanceId, Int32 stepNumber) { throw new NotImplementedException(); }
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
+            finally
+            {
+                if (transaction.Connection.State != ConnectionState.Closed)
+                {
+                    transaction.Connection.Close();
+                    transaction.Dispose();
+                }
+            }
+        }
 
+        /// <summary>
+        /// 返回“活的”TaskInstance。
+        /// “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
+        /// </summary>
+        public ITaskInstance findAliveTaskInstanceById(String id) {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "select * from t_ff_rt_taskinstance where id=:1 and  (state=" + ITaskInstance.INITIALIZED
+                        + " or state=" + ITaskInstance.RUNNING + " )";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
+                    while (reader.Read())
+                    {
+                        ITaskInstance info = OracleDataReaderToInfo.GetTaskInstance(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
 
-        /**
-         * 调用数据库自身的机制所定TaskInstance实例。<br/>
-         * 该方法主要用于工单的签收操作，在签收之前先锁定与之对应的TaskInstance。
-         * @param taskInstanceId
-         * @return
-         */
-        public bool lockTaskInstance(String taskInstanceId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 获得activity的“活的”TaskInstance的数量
+        /// “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
+        /// </summary>
+        public int getAliveTaskInstanceCountForActivity(String processInstanceId, String activityId)
+        {
+            String select = "select count(*) from T_FF_RT_TASKINSTANCE where " + " (state=" + ITaskInstance.INITIALIZED
+                + " or state=" + ITaskInstance.RUNNING + ")" + " and activity_id=:1 and processinstance_id=:2";
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 200, activityId), 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId), 
+		    };
+
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
+
+        /// <summary>
+        /// 返回某个Task已经结束的TaskInstance的数量
+        /// “已经结束”是指TaskInstance.state=COMPLETED。
+        /// </summary>
+        public int getCompletedTaskInstanceCountForTask(String processInstanceId, String taskId) {
+            String select = "select count(*) from T_FF_RT_TASKINSTANCE where state=" + ITaskInstance.COMPLETED
+                        + " and task_id=:1 and processinstance_id=:2 ";
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 300, taskId), 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId), 
+		    };
+
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
+
+        /// <summary>
+        /// Find the task instance by id
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public ITaskInstance findTaskInstanceById(String id) {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "select * from t_ff_rt_taskinstance where id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
+                    while (reader.Read())
+                    {
+                        ITaskInstance info = OracleDataReaderToInfo.GetTaskInstance(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<ITaskInstance> findTaskInstancesForProcessInstance(String processInstanceId, String activityId)
+        {
+            List<ITaskInstance> infos = new List<ITaskInstance>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select;
+                OracleParameter[] selectParms;
+                if (String.IsNullOrEmpty(activityId))
+                {
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by created_time";
+                    selectParms = new OracleParameter[]{ 
+        				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId)
+        		    };
+                }
+                else
+                {
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 and activity_id=:2 order by created_time";
+                    selectParms = new OracleParameter[]{  
+        				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId), 
+				        OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 200, activityId)
+        		    };
+                }
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, selectParms);
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            ITaskInstance info = OracleDataReaderToInfo.GetTaskInstance(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
+
+        /// <summary>
+        /// 查询出同一个stepNumber的所有TaskInstance实例
+        /// </summary>
+        public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(String processInstanceId, Int32 stepNumber)
+        {
+            List<ITaskInstance> infos = new List<ITaskInstance>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select;
+                OracleParameter[] selectParms;
+                if (stepNumber>0)
+                {
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by created_time";
+                    selectParms = new OracleParameter[]{ 
+        				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId)
+        		    };
+                }
+                else
+                {
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 and step_number=:2 order by created_time";
+                    selectParms = new OracleParameter[]{  
+        				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId), 
+				        OracleHelper.NewOracleParameter(":2", OracleType.Int32,stepNumber)
+        		    };
+                }
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, selectParms);
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            ITaskInstance info = OracleDataReaderToInfo.GetTaskInstance(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
+
+        /// <summary>
+        /// 调用数据库自身的机制所定TaskInstance实例。
+        /// 该方法主要用于工单的签收操作，在签收之前先锁定与之对应的TaskInstance。
+        /// </summary>
+        public bool lockTaskInstance(String taskInstanceId) {
+            if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, "select * from t_ff_rt_taskinstance where id=:1 for update",
+                OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)) != 1)
+                return false;
+            else return true;
+        }
 
 
         /******************************************************************************/
@@ -413,11 +770,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /************            Persistence methods for workitem            **********/
         /************                                                        **********/
         /******************************************************************************/
-        /**
-         * 插入或者更新WorkItem<br/>
-         * save or update workitem
-         * @param workitem
-         */
+
+        /// <summary>
+        /// 插入或者更新WorkItem
+        /// </summary>
         public bool saveOrUpdateWorkItem(IWorkItem workitem)
         {
             if (String.IsNullOrEmpty(workitem.getId()))
@@ -425,8 +781,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 String workItemId = Guid.NewGuid().ToString().Replace("-", ""); ;
 
                 string insert = "INSERT INTO T_FF_RT_WORKITEM (" +
-                "ID, STATE, CREATED_TIME, CLAIMED_TIME, END_TIME, " +
-                "ACTOR_ID, COMMENTS, TASKINSTANCE_ID )VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+                    "ID, STATE, CREATED_TIME, CLAIMED_TIME, END_TIME, " +
+                    "ACTOR_ID, COMMENTS, TASKINSTANCE_ID )VALUES(:1, :2, :3, :4, :5, :6, :7, :8)";
                 OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workItemId), 
     				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.getState()), 
@@ -444,9 +800,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             else
             {
                 string update = "UPDATE T_FF_RT_WORKITEM SET " +
-                "STATE=?, CREATED_TIME=?, CLAIMED_TIME=?, END_TIME=?, ACTOR_ID=?, " +
-                "COMMENTS=?, TASKINSTANCE_ID=?" +
-                " WHERE ID=?";
+                    "STATE=:2, CREATED_TIME=:3, CLAIMED_TIME=:4, END_TIME=:5, ACTOR_ID=:6, " +
+                    "COMMENTS=:7, TASKINSTANCE_ID=:8" +
+                    " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
     				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.getState()), 
     				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.getCreatedTime()), 
@@ -463,152 +819,400 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             }
         }
 
+        /// <summary>
+        ///  返回任务实例的所有"活的"WorkItem的数量。
+        ///  "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem。
+        /// </summary>
+        public Int32 getAliveWorkItemCountForTaskInstance(String taskInstanceId)
+        {
+            String select = "select count(*) from t_ff_rt_workitem where taskinstance_id=:1 and (state in (0,1,3))";
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId),
+		    };
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
 
+        /// <summary>
+        /// 查询任务实例的所有"已经结束"WorkItem。
+        /// 所以必须有关联条件WorkItem.state=IWorkItem.COMPLTED
+        /// </summary>
+        /// <param name="taskInstanceId">任务实例Id</param>
+        public List<IWorkItem> findCompletedWorkItemsForTaskInstance(String taskInstanceId)
+        {
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_rt_workitem where taskinstance_id=:1 and state=" + IWorkItem.COMPLETED;
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
+                        );
+                    if (reader != null)
+                    {
+                        ITaskInstance iTaskInstance = findTaskInstanceById(taskInstanceId);
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
+        /// <summary>
+        /// 查询某任务实例的所有WorkItem
+        /// </summary>
+        public List<IWorkItem> findWorkItemsForTaskInstance(String taskInstanceId)
+        {
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_rt_workitem where taskinstance_id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
+                        );
+                    if (reader != null)
+                    {
+                        ITaskInstance iTaskInstance = findTaskInstanceById(taskInstanceId);
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
-        /**
-         * 返回任务实例的所有"活的"WorkItem的数量。<br>
-         * "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem。
-         * @param taskInstanceId
-         * @return
-         */
-        public Int32 getAliveWorkItemCountForTaskInstance(String taskInstanceId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 删除处于初始化状态的workitem。
+        /// 此方法用于签收Workitem时，删除其他Actor的WorkItem
+        /// </summary>
+        public bool deleteWorkItemsInInitializedState(String taskInstanceId)
+        {
+            String delete = "delete from t_ff_rt_workitem where taskinstance_id=:1 and  state=" + IWorkItem.INITIALIZED;
+            OracleParameter[] deleteParms = { 
+                 OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
+			};
+            if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, delete, deleteParms) <= 0)
+                return false;
+            else return true;
+        }
 
-        /**
-         * 查询任务实例的所有"已经结束"WorkItem。<br>
-         * 
-         * 所以必须有关联条件WorkItem.state=IWorkItem.COMPLTED 
-         *
-         * @param taskInstanceId 任务实例Id
-         * @return
-         */
-        public List<IWorkItem> findCompletedWorkItemsForTaskInstance(String taskInstanceId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find workItem by id
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public IWorkItem findWorkItemById(String id)
+        {
+            WorkItem workItem;
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = " select * from t_ff_rt_workitem where id=:1 ";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
+                    if (reader != null)
+                    {
+                        if (reader.Read())
+                        {
+                            workItem = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ITaskInstance iTaskInstance = findTaskInstanceById(workItem.getTaskInstanceId());
+                            if (iTaskInstance != null)
+                            {
+                                ((WorkItem)workItem).setTaskInstance(iTaskInstance);
+                            }
+                            return workItem;
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
 
-        /**
-         * 查询某任务实例的所有WorkItem
-         * @param taskInstanceId
-         * @return
-         */
-        public List<IWorkItem> findWorkItemsForTaskInstance(String taskInstanceId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find all workitems for task
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findWorkItemsForTask(String taskid)
+        {
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and b.task_id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskid)
+                        );
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
+        /// <summary>
+        /// 根据操作员的Id返回其待办工单。如果actorId==null，则返回系统所有的待办任务
+        /// 待办工单是指状态等于INITIALIZED或STARTED工单
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findTodoWorkItems(String actorId)
+        {
+            return findTodoWorkItems(actorId,String.Empty);
+        }
 
-        /**
-         * 删除处于初始化状态的workitem。
-         * 此方法用于签收Workitem时，删除其他Actor的WorkItem
-         * @param taskInstanceId
-         */
-        public bool deleteWorkItemsInInitializedState(String taskInstanceId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 查找操作员在某个流程实例中的待办工单。
+        /// 如果processInstanceId为空，则等价于调用findTodoWorkItems(String actorId)
+        /// 待办工单是指状态等于INITIALIZED或STARTED工单
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findTodoWorkItems(String actorId, String processInstanceId)
+        {
+            if (String.IsNullOrEmpty(processInstanceId)) return findTodoWorkItems(actorId);
 
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                OracleParameter[] selectParms;
+                string select;
+                if (String.IsNullOrEmpty(processInstanceId))
+                {
+                    if (String.IsNullOrEmpty(actorId))
+                    {
+                        select = "select * from t_ff_rt_workitem where  state in (" + IWorkItem.INITIALIZED + "," + IWorkItem.RUNNING + ")  ";
+                        selectParms = null;
+                    }
+                    else
+                    {
+                        select = "select * from t_ff_rt_workitem where state in (" + IWorkItem.INITIALIZED + "," + IWorkItem.RUNNING +
+                            ") and actor_id=:1  ";
+                        selectParms = new OracleParameter[]{ 
+                            OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId)
+            		    };
+                    }
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(actorId))
+                    {
+                        throw new Exception("挡流程（processInstanceId）不为空时，工单操作员（actorId）不能为空！");
+                    }
+                    select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
+                        IWorkItem.INITIALIZED + " ," + IWorkItem.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
+                    selectParms = new OracleParameter[]{ 
+                            OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId),
+                            OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, processInstanceId)
+            		    };
 
-        /**
-         * Find workItem by id
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param id
-         * @return
-         */
-        public IWorkItem findWorkItemById(String id) { throw new NotImplementedException(); }
+                }
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, selectParms);
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
+        /// <summary>
+        /// 查找操作员在某个流程某个任务上的待办工单。
+        /// actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+        /// 待办工单是指状态等于INITIALIZED或STARTED工单
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findTodoWorkItems(String actorId, String processId, String taskId)
+        {
+            QueryField queryField = new QueryField();
+            queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
+            queryField.Add(new QueryFieldInfo("process_id", CSharpType.String, processId));
+            queryField.Add(new QueryFieldInfo("task_id", CSharpType.String, taskId));
+            QueryInfo queryInfo = OracleHelper.GetFormatQuery(queryField);
 
-        /**
-         *
-         * Find all workitems for task
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param taskid
-         * @return
-         */
-        public List<IWorkItem> findWorkItemsForTask(String taskid) { throw new NotImplementedException(); }
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = String.Format(
+                    "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    IWorkItem.INITIALIZED,
+                    IWorkItem.RUNNING,
+                    queryInfo.QueryStringAnd);
 
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, ((List<OracleParameter>)queryInfo.ListQueryParameters).ToArray());
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
-        /**
-         * 根据操作员的Id返回其待办工单。如果actorId==null，则返回系统所有的待办任务<br/>
-         * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param actorId
-         * @return
-         */
-        public List<IWorkItem> findTodoWorkItems(String actorId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 根据操作员的Id返回其已办工单。如果actorId==null，则返回系统所有的已办任务
+        /// 已办工单是指状态等于COMPLETED或CANCELED的工单
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findHaveDoneWorkItems(String actorId)
+        {
+            return findHaveDoneWorkItems(actorId, string.Empty);
+        }
 
-        /**
-         * 查找操作员在某个流程实例中的待办工单。
-         * 如果processInstanceId为空，则等价于调用findTodoWorkItems(String actorId)
-         * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param actorId
-         * @param processInstanceId
-         * @return
-         */
-        public List<IWorkItem> findTodoWorkItems(String actorId, String processInstanceId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 查找操作员在某个流程实例中的已办工单。
+        /// 如果processInstanceId为空，则等价于调用findHaveDoneWorkItems(String actorId)
+        /// 已办工单是指状态等于COMPLETED或CANCELED的工单
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String processInstanceId)
+        {
+            QueryField queryField = new QueryField();
+            queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
+            queryField.Add(new QueryFieldInfo("processinstance_id", CSharpType.String, processInstanceId));
+            QueryInfo queryInfo = OracleHelper.GetFormatQuery(queryField);
 
-        /**
-         * 查找操作员在某个流程某个任务上的待办工单。
-         * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
-         * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param actorId
-         * @param processId
-         * @param taskId
-         * @return
-         */
-        public List<IWorkItem> findTodoWorkItems(String actorId, String processId, String taskId) { throw new NotImplementedException(); }
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = String.Format(
+                    "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    IWorkItem.COMPLETED,
+                    IWorkItem.CANCELED,
+                    queryInfo.QueryStringAnd);
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, ((List<OracleParameter>)queryInfo.ListQueryParameters).ToArray());
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
-        /**
-         * 根据操作员的Id返回其已办工单。如果actorId==null，则返回系统所有的已办任务
-         * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param actorId
-         * @return
-         */
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 查找操作员在某个流程某个任务上的已办工单。
+        /// actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+        ///  已办工单是指状态等于COMPLETED或CANCELED的工单
+        ///  (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String processId, String taskId)
+        {
+            QueryField queryField = new QueryField();
+            queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
+            queryField.Add(new QueryFieldInfo("process_id", CSharpType.String, processId));
+            queryField.Add(new QueryFieldInfo("task_id", CSharpType.String, taskId));
+            QueryInfo queryInfo = OracleHelper.GetFormatQuery(queryField);
 
-        /**
-         * 查找操作员在某个流程实例中的已办工单。
-         * 如果processInstanceId为空，则等价于调用findHaveDoneWorkItems(String actorId)
-         * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param actorId
-         * @param processInstanceId
-         * @return
-         */
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String processInstanceId) { throw new NotImplementedException(); }
+            List<IWorkItem> infos = new List<IWorkItem>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = String.Format(
+                    "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    IWorkItem.COMPLETED,
+                    IWorkItem.CANCELED,
+                    queryInfo.QueryStringAnd);
 
-        /**
-         * 查找操作员在某个流程某个任务上的已办工单。
-         * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
-         * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param actorId
-         * @param processId
-         * @param taskId
-         * @return
-         */
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String processId, String taskId) { throw new NotImplementedException(); }
-
-
-
-        /*************************Persistence methods for joinpoint*********************/
-        /**
-         * Save joinpoint
-         *
-         * @param joinPoint
-         */
-        //    public bool saveOrUpdateJoinPoint(IJoinPoint joinPoint){ throw new NotImplementedException(); }
-
-        /**
-         * Find the joinpoint id
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param id
-         * @return
-         */
-        //    public IJoinPoint findJoinPointById(String id){ throw new NotImplementedException(); }
-
-        /**
-         * Find all the joinpoint of the process instance, and the synchronizerId of the joinpoint must equals to the seconds argument.
-         * @param processInstanceId
-         * @param synchronizerId if the synchronizerId is null ,then all the joinpoint of the process instance will be returned.
-         * @return
-         */
-        //    public List<IJoinPoint> findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId){ throw new NotImplementedException(); }
-
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, ((List<OracleParameter>)queryInfo.ListQueryParameters).ToArray());
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
+                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
+                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
         /******************************************************************************/
         /************                                                        **********/
@@ -616,18 +1220,16 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /************            Persistence methods for token               **********/
         /************                                                        **********/
         /******************************************************************************/
-        /**
-         * Save token
-         * @param token
-         */
+
+
         public bool saveOrUpdateToken(IToken token)
         {
             if (String.IsNullOrEmpty(token.getId()))
             {
                 String tokenId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_TOKEN (" +
-                "ID, ALIVE, VALUE, NODE_ID, PROCESSINSTANCE_ID, " +
-                "STEP_NUMBER, FROM_ACTIVITY_ID )VALUES(?, ?, ?, ?, ?, ?, ?)";
+                    "ID, ALIVE, VALUE, NODE_ID, PROCESSINSTANCE_ID, " +
+                    "STEP_NUMBER, FROM_ACTIVITY_ID )VALUES(:1, :2, :3, :4, :5, :6, :7)";
                 OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, tokenId), 
     				OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.isAlive())), 
@@ -644,9 +1246,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             else
             {
                 string update = "UPDATE T_FF_RT_TOKEN SET " +
-                    "ALIVE=?, VALUE=?, NODE_ID=?, PROCESSINSTANCE_ID=?, STEP_NUMBER=?, " +
-                    "FROM_ACTIVITY_ID=?" +
-                    " WHERE ID=?";
+                    "ALIVE=:2, VALUE=:3, NODE_ID=:4, PROCESSINSTANCE_ID=:5, STEP_NUMBER=:6, " +
+                    "FROM_ACTIVITY_ID=:7" +
+                    " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
 					OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.isAlive())), 
 					OracleHelper.NewOracleParameter(":3", OracleType.Int32, token.getValue()), 
@@ -662,55 +1264,151 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             }
         }
 
-        /**
-         * 统计流程任意节点的活动Token的数量。对于Activity节点，该数量只能取值1或者0，大于1表明有流程实例出现异常。
-         * @param processInstanceId
-         * @param nodeId
-         * @return
-         */
-        public int getAliveTokenCountForNode(String processInstanceId, String nodeId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 统计流程任意节点的活动Token的数量。对于Activity节点，该数量只能取值1或者0，大于1表明有流程实例出现异常。
+        /// </summary>
+        public int getAliveTokenCountForNode(String processInstanceId, String nodeId)
+        {
+            String select = String.Format("select count(*) from T_FF_RT_TOKEN where alive=1 and processinstance_id=:1 and node_id =:2",
+                IProcessInstance.INITIALIZED, IProcessInstance.RUNNING);
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId), 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 200, nodeId)
+		    };
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
 
-        /**
-         * 查找到状态为Dead的token
-         * @param id
-         * @return
-         */
-        //    public IToken findDeadTokenById(String id){ throw new NotImplementedException(); }
+        /// <summary>
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        public IToken findTokenById(String id)
+        {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "select * from t_ff_rt_token where id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
+                    while (reader.Read())
+                    {
+                        IToken info = OracleDataReaderToInfo.GetToken(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
 
-        /**
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         * @param id
-         * @return
-         */
-        public IToken findTokenById(String id) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find all the tokens for process instance ,and the nodeId of the token must equals to the second argument.
+        /// </summary>
+        /// <param name="processInstanceId">the id of the process instance</param>
+        /// <param name="nodeId">if the nodeId is null ,then return all the tokens of the process instance.</param>
+        /// <returns></returns>
+        public List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId)
+        {
+            if (String.IsNullOrEmpty(processInstanceId)) return null;
+            QueryField queryField = new QueryField();
+            queryField.Add(new QueryFieldInfo("processinstance_id", CSharpType.String, processInstanceId));
+            queryField.Add(new QueryFieldInfo("node_id", CSharpType.String, nodeId));
+            QueryInfo queryInfo = OracleHelper.GetFormatQuery(queryField);
 
-        /**
-         * Find all the tokens for process instance ,and the nodeId of the token must equals to the second argument.
-         * @param processInstanceId the id of the process instance
-         * @param nodeId if the nodeId is null ,then return all the tokens of the process instance.
-         * @return
-         */
-        public List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId) { throw new NotImplementedException(); }
+            List<IToken> infos = new List<IToken>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = String.Format("select * from t_ff_rt_token{0}", queryInfo.QueryStringWhere);
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, ((List<OracleParameter>)queryInfo.ListQueryParameters).ToArray());
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            IToken info = OracleDataReaderToInfo.GetToken(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
-        /**
-         * 删除某个节点的所有token
-         * @param processInstanceId
-         * @param nodeId
-         */
-        public bool deleteTokensForNode(String processInstanceId, String nodeId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 删除某个节点的所有token
+        /// </summary>
+        public bool deleteTokensForNode(String processInstanceId, String nodeId)
+        {
+            String delete = "delete from t_ff_rt_token where processinstance_id = :1 and node_id=:2 ";
+            OracleParameter[] deleteParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId),
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 200, nodeId)
+			};
+            if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, delete, deleteParms) != 1)
+                return false;
+            else return true;
+        }
 
-        /**
-         * 删除某些节点的所有token
-         * @param processInstanceId
-         * @param nodeIdsList
-         */
-        public bool deleteTokensForNodes(String processInstanceId, List<String> nodeIdsList) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 删除某些节点的所有token
+        /// </summary>
+        public bool deleteTokensForNodes(String processInstanceId, List<String> nodeIdsList)
+        {
+            OracleTransaction transaction = OracleHelper.GetOracleTransaction(connectionString);
+            try
+            {
+                String delete = "delete from t_ff_rt_token where processinstance_id = :1 and node_id=:2";
+                OracleParameter[] deleteParms = { 
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId),
+    				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 200, "")
+    			};
+                foreach (String item in nodeIdsList)
+                {
+                    deleteParms[1].Value = item;
+                    OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, delete, deleteParms);
+                }
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
+            finally
+            {
+                if (transaction.Connection.State != ConnectionState.Closed)
+                {
+                    transaction.Connection.Close();
+                    transaction.Dispose();
+                }
+            }
+        }
 
-        /**
-         * 删除token
-         * @param token
-         */
-        public bool deleteToken(IToken token) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 删除token
+        /// </summary>
+        public bool deleteToken(IToken token)
+        {
+            string delete = "delete from t_ff_rt_token where id=:1";
+            OracleParameter[] deleteParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, token.getId())
+			};
+            if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, delete, deleteParms) <=0)
+                return false;
+            else return true;
+        }
 
         /******************************************************************************/
         /************                                                        **********/
@@ -718,16 +1416,17 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /************            Persistence methods for workflow definition **********/
         /************                                                        **********/
         /******************************************************************************/
-        /**
-         * Save or update the workflow definition. The version will be increased automatically when insert a new record.<br>
-         * 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
-         * @param workflowDef
-         */
+
+        /// <summary>
+        /// Save or update the workflow definition. The version will be increased automatically when insert a new record.
+        /// 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
+        /// </summary>
         public bool saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
+
             if (String.IsNullOrEmpty(workflowDef.getId()))
             {
                 Int32 latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.getProcessId());
-                if (latestVersion != null && latestVersion>0)
+                if (latestVersion > 0)
                 {
                     workflowDef.setVersion(latestVersion + 1);
                 }
@@ -735,16 +1434,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 {
                     workflowDef.setVersion(1);
                 }
-            }
-
-
-            if (String.IsNullOrEmpty(workflowDef.getId()))
-            {
                 String workflowDefId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_DF_WORKFLOWDEF (" +
                     "ID, DEFINITION_TYPE, PROCESS_ID, NAME, DISPLAY_NAME, " +
                     "DESCRIPTION, VERSION, STATE, UPLOAD_USER, UPLOAD_TIME, " +
-                    "PUBLISH_USER, PUBLISH_TIME, PROCESS_CONTENT )VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "PUBLISH_USER, PUBLISH_TIME, PROCESS_CONTENT )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13)";
                 OracleParameter[] insertParms = { 
 					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDefId), 
 					OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.getDefinitionType()), 
@@ -767,10 +1461,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             else
             {
                 string update = "UPDATE T_FF_DF_WORKFLOWDEF SET " +
-                    "DEFINITION_TYPE=?, PROCESS_ID=?, NAME=?, DISPLAY_NAME=?, DESCRIPTION=?, " +
-                    "VERSION=?, STATE=?, UPLOAD_USER=?, UPLOAD_TIME=?, PUBLISH_USER=?, " +
-                    "PUBLISH_TIME=?, PROCESS_CONTENT=?" +
-                    " WHERE ID=?";
+                    "DEFINITION_TYPE=:2, PROCESS_ID=:3, NAME=:4, DISPLAY_NAME=:5, DESCRIPTION=:6, " +
+                    "VERSION=:7, STATE=:8, UPLOAD_USER=:9, UPLOAD_TIME=:10, PUBLISH_USER=:11, " +
+                    "PUBLISH_TIME=:12, PROCESS_CONTENT=:13" +
+                    " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.getDefinitionType()), 
     				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.getProcessId()), 
@@ -783,7 +1477,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.getUploadTime()), 
     				OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.getPublishUser()), 
     				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.getPublishTime()), 
-    				OracleHelper.NewOracleParameter(":13", OracleType.Clob, workflowDef.getProcessContent()),
+    				OracleHelper.NewOracleParameter(":13", OracleType.Clob,workflowDef.getProcessContent()),
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDef.getId())
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
@@ -792,60 +1486,167 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             }
         }
 
-        /**
-         * Find the workflow definition by id .
-         * 根据纪录的ID返回流程定义
-         * @param id
-         * @return
-         */
-        public WorkflowDefinition findWorkflowDefinitionById(String id) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find the workflow definition by id .
+        /// 根据纪录的ID返回流程定义
+        /// </summary>
+        public WorkflowDefinition findWorkflowDefinitionById(String id)
+        {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "select * from t_ff_df_workflowdef where id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, id)
+                        );
+                    while (reader.Read())
+                    {
+                        WorkflowDefinition info = OracleDataReaderToInfo.GetWorkflowDefinition(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
 
-        /**
-         * Find workflow definition by workflow process id and version<br>
-         * 根据ProcessId和版本号返回流程定义
-         * @param processId
-         * @param version
-         * @return
-         */
-        public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String processId, int version) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find workflow definition by workflow process id and version<br>
+        /// 根据ProcessId和版本号返回流程定义
+        /// </summary>
+        public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String processId, int version)
+        {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "select * from t_ff_df_workflowdef where process_id=:1 and version=:2";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId),
+                        OracleHelper.NewOracleParameter(":2", OracleType.Int32, version)
+                        );
+                    while (reader.Read())
+                    {
+                        WorkflowDefinition info = OracleDataReaderToInfo.GetWorkflowDefinition(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
 
-        /**
-         * Find the latest version of the workflow definition.<br>
-         * 根据processId返回最新版本的有效流程定义
-         * @param processId the workflow process id 
-         * @return
-         */
-        public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find the latest version of the workflow definition.
+        /// 根据processId返回最新版本的有效流程定义
+        /// </summary>
+        /// <param name="processId">the workflow process id </param>
+        /// <returns></returns>
+        public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId)
+        {
+            Int32 latestVersion = this.findTheLatestVersionNumber(processId);
+            return this.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, latestVersion);
+        }
 
-        /**
-         * Find all the workflow definitions for the workflow process id.<br>
-         * 根据ProcessId 返回所有版本的流程定义
-         * @param processId
-         * @return
-         */
-        public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String processId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find all the workflow definitions for the workflow process id.
+        /// 根据ProcessId 返回所有版本的流程定义
+        /// </summary>
+        public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String processId)
+        {
+            List<WorkflowDefinition> infos = new List<WorkflowDefinition>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_df_workflowdef where process_id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId)
+                        );
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            WorkflowDefinition info = OracleDataReaderToInfo.GetWorkflowDefinition(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
-        /**
-         * Find all of the latest version of workflow definitions.<br>
-         * 返回系统中所有的最新版本的有效流程定义
-         * @return
-         */
-        public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition() { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find all of the latest version of workflow definitions.
+        /// 返回系统中所有的最新版本的有效流程定义
+        /// </summary>
+        public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition()
+        {
+            List<WorkflowDefinition> infos = new List<WorkflowDefinition>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "SELECT * FROM T_FF_DF_WORKFLOWDEF a "+ 
+                    "where version=(select max(version) from T_FF_DF_WORKFLOWDEF b where a.PROCESS_ID=b.PROCESS_ID) ";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,null);
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            WorkflowDefinition info = OracleDataReaderToInfo.GetWorkflowDefinition(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
 
-        /**
-         * Find the latest version number <br>
-         * 返回最新的有效版本号
-         * @param processId
-         * @return the version number ,null if there is no workflow definition stored in the DB.
-         */
-        public int findTheLatestVersionNumber(String processId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Find the latest version number
+        /// 返回最新的有效版本号
+        /// </summary>
+        /// <returns>the version number ,null if there is no workflow definition stored in the DB.</returns>
+        public int findTheLatestVersionNumber(String processId)
+        {
+            String select = "select max(version) from t_ff_df_workflowdef where process_id=:1 and state=1";
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId)
+		    };
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
 
-        /**
-         * 返回最新版本号,
-         * @param processId
-         * @return
-         */
-        public int findTheLatestVersionNumberIgnoreState(String processId) { throw new NotImplementedException(); }
+        /// <summary>
+        /// 返回最新版本号,
+        /// </summary>
+        public int findTheLatestVersionNumberIgnoreState(String processId)
+        {
+            String select = "select max(version) from t_ff_df_workflowdef where process_id=:1";
+            OracleParameter[] selectParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 100, processId)
+		    };
+            return OracleHelper.ExecuteInt32(this.connectionString, CommandType.Text, select, selectParms);
+        }
 
 
 
@@ -855,8 +1656,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 String processInstanceTraceId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_HIST_TRACE (" +
-                "ID, PROCESSINSTANCE_ID, STEP_NUMBER, MINOR_NUMBER, TYPE, " +
-                "EDGE_ID, FROM_NODE_ID, TO_NODE_ID )VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+                    "ID, PROCESSINSTANCE_ID, STEP_NUMBER, MINOR_NUMBER, TYPE, " +
+                    "EDGE_ID, FROM_NODE_ID, TO_NODE_ID )VALUES(:1, :2, :3, :4, :5, :6, :7, :8)";
                 OracleParameter[] insertParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceTraceId), 
 				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceTrace.getProcessInstanceId()), 
@@ -874,9 +1675,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             else
             {
                 string update = "UPDATE T_FF_HIST_TRACE SET " +
-                "PROCESSINSTANCE_ID=?, STEP_NUMBER=?, MINOR_NUMBER=?, TYPE=?, EDGE_ID=?, " +
-                "FROM_NODE_ID=?, TO_NODE_ID=?" +
-                " WHERE ID=?";
+                    "PROCESSINSTANCE_ID=:2, STEP_NUMBER=:3, MINOR_NUMBER=:4, TYPE=:5, EDGE_ID=:6, " +
+                    "FROM_NODE_ID=:7, TO_NODE_ID=:8" +
+                    " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
 				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceTrace.getProcessInstanceId()), 
 				OracleHelper.NewOracleParameter(":3", OracleType.Int32, processInstanceTrace.getStepNumber()), 
@@ -892,7 +1693,110 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 else return true;
             }
         }
-        public List<String> findProcessInstanceTraces(String processInstanceId) { throw new NotImplementedException(); }
+
+
+        /********************************process instance trace info **********************/
+        /**
+         * 20090923 modified by wmj2003
+         * 根据流程实例ID查找流程实例运行轨迹
+         * @param processInstanceId 流程实例ID
+         * @return
+         */
+        public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId);
+
+        /******************************** lifw555@gmail.com **********************/
+
+        /**
+         * 获得操作员所要操作工单的总数量
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键 
+         * @param publishUser 流程定义发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getTodoWorkItemsCount(String actorId, String publishUser);
+
+        /**
+         * 获得操作员所要操作工单列表（分页）
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber);
+
+        /**
+         * 获得操作员完成的工单总数量
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键 
+         * @param publishUser 流程定义发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getHaveDoneWorkItemsCount(String actorId, String publishUser);
+
+        /**
+         * 获得操作员完成的工单列表（分页）
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber);
+
+        /**
+         * 获得操作员发起的工作流实例总数量
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getProcessInstanceCountByCreatorId(String creatorId, String publishUser);
+
+        /**
+         * 获得操作员发起的工作流实例列表（分页）
+         * publishUser如果为null，获取全部
+         * @param actorId 操作员主键
+         * @param publishUser 流程定义发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber);
+
+        /**
+         * 获得工作流发布者发起的所有流程定义的工作流实例总数量
+         * @param publishUser 工作流发布者
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public Int32 getProcessInstanceCountByPublishUser(String publishUser);
+
+        /**
+         * 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
+         * @param publishUser 工作流发布者
+         * @param pageSize 每页显示的条数
+         * @param pageNumber 当前页数
+         * @return
+         * @author lifw555@gmail.com
+         * @throws RuntimeException
+         */
+        public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber);
 
 
     }

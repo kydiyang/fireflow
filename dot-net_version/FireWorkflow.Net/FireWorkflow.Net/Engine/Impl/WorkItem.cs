@@ -24,6 +24,16 @@ namespace FireWorkflow.Net.Engine.Impl
         private String comments;
         private ITaskInstance taskInstance;
 
+        private String taskInstanceId; //added by wangmj 20090922 供springjdbc实现类使用
+        public String getTaskInstanceId()
+        {
+            return taskInstanceId;
+        }
+        public void setTaskInstanceId(String taskInstanceId)
+        {
+            this.taskInstanceId = taskInstanceId;
+        }
+
         [NonSerialized]
         protected RuntimeContext rtCtx = null;
         [NonSerialized]
