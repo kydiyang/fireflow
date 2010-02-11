@@ -135,5 +135,24 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             workFlowDefinition.setProcessContent(Convert.ToString(dr["process_content"]));
             return workFlowDefinition;
         }
+
+        public static ProcessInstanceTrace GetProcessInstanceTrace(IDataReader dr)
+        {
+                 ProcessInstanceTrace processInstanceTrace = new ProcessInstanceTrace(); 
+  
+                 processInstanceTrace.setId(Convert.ToString(dr["id"]));
+                 processInstanceTrace.setProcessInstanceId(Convert.ToString(dr["processinstance_id"]));
+                 processInstanceTrace.setStepNumber(Convert.ToInt32(dr["step_number"]));
+                 processInstanceTrace.setMinorNumber(Convert.ToInt32(dr["minor_number"]));
+                 processInstanceTrace.setType(Convert.ToString(dr["type"]));
+  
+                 processInstanceTrace.setEdgeId(Convert.ToString(dr["edge_id"]));
+                 processInstanceTrace.setFromNodeId(Convert.ToString(dr["from_node_id"]));
+                 processInstanceTrace.setToNodeId(Convert.ToString(dr["to_node_id"]));
+  
+                 return processInstanceTrace; 
+  
+         } 
+ 
     }
 }
