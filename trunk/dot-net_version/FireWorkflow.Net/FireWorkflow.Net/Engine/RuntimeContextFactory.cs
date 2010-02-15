@@ -12,7 +12,7 @@ namespace FireWorkflow.Net.Engine
     /// </summary>
     public class RuntimeContextFactory
     {
-        private static RuntimeContext ctx ;
+        //private static RuntimeContext ctx ;
 
         //    public static getRuntimeContext(){
         //        if (ctx==null){

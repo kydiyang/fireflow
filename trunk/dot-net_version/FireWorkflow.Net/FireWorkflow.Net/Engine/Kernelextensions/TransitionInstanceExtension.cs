@@ -49,7 +49,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
             //            Iterator nextTransNamesIterator = nextTransitionInstanceNames.iterator();
             //            while (nextTransNamesIterator.hasNext()) {
             //                String transName = (String) nextTransNamesIterator.next();
-            //                if (transName.Equals(transInst.getTransition().getName())) {
+            //                if (transName.Equals(transInst.getTransition().Name)) {
             //                    return true;
             //                }
             //            }
@@ -116,13 +116,13 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
             {
                 IToken token = e.getToken();
                 ITransitionInstance transInst = (ITransitionInstance)e.getSource();
-                String condition = transInst.getTransition().getCondition();
+                String condition = transInst.getTransition().Condition;
                 calculateTheAliveValue(token, condition);
 
                 if (rtCtx.isEnableTrace() && token.isAlive())
                 {
                     Transition transition = transInst.getTransition();
-                    IWFElement fromNode = transition.getFromNode();
+                    IWFElement fromNode = transition.FromNode;
                     int minorNumber = 1;
                     if (fromNode is Activity)
                     {
@@ -137,9 +137,9 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                     trace.setProcessInstanceId(e.getToken().getProcessInstanceId());
                     trace.setStepNumber(e.getToken().getStepNumber());
                     trace.setType(ProcessInstanceTrace.TRANSITION_TYPE);
-                    trace.setFromNodeId(transInst.getTransition().getFromNode().getId());
-                    trace.setToNodeId(transInst.getTransition().getToNode().getId());
-                    trace.setEdgeId(transInst.getTransition().getId());
+                    trace.setFromNodeId(transInst.getTransition().FromNode.Id);
+                    trace.setToNodeId(transInst.getTransition().ToNode.Id);
+                    trace.setEdgeId(transInst.getTransition().Id);
                     trace.setMinorNumber(minorNumber);
                     rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
                 }

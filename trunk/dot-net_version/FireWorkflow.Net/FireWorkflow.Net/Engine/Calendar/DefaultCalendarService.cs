@@ -86,57 +86,33 @@ namespace FireWorkflow.Net.Engine.Calendar
         /// <returns></returns>
         public DateTime? dateAfter(DateTime fromDate, Duration duration)
         {
-            if (duration.getUnit().Equals(Duration.SECOND) ||
-                    duration.getUnit().Equals(Duration.MINUTE) ||
-                    duration.getUnit().Equals(Duration.WEEK) ||
-                    duration.getUnit().Equals(Duration.MONTH) ||
-                    duration.getUnit().Equals(Duration.YEAR) ||
-                    (duration.getUnit().Equals(Duration.DAY) && !duration.IsBusinessTime()) ||
-                    (duration.getUnit().Equals(Duration.HOUR) && !duration.IsBusinessTime()))
+            if (!(duration.IsBusinessTime && (duration.Unit == UnitEnum.DAY || duration.Unit == UnitEnum.HOUR)))
             {
                 DateTime cal = fromDate;
                 //cal.setTime(fromDate);
-                if (duration.getUnit().Equals(Duration.MONTH))
-                {
-                    cal.AddMonths(duration.getValue());
-                }
-                else if (duration.getUnit().Equals(Duration.YEAR))
-                {
-                    cal.AddYears(duration.getValue());
-                }
-                else if (duration.getUnit().Equals(Duration.DAY))
-                {
-                    cal.AddDays(duration.getValue());
-                }
-                else if (duration.getUnit().Equals(Duration.HOUR))
-                {
-                    cal.AddHours(duration.getValue());
-                }
-                else if (duration.getUnit().Equals(Duration.MINUTE))
-                {
-                    cal.AddMinutes(duration.getValue());
-                }
-                else if (duration.getUnit().Equals(Duration.SECOND))
-                {
-                    cal.AddSeconds(duration.getValue());
-                }
-                else if (duration.getUnit().Equals(Duration.WEEK))
-                {
-                    cal.AddDays(duration.getValue() * 7);
-                }
+                switch (duration.Unit)
+            	{
+                    case UnitEnum.YEAR:cal.AddYears(duration.Value);break;
+                    case UnitEnum.MONTH:cal.AddMonths(duration.Value);break;
+                    case UnitEnum.WEEK:cal.AddDays(duration.Value * 7);break;
+                    case UnitEnum.DAY:cal.AddDays(duration.Value);break;
+                    case UnitEnum.HOUR:cal.AddHours(duration.Value);break;
+                    case UnitEnum.MINUTE: cal.AddMinutes(duration.Value);break;
+                    case UnitEnum.SECOND:cal.AddSeconds(duration.Value);break;
+            	}
                 return cal;
             } //计算工作日间隔
-            else if (duration.getUnit().Equals(Duration.DAY) && duration.IsBusinessTime())
+            else if (duration.Unit == UnitEnum.DAY && duration.IsBusinessTime)
             {
                 //float hoursPerDay = float.Parse(this.getBusinessCalendarProperties().getProperty(hours_of_business_day));
-                //int totalDurationInMillseconds = (int)(duration.getValue() * hoursPerDay * 60 * 60 * 1000);
+                //int totalDurationInMillseconds = (int)(duration.Value * hoursPerDay * 60 * 60 * 1000);
 
                 //return businessDateAfter(fromDate, totalDurationInMillseconds);
 
             } //计算工作时间隔
-            else if (duration.getUnit().Equals(Duration.HOUR) && duration.IsBusinessTime())
+            else if (duration.Unit == UnitEnum.HOUR && duration.IsBusinessTime)
             {
-                int totalDurationInMillseconds = (int)(duration.getValue() * 60 * 60 * 1000);
+                int totalDurationInMillseconds = (int)(duration.Value * 60 * 60 * 1000);
                 return businessDateAfter(fromDate, totalDurationInMillseconds);
             }
             return null;
@@ -171,7 +147,7 @@ namespace FireWorkflow.Net.Engine.Calendar
             //                    dateTmp = DateTime.Parse(businessTime.Substring(0, idx));
             //                } catch //(ParseException ex) 
             //{
-            //                   // Logger.getLogger(DefaultCalendarService.class.getName()).log(Level.SEVERE, null, ex);
+            //                   // Logger.getLogger(DefaultCalendarService.class.Name).log(Level.SEVERE, null, ex);
             //                }
 
             //                cal.set(Calendar.HOUR_OF_DAY, dateTmp);
@@ -291,12 +267,12 @@ namespace FireWorkflow.Net.Engine.Calendar
         //        //try {
         //        //    date2 = dFormat.parse(date2Str);
         //        //} catch (ParseException ex) {
-        //        //    Logger.getLogger(DefaultCalendarService.class.getName()).log(Level.SEVERE, null, ex);
+        //        //    Logger.getLogger(DefaultCalendarService.class.Name).log(Level.SEVERE, null, ex);
         //        //}
         //        //try {
         //        //    date1 = dFormat.parse(date1Str);
         //        //} catch (ParseException ex) {
-        //        //    Logger.getLogger(DefaultCalendarService.class.getName()).log(Level.SEVERE, null, ex);
+        //        //    Logger.getLogger(DefaultCalendarService.class.Name).log(Level.SEVERE, null, ex);
         //        //}
         //        //if (d.before(date1)) {
         //        //    return -1;
@@ -382,13 +358,13 @@ namespace FireWorkflow.Net.Engine.Calendar
         //    //    try {
         //    //        d1 = dFormat.parse(dStr1);
         //    //    } catch (ParseException ex) {
-        //    //        Logger.getLogger(DefaultCalendarService.class.getName()).log(Level.SEVERE, null, ex);
+        //    //        Logger.getLogger(DefaultCalendarService.class.Name).log(Level.SEVERE, null, ex);
         //    //    }
         //    //    DateTime d2 = null;
         //    //    try {
         //    //        d2 = dFormat.parse(dStr2);
         //    //    } catch (ParseException ex) {
-        //    //        Logger.getLogger(DefaultCalendarService.class.getName()).log(Level.SEVERE, null, ex);
+        //    //        Logger.getLogger(DefaultCalendarService.class.Name).log(Level.SEVERE, null, ex);
         //    //    }
 
         //    //    if (d1 == null || d2 == null) {

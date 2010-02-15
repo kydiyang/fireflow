@@ -34,7 +34,7 @@ namespace FireWorkflow.Net.Engine.Impl
         private String processId = null;
         private Int32 version ;
         //	private Set workItems = new HashSet(0);
-        private String taskType = null;
+        private TaskTypeEnum taskType;
         private String targetActivityId = null;
         private String fromActivityId = null;
         //    private String tokenId = null;
@@ -61,12 +61,12 @@ namespace FireWorkflow.Net.Engine.Impl
             return this.rtCtx;
         }
 
-        public override String getTaskType()
+        public override TaskTypeEnum getTaskType()
         {
             return taskType;
         }
 
-        public void setTaskType(String taskType)
+        public void setTaskType(TaskTypeEnum taskType)
         {
             this.taskType = taskType;
         }

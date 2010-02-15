@@ -37,14 +37,14 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String getId()
         {
-            return activity.getId();
+            return activity.Id;
         }
 
         public override void fire(IToken tk)
         {
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             IToken token = tk;
-            token.setNodeId(this.getActivity().getId());
+            token.setNodeId(this.getActivity().Id);
 
             //触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(this);
@@ -78,7 +78,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             fireNodeLeavingEvent(event2);
 
 
-            token.setFromActivityId(this.getActivity().getId());
+            token.setFromActivityId(this.getActivity().Id);
 
             if (targetActivityInstance != null)
             {
@@ -143,7 +143,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String ToString()
         {
-            return "ActivityInstance_4_[" + activity.getName() + "]";
+            return "ActivityInstance_4_[" + activity.Name + "]";
         }
 
         public Activity getActivity()

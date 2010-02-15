@@ -28,7 +28,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
     public override String getId()
     {
-        return this.transition.getId();
+        return this.transition.Id;
     }
 //	private int weight = 0;
     public override int getWeight()

@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
@@ -10,136 +28,74 @@ namespace FireWorkflow.Net.Model
     /// <summary>表单类型的Task，即人工任务。</summary>
     public class FormTask : Task
     {
-        /// <summary>可编辑表单</summary>
-        public const String EDITFORM = "EDITFORM";
+        #region 属性
+        /// <summary>获取或设置任务的操作员。只有FORM类型的任务才有操作员。</summary>
+        public Participant Performer { get; set; }//引用participant
 
-        /// <summary>只读表单</summary>
-        public const String VIEWFORM = "VIEWFORM";
-
-        /// <summary>列表表单</summary>
-        public const String LISTFORM = "LISTFORM";
+        /// <summary>任获取或设置任务的分配策略，只对FORM类型的任务有意义。取值为FormTask.ANY,FormTask.ALL。</summary>
+        public FormTaskEnum AssignmentStrategy { get; set; }
 
         /// <summary>
-        /// 任务分配策略之一：ALL。任务分配给角色中的所有人，只有在所有工单结束结束的情况下，任务实例才结束。
-        /// 用于实现会签。
+        /// <para>获取或设置任务的缺省表单的类型，取值为EDITFORM、VIEWFORM或者LISTFORM。</para>
+        /// 只有FORM类型的任务此方法才有意义。该方法的主要作用是方便系统开发，引擎不会用到该方法。
         /// </summary>
-        public const String ALL = "ALL";
-
-        /// <summary>任务分配策略之二：ANY。任何一个操作角签收该任务的工单后，其他人的工单被取消掉。</summary>
-        public const String ANY = "ANY";
-
-        /// <summary>deprecated</summary>
-        public const String MANUAL = "MANUAL";
-
-        /// <summary>deprecated</summary>
-        public const String AUTOMATIC = "AUTOMATIC";
-
-        //----------Form Task 的属性
-
-        /// <summary>操作者</summary>
-        protected Participant performer;//引用participant
-
-        /// <summary>该任务的工作项分配策略。取值为FormTask.ANY,FormTask.ALL。</summary>
-        [XmlAttribute(AttributeName = "CompletionStrategy")]
-        public String assignmentStrategy = ANY;//
-
-        /// <summary>缺省表单。</summary>
-        protected String defaultView = VIEWFORM;//缺省视图是view form
+        public DefaultViewEnum DefaultView { get; set; }//缺省视图是view form
 
         /// <summary>可编辑表单</summary>
-        protected Form editForm = null;
+        public Form EditForm { get; set; }
 
         /// <summary>只读表单</summary>
-        protected Form viewForm = null;
+        public Form ViewForm { get; set; }
 
         /// <summary>列表表单</summary>
-        protected Form listForm = null;
-
+        public Form ListForm { get; set; }
 
         //    protected String startMode = MANUAL ;//启动模式，启动模式没有意义，application和subflow自动启动，Form一般情况下签收时启动，如果需要自动启动则在assignable接口中实现。
+        #endregion
 
+        #region 构造函数
         public FormTask()
         {
-            this.setType(FORM);
+            this.TaskType = TaskTypeEnum.FORM;
+            this.AssignmentStrategy = FormTaskEnum.ANY;
+            this.DefaultView = DefaultViewEnum.VIEWFORM;
         }
 
         public FormTask(IWFElement parent, String name)
             : base(parent, name)
         {
-            this.setType(FORM);
+            this.TaskType = TaskTypeEnum.FORM;
+            this.AssignmentStrategy = FormTaskEnum.ANY;
+            this.DefaultView = DefaultViewEnum.VIEWFORM;
         }
-
-        // model.reference.Participant
-        /// <summary>返回任务的操作员。只有FORM类型的任务才有操作员。</summary>
-        /// <returns>操作员</returns>
-        public Participant getPerformer()
-        {
-            return performer;
-        }
-
-        /// <summary>设置任务的操作员</summary>
-        /// <param name="performer">参与者</param>
-        public void setPerformer(Participant performer)
-        {
-            this.performer = performer;
-        }
-
-        /// <summary>返回任务的分配策略，只对FORM类型的任务有意义。取值为ALL或者ANY</summary>
-        /// <returns>任务分配策略值</returns>
-        public String getAssignmentStrategy()
-        {
-            return assignmentStrategy;
-        }
-
-        /// <summary>设置任务分配策略，只对FORM类型的任务有意义。取值为ALL或者ANY</summary>
-        /// <param name="argAssignmentStrategy">任务分配策略值</param>
-        public void setAssignmentStrategy(String argAssignmentStrategy)
-        {
-            this.assignmentStrategy = argAssignmentStrategy;
-        }
-
-        /// <summary>
-        /// 返回任务的缺省表单的类型，取值为EDITFORM、VIEWFORM或者LISTFORM。
-        /// 只有FORM类型的任务此方法才有意义。该方法的主要作用是方便系统开发，引擎不会用到该方法。
-        /// </summary>
-        public String getDefaultView()
-        {
-            return defaultView;
-        }
-
-        public void setDefaultView(String defaultView)
-        {
-            this.defaultView = defaultView;
-        }
-
-        public Form getEditForm()
-        {
-            return editForm;
-        }
-
-        public void setEditForm(Form editForm)
-        {
-            this.editForm = editForm;
-        }
-
-        public Form getViewForm()
-        {
-            return viewForm;
-        }
-
-        public void setViewForm(Form viewForm)
-        {
-            this.viewForm = viewForm;
-        }
-
-        public Form getListForm()
-        {
-            return listForm;
-        }
-
-        public void setListForm(Form listForm)
-        {
-            this.listForm = listForm;
-        }
+        #endregion
     }
+
+    #region 枚举
+    /// <summary>
+    /// 表单的类型枚举
+    /// </summary>
+    public enum DefaultViewEnum
+    {
+        /// <summary>可编辑表单</summary>
+        EDITFORM,
+        /// <summary>只读表单</summary>
+        VIEWFORM,
+        /// <summary>列表表单</summary>
+        LISTFORM
+    }
+    /// <summary>
+    /// 任务的分配策略枚举
+    /// </summary>
+    public enum FormTaskEnum
+    {
+        /// <summary>
+        /// 任务分配策略之一：ALL。任务分配给角色中的所有人，只有在所有工单结束结束的情况下，任务实例才结束。
+        /// 用于实现会签。
+        /// </summary>
+        ALL,
+        /// <summary>任务分配策略之二：ANY。任何一个操作角签收该任务的工单后，其他人的工单被取消掉。</summary>
+        ANY
+    }
+    #endregion
 }

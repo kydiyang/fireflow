@@ -42,9 +42,9 @@ namespace FireWorkflow.Net.Kernel
             }
             if (workflowElement != null)
             {
-                this.setWorkflowElementId(workflowElement.getId());
-                this.setWorkflowElementName(workflowElement.getName());
-                this.setWorkflowElementDisplayName(workflowElement.getDisplayName());
+                this.setWorkflowElementId(workflowElement.Id);
+                this.setWorkflowElementName(workflowElement.Name);
+                this.setWorkflowElementDisplayName(workflowElement.DisplayName);
             }
             // TODO Auto-generated constructor stub
         }

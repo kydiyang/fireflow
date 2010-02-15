@@ -75,10 +75,9 @@ namespace FireWorkflow.Net.Engine
         public abstract String getActivityId();
 
         /// <summary>
-        /// 返回任务类型，取值为org.fireflow.model.Task.FORM,org.fireflow.model.Task.TOOL,
-        /// fireflow.model.Task.SUBFLOW或者fireflow.model.Task.DUMMY
+        /// 返回任务类型，取值为TaskTypeEnum:FORM,TOOL,SUBFLOW,DUMMY
         /// </summary>
-        public abstract String getTaskType();
+        public abstract TaskTypeEnum getTaskType();
 
         // 取消该任务（保留，未实现） 这个方法暂时取消，因为abort无清晰的无二义性的业务含义。（2009-04-12）
         // public void abort() throws EngineException,KernelException;

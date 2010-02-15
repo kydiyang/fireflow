@@ -51,8 +51,8 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public IProcessInstance createProcessInstance(String workflowProcessName, ITaskInstance parentTaskInstance)
         {
-            return _createProcessInstance(workflowProcessName, parentTaskInstance
-                    .getId(), parentTaskInstance.getProcessInstanceId(),
+            return _createProcessInstance(workflowProcessName, parentTaskInstance.getId()
+                    , parentTaskInstance.getProcessInstanceId(),
                     parentTaskInstance.getId());
         }
 
@@ -172,11 +172,11 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             catch //(EngineException ex)
             {
-                //Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,null, ex);
+                //Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,null, ex);
             }
             //catch (KernelException ex)
             //{
-            //    Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,null, ex);
+            //    Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,null, ex);
             //}
             return result;
         }
@@ -190,11 +190,11 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             catch //(EngineException ex)
             {
-                //Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,null, ex);
+                //Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,null, ex);
             }
             //catch (KernelException ex)
             //{
-            //    Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,null, ex);
+            //    Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,null, ex);
             //}
             return result;
         }
@@ -208,11 +208,11 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             catch //(EngineException ex)
             {
-                //Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,null, ex);
+                //Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,null, ex);
             }
             //catch (KernelException ex)
             //{
-            //    Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,null, ex);
+            //    Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,null, ex);
             //}
             return result;
         }
@@ -257,10 +257,10 @@ namespace FireWorkflow.Net.Engine.Impl
         //				}
         //			});
         //		} catch (EngineException ex) {
-        //			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
+        //			Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,
         //					null, ex);
         //		} catch (KernelException ex) {
-        //			Logger.getLogger(WorkflowSession.class.getName()).log(Level.SEVERE,
+        //			Logger.getLogger(WorkflowSession.class.Name).log(Level.SEVERE,
         //					null, ex);
         //		}
         //		return result;

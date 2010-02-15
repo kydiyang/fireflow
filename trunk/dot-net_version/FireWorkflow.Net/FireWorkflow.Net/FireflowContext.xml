@@ -5,187 +5,30 @@
         http://www.springframework.net/xsd/spring-objects.xsd">
 
   <object id="runtimeContext"
-        type="FireWorkflow.Net.Engine.RuntimeContext, FireWorkflow.Net" 
+        type="FireWorkflow.Net.Engine.RuntimeContext, FireWorkflow.Net"
         init-method="initialize">
-    <property name="taskInstanceManager">
-      <ref local="taskInstanceManager"/>
-    </property>
-    <property name="definitionService">
-      <ref local="definitionService"/>
-    </property>
-    <property name="persistenceService">
-      <ref local="persistenceService"/>
-    </property>
+    <!--转移条件表达式解析服务-->
     <property name="conditionResolver">
       <ref local="conditionResolver"/>
     </property>
-    <property name="calendarService">
-      <ref local="calendarService"/>
-    </property>
-    <property name="beanFactory">
-      <ref local="springBeanFactory"/>
-    </property>
-    <property name="kernelManager">
-      <ref local="kernelManager"/>
+    <!--实例对象存取服务-->
+    <property name="persistenceService">
+      <ref local="persistenceService"/>
     </property>
     <property name="enableTrace">
       <value>true</value>
     </property>
   </object>
-
-  <!-- ************ TaskInstance Manager Begin*************************** -->
-  <object id="taskInstanceManager"
-        type="FireWorkflow.Net.Engine.Taskinstance.BasicTaskInstanceManager, FireWorkflow.Net">
-    <property name="defaultTaskInstanceCreator">
-      <ref local="defaultTaskInstanceCreator"/>
-    </property>
-
-    <property name="defaultFormTaskInstanceRunner">
-      <ref local="defaultFormTaskInstanceRunner"/>
-    </property>
-    <property name="defaultToolTaskInstanceRunner">
-      <ref local="defaultToolTaskInstanceRunner"/>
-    </property>
-    <property name="defaultSubflowTaskInstanceRunner">
-      <ref local="defaultSubflowTaskInstanceRunner"/>
-    </property>
-
-    <property name="defaultFormTaskInstanceCompletionEvaluator">
-      <ref local="defaultFormTaskInstanceCompletionEvaluator"/>
-    </property>
-    <property name="defaultToolTaskInstanceCompletionEvaluator">
-      <ref local="defaultToolTaskInstanceCompletionEvaluator"/>
-    </property>
-    <property name="defaultSubflowTaskInstanceCompletionEvaluator">
-      <ref local="defaultSubflowTaskInstanceCompletionEvaluator"/>
-    </property>
-
-    <property name="defaultTaskInstanceEventListener">
-      <ref local="defaultTaskInstanceEventListener"/>
-    </property>
+  <object id="conditionResolver" type="FireWorkflow.Net.Engine.Condition.ConditionResolver, FireWorkflow.Net">
   </object>
-  <object id="defaultTaskInstanceCreator" type="FireWorkflow.Net.Engine.Taskinstance.DefaultTaskInstanceCreator, FireWorkflow.Net">
-  </object>
-
-  <object id="defaultFormTaskInstanceRunner" type="FireWorkflow.Net.Engine.Taskinstance.DefaultFormTaskInstanceRunner, FireWorkflow.Net">
-  </object>
-  <object id="defaultToolTaskInstanceRunner" type="FireWorkflow.Net.Engine.Taskinstance.DefaultToolTaskInstanceRunner, FireWorkflow.Net">
-  </object>
-  <object id="defaultSubflowTaskInstanceRunner" type="FireWorkflow.Net.Engine.Taskinstance.DefaultSubflowTaskInstanceRunner, FireWorkflow.Net">
-  </object>
-
-  <object id="defaultFormTaskInstanceCompletionEvaluator" type="FireWorkflow.Net.Engine.Taskinstance.DefaultFormTaskInstanceCompletionEvaluator, FireWorkflow.Net">
-  </object>
-  <object id="defaultToolTaskInstanceCompletionEvaluator" type="FireWorkflow.Net.Engine.Taskinstance.DefaultToolTaskInstanceCompletionEvaluator, FireWorkflow.Net">
-  </object>
-  <object id="defaultSubflowTaskInstanceCompletionEvaluator" type="FireWorkflow.Net.Engine.Taskinstance.DefaultSubflowTaskInstanceCompletionEvaluator, FireWorkflow.Net">
-  </object>
-  <object id="defaultTaskInstanceEventListener" type="FireWorkflow.Net.Engine.Taskinstance.DefaultTaskInstanceEventListener, FireWorkflow.Net">
-  </object>
-
-  <!-- ************ TaskInstance Manager End*************************** -->
-
-  <!-- **************Persistence Begin******************** -->
+  <!-- **************Persistence Begin 实例对象存取服务******************** -->
   <object id="persistenceService"
         type="FireWorkflow.Net.Engine.Persistence.Hibernate.PersistenceServiceHibernateImpl, FireWorkflow.Net">
     <!--
         <property name="sessionFactory">
-    			<ref object="MyHibernateSessionFactory" />
+    			<ref bean="MyHibernateSessionFactory" />
     		</property>
     		-->
   </object>
   <!-- ***************Persistence End******************* -->
-
-
-
-  <!-- **************workflow Definitions Begin*******  -->
-  <object id="definitionService"
-  type="FireWorkflow.Net.Engine.Definition.DefinitionService4FileSystem, FireWorkflow.Net">
-    <property name="definitionFiles">
-      <list>
-        <value>
-          <!-- /org/fireflow/example/workflowdefinition/demo_workflow.xml -->
-        </value>
-      </list>
-    </property>
-  </object>
-  <!-- **************workflow Definitions End*******  -->
-
-
-
-  <!-- **************CalendarService Begin******************** -->
-  <object id="calendarService"
-  type="FireWorkflow.Net.Engine.Calendar.DefaultCalendarService, FireWorkflow.Net">
-  </object>
-  <!-- ***************CalendarService End******************* -->
-
-
-  <object id="conditionResolver" type="FireWorkflow.Net.Engine.Condition.ConditionResolver, FireWorkflow.Net">
-  </object>
-
-
-  <object id="springBeanFactory" type="FireWorkflow.Net.Engine.Beanfactory.SpringBeanFactory, FireWorkflow.Net">
-  </object>
-
-  <!-- **************Kernel Manager Begin*************** -->
-  <object id="kernelManager"
-        type="FireWorkflow.Net.Kernel.KernelManager, FireWorkflow.Net">
-    <property name="kernelExtensions">
-      <dictionary>
-        <entry key="FireWorkflow.Net.Kernel.Impl.StartNodeInstance, FireWorkflow.Net">
-          <list>
-            <ref local="startNodeInstanceEventListenser"/>
-          </list>
-        </entry>
-        <entry key="FireWorkflow.Net.Kernel.Impl.ActivityInstance, FireWorkflow.Net">
-          <list>
-            <ref local="activityInstanceEventListener"/>
-          </list>
-        </entry>
-        <entry key="FireWorkflow.Net.Kernel.Impl.SynchronizerInstance, FireWorkflow.Net">
-          <list>
-            <ref local="synchronizerInstanceEventListenser"/>
-          </list>
-        </entry>
-        <entry key="FireWorkflow.Net.Kernel.Impl.EndNodeInstance, FireWorkflow.Net">
-          <list>
-            <ref local="endNodeInstanceEventListenser"/>
-          </list>
-        </entry>
-        <entry key="FireWorkflow.Net.Kernel.Impl.TransitionInstance, FireWorkflow.Net">
-          <list>
-            <ref local="transitionInstanceEventListenser"/>
-          </list>
-        </entry>
-        <entry key="FireWorkflow.Net.Kernel.Impl.LoopInstance, FireWorkflow.Net">
-          <list>
-            <ref local="loopInstanceEventListenser"/>
-          </list>
-        </entry>
-      </dictionary>
-    </property>
-  </object>
-  <!-- **************Kernel Manager End*************** -->
-
-  <!-- kernel extensions (begin) -->
-  <object id="startNodeInstanceEventListenser"
-      type="FireWorkflow.Net.Engine.Kernelextensions.StartNodeInstanceExtension, FireWorkflow.Net">
-  </object>
-  <object id="activityInstanceEventListener"
-      type="FireWorkflow.Net.Engine.Kernelextensions.ActivityInstanceExtension, FireWorkflow.Net">
-  </object>
-  <object id="synchronizerInstanceEventListenser"
-      type="FireWorkflow.Net.Engine.Kernelextensions.SynchronizerInstanceExtension, FireWorkflow.Net">
-  </object>
-  <object id="endNodeInstanceEventListenser"
-      type="FireWorkflow.Net.Engine.Kernelextensions.EndNodeInstanceExtension, FireWorkflow.Net">
-  </object>
-  <object id="transitionInstanceEventListenser"
-      type="FireWorkflow.Net.Engine.Kernelextensions.TransitionInstanceExtension, FireWorkflow.Net">
-  </object>
-  <object id="loopInstanceEventListenser"
-      type="FireWorkflow.Net.Engine.Kernelextensions.LoopInstanceExtension, FireWorkflow.Net">
-  </object>
-
-  <!-- kernel extensions  (end)-->
 </objects>

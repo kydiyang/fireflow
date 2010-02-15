@@ -32,14 +32,14 @@ namespace FireWorkflow.Net.Kernel.Impl
         public StartNodeInstance(StartNode startNd)
         {
             this.startNode = startNd;
-            volume = startNode.getLeavingTransitions().Count;
+            volume = startNode.LeavingTransitions.Count;
 
             //		System.out.println(" startnode's volume is "+volume);
         }
 
         public override String getId()
         {
-            return this.startNode.getId();
+            return this.startNode.Id;
         }
 
         public override void fire(IToken tk)
@@ -57,7 +57,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
             }
 
-            tk.setNodeId(this.getSynchronizer().getId());
+            tk.setNodeId(this.getSynchronizer().Id);
 
             IProcessInstance processInstance = tk.getProcessInstance();
 
@@ -85,7 +85,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.Count; i++)
             {
                 ITransitionInstance transInst = leavingTransitionInstances[i];
-                String condition = transInst.getTransition().getCondition();
+                String condition = transInst.getTransition().Condition;
                 if (condition != null && condition.Equals(ConditionConstant.DEFAULT))
                 {
                     defaultTransInst = transInst;
@@ -147,7 +147,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public override void registExtension(IKernelExtension extension)
         {
             // System.out.println("====extension class is
-            // "+extension.getClass().getName());
+            // "+extension.getClass().Name);
             if (!Extension_Target_Name.Equals(extension.getExtentionTargetName()))
             {
                 throw new Exception(
@@ -169,7 +169,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String ToString()
         {
-            return "StartNodeInstance_4_[" + startNode.getId() + "]";
+            return "StartNodeInstance_4_[" + startNode.Id + "]";
         }
 
         public Synchronizer getSynchronizer()

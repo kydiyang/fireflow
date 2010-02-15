@@ -1,6 +1,20 @@
-﻿/* 
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
  * @author 非也,nychen2000@163.com
- * @Revision 无忧 lwz0721@gmail.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
  */
 using System;
 using System.Collections.Generic;
@@ -10,215 +24,140 @@ using FireWorkflow.Net.Model.Net;
 
 namespace FireWorkflow.Net.Model
 {
-    //[XmlRootAttribute(Namespace = "http://www.fireflow.org/Fireflow_Process_Definition_Language")]
+    /// <summary>
+    /// <para>业务流程。</para>
+    /// 这是Fire workflow工作流模型的最顶层元素。
+    /// </summary>
     public class WorkflowProcess : AbstractWFElement
     {
+        #region 属性
+
         #region 子元素
-        //    private List formalParameters = new ArrayList();
 
-        /// <summary>流程数据项，运行时转换为流程变量进行存储。</summary>
-        private List<DataField> dataFields = new List<DataField>();
+        /// <summary>获取或设置流程数据项，运行时转换为流程变量进行存储。</summary>
+        public List<DataField> DataFields { get; set; }
 
-        /// <summary>全局Task。</summary>
-        private List<Task> tasks = new List<Task>();
+        /// <summary>获取或设置全局Task。</summary>
+        public List<Task> Tasks { get; set; }
 
-        /// <summary>流程环节</summary>
-        private List<Activity> activities = new List<Activity>();
+        /// <summary>获取或设置流程环节</summary>
+        public List<Activity> Activities { get; set; }
 
-        /// <summary>转移</summary>
-        private List<Transition> transitions = new List<Transition>();
+        /// <summary>获取或设置转移</summary>
+        public List<Transition> Transitions { get; set; }
 
-        /// <summary>循环</summary>
-        private List<Loop> loops = new List<Loop>();
+        /// <summary>获取或设置循环</summary>
+        public List<Loop> Loops = new List<Loop>();
 
-        /// <summary>同步器</summary>
-        private List<Synchronizer> synchronizers = new List<Synchronizer>();
+        /// <summary>获取或设置同步器</summary>
+        public List<Synchronizer> Synchronizers { get; set; }
 
-        /// <summary>开始节点</summary>
-        private StartNode startNode = null;
+        /// <summary>获取或设置开始节点</summary>
+        public StartNode StartNode { get; set; }
 
-        /// <summary>结束节点</summary>
-        private List<EndNode> endNodes = new List<EndNode>();
+        /// <summary>获取或设置结束节点</summary>
+        public List<EndNode> EndNodes { get; set; }
 
         #endregion
 
         #region 其他属性
 
-        /// <summary>资源文件（在1.0中暂时未使用）</summary>
-        private String resourceFile = null;
+        /// <summary>获取或设置资源文件（在1.0中暂时未使用）</summary>
+        public String ResourceFile { get; set; }
 
-        /// <summary>资源管理器（在1.0中暂时未使用）</summary>
-        private String resourceManager = null;
+        /// <summary>获取或设置资源管理器（在1.0中暂时未使用）</summary>
+        public String ResourceManager { get; set; }
 
         /// <summary>
-        /// 本流程全局的任务实例创建器。
+        /// 获取或设置本流程全局的任务实例创建器。
         /// 如果没有设置，引擎将使用DefaultTaskInstanceCreator来创建TaskInstance。
         /// </summary>
-        protected String taskInstanceCreator = null;
+        public String TaskInstanceCreator { get; set; }
 
         /// <summary>
-        /// 本流程全局的FormTask Instance运行器。
+        /// 获取或设置本流程全局的FormTask Instance运行器。
         /// 如果没有设置，引擎将使用DefaultFormTaskInstanceRunner来运行TaskInstance。
         /// </summary>
-        protected String formTaskInstanceRunner = null;
+        public String FormTaskInstanceRunner { get; set; }
 
         /// <summary>
-        /// 本流程全局的ToolTask Instance运行器。
+        /// 获取或设置本流程全局的ToolTask Instance运行器。
         /// 如果没有设置，引擎将使用DefaultToolTaskInstanceRunner来运行TaskInstance。
         /// </summary>
-        protected String toolTaskInstanceRunner = null;
+        public String ToolTaskInstanceRunner { get; set; }
 
 
         /// <summary>
-        /// 本流程全局的SubflowTask Instance运行器。
+        /// 获取或设置本流程全局的SubflowTask Instance运行器。
         /// 如果没有设置，引擎将使用DefaultSubflowTaskInstanceRunner来运行TaskInstance。
         /// </summary>
-        protected String subflowTaskInstanceRunner = null;
+        public String SubflowTaskInstanceRunner { get; set; }
 
 
         /// <summary>
-        /// 本流程全局的FormTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
+        /// 获取或设置本流程全局的FormTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
         /// 如果没有设置，引擎使用缺省实现DefaultFormTaskInstanceCompletionEvaluator。
         /// </summary>
-        protected String formTaskInstanceCompletionEvaluator = null;
+        public String FormTaskInstanceCompletionEvaluator { get; set; }
 
         /// <summary>
-        /// 本流程全局的ToolTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
+        /// 获取或设置本流程全局的ToolTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
         /// 如果没有设置，引擎使用缺省实现DefaultToolTaskInstanceCompletionEvaluator。
         /// </summary>
-        protected String toolTaskInstanceCompletionEvaluator = null;
+        public String ToolTaskInstanceCompletionEvaluator { get; set; }
 
         /// <summary>
-        /// 本流程全局的SubflowTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
+        /// 获取或设置本流程全局的SubflowTask Instance 终结评价器，用于告诉引擎该实例是否可以结束。<br/>
         /// 如果没有设置，引擎使用缺省实现DefaultSubflowTaskInstanceCompletionEvaluator。
         /// </summary>
-        protected String subflowTaskInstanceCompletionEvaluator = null;
+        public String SubflowTaskInstanceCompletionEvaluator { get; set; }
 
         //    private int version = 1;//version在流程定义中不需要，只有在流程存储中需要，每次updatge数据库，都需要增加Version值
 
         #endregion
 
-        //构造函数
+        #endregion
+
+        #region 构造函数
         public WorkflowProcess(String name)
             : base(null, name)
         {
+            this.DataFields = new List<DataField>();
+            this.Tasks = new List<Task>();
+            this.Activities = new List<Activity>();
+            this.Transitions = new List<Transition>();
+            this.Loops = new List<Loop>();
+            this.Synchronizers = new List<Synchronizer>();
+            this.EndNodes = new List<EndNode>();
         }
-        //    public List getFormalParameters() {
-        //        return formalParameters;
-        //    }
+        #endregion
 
-        /// <summary>返回所有的流程数据项</summary>
-        /// <returns></returns>
-        public List<DataField> getDataFields()
-        {
-            return dataFields;
-        }
-
-        /// <summary>返回所有的环节</summary>
-        public List<Activity> getActivities()
-        {
-            return activities;
-        }
-
-        /// <summary>返回所有的循环</summary>
-        public List<Loop> getLoops()
-        {
-            return loops;
-        }
-
-        /// <summary>返回所有的转移</summary>
-        public List<Transition> getTransitions()
-        {
-            return transitions;
-        }
-
-        //    public int getVersion() {
-        //        return version;
-        //    }
-        //
-        //    public void setVersion(int version) {
-        //        this.version = version;
-        //    }
-
-        /// <summary>返回开始节点</summary>
-        public StartNode getStartNode()
-        {
-            return startNode;
-        }
-
-        public void setStartNode(StartNode startNode)
-        {
-            this.startNode = startNode;
-        }
-
-        /// <summary>返回所有的结束节点</summary>
-        public List<EndNode> getEndNodes()
-        {
-            return endNodes;
-        }
-
-        /// <summary>返回所有的同步器</summary>
-        public List<Synchronizer> getSynchronizers()
-        {
-            return synchronizers;
-        }
-
-        /// <summary>返回所有的全局Task</summary>
-        public List<Task> getTasks()
-        {
-            return this.tasks;
-        }
-
-
-        //保留
-        public String getResourceFile()
-        {
-            return resourceFile;
-        }
-
-        //保留
-        public void setResourceFile(String resourceFile)
-        {
-            this.resourceFile = resourceFile;
-        }
-
-        //保留
-        public String getResourceManager()
-        {
-            return resourceManager;
-        }
-
-        //保留
-        public void setResourceManager(String resourceMgr)
-        {
-            this.resourceManager = resourceMgr;
-        }
-
+        #region 方法
         /// <summary>通过ID查找该流程中的任意元素</summary>
         /// <param name="id">元素的Id</param>
         /// <returns>流程元素，如：Activity,Task,Synchronizer等等</returns>
         public IWFElement findWFElementById(String id)
         {
-            if (this.getId().Equals(id))
+            if (this.Id.Equals(id))
             {
                 return this;
             }
 
-            List<Task> tasksList = this.getTasks();
+            List<Task> tasksList = this.Tasks;
             for (int i = 0; i < tasksList.Count; i++)
             {
                 Task task = (Task)tasksList[i];
-                if (task.getId().Equals(id))
+                if (task.Id.Equals(id))
                 {
                     return task;
                 }
             }
 
-            List<Activity> activityList = this.getActivities();
+            List<Activity> activityList = this.Activities;
             for (int i = 0; i < activityList.Count; i++)
             {
                 IWFElement wfElement = (IWFElement)activityList[i];
-                if (wfElement.getId().Equals(id))
+                if (wfElement.Id.Equals(id))
                 {
                     return wfElement;
                 }
@@ -226,61 +165,61 @@ namespace FireWorkflow.Net.Model
                 for (int j = 0; j < taskList.Count; j++)
                 {
                     IWFElement wfElement2 = (IWFElement)taskList[j];
-                    if (wfElement2.getId().Equals(id))
+                    if (wfElement2.Id.Equals(id))
                     {
                         return wfElement2;
                     }
                 }
             }
-            if (this.getStartNode().getId().Equals(id))
+            if (this.StartNode.Id.Equals(id))
             {
-                return this.getStartNode();
+                return this.StartNode;
             }
-            List<Synchronizer> synchronizerList = this.getSynchronizers();
+            List<Synchronizer> synchronizerList = this.Synchronizers;
             for (int i = 0; i < synchronizerList.Count; i++)
             {
                 IWFElement wfElement = (IWFElement)synchronizerList[i];
-                if (wfElement.getId().Equals(id))
+                if (wfElement.Id.Equals(id))
                 {
                     return wfElement;
                 }
             }
 
-            List<EndNode> endNodeList = this.getEndNodes();
+            List<EndNode> endNodeList = this.EndNodes;
             for (int i = 0; i < endNodeList.Count; i++)
             {
                 IWFElement wfElement = (IWFElement)endNodeList[i];
-                if (wfElement.getId().Equals(id))
+                if (wfElement.Id.Equals(id))
                 {
                     return wfElement;
                 }
             }
 
-            List<Transition> transitionList = this.getTransitions();
+            List<Transition> transitionList = this.Transitions;
             for (int i = 0; i < transitionList.Count; i++)
             {
                 IWFElement wfElement = (IWFElement)transitionList[i];
-                if (wfElement.getId().Equals(id))
+                if (wfElement.Id.Equals(id))
                 {
                     return wfElement;
                 }
             }
 
-            List<DataField> dataFieldList = this.getDataFields();
+            List<DataField> dataFieldList = this.DataFields;
             for (int i = 0; i < dataFieldList.Count; i++)
             {
                 IWFElement wfElement = (IWFElement)dataFieldList[i];
-                if (wfElement.getId().Equals(id))
+                if (wfElement.Id.Equals(id))
                 {
                     return wfElement;
                 }
             }
 
-            List<Loop> loopList = this.getLoops();
+            List<Loop> loopList = this.Loops;
             for (int i = 0; i < loopList.Count; i++)
             {
                 IWFElement wfElement = (IWFElement)loopList[i];
-                if (wfElement.getId().Equals(id))
+                if (wfElement.Id.Equals(id))
                 {
                     return wfElement;
                 }
@@ -296,7 +235,7 @@ namespace FireWorkflow.Net.Model
             IWFElement elem = this.findWFElementById(id);
             if (elem != null)
             {
-                return elem.getSn();
+                return elem.Sn;
             }
             return null;
         }
@@ -306,26 +245,26 @@ namespace FireWorkflow.Net.Model
         public String validate()
         {
             String errHead = "Workflow process is invalid：";
-            if (this.getStartNode() == null)
+            if (this.StartNode == null)
             {
                 return errHead + "must have one start node";
             }
-            if (this.getStartNode().getLeavingTransitions().Count == 0)
+            if (this.StartNode.LeavingTransitions.Count == 0)
             {
                 return errHead + "start node must have leaving transitions.";
             }
 
 
-            List<Activity> activities = this.getActivities();
+            List<Activity> activities = this.Activities;
             for (int i = 0; i < activities.Count; i++)
             {
                 Activity activity = activities[i];
-                String theName = (String.IsNullOrEmpty(activity.getDisplayName())) ? activity.getName() : activity.getDisplayName();
-                if (activity.getEnteringTransition() == null)
+                String theName = (String.IsNullOrEmpty(activity.DisplayName)) ? activity.Name : activity.DisplayName;
+                if (activity.EnteringTransition == null)
                 {
                     return errHead + "activity[" + theName + "] must have entering transition.";
                 }
-                if (activity.getLeavingTransition() == null)
+                if (activity.LeavingTransition == null)
                 {
                     return errHead + "activity[" + theName + "] must have leaving transition.";
                 }
@@ -335,93 +274,89 @@ namespace FireWorkflow.Net.Model
                 for (int j = 0; j < taskList.Count; j++)
                 {
                     Task task = (Task)taskList[j];
-                    if (task.getType() == null)
-                    {
-                        return errHead + "task[" + task.getId() + "]'s taskType can Not be null.";
-                    }
-                    else if (task.getType().Equals(Task.FORM))
+                    if (task.TaskType==TaskTypeEnum.FORM)
                     {
                         FormTask formTask = (FormTask)task;
-                        if (formTask.getPerformer() == null)
+                        if (formTask.Performer == null)
                         {
-                            return errHead + "FORM-task[id=" + task.getId() + "] must has a performer.";
+                            return errHead + "FORM-task[id=" + task.Id + "] must has a performer.";
                         }
                     }
-                    else if (task.getType().Equals(Task.TOOL))
+                    else if (task.TaskType==TaskTypeEnum.TOOL)
                     {
                         ToolTask toolTask = (ToolTask)task;
-                        if (toolTask.getApplication() == null)
+                        if (toolTask.Application == null)
                         {
-                            return errHead + "TOOL-task[id=" + task.getId() + "] must has a application.";
+                            return errHead + "TOOL-task[id=" + task.Id + "] must has a application.";
                         }
                     }
-                    else if (task.getType().Equals(Task.SUBFLOW))
+                    else if (task.TaskType==TaskTypeEnum.SUBFLOW)
                     {
                         SubflowTask subflowTask = (SubflowTask)task;
-                        if (subflowTask.getSubWorkflowProcess() == null)
+                        if (subflowTask.SubWorkflowProcess == null)
                         {
-                            return errHead + "SUBFLOW-task[id=" + task.getId() + "] must has a subflow.";
+                            return errHead + "SUBFLOW-task[id=" + task.Id + "] must has a subflow.";
                         }
                     }
                     else
                     {
-                        return errHead + " unknown task type of task[" + task.getId() + "]";
+                        return errHead + " unknown task type of task[" + task.Id + "]";
                     }
                 }
             }
 
-            List<Synchronizer> synchronizers = this.getSynchronizers();
+            List<Synchronizer> synchronizers = this.Synchronizers;
             for (int i = 0; i < synchronizers.Count; i++)
             {
                 Synchronizer synchronizer = synchronizers[i];
-                String theName = (synchronizer.getDisplayName() == null || synchronizer.getDisplayName().Equals("")) ? synchronizer.getName() : synchronizer.getDisplayName();
-                if (synchronizer.getEnteringTransitions().Count == 0)
+                String theName = (synchronizer.DisplayName == null || synchronizer.DisplayName.Equals("")) ? synchronizer.Name : synchronizer.DisplayName;
+                if (synchronizer.EnteringTransitions.Count == 0)
                 {
                     return errHead + "synchronizer[" + theName + "] must have entering transition.";
                 }
-                if (synchronizer.getLeavingTransitions().Count == 0)
+                if (synchronizer.LeavingTransitions.Count == 0)
                 {
                     return errHead + "synchronizer[" + theName + "] must have leaving transition.";
                 }
             }
 
-            List<EndNode> endnodes = this.getEndNodes();
+            List<EndNode> endnodes = this.EndNodes;
             for (int i = 0; i < endnodes.Count; i++)
             {
                 EndNode endnode = endnodes[i];
-                String theName = (endnode.getDisplayName() == null || endnode.getDisplayName().Equals("")) ? endnode.getName() : endnode.getDisplayName();
-                if (endnode.getEnteringTransitions().Count == 0)
+                String theName = (endnode.DisplayName == null || endnode.DisplayName.Equals("")) ? endnode.Name : endnode.DisplayName;
+                if (endnode.EnteringTransitions.Count == 0)
                 {
                     return errHead + "end node[" + theName + "] must have entering transition.";
                 }
             }
 
-            List<Transition> transitions = this.getTransitions();
+            List<Transition> transitions = this.Transitions;
             for (int i = 0; i < transitions.Count; i++)
             {
                 Transition transition = transitions[i];
-                String theName = (transition.getDisplayName() == null || transition.getDisplayName().Equals("")) ? transition.getName() : transition.getDisplayName();
-                if (transition.getFromNode() == null)
+                String theName = (transition.DisplayName == null || transition.DisplayName.Equals("")) ? transition.Name : transition.DisplayName;
+                if (transition.FromNode == null)
                 {
                     return errHead + "transition[" + theName + "] must have from node.";
 
                 }
-                if (transition.getToNode() == null)
+                if (transition.ToNode == null)
                 {
                     return errHead + "transition[" + theName + "] must have to node.";
                 }
             }
 
             //check datafield
-            List<DataField> dataFieldList = this.getDataFields();
-            for (int i = 0; i < dataFieldList.Count; i++)
-            {
-                DataField df = (DataField)dataFieldList[i];
-                if (df.getDataType() == null)
-                {
-                    return errHead + "unknown data type of datafield[" + df.getId() + "]";
-                }
-            }
+            //List<DataField> dataFieldList = this.DataFields;
+            //for (int i = 0; i < dataFieldList.Count; i++)
+            //{
+            //    DataField df = (DataField)dataFieldList[i];
+            //    if (df.DataType == null)
+            //    {
+            //        return errHead + "unknown data type of datafield[" + df.Id + "]";
+            //    }
+            //}
 
             return null;
         }
@@ -448,13 +383,13 @@ namespace FireWorkflow.Net.Model
             System.out.println("-----------------------activity1--------------");
             for (int i=0;i<connectableNodes4Activity1.Count;i++){
                 Node node = (Node)connectableNodes4Activity1[i];
-                System.out.println("node.id of act1 is "+node.getId());
+                System.out.println("node.id of act1 is "+node.Id);
             }
         
             System.out.println("---------------------activity2--------------------");
             for (int i=0;i<connectableNodes4Activity2.Count;i++){
                 Node node = (Node)connectableNodes4Activity2[i];
-                System.out.println("node.id of act2 is "+node.getId());
+                System.out.println("node.id of act2 is "+node.Id);
             }
              */
 
@@ -471,7 +406,7 @@ namespace FireWorkflow.Net.Model
                 for (int j = 0; j < connectableNodes4Activity2.Count; j++)
                 {
                     Node tmpNode = (Node)connectableNodes4Activity2[j];
-                    if (node.getId().Equals(tmpNode.getId()))
+                    if (node.Id.Equals(tmpNode.Id))
                     {
                         find = true;
                         break;
@@ -489,31 +424,31 @@ namespace FireWorkflow.Net.Model
             if (node is Activity)
             {
                 Activity activity = (Activity)node;
-                Transition leavingTransition = activity.getLeavingTransition();
+                Transition leavingTransition = activity.LeavingTransition;
                 if (leavingTransition != null)
                 {
-                    Node toNode = (Node)leavingTransition.getToNode();
+                    Node toNode = (Node)leavingTransition.ToNode;
                     if (toNode != null)
                     {
                         reachableNodesList.Add(toNode);
-                        reachableNodesList.AddRange(getReachableNodes(toNode.getId()));
+                        reachableNodesList.AddRange(getReachableNodes(toNode.Id));
                     }
                 }
             }
             else if (node is Synchronizer)
             {
                 Synchronizer synchronizer = (Synchronizer)node;
-                List<Transition> leavingTransitions = synchronizer.getLeavingTransitions();
+                List<Transition> leavingTransitions = synchronizer.LeavingTransitions;
                 for (int i = 0; leavingTransitions != null && i < leavingTransitions.Count; i++)
                 {
                     Transition leavingTransition = (Transition)leavingTransitions[i];
                     if (leavingTransition != null)
                     {
-                        Node toNode = (Node)leavingTransition.getToNode();
+                        Node toNode = (Node)leavingTransition.ToNode;
                         if (toNode != null)
                         {
                             reachableNodesList.Add(toNode);
-                            reachableNodesList.AddRange(getReachableNodes(toNode.getId()));
+                            reachableNodesList.AddRange(getReachableNodes(toNode.Id));
                         }
 
                     }
@@ -529,7 +464,7 @@ namespace FireWorkflow.Net.Model
                 for (int j = 0; j < tmp.Count; j++)
                 {
                     Node nodeTmp2 = (Node)tmp[j];
-                    if (nodeTmp2.getId().Equals(nodeTmp.getId()))
+                    if (nodeTmp2.Id.Equals(nodeTmp.Id))
                     {
                         alreadyInTheList = true;
                         break;
@@ -551,31 +486,31 @@ namespace FireWorkflow.Net.Model
             if (node is Activity)
             {
                 Activity activity = (Activity)node;
-                Transition enteringTransition = activity.getEnteringTransition();
+                Transition enteringTransition = activity.EnteringTransition;
                 if (enteringTransition != null)
                 {
-                    Node fromNode = (Node)enteringTransition.getFromNode();
+                    Node fromNode = (Node)enteringTransition.FromNode;
                     if (fromNode != null)
                     {
                         enterableNodesList.Add(fromNode);
-                        enterableNodesList.AddRange(getEnterableNodes(fromNode.getId()));
+                        enterableNodesList.AddRange(getEnterableNodes(fromNode.Id));
                     }
                 }
             }
             else if (node is Synchronizer)
             {
                 Synchronizer synchronizer = (Synchronizer)node;
-                List<Transition> enteringTransitions = synchronizer.getEnteringTransitions();
+                List<Transition> enteringTransitions = synchronizer.EnteringTransitions;
                 for (int i = 0; enteringTransitions != null && i < enteringTransitions.Count; i++)
                 {
                     Transition enteringTransition = (Transition)enteringTransitions[i];
                     if (enteringTransition != null)
                     {
-                        Node fromNode = (Node)enteringTransition.getFromNode();
+                        Node fromNode = (Node)enteringTransition.FromNode;
                         if (fromNode != null)
                         {
                             enterableNodesList.Add(fromNode);
-                            enterableNodesList.AddRange(getEnterableNodes(fromNode.getId()));
+                            enterableNodesList.AddRange(getEnterableNodes(fromNode.Id));
                         }
 
                     }
@@ -591,7 +526,7 @@ namespace FireWorkflow.Net.Model
                 for (int j = 0; j < tmp.Count; j++)
                 {
                     Node nodeTmp2 = (Node)tmp[j];
-                    if (nodeTmp2.getId().Equals(nodeTmp.getId()))
+                    if (nodeTmp2.Id.Equals(nodeTmp.Id))
                     {
                         alreadyInTheList = true;
                         break;
@@ -605,76 +540,6 @@ namespace FireWorkflow.Net.Model
             enterableNodesList = tmp;
             return enterableNodesList;
         }
-
-
-        public String getTaskInstanceCreator()
-        {
-            return taskInstanceCreator;
-        }
-
-        public void setTaskInstanceCreator(String taskInstanceCreator)
-        {
-            this.taskInstanceCreator = taskInstanceCreator;
-        }
-
-        public String getFormTaskInstanceCompletionEvaluator()
-        {
-            return formTaskInstanceCompletionEvaluator;
-        }
-
-        public void setFormTaskInstanceCompletionEvaluator(String formTaskInstanceCompletionEvaluator)
-        {
-            this.formTaskInstanceCompletionEvaluator = formTaskInstanceCompletionEvaluator;
-        }
-
-        public String getFormTaskInstanceRunner()
-        {
-            return formTaskInstanceRunner;
-        }
-
-        public void setFormTaskInstanceRunner(String formTaskInstanceRunner)
-        {
-            this.formTaskInstanceRunner = formTaskInstanceRunner;
-        }
-
-        public String getSubflowTaskInstanceCompletionEvaluator()
-        {
-            return subflowTaskInstanceCompletionEvaluator;
-        }
-
-        public void setSubflowTaskInstanceCompletionEvaluator(String subflowTaskInstanceCompletionEvaluator)
-        {
-            this.subflowTaskInstanceCompletionEvaluator = subflowTaskInstanceCompletionEvaluator;
-        }
-
-        public String getSubflowTaskInstanceRunner()
-        {
-            return subflowTaskInstanceRunner;
-        }
-
-        public void setSubflowTaskInstanceRunner(String subflowTaskInstanceRunner)
-        {
-            this.subflowTaskInstanceRunner = subflowTaskInstanceRunner;
-        }
-
-        public String getToolTaskInstanceRunner()
-        {
-            return toolTaskInstanceRunner;
-        }
-
-        public void setToolTaskInstanceRunner(String toolTaskInstanceRunner)
-        {
-            this.toolTaskInstanceRunner = toolTaskInstanceRunner;
-        }
-
-        public String getToolTaskInstanceCompletionEvaluator()
-        {
-            return toolTaskInstanceCompletionEvaluator;
-        }
-
-        public void setToolTaskInstanceCompletionEvaluator(String toolTaskIntanceCompletionEvaluator)
-        {
-            this.toolTaskInstanceCompletionEvaluator = toolTaskIntanceCompletionEvaluator;
-        }
+        #endregion
     }
 }

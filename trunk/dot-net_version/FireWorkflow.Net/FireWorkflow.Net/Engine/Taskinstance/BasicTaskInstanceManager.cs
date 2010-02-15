@@ -83,17 +83,17 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 }
                 createdTaskInstanceCount = createdTaskInstanceCount + 1;
 
-                String taskType = task.getType();
+                TaskTypeEnum taskType = task.TaskType;
                 ((TaskInstance)taskInstance).setTaskType(taskType);
                 ((TaskInstance)taskInstance).setStepNumber(token.getStepNumber());
-                //            ((TaskInstance) taskInstance).setTokenId(token.getId());
+                //            ((TaskInstance) taskInstance).setTokenId(token.Id);
                 ((TaskInstance)taskInstance).setProcessInstanceId(processInstance.getId());
                 ((TaskInstance)taskInstance).setProcessId(processInstance.getProcessId());
                 ((TaskInstance)taskInstance).setVersion(processInstance.getVersion());
-                ((TaskInstance)taskInstance).setActivityId(activity.getId());
-                if (Task.FORM.Equals(taskType))
+                ((TaskInstance)taskInstance).setActivityId(activity.Id);
+                if (TaskTypeEnum.FORM.Equals(taskType))
                 {
-                    ((TaskInstance)taskInstance).setAssignmentStrategy(((FormTask)task).getAssignmentStrategy());
+                    ((TaskInstance)taskInstance).setAssignmentStrategy(((FormTask)task).AssignmentStrategy.ToString());
                     ((TaskInstance)taskInstance).setCanBeWithdrawn(true);
                 }
                 else
@@ -101,19 +101,19 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     ((TaskInstance)taskInstance).setCanBeWithdrawn(false);
                 }
                 ((TaskInstance)taskInstance).setCreatedTime(calService.getSysDate());
-                ((TaskInstance)taskInstance).setDisplayName(task.getDisplayName());
-                ((TaskInstance)taskInstance).setName(task.getName());
+                ((TaskInstance)taskInstance).setDisplayName(task.DisplayName);
+                ((TaskInstance)taskInstance).setName(task.Name);
 
                 ((TaskInstance)taskInstance).setState(TaskInstance.INITIALIZED);
 
-                ((TaskInstance)taskInstance).setTaskId(task.getId());
+                ((TaskInstance)taskInstance).setTaskId(task.Id);
 
                 ((TaskInstance)taskInstance).setFromActivityId(token.getFromActivityId());
 
                 ((IRuntimeContextAware)taskInstance).setRuntimeContext(rtCtx);
                 ((IWorkflowSessionAware)taskInstance).setCurrentWorkflowSession(workflowSession);
                 //计算超时
-                Duration duration = task.getDuration();
+                Duration duration = task.Duration;
 
                 if (duration != null && calService != null)
                 {
@@ -140,11 +140,11 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         {
             //如果loopStrategy为SKIP且Task被执行过，则直接返回null;
             IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
-            String loopStrategy = task.getLoopStrategy();
-            if (loopStrategy != null && Task.SKIP.Equals(loopStrategy) && !currentSession.isInWithdrawOrRejectOperation())
+            LoopStrategyEnum loopStrategy = task.LoopStrategy;
+            if (LoopStrategyEnum.SKIP == loopStrategy && !currentSession.isInWithdrawOrRejectOperation())
             {
                 //检查是否已经执行过的task instance
-                Int32 count = persistenceService.getCompletedTaskInstanceCountForTask(processInstance.getId(), task.getId());
+                Int32 count = persistenceService.getCompletedTaskInstanceCountForTask(processInstance.getId(), task.Id);
                 if (count > 0)
                 {
                     return null;
@@ -155,7 +155,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             ITaskInstanceCreator taskInstanceCreator = null;
 
             //首先查找Task级别的TaskInstanceCreator
-            taskInstanceCreatorName = task.getTaskInstanceCreator();
+            taskInstanceCreatorName = task.TaskInstanceCreator;
             if (taskInstanceCreatorName != null && !taskInstanceCreatorName.Trim().Equals(""))
             {
                 IBeanFactory beanFactory = this.rtCtx.getBeanFactory();
@@ -164,7 +164,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             //如果没有，则查询流程级别的TaskInstanceCreator
             if (taskInstanceCreator == null)
             {
-                taskInstanceCreatorName = processInstance.getWorkflowProcess().getTaskInstanceCreator();
+                taskInstanceCreatorName = processInstance.getWorkflowProcess().TaskInstanceCreator;
                 if (taskInstanceCreatorName != null && !taskInstanceCreatorName.Trim().Equals(""))
                 {
                     IBeanFactory beanFactory = this.rtCtx.getBeanFactory();
@@ -212,9 +212,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             String taskInstanceRunnerName = null;
             ITaskInstanceRunner taskInstanceRunner = null;
 
-            String taskType = task.getType();
+            TaskTypeEnum taskType = task.TaskType;
 
-            taskInstanceRunnerName = task.getTaskInstanceRunner();
+            taskInstanceRunnerName = task.TaskInstanceRunner;
             if (taskInstanceRunnerName != null && !taskInstanceRunnerName.Trim().Equals(""))
             {
                 IBeanFactory beanFactory = this.rtCtx.getBeanFactory();
@@ -223,17 +223,17 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (taskInstanceRunner == null)
             {
-                if (Task.FORM.Equals(taskType))
+                if (TaskTypeEnum.FORM.Equals(taskType))
                 {
-                    taskInstanceRunnerName = processInstance.getWorkflowProcess().getFormTaskInstanceRunner();
+                    taskInstanceRunnerName = processInstance.getWorkflowProcess().FormTaskInstanceRunner;
                 }
-                else if (Task.TOOL.Equals(taskType))
+                else if (TaskTypeEnum.TOOL.Equals(taskType))
                 {
-                    taskInstanceRunnerName = processInstance.getWorkflowProcess().getToolTaskInstanceRunner();
+                    taskInstanceRunnerName = processInstance.getWorkflowProcess().ToolTaskInstanceRunner;
                 }
-                else if (Task.SUBFLOW.Equals(taskType))
+                else if (TaskTypeEnum.SUBFLOW.Equals(taskType))
                 {
-                    taskInstanceRunnerName = processInstance.getWorkflowProcess().getSubflowTaskInstanceRunner();
+                    taskInstanceRunnerName = processInstance.getWorkflowProcess().SubflowTaskInstanceRunner;
                 }
                 if (taskInstanceRunnerName != null && !taskInstanceRunnerName.Trim().Equals(""))
                 {
@@ -244,15 +244,15 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (taskInstanceRunner == null)
             {
-                if (Task.FORM.Equals(taskType))
+                if (TaskTypeEnum.FORM.Equals(taskType))
                 {
                     taskInstanceRunner = defaultFormTaskInstanceRunner;
                 }
-                else if (Task.TOOL.Equals(taskType))
+                else if (TaskTypeEnum.TOOL.Equals(taskType))
                 {
                     taskInstanceRunner = defaultToolTaskInstanceRunner;
                 }
-                else if (Task.SUBFLOW.Equals(taskType))
+                else if (TaskTypeEnum.SUBFLOW.Equals(taskType))
                 {
                     taskInstanceRunner = defaultSubflowTaskInstanceRunner;
                 }
@@ -266,7 +266,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 WorkflowProcess process = taskInstance.getWorkflowProcess();
                 throw new EngineException(taskInstance.getProcessInstanceId(), process,
                         taskInstance.getTaskId(),
-                        "无法获取TaskInstanceRunner,TaskId=" + task.getId() + ", taskType=" + taskInstance.getTaskType());
+                        "无法获取TaskInstanceRunner,TaskId=" + task.Id + ", taskType=" + taskInstance.getTaskType());
             }
         }
 
@@ -283,9 +283,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             String taskInstanceCompletionEvaluatorName = null;
             ITaskInstanceCompletionEvaluator taskInstanceCompletionEvaluator = null;
 
-            String taskType = task.getType();
+            TaskTypeEnum taskType = task.TaskType;
 
-            taskInstanceCompletionEvaluatorName = task.getTaskInstanceCompletionEvaluator();
+            taskInstanceCompletionEvaluatorName = task.TaskInstanceCompletionEvaluator;
             if (taskInstanceCompletionEvaluatorName != null && !taskInstanceCompletionEvaluatorName.Trim().Equals(""))
             {
                 IBeanFactory beanFactory = runtimeContext.getBeanFactory();
@@ -294,17 +294,17 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (taskInstanceCompletionEvaluator == null)
             {
-                if (Task.FORM.Equals(taskType))
+                if (TaskTypeEnum.FORM.Equals(taskType))
                 {
-                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().getFormTaskInstanceCompletionEvaluator();
+                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().FormTaskInstanceCompletionEvaluator;
                 }
-                else if (Task.TOOL.Equals(taskType))
+                else if (TaskTypeEnum.TOOL.Equals(taskType))
                 {
-                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().getToolTaskInstanceCompletionEvaluator();
+                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().ToolTaskInstanceCompletionEvaluator;
                 }
-                else if (Task.SUBFLOW.Equals(taskType))
+                else if (TaskTypeEnum.SUBFLOW.Equals(taskType))
                 {
-                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().getSubflowTaskInstanceCompletionEvaluator();
+                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().SubflowTaskInstanceCompletionEvaluator;
                 }
                 if (taskInstanceCompletionEvaluatorName != null && !taskInstanceCompletionEvaluatorName.Trim().Equals(""))
                 {
@@ -315,15 +315,15 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (taskInstanceCompletionEvaluator == null)
             {
-                if (Task.FORM.Equals(taskType))
+                if (TaskTypeEnum.FORM.Equals(taskType))
                 {
                     taskInstanceCompletionEvaluator = this.defaultFormTaskInstanceCompletionEvaluator;
                 }
-                else if (Task.TOOL.Equals(taskType))
+                else if (TaskTypeEnum.TOOL.Equals(taskType))
                 {
                     taskInstanceCompletionEvaluator = this.defaultToolTaskInstanceCompletionEvaluator;
                 }
-                else if (Task.SUBFLOW.Equals(taskType))
+                else if (TaskTypeEnum.SUBFLOW.Equals(taskType))
                 {
                     taskInstanceCompletionEvaluator = this.defaultSubflowTaskInstanceCompletionEvaluator;
                 }
@@ -337,7 +337,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 WorkflowProcess process = taskInstance.getWorkflowProcess();
                 throw new EngineException(taskInstance.getProcessInstanceId(), process,
                         taskInstance.getTaskId(),
-                        "无法获取TaskInstanceCompletionEvaluator,TaskId=" + task.getId() + ", taskType=" + taskInstance.getTaskType());
+                        "无法获取TaskInstanceCompletionEvaluator,TaskId=" + task.Id + ", taskType=" + taskInstance.getTaskType());
             }
         }
 
@@ -354,7 +354,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     return false;
                 }
             }
-            if (thisActivity.getCompletionStrategy().Equals(Activity.ALL))
+            if (thisActivity.CompletionStrategy== FormTaskEnum.ALL)
             {
                 Int32 aliveTaskInstanceCount4ThisActivity = persistenceService.getAliveTaskInstanceCountForActivity(taskInstance.getProcessInstanceId(), taskInstance.getActivityId());
 
@@ -407,7 +407,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (targetActivityInstance != null)
             {
-                ((TaskInstance)taskInstance).setTargetActivityId(targetActivityInstance.getActivity().getId());
+                ((TaskInstance)taskInstance).setTargetActivityId(targetActivityInstance.getActivity().Id);
             }
 
             IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
@@ -498,11 +498,11 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 return;
             }
 
-            List<EventListener> listeners = task.getEventListeners();
+            List<EventListener> listeners = task.EventListeners;
             for (int i = 0; i < listeners.Count; i++)
             {
                 EventListener listener = (EventListener)listeners[i];
-                Object obj = rtCtx.getBeanByName(listener.getClassName());
+                Object obj = rtCtx.getBeanByName(listener.ClassName);
                 if (obj != null && (obj is ITaskInstanceEventListener))
                 {
                     ((ITaskInstanceEventListener)obj).onTaskInstanceEventFired(e);
@@ -585,7 +585,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             persistenceService.saveOrUpdateWorkItem(workItem);
 
             //1、如果不是会签，则删除其他的workitem
-            if (FormTask.ANY.Equals(workItem.getTaskInstance().getAssignmentStrategy()))
+            if (FormTaskEnum.ANY.Equals(workItem.getTaskInstance().getAssignmentStrategy()))
             {
                 persistenceService.deleteWorkItemsInInitializedState(workItem.getTaskInstance().getId());
             }
@@ -665,7 +665,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
 
             //4)检查当前的activity instance是否可以结束
-            if (Activity.ALL.Equals(workItem.getTaskInstance().getActivity().getCompletionStrategy()))
+            if (workItem.getTaskInstance().getActivity().CompletionStrategy== FormTaskEnum.ALL)
             {
 
                 Int32 aliveTaskInstanceCount4ThisActivity = persistenceService.getAliveTaskInstanceCountForActivity(workItem.getTaskInstance().getProcessInstanceId(), workItem.getTaskInstance().getActivityId());
@@ -676,18 +676,18 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 }
             }
 
-            INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(workflowProcess.getId(), workItem.getTaskInstance().getVersion());
+            INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(workflowProcess.Id, workItem.getTaskInstance().getVersion());
             if (netInstance == null)
             {
                 throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-                        thisTaskInst.getTaskId(), "Not find the net instance for workflow process [id=" + workflowProcess.getId() + ", version=" + workItem.getTaskInstance().getVersion() + "]");
+                        thisTaskInst.getTaskId(), "Not find the net instance for workflow process [id=" + workflowProcess.Id + ", version=" + workItem.getTaskInstance().getVersion() + "]");
             }
             Object obj = netInstance.getWFElementInstance(targetActivityId);
             IActivityInstance targetActivityInstance = (IActivityInstance)obj;
             if (targetActivityInstance == null)
             {
                 throw new EngineException(thisTaskInst.getProcessInstanceId(), thisTaskInst.getWorkflowProcess(),
-                        thisTaskInst.getTaskId(), "Not find the activity instance  for activity[process id=" + workflowProcess.getId() + ", version=" + workItem.getTaskInstance().getVersion() + ",activity id=" + targetActivityId + "]");
+                        thisTaskInst.getTaskId(), "Not find the activity instance  for activity[process id=" + workflowProcess.Id + ", version=" + workItem.getTaskInstance().getVersion() + ",activity id=" + targetActivityId + "]");
             }
 
 
@@ -725,7 +725,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         "Reject operation refused!The correspond activity has more than 1 tasks");
             }
             //汇签Task不允许Reject
-            if (FormTask.ALL.Equals(thisTaskInstance.getAssignmentStrategy()))
+            if (FormTaskEnum.ALL.Equals(thisTaskInstance.getAssignmentStrategy()))
             {
                 throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
                         thisTaskInstance.getTaskId(),
@@ -762,7 +762,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 for (int j = 0; j < fromTaskList.Count; j++)
                 {
                     Task task = (Task)fromTaskList[j];
-                    if (Task.TOOL.Equals(task.getType()) || Task.SUBFLOW.Equals(task.getType()))
+                    if (TaskTypeEnum.TOOL.Equals(task.TaskType) || TaskTypeEnum.SUBFLOW.Equals(task.TaskType))
                     {
                         throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
                                 thisTaskInstance.getTaskId(), "Reject operation refused!The previous activity contains tool-task or subflow-task");
@@ -771,11 +771,11 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 }
             }
             //恢复所有的FromTaskInstance
-            INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(workflowProcess.getId(), workItem.getTaskInstance().getVersion());
+            INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(workflowProcess.Id, workItem.getTaskInstance().getVersion());
             if (netInstance == null)
             {
                 throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
-                        thisTaskInstance.getTaskId(), "Not find the net instance for workflow process [id=" + workflowProcess.getId() + ", version=" + workItem.getTaskInstance().getVersion() + "]");
+                        thisTaskInstance.getTaskId(), "Not find the net instance for workflow process [id=" + workflowProcess.Id + ", version=" + workItem.getTaskInstance().getVersion() + "]");
             }
 
             //执行reject操作。
@@ -822,7 +822,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         trace.setProcessInstanceId(thisTaskInstance.getProcessInstanceId());
                         trace.setStepNumber(newStepNumber);
                         trace.setType(ProcessInstanceTrace.REJECT_TYPE);
-                        trace.setFromNodeId(thisActivity.getId());
+                        trace.setFromNodeId(thisActivity.Id);
                         trace.setToNodeId(fromActivityId);
                         trace.setEdgeId("");
                         rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
@@ -835,7 +835,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 {
                     Token supplementToken = new Token();
                     ((Token)supplementToken).setAlive(false);
-                    ((Token)supplementToken).setNodeId(synchronizerInstance.getSynchronizer().getId());
+                    ((Token)supplementToken).setNodeId(synchronizerInstance.getSynchronizer().Id);
                     supplementToken.setProcessInstanceId(thisTaskInstance.getProcessInstanceId());
                     supplementToken.setProcessInstance(((TaskInstance)thisTaskInstance).getAliveProcessInstance());
                     supplementToken.setFromActivityId("EMPTY(created by reject)");
@@ -865,15 +865,15 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
                 throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
                         thisTaskInstance.getTaskId(),
-                        "Withdraw operation is refused! The activity[id=" + thisActivity.getId() + "] has more than 1 tasks");
+                        "Withdraw operation is refused! The activity[id=" + thisActivity.Id + "] has more than 1 tasks");
             }
 
             //汇签Task不允许撤销
-            if (FormTask.ALL.Equals(thisTaskInstance.getAssignmentStrategy()))
+            if (FormTaskEnum.ALL.Equals(thisTaskInstance.getAssignmentStrategy()))
             {
                 throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
                         thisTaskInstance.getTaskId(),
-                        "Withdraw operation is refused! The assignment strategy for activity[id=" + thisActivity.getId() + "] is 'ALL'");
+                        "Withdraw operation is refused! The assignment strategy for activity[id=" + thisActivity.Id + "] is 'ALL'");
             }
             // Activity targetActivity = null;
             // List targetActivityList = new ArrayList();
@@ -889,7 +889,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (targetTaskInstancesList == null || targetTaskInstancesList.Count == 0)
             {
                 throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
-                        thisTaskInstance.getTaskId(), "Withdraw operation is refused!Because the process instance has taken a join operation after this activity[id=" + thisActivity.getId() + "].");
+                        thisTaskInstance.getTaskId(), "Withdraw operation is refused!Because the process instance has taken a join operation after this activity[id=" + thisActivity.Id + "].");
             }
             else
             {
@@ -897,7 +897,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 if (!taskInstance.getFromActivityId().Equals(thisTaskInstance.getActivityId()))
                 {
                     throw new EngineException(thisTaskInstance.getProcessInstanceId(), thisTaskInstance.getWorkflowProcess(),
-                            thisTaskInstance.getTaskId(), "Withdraw operation is refused!Because the process instance has taken a join operation after this activity[id=" + thisActivity.getId() + "].");
+                            thisTaskInstance.getTaskId(), "Withdraw operation is refused!Because the process instance has taken a join operation after this activity[id=" + thisActivity.Id + "].");
                 }
             }
 
@@ -971,7 +971,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         trace.setStepNumber(newStepNumber);
                         trace.setType(ProcessInstanceTrace.WITHDRAW_TYPE);
                         trace.setFromNodeId(tmpActId);
-                        trace.setToNodeId(thisActivity.getId());
+                        trace.setToNodeId(thisActivity.Id);
                         trace.setEdgeId("");
                         rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
                     }
@@ -983,7 +983,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 {
                     Token supplementToken = new Token();
                     ((Token)supplementToken).setAlive(false);
-                    ((Token)supplementToken).setNodeId(synchronizerInstance.getSynchronizer().getId());
+                    ((Token)supplementToken).setNodeId(synchronizerInstance.getSynchronizer().Id);
                     supplementToken.setProcessInstanceId(thisTaskInstance.getProcessInstanceId());
                     supplementToken.setProcessInstance(((TaskInstance)thisTaskInstance).getAliveProcessInstance());
                     supplementToken.setFromActivityId("Empty(created by withdraw)");

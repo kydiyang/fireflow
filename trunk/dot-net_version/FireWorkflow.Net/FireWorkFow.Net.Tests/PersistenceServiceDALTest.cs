@@ -132,7 +132,7 @@ namespace FireWorkFow.Net.Tests
         /// <summary>
         ///A test for saveOrUpdateWorkflowDefinition
         ///</summary>
-        [TestMethod()]
+        //[TestMethod()]
         public void saveOrUpdateWorkflowDefinitionTest()
         {
             PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value

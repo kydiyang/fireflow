@@ -32,8 +32,8 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             ITaskInstance taskInst = (ITaskInstance)asignable;
             if (!needClaim)
             {
-                if (FormTask.ALL.Equals(taskInst.getAssignmentStrategy()) ||
-                        (FormTask.ANY.Equals(taskInst.getAssignmentStrategy()) && actorIdsList.Count == 1))
+                if (FormTaskEnum.ALL.Equals(taskInst.getAssignmentStrategy()) ||
+                        (FormTaskEnum.ANY.Equals(taskInst.getAssignmentStrategy()) && actorIdsList.Count == 1))
                 {
                     for (int i = 0; i < workItems.Count; i++)
                     {

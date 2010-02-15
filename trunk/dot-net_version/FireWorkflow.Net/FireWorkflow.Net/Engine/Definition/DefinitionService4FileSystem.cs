@@ -58,33 +58,33 @@ namespace FireWorkflow.Net.Engine.Definition
 
                     workflowDef.setWorkflowProcess(workflowProcess);
 
-                    String latestVersionKey = workflowProcess.getId() + "_V_" + workflowDef.getVersion();
+                    String latestVersionKey = workflowProcess.Id + "_V_" + workflowDef.getVersion();
                     workflowDefinitionMap.Add(latestVersionKey, workflowDef);
-                    latestVersionKeyMap.Add(workflowProcess.getId(), latestVersionKey);
-                    //                workflowProcessMap.put(workflowProcess.getName(), workflowProcess);
+                    latestVersionKeyMap.Add(workflowProcess.Id, latestVersionKey);
+                    //                workflowProcessMap.put(workflowProcess.Name, workflowProcess);
                     //
-                    //                List<Activity> activities = workflowProcess.getActivities();
+                    //                List<Activity> activities = workflowProcess.Activities;
                     //                for (int k = 0; activities != null && k < activities.Count; k++) {
                     //                    Activity activity = activities.get(k);
-                    //                    activityMap.put(activity.getId(), activity);
+                    //                    activityMap.put(activity.Id, activity);
                     //
                     //                    List<Task> tasks = activity.getTasks();
                     //                    for (int j = 0; tasks != null && j < tasks.Count; j++) {
                     //                        Task task = tasks.get(j);
-                    //                        taskMap.put(task.getId(), task);
+                    //                        taskMap.put(task.Id, task);
                     //                    }
                     //                }
                     //
-                    //                List<Transition> transitions = workflowProcess.getTransitions();
+                    //                List<Transition> transitions = workflowProcess.Transitions;
                     //                for (int k = 0; transitions != null && k < transitions.Count; k++) {
                     //                    Transition trans = transitions.get(k);
-                    //                    transitionMap.put(trans.getId(), trans);
+                    //                    transitionMap.put(trans.Id, trans);
                     //                }
                     //
-                    //                List<DataField> datafields = workflowProcess.getDataFields();
+                    //                List<DataField> datafields = workflowProcess.DataFields;
                     //                for (int k = 0; datafields != null && k < datafields.Count; k++) {
                     //                    DataField df = datafields.get(k);
-                    //                    dataFieldMap.put(df.getId(), df);
+                    //                    dataFieldMap.put(df.Id, df);
                     //                }
 
                 }

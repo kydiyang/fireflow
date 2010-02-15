@@ -37,24 +37,24 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String getId()
         {
-            return this.synchronizer.getId();
+            return this.synchronizer.Id;
         }
 
         public SynchronizerInstance(Synchronizer s)
         {
             synchronizer = s;
-            int a = synchronizer.getEnteringTransitions().Count;
-            int b = synchronizer.getLeavingTransitions().Count;
+            int a = synchronizer.EnteringTransitions.Count;
+            int b = synchronizer.LeavingTransitions.Count;
             volume = a * b;
 
-            //		System.out.println("synchronizer "+synchronizer.getName()+"'s volume is "+volume);
+            //		System.out.println("synchronizer "+synchronizer.Name+"'s volume is "+volume);
         }
 
 
         public IJoinPoint synchronized(IToken tk, SynchronizerInstance sthis)
         {
             IJoinPoint joinPoint = null;
-            tk.setNodeId(this.getSynchronizer().getId());
+            tk.setNodeId(this.getSynchronizer().Id);
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             // 触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(sthis);
@@ -131,7 +131,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                 for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.Count; i++)
                 {
                     ITransitionInstance transInst = leavingTransitionInstances[i];
-                    String condition = transInst.getTransition().getCondition();
+                    String condition = transInst.getTransition().Condition;
                     if (condition != null && condition.Equals(ConditionConstant.DEFAULT))
                     {
                         defaultTransInst = transInst;
@@ -219,7 +219,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String ToString()
         {
-            return "SynchronizerInstance_4_[" + synchronizer.getId() + "]";
+            return "SynchronizerInstance_4_[" + synchronizer.Id + "]";
         }
 
         public Synchronizer getSynchronizer()

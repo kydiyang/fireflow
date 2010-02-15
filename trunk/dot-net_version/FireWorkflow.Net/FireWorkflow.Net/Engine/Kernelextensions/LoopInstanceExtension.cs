@@ -79,7 +79,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                 IToken token = e.getToken();
                 // 计算token的alive值
                 ILoopInstance transInst = (ILoopInstance)e.getSource();
-                String condition = transInst.getLoop().getCondition();
+                String condition = transInst.getLoop().Condition;
 
                 calculateTheAliveValue(token, condition);
 
@@ -89,9 +89,9 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                     trace.setProcessInstanceId(e.getToken().getProcessInstanceId());
                     trace.setStepNumber(e.getToken().getStepNumber() + 1);
                     trace.setType(ProcessInstanceTrace.LOOP_TYPE);
-                    trace.setFromNodeId(transInst.getLoop().getFromNode().getId());
-                    trace.setToNodeId(transInst.getLoop().getToNode().getId());
-                    trace.setEdgeId(transInst.getLoop().getId());
+                    trace.setFromNodeId(transInst.getLoop().FromNode.Id);
+                    trace.setToNodeId(transInst.getLoop().ToNode.Id);
+                    trace.setEdgeId(transInst.getLoop().Id);
                     rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
                 }
             }
