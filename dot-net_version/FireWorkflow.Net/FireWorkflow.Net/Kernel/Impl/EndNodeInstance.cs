@@ -37,13 +37,13 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String getId()
         {
-            return this.endNode.getId();
+            return this.endNode.Id;
         }
 
         public EndNodeInstance(EndNode endNd)
         {
             this.endNode = endNd;
-            this.volume = this.endNode.getEnteringTransitions().Count;
+            this.volume = this.endNode.EnteringTransitions.Count;
 
             //		System.out.println("endnode's volume is "+volume);
         }
@@ -98,7 +98,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public IJoinPoint synchronized(IToken tk, EndNodeInstance teni)
         {
             IJoinPoint joinPoint = null;
-            tk.setNodeId(this.getSynchronizer().getId());
+            tk.setNodeId(this.getSynchronizer().Id);
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             // 触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(teni);
@@ -221,7 +221,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override String ToString()
         {
-            return "EndNodeInstance_4_[" + endNode.getId() + "]";
+            return "EndNodeInstance_4_[" + endNode.Id + "]";
         }
 
 

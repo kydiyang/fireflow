@@ -63,7 +63,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                 ISynchronizerInstance syncInst = (ISynchronizerInstance)e.getSource();
                 IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
 
-                persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().getId());
+                persistenceService.deleteTokensForNode(e.getToken().getProcessInstanceId(), syncInst.getSynchronizer().Id);
 
             }
         }

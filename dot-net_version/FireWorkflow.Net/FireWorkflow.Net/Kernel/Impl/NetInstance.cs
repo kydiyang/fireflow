@@ -26,7 +26,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         {
             this.workflowProcess = process;
 
-            StartNode startNode = workflowProcess.getStartNode();
+            StartNode startNode = workflowProcess.StartNode;
             startNodeInstance = new StartNodeInstance(startNode);
             List<IKernelExtension> extensionList = kenelExtensions[startNodeInstance.getExtensionTargetName()];
             for (int i = 0; extensionList != null && i < extensionList.Count; i++)
@@ -35,10 +35,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                 startNodeInstance.registExtension(extension);
             }
             this.setStartNodeInstance(startNodeInstance);
-            wfElementInstanceMap.Add(startNode.getId(), startNodeInstance);
+            wfElementInstanceMap.Add(startNode.Id, startNodeInstance);
 
 
-            List<Activity> activities = workflowProcess.getActivities();
+            List<Activity> activities = workflowProcess.Activities;
             for (int i = 0; i < activities.Count; i++)
             {
                 Activity activity = (Activity)activities[i];
@@ -49,10 +49,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                     IKernelExtension extension = extensionList[j];
                     activityInstance.registExtension(extension);
                 }
-                wfElementInstanceMap.Add(activity.getId(), activityInstance);
+                wfElementInstanceMap.Add(activity.Id, activityInstance);
             }
 
-            List<Synchronizer> synchronizers = workflowProcess.getSynchronizers();
+            List<Synchronizer> synchronizers = workflowProcess.Synchronizers;
             for (int i = 0; i < synchronizers.Count; i++)
             {
                 Synchronizer synchronizer = (Synchronizer)synchronizers[i];
@@ -63,10 +63,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                     IKernelExtension extension = extensionList[j];
                     synchronizerInstance.registExtension(extension);
                 }
-                wfElementInstanceMap.Add(synchronizer.getId(), synchronizerInstance);
+                wfElementInstanceMap.Add(synchronizer.Id, synchronizerInstance);
             }
 
-            List<EndNode> endNodes = workflowProcess.getEndNodes();
+            List<EndNode> endNodes = workflowProcess.EndNodes;
             //        List<EndNodeInstance> endNodeInstances = netInstance.getEndNodeInstances();
             for (int i = 0; i < endNodes.Count; i++)
             {
@@ -79,16 +79,16 @@ namespace FireWorkflow.Net.Kernel.Impl
                     IKernelExtension extension = extensionList[j];
                     endNodeInstance.registExtension(extension);
                 }
-                wfElementInstanceMap.Add(endNode.getId(), endNodeInstance);
+                wfElementInstanceMap.Add(endNode.Id, endNodeInstance);
             }
 
-            List<Transition> transitions = workflowProcess.getTransitions();
+            List<Transition> transitions = workflowProcess.Transitions;
             for (int i = 0; i < transitions.Count; i++)
             {
                 Transition transition = (Transition)transitions[i];
                 TransitionInstance transitionInstance = new TransitionInstance(transition);
 
-                String fromNodeId = transition.getFromNode().getId();
+                String fromNodeId = transition.FromNode.Id;
                 if (fromNodeId != null)
                 {
                     INodeInstance enteringNodeInstance = (INodeInstance)wfElementInstanceMap[fromNodeId];
@@ -99,7 +99,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     }
                 }
 
-                String toNodeId = transition.getToNode().getId();
+                String toNodeId = transition.ToNode.Id;
                 if (toNodeId != null)
                 {
                     INodeInstance leavingNodeInstance = (INodeInstance)wfElementInstanceMap[toNodeId];
@@ -118,13 +118,13 @@ namespace FireWorkflow.Net.Kernel.Impl
                 wfElementInstanceMap.Add(transitionInstance.getId(), transitionInstance);
             }
 
-            List<Loop> loops = workflowProcess.getLoops();
+            List<Loop> loops = workflowProcess.Loops;
             for (int i = 0; i < loops.Count; i++)
             {
                 Loop loop = (Loop)loops[i];
                 LoopInstance loopInstance = new LoopInstance(loop);
 
-                String fromNodeId = loop.getFromNode().getId();
+                String fromNodeId = loop.FromNode.Id;
                 if (fromNodeId != null)
                 {
                     INodeInstance enteringNodeInstance = (INodeInstance)wfElementInstanceMap[fromNodeId];
@@ -136,7 +136,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     }
                 }
 
-                String toNodeId = loop.getToNode().getId();
+                String toNodeId = loop.ToNode.Id;
                 if (toNodeId != null)
                 {
                     INodeInstance leavingNodeInstance = (INodeInstance)wfElementInstanceMap[toNodeId];
@@ -158,7 +158,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public String getId()
         {
-            return this.workflowProcess.getId();
+            return this.workflowProcess.Id;
         }
 
         public Int32? getVersion()

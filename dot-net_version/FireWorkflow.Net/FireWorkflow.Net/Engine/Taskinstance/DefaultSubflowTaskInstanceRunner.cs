@@ -20,22 +20,22 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance,
                 ITaskInstance taskInstance)// throws EngineException, KernelException 
         {
-            if (!Task.SUBFLOW.Equals(taskInstance.getTaskType()))
+            if (taskInstance.getTaskType() != TaskTypeEnum.SUBFLOW)
             {
                 throw new EngineException(processInstance,
                         taskInstance.getActivity(),
                         "DefaultSubflowTaskInstanceRunner：TaskInstance的任务类型错误，只能为SUBFLOW类型");
             }
             Task task = taskInstance.getTask();
-            SubWorkflowProcess Subflow = ((SubflowTask)task).getSubWorkflowProcess();
+            SubWorkflowProcess Subflow = ((SubflowTask)task).SubWorkflowProcess;
 
-            WorkflowDefinition subWorkflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(Subflow.getWorkflowProcessId());
+            WorkflowDefinition subWorkflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(Subflow.WorkflowProcessId);
             if (subWorkflowDef == null)
             {
                 WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
                 throw new EngineException(taskInstance.getProcessInstanceId(), parentWorkflowProcess,
                         taskInstance.getTaskId(),
-                        "系统中没有Id为" + Subflow.getWorkflowProcessId() + "的流程定义");
+                        "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
             }
             WorkflowProcess subWorkflowProcess = subWorkflowDef.getWorkflowProcess();
 
@@ -44,7 +44,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
                 throw new EngineException(taskInstance.getProcessInstanceId(), parentWorkflowProcess,
                         taskInstance.getTaskId(),
-                        "系统中没有Id为" + Subflow.getWorkflowProcessId() + "的流程定义");
+                        "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
             }
 
             IPersistenceService persistenceService = runtimeContext.getPersistenceService();
@@ -54,41 +54,41 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
 
-            IProcessInstance subProcessInstance = currentSession.createProcessInstance(subWorkflowProcess.getName(), taskInstance);
+            IProcessInstance subProcessInstance = currentSession.createProcessInstance(subWorkflowProcess.Name, taskInstance);
 
             //初始化流程变量,从父实例获得初始值
             Dictionary<String, Object> processVars = ((TaskInstance)taskInstance).getAliveProcessInstance().getProcessInstanceVariables();
-            List<DataField> datafields = subWorkflowProcess.getDataFields();
+            List<DataField> datafields = subWorkflowProcess.DataFields;
             for (int i = 0; datafields != null && i < datafields.Count; i++)
             {
                 DataField df = (DataField)datafields[i];
-                if (df.getDataType().Equals(DataField.STRING))
+                if (df.DataType == DataTypeEnum.STRING)
                 {
-                    if (processVars[df.getName()] != null && (processVars[df.getName()] is String))
+                    if (processVars[df.Name] != null && (processVars[df.Name] is String))
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), processVars[df.getName()]);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, processVars[df.Name]);
                     }
-                    else if (df.getInitialValue() != null)
+                    else if (df.InitialValue != null)
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), df.getInitialValue());
+                        subProcessInstance.setProcessInstanceVariable(df.Name, df.InitialValue);
                     }
                     else
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), "");
+                        subProcessInstance.setProcessInstanceVariable(df.Name, "");
                     }
                 }
-                else if (df.getDataType().Equals(DataField.INTEGER))
+                else if (df.DataType == DataTypeEnum.INTEGER)
                 {
-                    if (processVars[df.getName()] != null && (processVars[df.getName()] is Int32))
+                    if (processVars[df.Name] != null && (processVars[df.Name] is Int32))
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), processVars[df.getName()]);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, processVars[df.Name]);
                     }
-                    else if (df.getInitialValue() != null)
+                    else if (df.InitialValue != null)
                     {
                         try
                         {
-                            Int32 intValue = Int32.Parse(df.getInitialValue());
-                            subProcessInstance.setProcessInstanceVariable(df.getName(), intValue);
+                            Int32 intValue = Int32.Parse(df.InitialValue);
+                            subProcessInstance.setProcessInstanceVariable(df.Name, intValue);
                         }
                         catch// (Exception e)
                         {
@@ -97,42 +97,42 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     }
                     else
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), (Int32)0);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, (Int32)0);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.FLOAT))
+                else if (df.DataType == DataTypeEnum.FLOAT)
                 {
-                    if (processVars[df.getName()] != null && (processVars[df.getName()] is float))
+                    if (processVars[df.Name] != null && (processVars[df.Name] is float))
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), processVars[df.getName()]);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, processVars[df.Name]);
                     }
-                    else if (df.getInitialValue() != null)
+                    else if (df.InitialValue != null)
                     {
-                        float floatValue = float.Parse(df.getInitialValue());
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), floatValue);
+                        float floatValue = float.Parse(df.InitialValue);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, floatValue);
                     }
                     else
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), (float)0);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, (float)0);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.BOOLEAN))
+                else if (df.DataType == DataTypeEnum.BOOLEAN)
                 {
-                    if (processVars[df.getName()] != null && (processVars[df.getName()] is Boolean))
+                    if (processVars[df.Name] != null && (processVars[df.Name] is Boolean))
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), processVars[df.getName()]);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, processVars[df.Name]);
                     }
-                    else if (df.getInitialValue() != null)
+                    else if (df.InitialValue != null)
                     {
-                        Boolean booleanValue = Boolean.Parse(df.getInitialValue());
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), booleanValue);
+                        Boolean booleanValue = Boolean.Parse(df.InitialValue);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, booleanValue);
                     }
                     else
                     {
-                        subProcessInstance.setProcessInstanceVariable(df.getName(), false);
+                        subProcessInstance.setProcessInstanceVariable(df.Name, false);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.DATETIME))
+                else if (df.DataType == DataTypeEnum.DATETIME)
                 {
                     //TODO 需要完善一下
                 }

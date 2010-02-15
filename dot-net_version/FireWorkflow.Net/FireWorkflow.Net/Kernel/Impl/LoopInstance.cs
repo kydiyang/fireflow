@@ -35,7 +35,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
     public override String getId()
     {
-        return loop.getId();
+        return loop.Id;
     }
 
     public override int getWeight() {

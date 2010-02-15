@@ -41,10 +41,10 @@ namespace FireWorkflow.Net.Engine.Impl
 
             ProcessInstance processInstance = new ProcessInstance();
             processInstance.setCreatorId(creatorId);
-            processInstance.setProcessId(wfProcess.getId());
+            processInstance.setProcessId(wfProcess.Id);
             processInstance.setVersion(workflowDef.getVersion());
-            processInstance.setDisplayName(wfProcess.getDisplayName());
-            processInstance.setName(wfProcess.getName());
+            processInstance.setDisplayName(wfProcess.DisplayName);
+            processInstance.setName(wfProcess.Name);
             processInstance.setState(IProcessInstance.INITIALIZED);
             processInstance.setCreatedTime(ctx.getCalendarService().getSysDate());
             processInstance.setParentProcessInstanceId(parentProcessInstanceId);
@@ -54,29 +54,29 @@ namespace FireWorkflow.Net.Engine.Impl
                     processInstance);
 
             // 初始化流程变量
-            List<DataField> datafields = wfProcess.getDataFields();
+            List<DataField> datafields = wfProcess.DataFields;
             for (int i = 0; datafields != null && i < datafields.Count; i++)
             {
                 DataField df = (DataField)datafields[i];
-                if (df.getDataType().Equals(DataField.STRING))
+                if (df.DataType == DataTypeEnum.STRING)
                 {
-                    if (df.getInitialValue() != null)
+                    if (df.InitialValue != null)
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), df.getInitialValue());
+                        processInstance.setProcessInstanceVariable(df.Name, df.InitialValue);
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), "");
+                        processInstance.setProcessInstanceVariable(df.Name, "");
                     }
                 }
-                else if (df.getDataType().Equals(DataField.INTEGER))
+                else if (df.DataType == DataTypeEnum.INTEGER)
                 {
-                    if (df.getInitialValue() != null)
+                    if (df.InitialValue != null)
                     {
                         try
                         {
-                            Int32 intValue = Int32.Parse(df.getInitialValue());
-                            processInstance.setProcessInstanceVariable(df.getName(), intValue);
+                            Int32 intValue = Int32.Parse(df.InitialValue);
+                            processInstance.setProcessInstanceVariable(df.Name, intValue);
                         }
                         catch (Exception )
                         {
@@ -84,17 +84,17 @@ namespace FireWorkflow.Net.Engine.Impl
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), (Int32)0);
+                        processInstance.setProcessInstanceVariable(df.Name, (Int32)0);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.LONG))
+                else if (df.DataType == DataTypeEnum.LONG)
                 {
-                    if (df.getInitialValue() != null)
+                    if (df.InitialValue != null)
                     {
                         try
                         {
-                            long longValue = long.Parse(df.getInitialValue());
-                            processInstance.setProcessInstanceVariable(df.getName(), longValue);
+                            long longValue = long.Parse(df.InitialValue);
+                            processInstance.setProcessInstanceVariable(df.Name, longValue);
                         }
                         catch (Exception )
                         {
@@ -102,67 +102,67 @@ namespace FireWorkflow.Net.Engine.Impl
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), (long)0);
+                        processInstance.setProcessInstanceVariable(df.Name, (long)0);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.FLOAT))
+                else if (df.DataType == DataTypeEnum.FLOAT)
                 {
-                    if (df.getInitialValue() != null)
+                    if (df.InitialValue != null)
                     {
-                        float floatValue = float.Parse(df.getInitialValue());
-                        processInstance.setProcessInstanceVariable(df.getName(), floatValue);
+                        float floatValue = float.Parse(df.InitialValue);
+                        processInstance.setProcessInstanceVariable(df.Name, floatValue);
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), (float)0);
+                        processInstance.setProcessInstanceVariable(df.Name, (float)0);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.DOUBLE))
+                else if (df.DataType == DataTypeEnum.DOUBLE)
                 {
-                    if (df.getInitialValue() != null)
+                    if (df.InitialValue != null)
                     {
-                        Double doubleValue = Double.Parse(df.getInitialValue());
+                        Double doubleValue = Double.Parse(df.InitialValue);
                         processInstance.setProcessInstanceVariable(df
-                                .getName(), doubleValue);
+                                .Name, doubleValue);
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), (Double)0);
+                        processInstance.setProcessInstanceVariable(df.Name, (Double)0);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.BOOLEAN))
+                else if (df.DataType == DataTypeEnum.BOOLEAN)
                 {
-                    if (df.getInitialValue() != null)
+                    if (df.InitialValue != null)
                     {
-                        Boolean booleanValue = Boolean.Parse(df.getInitialValue());
-                        processInstance.setProcessInstanceVariable(df.getName(), booleanValue);
+                        Boolean booleanValue = Boolean.Parse(df.InitialValue);
+                        processInstance.setProcessInstanceVariable(df.Name, booleanValue);
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), false);
+                        processInstance.setProcessInstanceVariable(df.Name, false);
                     }
                 }
-                else if (df.getDataType().Equals(DataField.DATETIME))
+                else if (df.DataType == DataTypeEnum.DATETIME)
                 {
                     // TODO 需要完善一下
-                    if (df.getInitialValue() != null
-                            && df.getDataPattern() != null)
+                    if (df.InitialValue != null
+                            && df.DataPattern != null)
                     {
                         try
                         {
-                            //SimpleDateFormat dFormat = new SimpleDateFormat(df.getDataPattern());
-                            DateTime dateTmp = DateTime.Parse(df.getInitialValue());
-                            processInstance.setProcessInstanceVariable(df.getName(), dateTmp);
+                            //SimpleDateFormat dFormat = new SimpleDateFormat(df.DataPattern);
+                            DateTime dateTmp = DateTime.Parse(df.InitialValue);
+                            processInstance.setProcessInstanceVariable(df.Name, dateTmp);
                         }
                         catch (Exception )
                         {
-                            processInstance.setProcessInstanceVariable(df.getName(), null);
+                            processInstance.setProcessInstanceVariable(df.Name, null);
                             //e.printStackTrace();
                         }
                     }
                     else
                     {
-                        processInstance.setProcessInstanceVariable(df.getName(), null);
+                        processInstance.setProcessInstanceVariable(df.Name, null);
                     }
                 }
             }

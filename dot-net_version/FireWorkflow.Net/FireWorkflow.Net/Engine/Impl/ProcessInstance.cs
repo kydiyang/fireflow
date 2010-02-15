@@ -130,7 +130,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
 
                 throw new EngineException(this.getId(), this.getWorkflowProcess(),
-                        synchInst.getSynchronizer().getId(), "The process definition [" + this.getName() + "] is invalid，the synchronizer[" + synchInst.getSynchronizer() + "] has no entering transition");
+                        synchInst.getSynchronizer().Id, "The process definition [" + this.getName() + "] is invalid，the synchronizer[" + synchInst.getSynchronizer() + "] has no entering transition");
             }
             IPersistenceService persistenceService = rtCtx.getPersistenceService();
             //保存到数据库
@@ -139,7 +139,7 @@ namespace FireWorkflow.Net.Engine.Impl
             IJoinPoint resultJoinPoint = null;
             resultJoinPoint = new JoinPoint();
             resultJoinPoint.setProcessInstance(this);
-            resultJoinPoint.setSynchronizerId(synchInst.getSynchronizer().getId());
+            resultJoinPoint.setSynchronizerId(synchInst.getSynchronizer().Id);
             if (enterTransInstanceCount == 1)
             {
                 // 生成一个不存储到数据库中的JoinPoint
@@ -159,7 +159,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
                 int stepNumber = 0;
 
-                List<IToken> tokensList_0 = persistenceService.findTokensForProcessInstance(this.getId(), synchInst.getSynchronizer().getId());
+                List<IToken> tokensList_0 = persistenceService.findTokensForProcessInstance(this.getId(), synchInst.getSynchronizer().Id);
                 Dictionary<String, IToken> tokensMap = new Dictionary<String, IToken>();
                 for (int i = 0; i < tokensList_0.Count; i++)
                 {
@@ -417,11 +417,11 @@ namespace FireWorkflow.Net.Engine.Impl
                 return;
             }
 
-            List<EventListener> listeners = workflowProcess.getEventListeners();
+            List<EventListener> listeners = workflowProcess.EventListeners;
             for (int i = 0; i < listeners.Count; i++)
             {
                 EventListener listener = (EventListener)listeners[i];
-                Object obj = rtCtx.getBeanByName(listener.getClassName());
+                Object obj = rtCtx.getBeanByName(listener.ClassName);
                 if (obj != null)
                 {
                     ((IProcessInstanceEventListener)obj).onProcessInstanceEventFired(e);

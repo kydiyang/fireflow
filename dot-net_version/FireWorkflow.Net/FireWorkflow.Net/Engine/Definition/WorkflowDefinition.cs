@@ -72,10 +72,10 @@ namespace FireWorkflow.Net.Engine.Definition
             try
             {
                 this.workflowProcess = process;
-                this.processId = workflowProcess.getId();
-                this.name = workflowProcess.getName();
-                this.displayName = workflowProcess.getDisplayName();
-                this.description = workflowProcess.getDescription();
+                this.processId = workflowProcess.Id;
+                this.name = workflowProcess.Name;
+                this.displayName = workflowProcess.DisplayName;
+                this.description = workflowProcess.Description;
 
                 Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
                 MemoryStream so = new MemoryStream();

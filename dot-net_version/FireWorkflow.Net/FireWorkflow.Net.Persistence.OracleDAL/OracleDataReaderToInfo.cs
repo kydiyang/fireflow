@@ -11,6 +11,7 @@ using FireWorkflow.Net.Engine.Definition;
 using FireWorkflow.Net.Kernel;
 using FireWorkflow.Net.Kernel.Impl;
 using FireWorkflow.Net.Engine.Persistence;
+using FireWorkflow.Net.Model;
 
 namespace FireWorkflow.Net.Persistence.OracleDAL
 {
@@ -64,7 +65,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             taskInstance.setDisplayName(Convert.ToString(dr["display_name"]));
             taskInstance.setState(Convert.ToInt32(dr["state"]));
             taskInstance.setSuspended(Convert.ToInt32(dr["suspended"]) == 1 ? true : false);
-            taskInstance.setTaskType(Convert.ToString(dr["task_type"]));
+            taskInstance.setTaskType((TaskTypeEnum)Enum.Parse(typeof(TaskTypeEnum),Convert.ToString(dr["task_type"])));
             if (!(dr["created_time"] is DBNull)) taskInstance.setCreatedTime(Convert.ToDateTime(dr["created_time"]));
 
             if (!(dr["started_time"] is DBNull)) taskInstance.setStartedTime(Convert.ToDateTime(dr["started_time"]));

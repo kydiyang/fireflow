@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
@@ -6,101 +24,57 @@ using System.Text;
 
 namespace FireWorkflow.Net.Model
 {
-
     /// <summary>流程变量</summary>
     public class DataField : AbstractWFElement
     {
-        /// <summary>字符串类型</summary>
-        public const String STRING = "STRING";
+        #region 属性
+        /// <summary>获取或设置返回流程变量的数据类型</summary>
+        [XmlAttribute]
+        public DataTypeEnum DataType { get; set; }
 
-        /// <summary>浮点类型</summary>
-        public const String FLOAT = "FLOAT";
+        /// <summary>获取或设置初始值</summary>
+        [XmlAttribute]
+        public String InitialValue { get; set; }
 
-        /// <summary>双精度类型</summary>
-        public const String DOUBLE = "DOUBLE";
+        /// <summary>获取或设置数据的pattern，目前主要用于日期类型。如 yyyyMMdd 等等。</summary>
+        [XmlAttribute]
+        public String DataPattern { get; set; }
+        #endregion
 
-        /// <summary>整数类型</summary>
-        public const String INTEGER = "INTEGER";
-
-        /// <summary>长整型</summary>
-        public const String LONG = "LONG";
-
-        /// <summary>日期时间类型</summary>
-        public const String DATETIME = "DATETIME";
-
-        /// <summary>布尔类型</summary>
-        public const String BOOLEAN = "BOOLEAN";
-
-        /// <summary>数据类型</summary>
-        [XmlAttribute(AttributeName = "DataType")]
-        public String dataType;
-
-        /// <summary>初始值</summary>
-        [XmlAttribute(AttributeName = "InitialValue")]
-        public String initialValue;
-
-        /// <summary>数据格式</summary>
-        private String dataPattern;
-
-
+        #region 构造函数
         public DataField()
         {
-            this.setDataType(STRING);
+            this.DataType=DataTypeEnum.STRING;
         }
 
-        public DataField(WorkflowProcess workflowProcess, String name, String dataType)
+        public DataField(WorkflowProcess workflowProcess, String name, DataTypeEnum dataType)
             : base(workflowProcess, name)
         {
-            setDataType(dataType);
+            this.DataType = DataTypeEnum.STRING;
         }
-
-        /// <summary>返回流程变量的数据类型</summary>
-        /// <returns>数据类型</returns>
-        public String getDataType()
-        {
-            return dataType;
-        }
-
-        /// <summary>设置数据类型，其取值只能是
-        /// DataField.STRING, DataField.FLOAT, DataField.DOUBLE, DataField.INTEGER,
-        /// DataField.LONG,DataField.DATETIME, DataField.BOOLEAN
-        /// </summary>
-        /// <param name="dataType">数据类型</param>
-        public void setDataType(String dataType)
-        {
-            if (dataType == null)
-            {
-                throw new NullReferenceException("Data type cannot be null");
-            }
-            this.dataType = dataType;
-        }
-
-        /// <summary>返回初始值
-        /// <returns>初始值</returns>
-        public String getInitialValue()
-        {
-            return initialValue;
-        }
-
-        /// <summary>设置初始值</summary>
-        /// <param name="initialValue">初始值</param>
-        public void setInitialValue(String initialValue)
-        {
-            this.initialValue = initialValue;
-        }
-
-        /// <summary>返回数据的pattern，目前主要用于日期类型。如 yyyyMMdd 等等。</summary>
-        /// <returns>返回数据的pattern</returns>
-        public String getDataPattern()
-        {
-            return dataPattern;
-        }
-
-        /// <summary>设置数据的pattern，目前主要用于日期类型。如 yyyyMMdd 等等。</summary>
-        /// <param name="dataPattern">数据</param>
-        public void setDataPattern(String dataPattern)
-        {
-            this.dataPattern = dataPattern;
-        }
+        #endregion
     }
+
+    #region
+    /// <summary>
+    /// 数据类型
+    /// </summary>
+    public enum DataTypeEnum
+    {
+        /// <summary>字符串类型</summary>
+        STRING,
+        /// <summary>浮点类型</summary>
+        FLOAT,
+        /// <summary>双精度类型</summary>
+        DOUBLE,
+        /// <summary>整数类型</summary>
+        INTEGER,
+        /// <summary>长整型</summary>
+        LONG,
+        /// <summary>日期时间类型</summary>
+        DATETIME,
+        /// <summary>布尔类型</summary>
+        BOOLEAN
+    }
+    #endregion
 }

@@ -18,7 +18,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
         public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance, ITaskInstance taskInstance)// throws EngineException, KernelException 
         {
-            if (!Task.FORM.Equals(taskInstance.getTaskType()))
+            if (taskInstance.getTaskType()!= TaskTypeEnum.FORM)//!Task.FORM.Equals(taskInstance.getTaskType()))
             {
                 throw new EngineException(processInstance,
                         taskInstance.getActivity(),
@@ -28,8 +28,8 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             DynamicAssignmentHandler dynamicAssignmentHandler = ((WorkflowSession)currentSession).consumeCurrentDynamicAssignmentHandler();
             FormTask task = (FormTask)taskInstance.getTask();
             // performer(id,name,type,handler)
-            Participant performer = task.getPerformer();
-            if (performer == null || performer.getAssignmentHandler().Trim().Equals(""))
+            Participant performer = task.Performer;
+            if (performer == null || performer.AssignmentHandler.Trim().Equals(""))
             {
                 throw new EngineException(processInstance,
                         taskInstance.getActivity(),
@@ -44,7 +44,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (dynamicAssignmentHandler != null)
             {
 
-                dynamicAssignmentHandler.assign((IAssignable)taskInstance, part.getName());
+                dynamicAssignmentHandler.assign((IAssignable)taskInstance, part.Name);
 
             }
             else
@@ -74,7 +74,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 }
 
                 //如果是循环且LoopStrategy==REDO，则分配个上次完成该工作的操作员
-                if (theLastCompletedTaskInstance != null && (FormTask.REDO.Equals(formTask.getLoopStrategy()) || currentSession.isInWithdrawOrRejectOperation()))
+                if (theLastCompletedTaskInstance != null && (LoopStrategyEnum.REDO.Equals(formTask.LoopStrategy) || currentSession.isInWithdrawOrRejectOperation()))
                 {
                     List<IWorkItem> workItemList = persistenceService.findCompletedWorkItemsForTaskInstance(theLastCompletedTaskInstance.getId());
                     ITaskInstanceManager taskInstanceMgr = runtimeContext.getTaskInstanceManager();
@@ -89,8 +89,8 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 else
                 {
                     IBeanFactory beanFactory = runtimeContext.getBeanFactory();
-                    IAssignmentHandler assignmentHandler = (IAssignmentHandler)beanFactory.getBean(part.getAssignmentHandler());
-                    ((IAssignmentHandler)assignmentHandler).assign((IAssignable)taskInstance, part.getName());
+                    IAssignmentHandler assignmentHandler = (IAssignmentHandler)beanFactory.getBean(part.AssignmentHandler);
+                    ((IAssignmentHandler)assignmentHandler).assign((IAssignable)taskInstance, part.Name);
                 }
             }
         }

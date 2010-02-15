@@ -138,7 +138,9 @@
     <Compile Include="Engine\Taskinstance\ITaskInstanceCreator.cs" />
     <Compile Include="Engine\Taskinstance\ITaskInstanceManager.cs" />
     <Compile Include="Engine\Taskinstance\ITaskInstanceRunner.cs" />
-    <Compile Include="EventObject.cs" />
+    <Compile Include="EventObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Kernel\Event\EdgeInstanceEvent.cs" />
     <Compile Include="Kernel\Event\IEdgeInstanceEventListener.cs" />
     <Compile Include="Kernel\Event\INodeInstanceEventListener.cs" />
