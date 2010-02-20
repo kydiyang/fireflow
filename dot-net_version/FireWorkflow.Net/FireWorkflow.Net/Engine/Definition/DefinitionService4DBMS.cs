@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,40 +30,27 @@ namespace FireWorkflow.Net.Engine.Definition
     /// </summary>
     public class DefinitionService4DBMS : IDefinitionService
     {
-        protected RuntimeContext rtCtx = null;
+        public RuntimeContext RuntimeContext { get; set; }
 
-
-        public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition()
+        #region 实现IDefinitionService
+        /// <summary>返回所有流程的最新版本</summary>
+        /// <returns></returns>
+        public List<WorkflowDefinition> GetAllLatestVersionsOfWorkflowDefinition()
         {
-            return rtCtx.getPersistenceService().findAllTheLatestVersionsOfWorkflowDefinition();
-
+            return RuntimeContext.PersistenceService.findAllTheLatestVersionsOfWorkflowDefinition();
         }
 
-        public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String id, Int32 version)
+
+        /// <summary>根据流程Id和版本号查找流程定义</summary>
+        public WorkflowDefinition GetWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Int32 version)
         {
-            return rtCtx.getPersistenceService().findWorkflowDefinitionByProcessIdAndVersionNumber(id, version);
+            return RuntimeContext.PersistenceService.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, version);
         }
 
-        public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId)
+        /// <summary>通过流程Id查找其最新版本的流程定义</summary>
+        public WorkflowDefinition GetTheLatestVersionOfWorkflowDefinition(String processId)
         {
-            return rtCtx.getPersistenceService().findTheLatestVersionOfWorkflowDefinitionByProcessId(processId);
-        }
-
-        public void setRuntimeContext(RuntimeContext ctx)
-        {
-            this.rtCtx = ctx;
-        }
-        public RuntimeContext getRuntimeContext()
-        {
-            return this.rtCtx;
-        }
-
-        #region IDefinitionService 成员
-
-
-        public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(string processId, int? version)
-        {
-            throw new NotImplementedException();
+            return RuntimeContext.PersistenceService.findTheLatestVersionOfWorkflowDefinitionByProcessId(processId);
         }
 
         #endregion

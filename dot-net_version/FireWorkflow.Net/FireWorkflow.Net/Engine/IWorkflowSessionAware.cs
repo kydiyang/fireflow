@@ -14,11 +14,10 @@ namespace FireWorkflow.Net.Engine
     /// </summary>
     public interface IWorkflowSessionAware
     {
-        /// <summary>设置当前的IWorkflowSession</summary>
+        /// <summary>设置或返回当前的IWorkflowSession</summary>
         /// <returns></returns>
-        IWorkflowSession getCurrentWorkflowSession();
+        IWorkflowSession CurrentWorkflowSession { get; set; }
 
-        /// <summary>返回当前的IWorkflowSession</summary>
-        void setCurrentWorkflowSession(IWorkflowSession session);
+        //void setCurrentWorkflowSession(IWorkflowSession session);
     }
 }

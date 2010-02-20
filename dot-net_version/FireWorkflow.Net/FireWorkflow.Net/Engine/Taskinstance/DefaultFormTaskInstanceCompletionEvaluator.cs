@@ -14,7 +14,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         public Boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession, RuntimeContext runtimeContext,
                 IProcessInstance processInstance, ITaskInstance taskInstance)//throws EngineException ,KernelException 
         {
-            IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+            IPersistenceService persistenceService = runtimeContext.PersistenceService;
             Int32 aliveWorkItemCount = persistenceService.getAliveWorkItemCountForTaskInstance(taskInstance.getId());
             if (aliveWorkItemCount == 0)
             {

@@ -58,7 +58,7 @@ namespace FireWorkflow.Net.Engine.Calendar
         /// </summary>
         //private Properties businessCalendarProperties = new Properties();
 
-        protected RuntimeContext rtCtx = null;
+        public RuntimeContext RuntimeContext { get; set; }
 
         public DefaultCalendarService()
         {
@@ -414,11 +414,11 @@ namespace FireWorkflow.Net.Engine.Calendar
         //    }
 
         //    public void setRuntimeContext(RuntimeContext ctx) {
-        //        this.rtCtx = ctx;
+        //        this.this.RuntimeContext = ctx;
         //    }
 
         //    public RuntimeContext getRuntimeContext(){
-        //        return this.rtCtx;
+        //        return this.this.RuntimeContext;
         //    }    
 
         #region ICalendarService 成员

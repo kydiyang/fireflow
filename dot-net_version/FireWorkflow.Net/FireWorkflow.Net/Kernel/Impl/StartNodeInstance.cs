@@ -14,11 +14,9 @@ namespace FireWorkflow.Net.Kernel.Impl
 {
     public class StartNodeInstance : AbstractNodeInstance, ISynchronizerInstance
     {
-
         public const String Extension_Target_Name = "org.fireflow.kernel.StartNodeInstance";
         public static List<String> Extension_Point_Names = new List<String>();
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
-
 
         static StartNodeInstance()
         {
@@ -44,22 +42,22 @@ namespace FireWorkflow.Net.Kernel.Impl
 
         public override void fire(IToken tk)
         {
-            if (!tk.isAlive())
+            if (!tk.IsAlive)
             {
                 return;//
             }
-            if (tk.getValue() != volume)
+            if (tk.Value != volume)
             {
-                KernelException exception = new KernelException(tk.getProcessInstance(),
+                KernelException exception = new KernelException(tk.ProcessInstance,
                         this.startNode,
                         "Error:Illegal StartNodeInstance,the tokenValue MUST be equal to the volume ");
                 throw exception;
 
             }
 
-            tk.setNodeId(this.getSynchronizer().Id);
+            tk.NodeId=this.getSynchronizer().Id;
 
-            IProcessInstance processInstance = tk.getProcessInstance();
+            IProcessInstance processInstance = tk.ProcessInstance;
 
             //触发token_entered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(this);
@@ -93,10 +91,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                 }
 
                 Token token = new Token(); // 产生新的token
-                token.setAlive(true);
-                token.setProcessInstance(processInstance);
-                token.setFromActivityId(tk.getFromActivityId());
-                token.setStepNumber(tk.getStepNumber() + 1);
+                token.IsAlive=true;
+                token.ProcessInstance=processInstance;
+                token.FromActivityId=tk.FromActivityId;
+                token.StepNumber=tk.StepNumber + 1;
 
                 Boolean alive = transInst.take(token);
                 if (alive)
@@ -108,10 +106,10 @@ namespace FireWorkflow.Net.Kernel.Impl
             if (defaultTransInst != null)
             {
                 Token token = new Token();
-                token.setAlive(activiateDefaultCondition);
-                token.setProcessInstance(processInstance);
-                token.setFromActivityId(token.getFromActivityId());
-                token.setStepNumber(tk.getStepNumber() + 1);
+                token.IsAlive=activiateDefaultCondition;
+                token.ProcessInstance=processInstance;
+                token.FromActivityId=token.FromActivityId;
+                token.StepNumber=tk.StepNumber + 1;
                 defaultTransInst.take(token);
             }
 

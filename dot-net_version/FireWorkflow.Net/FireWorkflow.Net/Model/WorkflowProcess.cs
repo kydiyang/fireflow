@@ -361,6 +361,35 @@ namespace FireWorkflow.Net.Model
             return null;
         }
 
+        /// <summary>
+        /// 判断是否可以从from节点到达to节点
+        /// </summary>
+        /// <param name="fromNodeId">from节点的id</param>
+        /// <param name="toNodeId">to节点的id</param>
+        public Boolean isReachable(String fromNodeId, String toNodeId)
+        {
+            if (fromNodeId == null || toNodeId == null)
+            {
+                return false;
+            }
+            if (fromNodeId.Equals(toNodeId))
+            {
+                return true;
+            }
+            List<Node> reachableList = this.getReachableNodes(fromNodeId);
+
+            for (int j = 0; reachableList != null && j < reachableList.Count; j++)
+            {
+                Node node = reachableList[j];
+                if (node.Id.Equals(toNodeId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>判断两个Activity是否在同一个执行线上</summary>
         /// <returns>true表示在同一个执行线上，false表示不在同一个执行线上</returns>
         public Boolean isInSameLine(String activityId1, String activityId2)

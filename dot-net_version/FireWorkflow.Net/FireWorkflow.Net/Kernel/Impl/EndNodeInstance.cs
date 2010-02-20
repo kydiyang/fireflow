@@ -29,7 +29,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         private int volume = 0;// 即节点的容量
         private int tokenValue = 0;
         private EndNode endNode = null;
-        private Boolean alive = false;
+        //private Boolean alive = false;
 
         public EndNodeInstance()
         {
@@ -98,7 +98,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public IJoinPoint synchronized(IToken tk, EndNodeInstance teni)
         {
             IJoinPoint joinPoint = null;
-            tk.setNodeId(this.getSynchronizer().Id);
+            tk.NodeId=this.getSynchronizer().Id;
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             // 触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(teni);
@@ -107,14 +107,14 @@ namespace FireWorkflow.Net.Kernel.Impl
             fireNodeLeavingEvent(event1);
 
             //汇聚检查
-            joinPoint = ((ProcessInstance)tk.getProcessInstance()).createJoinPoint(teni, tk);// JoinPoint由谁生成比较好？
+            joinPoint = ((ProcessInstance)tk.ProcessInstance).createJoinPoint(teni, tk);// JoinPoint由谁生成比较好？
             int value = (int)joinPoint.getValue();
 
             //log.debug("The volume of " + this.toString() + " is " + volume);
             //log.debug("The value of " + this.toString() + " is " + value);
             if (value > volume)
             {
-                KernelException exception = new KernelException(tk.getProcessInstance(),
+                KernelException exception = new KernelException(tk.ProcessInstance,
                         this.getSynchronizer(),
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
                 throw exception;
@@ -130,7 +130,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         {
             IJoinPoint joinPoint = synchronized(tk, this);
             if (joinPoint == null) return;
-            IProcessInstance processInstance = tk.getProcessInstance();
+            IProcessInstance processInstance = tk.ProcessInstance;
             NodeInstanceEvent event2 = new NodeInstanceEvent(this);
             event2.setToken(tk);
             event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
@@ -142,10 +142,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                 IToken tokenForLoop = null;
 
                 tokenForLoop = new Token(); // 产生新的token
-                tokenForLoop.setAlive(joinPoint.getAlive());
-                tokenForLoop.setProcessInstance(processInstance);
-                tokenForLoop.setStepNumber(joinPoint.getStepNumber() - 1);
-                tokenForLoop.setFromActivityId(joinPoint.getFromActivityId());
+                tokenForLoop.IsAlive=joinPoint.getAlive();
+                tokenForLoop.ProcessInstance=processInstance;
+                tokenForLoop.StepNumber=joinPoint.getStepNumber() - 1;
+                tokenForLoop.FromActivityId=joinPoint.getFromActivityId();
 
                 for (int i = 0; i < this.leavingLoopInstances.Count; i++)
                 {

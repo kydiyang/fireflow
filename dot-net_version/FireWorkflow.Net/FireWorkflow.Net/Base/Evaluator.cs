@@ -1,4 +1,7 @@
-﻿using System;
+﻿/* Copyright 2009 无忧lwz0721@gmail.com
+ * @author 无忧lwz0721@gmail.com
+ */
+using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -9,36 +12,23 @@ using System.Reflection;
 namespace FireWorkflow.Net.Base
 {
     /// <summary>
-    /// Summary description for Class1.
+    /// 表达式解析
     /// </summary>
-    public class Evaluator
+    public class Expressions
     {
         #region Construction
-        public Evaluator(EvaluatorItem[] items)
-        {
-            ConstructEvaluator(items);
-        }
 
-        public Evaluator(Type returnType, string expression, string name, Dictionary<String, Object> Keys)
+        /// <summary>生成表达式类</summary>
+        /// <param name="returnType">返回类型</param>
+        /// <param name="expression">表达式</param>
+        /// <param name="name">方法名称</param>
+        /// <param name="Keys">参数传递</param>
+        public Expressions(Type returnType, string expression, string name, Dictionary<String, Object> Keys)
         {
-            EvaluatorItem[] items = { new EvaluatorItem(returnType, expression, name, Keys) };
-            ConstructEvaluator(items);
-        }
-
-        public Evaluator(EvaluatorItem item)
-        {
-            EvaluatorItem[] items = { item };
-            ConstructEvaluator(items);
-        }
-
-        private void ConstructEvaluator(EvaluatorItem[] items)
-        { 
             Dictionary<string, string> providerOptions = new Dictionary<string, string>();
             providerOptions.Add("CompilerVersion", "v3.5");
             CSharpCodeProvider csp = new CSharpCodeProvider(providerOptions);
 
-
-            ICodeCompiler comp = csp.CreateCompiler();
             CompilerParameters cp = new CompilerParameters();
             cp.ReferencedAssemblies.Add("system.dll");
             cp.ReferencedAssemblies.Add("system.data.dll");
@@ -55,41 +45,35 @@ namespace FireWorkflow.Net.Base
             code.Append("namespace ISM.DynamicallyGenerated { \n");
             code.Append("  public class _DG { \n");
             int i = 0;
-            foreach (EvaluatorItem item in items)
+
+            if (Keys != null && Keys.Count > 0)
             {
-                if (item.Keys != null && item.Keys.Count > 0)
+                code.AppendFormat("    public {0} {1}(", returnType.Name, name);
+                i = 0;
+                foreach (String key in Keys.Keys)
                 {
-                    code.AppendFormat("    public {0} {1}(",
-                                      item.ReturnType.Name,
-                                      item.Name);
-                    i = 0;
-                    foreach (String key in item.Keys.Keys)
-                    {
-                        if (i > 0) code.Append(" ,");
-                        i++;
-                        code.AppendFormat("Object {0}", key);
-                    }
-                    code.Append(") \n");
-                    code.Append("{ \n");
-                    code.AppendFormat("      return ({0});\n ", item.Expression);
-                    code.Append("}\n");
+                    if (i > 0) code.Append(" ,");
+                    i++;
+                    code.AppendFormat("{0} {1}", Keys[key].GetType().Name, key);
                 }
-                else
-                {
-
-                    code.AppendFormat("    public {0} {1}() ",
-                                      item.ReturnType.Name,
-                                      item.Name);
-                    code.Append("{ ");
-                    code.AppendFormat("      return ({0}); ", item.Expression);
-                    code.Append("}\n");
-                }
+                code.Append(") \n");
+                code.Append("{ \n");
+                code.AppendFormat("      return ({0});\n ", expression);
+                code.Append("}\n");
             }
+            else
+            {
 
+                code.AppendFormat("    public {0} {1}() ", returnType.Name, name);
+                code.Append("{ ");
+                code.AppendFormat("      return ({0}); ", expression);
+                code.Append("}\n");
+            }
 
             code.Append("} }");
 
-            CompilerResults cr = comp.CompileAssemblyFromSource(cp, code.ToString());
+            //ICodeCompiler comp = csp.CreateCompiler();
+            CompilerResults cr = csp.CompileAssemblyFromSource(cp, code.ToString());
             if (cr.Errors.HasErrors)
             {
                 StringBuilder error = new StringBuilder();
@@ -101,97 +85,33 @@ namespace FireWorkflow.Net.Base
                 throw new Exception("Error Compiling Expression: " + error.ToString());
             }
             Assembly a = cr.CompiledAssembly;
-            _Compiled = a.CreateInstance("ADOGuy._Evaluator");
+            _Compiled = a.CreateInstance("ISM.DynamicallyGenerated._DG");
         }
         #endregion
 
         #region Public Members
-        public int EvaluateInt(string name)
-        {
-            return (int)Evaluate(name);
-        }
 
-        public string EvaluateString(string name)
+        /// <summary>
+        /// 执行
+        /// </summary>
+        /// <typeparam name="T">返回类型</typeparam>
+        /// <param name="name">执行方法名</param>
+        /// <param name="keys">参数</param>
+        public T Evaluate<T>(string name, Dictionary<String, Object> keys)
         {
-            return (string)Evaluate(name);
-        }
-
-        public bool EvaluateBool(string name)
-        {
-            return (bool)Evaluate(name);
-        }
-
-        public object Evaluate(string name)
-        {
+            if (keys == null && keys.Keys == null) return default(T);
             MethodInfo mi = _Compiled.GetType().GetMethod(name);
-            return mi.Invoke(_Compiled, null);
-        }
-        public object Evaluate(string name, Dictionary<String, Object> Keys)
-        {
-            if (Keys!=null) return null;
-            object[] os = new object[Keys.Count];
-            int i = 0;
-            foreach (object o in Keys.Values)
+            List<object> os = new List<object>();
+            foreach (object o in keys.Values)
             {
-                os[i] = o; i++;
+                os.Add(o);
             }
-            MethodInfo mi = _Compiled.GetType().GetMethod(name);
-            return mi.Invoke(_Compiled, os);
-        }
-        #endregion
-
-        #region Static Members
-        static public int EvaluateToInteger(string code)
-        {
-            Evaluator eval = new Evaluator(typeof(int), code, staticMethodName,null);
-            return (int)eval.Evaluate(staticMethodName);
-        }
-
-        static public string EvaluateToString(string code)
-        {
-            Evaluator eval = new Evaluator(typeof(string), code, staticMethodName, null);
-            return (string)eval.Evaluate(staticMethodName);
-        }
-
-        static public bool EvaluateToBool(string code)
-        {
-            Evaluator eval = new Evaluator(typeof(bool), code, staticMethodName, null);
-            return (bool)eval.Evaluate(staticMethodName);
-        }
-
-        static public object EvaluateToObject(string code)
-        {
-            Evaluator eval = new Evaluator(typeof(object), code, staticMethodName, null);
-            return eval.Evaluate(staticMethodName);
+            return (T)mi.Invoke(_Compiled, os.ToArray());
         }
         #endregion
 
         #region Private
-        const string staticMethodName = "__foo";
-        Type _CompiledType = null;
         object _Compiled = null;
         #endregion
-    }
-
-    public class EvaluatorItem
-    {
-        public EvaluatorItem(Type returnType, string expression, string name)
-        {
-            ReturnType = returnType;
-            Expression = expression;
-            Name = name;
-
-        }
-        public EvaluatorItem(Type returnType, string expression, string name, Dictionary<String, Object> keys)
-        {
-            ReturnType = returnType;
-            Expression = expression;
-            Name = name;
-            Keys = keys;
-        }
-        public Dictionary<String, Object> Keys;
-        public Type ReturnType;
-        public string Name;
-        public string Expression;
     }
 }

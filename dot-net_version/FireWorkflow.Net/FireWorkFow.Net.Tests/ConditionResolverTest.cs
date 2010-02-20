@@ -1,19 +1,18 @@
-﻿using FireWorkflow.Net.Model.Io;
+﻿using FireWorkflow.Net.Engine.Condition;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IO;
-using FireWorkflow.Net.Model;
+using System.Collections.Generic;
 
 namespace FireWorkFow.Net.Tests
 {
     
     
     /// <summary>
-    ///This is a test class for Dom4JFPDLParserTest and is intended
-    ///to contain all Dom4JFPDLParserTest Unit Tests
+    ///This is a test class for ConditionResolverTest and is intended
+    ///to contain all ConditionResolverTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class Dom4JFPDLParserTest
+    public class ConditionResolverTest
     {
 
 
@@ -67,18 +66,22 @@ namespace FireWorkFow.Net.Tests
 
 
         /// <summary>
-        ///A test for parse
+        ///A test for resolveBooleanExpression
         ///</summary>
         //[TestMethod()]
-        public void parseTest()
+        public void resolveBooleanExpressionTest()
         {
-            Dom4JFPDLParser target = new Dom4JFPDLParser(); // TODO: Initialize to an appropriate value
-            Stream srin = null; // TODO: Initialize to an appropriate value
-            WorkflowProcess expected = null; // TODO: Initialize to an appropriate value
-            WorkflowProcess actual;
-            actual = target.parse(srin);
+            ConditionResolver target = new ConditionResolver(); // TODO: Initialize to an appropriate value
+            Dictionary<string, object> vars = new Dictionary<string,object>(); // TODO: Initialize to an appropriate value
+            vars.Add("a", 10);
+            vars.Add("b", 11);
+            string elExpression = "a<b"; // TODO: Initialize to an appropriate value
+            bool expected = false; // TODO: Initialize to an appropriate value
+            bool actual;
+            actual = target.resolveBooleanExpression(vars, elExpression);
+            actual = target.resolveBooleanExpression(vars, "a>b");
             Assert.AreEqual(expected, actual);
-            //Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }
+

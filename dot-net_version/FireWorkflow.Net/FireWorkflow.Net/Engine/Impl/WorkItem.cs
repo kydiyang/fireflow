@@ -34,24 +34,34 @@ namespace FireWorkflow.Net.Engine.Impl
             this.taskInstanceId = taskInstanceId;
         }
 
+        //[NonSerialized]
+        public RuntimeContext RuntimeContext { get; set; }
         [NonSerialized]
-        protected RuntimeContext rtCtx = null;
-        [NonSerialized]
-        protected IWorkflowSession workflowSession = null;
-
-        public void setRuntimeContext(RuntimeContext ctx)
+        protected IWorkflowSession _workflowSession = null;
+        public IWorkflowSession CurrentWorkflowSession
         {
-            this.rtCtx = ctx;
-            if (this.taskInstance != null)
+            get { return this._workflowSession; }
+            set
             {
-                ((IRuntimeContextAware)taskInstance).setRuntimeContext(this.rtCtx);
+                this._workflowSession = value;
+                if (this.taskInstance != null)
+                {
+                    ((IWorkflowSessionAware)taskInstance).CurrentWorkflowSession = this._workflowSession;
+                }
             }
         }
 
-        public RuntimeContext getRuntimeContext()
+
+        public void setRuntimeContext(RuntimeContext ctx)
         {
-            return this.rtCtx;
+            this.RuntimeContext = ctx;
+            if (this.taskInstance != null)
+            {
+                ((IRuntimeContextAware)taskInstance).RuntimeContext = this.RuntimeContext;
+            }
         }
+
+
 
         public WorkItem()
         {
@@ -173,19 +183,19 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public override IWorkItem withdraw()
         {
-            if (this.workflowSession == null)
+            if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current workflow session is null.");
             }
-            if (this.rtCtx == null)
+            if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current runtime context is null.");
             }
-            ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
+            ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
             return taskInstanceMgr.withdrawWorkItem(this);
         }
 
@@ -197,19 +207,19 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public override void reject(String comments)
         {
-            if (this.workflowSession == null)
+            if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current workflow session is null.");
             }
-            if (this.rtCtx == null)
+            if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current runtime context is null.");
             }
-            ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
+            ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
             taskInstanceMgr.rejectWorkItem(this, comments);
         }
 
@@ -227,13 +237,13 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public override void complete(DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
         {
-            if (this.workflowSession == null)
+            if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current workflow session is null.");
             }
-            if (this.rtCtx == null)
+            if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
@@ -241,9 +251,9 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             if (dynamicAssignmentHandler != null)
             {
-                this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+                this._workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
             }
-            ITaskInstanceManager taskInstanceManager = this.rtCtx.getTaskInstanceManager();
+            ITaskInstanceManager taskInstanceManager = this.RuntimeContext.TaskInstanceManager;
             taskInstanceManager.completeWorkItem(this, null, comments);
         }
 
@@ -254,20 +264,20 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public override IWorkItem reasignTo(String actorId, String comments)
         {
-            if (this.workflowSession == null)
+            if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current workflow session is null.");
             }
-            if (this.rtCtx == null)
+            if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current runtime context is null.");
             }
 
-            ITaskInstanceManager manager = this.rtCtx.getTaskInstanceManager();
+            ITaskInstanceManager manager = this.RuntimeContext.TaskInstanceManager;
             return manager.reasignWorkItemTo(this, actorId, comments);
         }
 
@@ -288,13 +298,13 @@ namespace FireWorkflow.Net.Engine.Impl
          */
         public override IWorkItem claim()
         {
-            if (this.workflowSession == null)
+            if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current workflow session is null.");
             }
-            if (this.rtCtx == null)
+            if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
@@ -302,7 +312,7 @@ namespace FireWorkflow.Net.Engine.Impl
             }
 
 
-            ITaskInstanceManager taskInstanceMgr = rtCtx.getTaskInstanceManager();
+            ITaskInstanceManager taskInstanceMgr = RuntimeContext.TaskInstanceManager;
             IWorkItem newWorkItem = taskInstanceMgr.claimWorkItem(this.getId(), this.getTaskInstance().getId());
 
             if (newWorkItem != null)
@@ -310,8 +320,8 @@ namespace FireWorkflow.Net.Engine.Impl
                 this.state = newWorkItem.getState();
                 this.claimedTime = newWorkItem.getClaimedTime();
 
-                ((IRuntimeContextAware)newWorkItem).setRuntimeContext(rtCtx);
-                ((IWorkflowSessionAware)newWorkItem).setCurrentWorkflowSession(this.workflowSession);
+                ((IRuntimeContextAware)newWorkItem).RuntimeContext=this.RuntimeContext;
+                ((IWorkflowSessionAware)newWorkItem).CurrentWorkflowSession=this._workflowSession;
             }
             else
             {
@@ -337,13 +347,13 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public override void jumpTo(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
         {
-            if (this.workflowSession == null)
+            if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
                         "The current workflow session is null.");
             }
-            if (this.rtCtx == null)
+            if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().getProcessInstanceId(),
                         this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().getTaskId(),
@@ -351,25 +361,13 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             if (dynamicAssignmentHandler != null)
             {
-                this.workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
+                this._workflowSession.setDynamicAssignmentHandler(dynamicAssignmentHandler);
             }
-            ITaskInstanceManager taskInstanceManager = this.rtCtx.getTaskInstanceManager();
+            ITaskInstanceManager taskInstanceManager = this.RuntimeContext.TaskInstanceManager;
             taskInstanceManager.completeWorkItemAndJumpTo(this, targetActivityId, comments);
         }
 
-        public IWorkflowSession getCurrentWorkflowSession()
-        {
-            return this.workflowSession;
-        }
 
-        public void setCurrentWorkflowSession(IWorkflowSession session)
-        {
-            this.workflowSession = session;
-            if (this.taskInstance != null)
-            {
-                ((IWorkflowSessionAware)taskInstance).setCurrentWorkflowSession(this.workflowSession);
-            }
-        }
 
     }
 }

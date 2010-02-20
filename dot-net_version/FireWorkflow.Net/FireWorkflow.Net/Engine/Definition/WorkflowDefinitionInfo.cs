@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,139 +30,55 @@ namespace FireWorkflow.Net.Engine.Definition
     public class WorkflowDefinitionInfo
     {
         public const String FPDL_PROCESS = "FPDL";
-        public const String XPDL_PROCESS = "XPDL";
-        public const String BPEL_PROCESS = "BPEL";
-        protected String id;
-        protected String processId;
-        protected String name;
-        protected String displayName;
-        protected String description;
-        protected Int32 version;
-        protected Boolean state;//是否发布，1=已经发布,0未发布
-        protected String uploadUser;//上载到数据库的操作员
-        protected DateTime uploadTime;//上载到数据库的时间
-        protected String publishUser;//发布人
-        protected DateTime publishTime;//发布时间
-        protected String definitionType = FPDL_PROCESS;//定义文件的语言类型，fpdl,xpdl,bepl...
+        public const String XPDL_PROCESS = "XPDL";//从未用到
+        public const String BPEL_PROCESS = "BPEL";//从未用到
 
-        public String getDisplayName()
-        {
-            return displayName;
-        }
+        #region 属性
+        /// <summary>获取或设置主键</summary>
+        public String Id { get; set; }
+        /// <summary>获取或设置流程id</summary>
+        public String ProcessId { get; set; }
+        /// <summary>获取或设置流程英文名称</summary>
+        public String Name { get; set; }
+        /// <summary>获取或设置流程显示名称</summary>
+        public String DisplayName { get; set; }
+        /// <summary>获取或设置流程业务说明</summary>
+        public String Description { get; set; }
+        /// <summary>获取或设置版本号</summary>
+        public Int32 Version { get; set; }
+        /// <summary>获取或设置是否发布，1=已经发布,0未发布</summary>
+        public Boolean State { get; set; }
+        /// <summary>获取或设置上载到数据库的操作员</summary>
+        public String UploadUser { get; set; }
+        /// <summary>获取或设置上载到数据库的时间</summary>
+        public DateTime UploadTime { get; set; }
+        /// <summary>获取或设置发布人</summary>
+        public String PublishUser { get; set; }
+        /// <summary>获取或设置发布时间</summary>
+        public DateTime PublishTime { get; set; }
+        /// <summary>获取或设置定义文件的语言类型，fpdl,xpdl,bepl...</summary>
+        public String DefinitionType { get; set; }//
+        #endregion
 
-        public void setDisplayName(String displayName)
+        public WorkflowDefinitionInfo()
         {
-            this.displayName = displayName;
-        }
-
-        public String getId()
-        {
-            return id;
-        }
-
-        public void setId(String id)
-        {
-            this.id = id;
-        }
-
-        public String getName()
-        {
-            return name;
+            DefinitionType = FPDL_PROCESS;
         }
 
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-        public DateTime getPublishTime()
-        {
-            return publishTime;
-        }
 
-        public void setPublishTime(DateTime publishTime)
-        {
-            this.publishTime = publishTime;
-        }
 
-        public Boolean getState()
-        {
-            return state;
-        }
 
-        public void setState(Boolean published)
-        {
-            this.state = published;
-        }
 
-        public String getPublishUser()
-        {
-            return publishUser;
-        }
 
-        public void setPublishUser(String publisher)
-        {
-            this.publishUser = publisher;
-        }
 
-        public Int32 getVersion()
-        {
-            return version;
-        }
 
-        public void setVersion(Int32 version)
-        {
-            this.version = version;
-        }
 
-        public String getDescription()
-        {
-            return description;
-        }
 
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
 
-        public String getProcessId()
-        {
-            return processId;
-        }
 
-        public void setProcessId(String processId)
-        {
-            this.processId = processId;
-        }
 
-        public String getUploadUser()
-        {
-            return uploadUser;
-        }
 
-        public void setUploadUser(String uploadUser)
-        {
-            this.uploadUser = uploadUser;
-        }
 
-        public DateTime getUploadTime()
-        {
-            return uploadTime;
-        }
-
-        public void setUploadTime(DateTime uploadTime)
-        {
-            this.uploadTime = uploadTime;
-        }
-
-        public String getDefinitionType()
-        {
-            return definitionType;
-        }
-
-        public void setDefinitionType(String definitionType)
-        {
-            this.definitionType = definitionType;
-        }
 
 
     }

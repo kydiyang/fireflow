@@ -1,4 +1,4 @@
-﻿/* 
+﻿/* Copyright 2009 无忧lwz0721@gmail.com
  * @author 无忧lwz0721@gmail.com
  */
 using System;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Data.OracleClient;
+using System.Configuration;
 using FireWorkflow.Net.Engine;
 using FireWorkflow.Net.Engine.Impl;
 using FireWorkflow.Net.Engine.Definition;
@@ -17,16 +18,20 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     public class PersistenceServiceDAL : IPersistenceService
     {
         string connectionString = "User Id=ISS;Password=webiss;Data Source=ism";
-        #region IRuntimeContextAware 成员
-        protected RuntimeContext rtCtx = null;
-        public void setRuntimeContext(RuntimeContext ctx)
+        public PersistenceServiceDAL()
+        { }
+        public PersistenceServiceDAL(String connName)
         {
-            this.rtCtx = ctx;
+            if (String.IsNullOrEmpty(connName)) throw new Exception("没有配置数据库连接字符串。");
+            connectionString = ConfigurationManager.ConnectionStrings[connName].ConnectionString;
+            if (String.IsNullOrEmpty(connectionString)) throw new Exception("没有配置数据库连接字符串。");
         }
 
-        public RuntimeContext getRuntimeContext()
+        #region IRuntimeContextAware 成员
+        public RuntimeContext RuntimeContext { get; set; }
+        public void setRuntimeContext(RuntimeContext ctx)
         {
-            return this.rtCtx;
+            this.RuntimeContext = ctx;
         }
 
         #endregion
@@ -253,7 +258,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             try
             {
                 // 更新流程状态，设置为canceled
-                DateTime now = rtCtx.getCalendarService().getSysDate();
+                DateTime now = this.RuntimeContext.getCalendarService().getSysDate();
                 String processSql = "update t_ff_rt_processinstance set state=" + IProcessInstance.CANCELED
                         + ",end_time=:1 where id=:2 ";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, processSql,
@@ -268,7 +273,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
 
                 // 更新所有的任务实例状态为canceled
-                String taskSql = " update t_ff_rt_taskinstance set state=" + ITaskInstance.CANCELED
+                String taskSql = " update t_ff_rt_taskinstance set state=" + TaskInstanceStateEnum.CANCELED
                         + ",end_time=:1,can_be_withdrawn=0 " + "  where processinstance_id=:2 and (state=0 or state=1)";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, taskSql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, now),
@@ -459,7 +464,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.getActivityId()), 
     				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 100, taskInstance.getName()), 
     				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 128, taskInstance.getDisplayName()), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, taskInstance.getState()), 
+    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, (int)taskInstance.State), 
     				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(taskInstance.IsSuspended())), 
     				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 10, taskInstance.getTaskType()), 
     				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, taskInstance.getCreatedTime()), 
@@ -493,7 +498,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.getActivityId()), 
     				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 100, taskInstance.getName()), 
     				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 128, taskInstance.getDisplayName()), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, taskInstance.getState()), 
+    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, (int)taskInstance.State), 
     				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(taskInstance.IsSuspended())), 
     				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 10, taskInstance.getTaskType()), 
     				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, taskInstance.getCreatedTime()), 
@@ -525,9 +530,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(connectionString);
             try
             {
-                String sql = "update t_ff_rt_taskinstance set state=" + ITaskInstance.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
+                String sql = "update t_ff_rt_taskinstance set state=" + TaskInstanceStateEnum.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
-                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, rtCtx.getCalendarService().getSysDate()),
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.getCalendarService().getSysDate()),
                     OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.getId())
                     );
                 if (count <= 0)
@@ -541,7 +546,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 String workItemSql = " update t_ff_rt_workitem set state=" + IWorkItem.CANCELED + ",end_time=:1  "
                         + " where taskinstance_id =:2 ";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
-                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, rtCtx.getCalendarService().getSysDate()),
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.getCalendarService().getSysDate()),
                     OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.getId())
                     );
                 if (count <= 0)
@@ -550,7 +555,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     return false;
                 }
 
-                taskInstance.setState(ITaskInstance.CANCELED);
+                taskInstance.State=TaskInstanceStateEnum.CANCELED;
 
                 transaction.Commit();
                 return true;
@@ -578,8 +583,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public ITaskInstance findAliveTaskInstanceById(String id) {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                String select = "select * from t_ff_rt_taskinstance where id=:1 and  (state=" + ITaskInstance.INITIALIZED
-                        + " or state=" + ITaskInstance.RUNNING + " )";
+                String select = "select * from t_ff_rt_taskinstance where id=:1 and  (state=" + TaskInstanceStateEnum.INITIALIZED
+                        + " or state=" + TaskInstanceStateEnum.RUNNING + " )";
                 OracleDataReader reader = null;
                 try
                 {
@@ -606,8 +611,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public int getAliveTaskInstanceCountForActivity(String processInstanceId, String activityId)
         {
-            String select = "select count(*) from T_FF_RT_TASKINSTANCE where " + " (state=" + ITaskInstance.INITIALIZED
-                + " or state=" + ITaskInstance.RUNNING + ")" + " and activity_id=:1 and processinstance_id=:2";
+            String select = "select count(*) from T_FF_RT_TASKINSTANCE where " + " (state=" + TaskInstanceStateEnum.INITIALIZED
+                + " or state=" + TaskInstanceStateEnum.RUNNING + ")" + " and activity_id=:1 and processinstance_id=:2";
             OracleParameter[] selectParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 200, activityId), 
 				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId), 
@@ -621,7 +626,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// “已经结束”是指TaskInstance.state=COMPLETED。
         /// </summary>
         public int getCompletedTaskInstanceCountForTask(String processInstanceId, String taskId) {
-            String select = "select count(*) from T_FF_RT_TASKINSTANCE where state=" + ITaskInstance.COMPLETED
+            String select = "select count(*) from T_FF_RT_TASKINSTANCE where state=" + TaskInstanceStateEnum.COMPLETED
                         + " and task_id=:1 and processinstance_id=:2 ";
             OracleParameter[] selectParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 300, taskId), 
@@ -1224,7 +1229,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
         public bool saveOrUpdateToken(IToken token)
         {
-            if (String.IsNullOrEmpty(token.getId()))
+            if (String.IsNullOrEmpty(token.Id))
             {
                 String tokenId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_TOKEN (" +
@@ -1232,12 +1237,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "STEP_NUMBER, FROM_ACTIVITY_ID )VALUES(:1, :2, :3, :4, :5, :6, :7)";
                 OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, tokenId), 
-    				OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.isAlive())), 
-    				OracleHelper.NewOracleParameter(":3", OracleType.Int32, token.getValue()), 
-    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, token.getNodeId()), 
-    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 50, token.getProcessInstanceId()), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.Int32, token.getStepNumber()), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 100, token.getFromActivityId())
+    				OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.IsAlive)), 
+    				OracleHelper.NewOracleParameter(":3", OracleType.Int32, token.Value), 
+    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, token.NodeId), 
+    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 50, token.ProcessInstanceId), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.Int32, token.StepNumber), 
+    				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 100, token.FromActivityId)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
                     return false;
@@ -1250,13 +1255,13 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "FROM_ACTIVITY_ID=:7" +
                     " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
-					OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.isAlive())), 
-					OracleHelper.NewOracleParameter(":3", OracleType.Int32, token.getValue()), 
-					OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, token.getNodeId()), 
-					OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 50, token.getProcessInstanceId()), 
-					OracleHelper.NewOracleParameter(":6", OracleType.Int32, token.getStepNumber()), 
-					OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 100, token.getFromActivityId()),
-					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, token.getId())
+					OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.IsAlive)), 
+					OracleHelper.NewOracleParameter(":3", OracleType.Int32, token.Value), 
+					OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, token.NodeId), 
+					OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 50, token.ProcessInstanceId), 
+					OracleHelper.NewOracleParameter(":6", OracleType.Int32, token.StepNumber), 
+					OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 100, token.FromActivityId),
+					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, token.Id)
 				};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
                     return false;
@@ -1403,7 +1408,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
             string delete = "delete from t_ff_rt_token where id=:1";
             OracleParameter[] deleteParms = { 
-				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, token.getId())
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, token.Id)
 			};
             if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, delete, deleteParms) <=0)
                 return false;
@@ -1423,16 +1428,16 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public bool saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
 
-            if (String.IsNullOrEmpty(workflowDef.getId()))
+            if (String.IsNullOrEmpty(workflowDef.Id))
             {
-                Int32 latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.getProcessId());
+                Int32 latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.ProcessId);
                 if (latestVersion > 0)
                 {
-                    workflowDef.setVersion(latestVersion + 1);
+                    workflowDef.Version=latestVersion + 1;
                 }
                 else
                 {
-                    workflowDef.setVersion(1);
+                    workflowDef.Version=1;
                 }
                 String workflowDefId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_DF_WORKFLOWDEF (" +
@@ -1441,18 +1446,18 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "PUBLISH_USER, PUBLISH_TIME, PROCESS_CONTENT )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13)";
                 OracleParameter[] insertParms = { 
 					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDefId), 
-					OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.getDefinitionType()), 
-					OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.getProcessId()), 
-					OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, workflowDef.getName()), 
-					OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, workflowDef.getDisplayName()), 
-					OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 1024, workflowDef.getDescription()), 
-					OracleHelper.NewOracleParameter(":7", OracleType.Int32, workflowDef.getVersion()), 
-					OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(workflowDef.getState()) ), 
-					OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 50, workflowDef.getUploadUser()), 
-					OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.getUploadTime()), 
-					OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.getPublishUser()), 
-					OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.getPublishTime()), 
-					OracleHelper.NewOracleParameter(":13", OracleType.Clob, workflowDef.getProcessContent())
+					OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.DefinitionType), 
+					OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.ProcessId), 
+					OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, workflowDef.Name), 
+					OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, workflowDef.DisplayName), 
+					OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 1024, workflowDef.Description), 
+					OracleHelper.NewOracleParameter(":7", OracleType.Int32, workflowDef.Version), 
+					OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(workflowDef.State) ), 
+					OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 50, workflowDef.UploadUser), 
+					OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.UploadTime), 
+					OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.PublishUser), 
+					OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.PublishTime), 
+					OracleHelper.NewOracleParameter(":13", OracleType.Clob, workflowDef.ProcessContent)
 				};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
                     return false;
@@ -1466,19 +1471,19 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "PUBLISH_TIME=:12, PROCESS_CONTENT=:13" +
                     " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
-    				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.getDefinitionType()), 
-    				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.getProcessId()), 
-    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, workflowDef.getName()), 
-    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, workflowDef.getDisplayName()), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 1024, workflowDef.getDescription()), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, workflowDef.getVersion()), 
-    				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(workflowDef.getState())), 
-    				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 50, workflowDef.getUploadUser()), 
-    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.getUploadTime()), 
-    				OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.getPublishUser()), 
-    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.getPublishTime()), 
-    				OracleHelper.NewOracleParameter(":13", OracleType.Clob,workflowDef.getProcessContent()),
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDef.getId())
+    				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.DefinitionType), 
+    				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.ProcessId), 
+    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, workflowDef.Name), 
+    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, workflowDef.DisplayName), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 1024, workflowDef.Description), 
+    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, workflowDef.Version), 
+    				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(workflowDef.State)), 
+    				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 50, workflowDef.UploadUser), 
+    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.UploadTime), 
+    				OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.PublishUser), 
+    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.PublishTime), 
+    				OracleHelper.NewOracleParameter(":13", OracleType.Clob,workflowDef.ProcessContent),
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDef.Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
                     return false;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FireWorkflow.Net.Base;
 
 namespace FireWorkflow.Net.Kernel.Event
 {

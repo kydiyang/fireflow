@@ -44,14 +44,14 @@ namespace FireWorkflow.Net.Kernel.Impl
         {
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             IToken token = tk;
-            token.setNodeId(this.getActivity().Id);
+            token.NodeId=this.getActivity().Id;
 
             //触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(this);
             event1.setToken(tk);
             event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
             fireNodeEnteredEvent(event1);
-            if (token.isAlive())
+            if (token.IsAlive)
             {
                 NodeInstanceEvent neevent = new NodeInstanceEvent(this);
                 neevent.setToken(token);
@@ -78,17 +78,17 @@ namespace FireWorkflow.Net.Kernel.Impl
             fireNodeLeavingEvent(event2);
 
 
-            token.setFromActivityId(this.getActivity().Id);
+            token.FromActivityId=this.getActivity().Id;
 
             if (targetActivityInstance != null)
             {
                 /*为什么要新建一个Token?似乎没有必要。20090122
                 Token newtoken = new Token();
-                newtoken.setAlive(token.isAlive());
+                newtoken.setAlive(token.IsAlive);
                 newtoken.setProcessInstance(token.getProcessInstance());
                 targetActivityInstance.fire(newtoken);
                  */
-                token.setStepNumber(token.getStepNumber() + 1);
+                token.StepNumber=token.StepNumber + 1;
                 targetActivityInstance.fire(token);
             }
             else
@@ -101,7 +101,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                 }
             }
 
-            if (token.isAlive())
+            if (token.IsAlive)
             {
                 NodeInstanceEvent neevent = new NodeInstanceEvent(this);
                 neevent.setToken(token);

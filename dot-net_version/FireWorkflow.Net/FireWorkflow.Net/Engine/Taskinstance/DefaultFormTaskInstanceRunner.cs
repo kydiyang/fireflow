@@ -50,7 +50,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             else
             {
 
-                IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+                IPersistenceService persistenceService = runtimeContext.PersistenceService;
                 List<ITaskInstance> taskInstanceList = persistenceService.findTaskInstancesForProcessInstance(taskInstance.getProcessInstanceId(), taskInstance.getActivityId());
                 ITaskInstance theLastCompletedTaskInstance = null;
 
@@ -59,7 +59,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     ITaskInstance tmp = (ITaskInstance)taskInstanceList[i];
                     if (tmp.getId().Equals(taskInstance.getId())) continue;
                     if (!tmp.getTaskId().Equals(taskInstance.getTaskId())) continue;
-                    if (tmp.getState() != ITaskInstance.COMPLETED) continue;
+                    if (tmp.State != TaskInstanceStateEnum.COMPLETED) continue;
                     if (theLastCompletedTaskInstance == null)
                     {
                         theLastCompletedTaskInstance = tmp;
@@ -77,7 +77,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 if (theLastCompletedTaskInstance != null && (LoopStrategyEnum.REDO.Equals(formTask.LoopStrategy) || currentSession.isInWithdrawOrRejectOperation()))
                 {
                     List<IWorkItem> workItemList = persistenceService.findCompletedWorkItemsForTaskInstance(theLastCompletedTaskInstance.getId());
-                    ITaskInstanceManager taskInstanceMgr = runtimeContext.getTaskInstanceManager();
+                    ITaskInstanceManager taskInstanceMgr = runtimeContext.TaskInstanceManager;
                     for (int k = 0; k < workItemList.Count; k++)
                     {
                         IWorkItem completedWorkItem = (IWorkItem)workItemList[k];

@@ -74,20 +74,25 @@
   <ItemGroup>
     <Compile Include="Base\BeanUtils.cs" />
     <Compile Include="Base\Evaluator.cs" />
-    <Compile Include="Base\ISMDictionary.cs" />
     <Compile Include="Engine\Beanfactory\IBeanFactory.cs" />
     <Compile Include="Engine\Beanfactory\SpringBeanFactory.cs" />
     <Compile Include="Engine\Calendar\DefaultCalendarService.cs" />
     <Compile Include="Engine\Calendar\ICalendarService.cs" />
-    <Compile Include="Engine\Condition\ConditionConstant.cs" />
+    <Compile Include="Engine\Condition\ConditionConstant.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Engine\Condition\ConditionResolver.cs" />
     <Compile Include="Engine\Condition\IConditionResolver.cs" />
     <Compile Include="Engine\Definition\DefinitionService4DBMS.cs" />
     <Compile Include="Engine\Definition\DefinitionService4FileSystem.cs" />
-    <Compile Include="Engine\Definition\FPDLSerializerException.cs" />
     <Compile Include="Engine\Definition\IDefinitionService.cs" />
-    <Compile Include="Engine\Definition\WorkflowDefinition.cs" />
-    <Compile Include="Engine\Definition\WorkflowDefinitionInfo.cs" />
+    <Compile Include="Engine\Definition\WorkflowDefinition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Engine\Definition\WorkflowDefinitionInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Engine\EngineConstant.cs" />
     <Compile Include="Engine\EngineException.cs" />
     <Compile Include="Engine\Event\ActivityInstanceEvent.cs" />
     <Compile Include="Engine\Event\IActivityInstanceEvent.cs" />
@@ -118,7 +123,6 @@
     <Compile Include="Engine\Kernelextensions\SynchronizerInstanceExtension.cs" />
     <Compile Include="Engine\Kernelextensions\TransitionInstanceExtension.cs" />
     <Compile Include="Engine\Persistence\IPersistenceService.cs" />
-    <Compile Include="Engine\Persistence\IReaderToInfo.cs" />
     <Compile Include="Engine\RuntimeContext.cs" />
     <Compile Include="Engine\RuntimeContextFactory.cs" />
     <Compile Include="Engine\Taskinstance\BasicTaskInstanceManager.cs" />
@@ -138,7 +142,7 @@
     <Compile Include="Engine\Taskinstance\ITaskInstanceCreator.cs" />
     <Compile Include="Engine\Taskinstance\ITaskInstanceManager.cs" />
     <Compile Include="Engine\Taskinstance\ITaskInstanceRunner.cs" />
-    <Compile Include="EventObject.cs">
+    <Compile Include="Base\EventObject.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Kernel\Event\EdgeInstanceEvent.cs" />
@@ -211,6 +215,7 @@
     <Content Include="Engine\Definition\关于定义文件的存储.txt" />
     <Content Include="FireflowContext.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>

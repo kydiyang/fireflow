@@ -1,19 +1,22 @@
-﻿using FireWorkflow.Net.Model.Io;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IO;
 using FireWorkflow.Net.Model;
+using FireWorkflow.Net.Model.Net;
+using FireWorkflow.Net.Model.Resource;
+using FireWorkflow.Net.Engine;
+using FireWorkflow.Net.Engine.Impl;
+using FireWorkflow.Net.Engine.Beanfactory;
 
 namespace FireWorkFow.Net.Tests
 {
     
     
     /// <summary>
-    ///This is a test class for Dom4JFPDLParserTest and is intended
-    ///to contain all Dom4JFPDLParserTest Unit Tests
+    ///This is a test class for RuntimeContextTest and is intended
+    ///to contain all RuntimeContextTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class Dom4JFPDLParserTest
+    public class RuntimeContextTest
     {
 
 
@@ -67,18 +70,15 @@ namespace FireWorkFow.Net.Tests
 
 
         /// <summary>
-        ///A test for parse
+        ///A test for RuntimeContext Constructor
         ///</summary>
-        //[TestMethod()]
-        public void parseTest()
+        [TestMethod()]
+        public void RuntimeContextConstructorTest()
         {
-            Dom4JFPDLParser target = new Dom4JFPDLParser(); // TODO: Initialize to an appropriate value
-            Stream srin = null; // TODO: Initialize to an appropriate value
-            WorkflowProcess expected = null; // TODO: Initialize to an appropriate value
-            WorkflowProcess actual;
-            actual = target.parse(srin);
-            Assert.AreEqual(expected, actual);
-            //Assert.Inconclusive("Verify the correctness of this test method.");
+            SpringBeanFactory mySpringBeanFactory = new SpringBeanFactory();
+            RuntimeContext rtCtx = (RuntimeContext)mySpringBeanFactory.getBean("runtimeContext");
+            IWorkflowSession workflowSession = rtCtx.getWorkflowSession();
+
         }
     }
 }

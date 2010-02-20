@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Text;
 using FireWorkflow.Net.Engine.Beanfactory;
@@ -16,28 +34,102 @@ namespace FireWorkflow.Net.Engine
     /// RuntimeContext是Fire workflow Engine的总线。所有的服务都挂接在这个总线上，并通过这个总线获取。<br/>
     /// RuntimeContext也是业务代码调用工作流引擎的入口，通过runtimeContext.getWorkflowSession()获得IWorkflowSession 对象，
     /// 然后通过IWorkflowSession调用各种工作流实例对象及其API。<br/>
+    /// context管理的各种服务
     /// </summary>
     public class RuntimeContext
     {
-        //    private static RuntimeContext instance = null;
         /// <summary>是否已经初始化</summary>
-        private Boolean isInitialized = false;
+        public Boolean IsInitialized { get; set; }
         //context管理的各种服务
 
+        /// <summary>是否打开流程跟踪，如果打开，则会往T_FF_HIST_TRACE表中插入纪录。</summary>
+        public Boolean EnableTrace { get; set; }
+
         /// <summary>转移条件表达式解析服务</summary>
-        private IConditionResolver conditionResolver = null;
+        private IConditionResolver _conditionResolver = null;
+        /// <summary>设置或获取</summary>
+        public IConditionResolver ConditionResolver
+        {
+            get { return _conditionResolver; }
+            set
+            {
+                this._conditionResolver = value;
+                if (this._conditionResolver is IRuntimeContextAware)
+                {
+                    ((IRuntimeContextAware)this._conditionResolver).RuntimeContext = this;
+                }
+            }
+        }
 
         /// <summary>实例对象存取服务</summary>
-        private IPersistenceService persistenceService = null;
+        private IPersistenceService _persistenceService = null;
+        /// <summary>实例对象存取服务</summary>
+        public IPersistenceService PersistenceService
+        {
+            get { return this._persistenceService; }
+            set
+            {
+                this._persistenceService = value;
+                this._persistenceService.RuntimeContext = this;
+            }
+        }
 
         /// <summary>流程定义服务，通过该服务获取流程定义</summary>
-        private IDefinitionService definitionService = null;
+        private IDefinitionService _definitionService = null;
+        /// <summary>流程定义服务，通过该服务获取流程定义</summary>
+        public IDefinitionService DefinitionService
+        {
+            get { return _definitionService; }
+            set
+            {
+                this._definitionService = value;
+                this._definitionService.RuntimeContext = this;
+            }
+        }
 
         /// <summary>内核管理器</summary>
-        private KernelManager kernelManager = null;
+        private KernelManager _kernelManager = null;
+        /// <summary>内核管理器</summary>
+        public KernelManager KernelManager
+        {
+            get { return _kernelManager; }
+            set
+            {
+                this._kernelManager = value;
+                //KernelExtensions  Spring.net还没想到方法解决初始化
+                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.StartNodeInstance",
+                    new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.StartNodeInstanceExtension() }
+                    );
+                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.ActivityInstance",
+                    new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.ActivityInstanceExtension() }
+                    );
+                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.SynchronizerInstance",
+                    new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.SynchronizerInstanceExtension() }
+                    );
+                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.EndNodeInstance",
+                    new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.EndNodeInstanceExtension() }
+                    );
+                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.TransitionInstance",
+                    new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.TransitionInstanceExtension() }
+                    );
+                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.LoopInstance",
+                    new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.LoopInstanceExtension() }
+                    );
+                this._kernelManager.RuntimeContext = this;
+            }
+        }
 
         /// <summary>TaskInstance 管理器，负责TaskInstance的创建、运行、结束。</summary>
-        private ITaskInstanceManager taskInstanceManager = null;
+        private ITaskInstanceManager _taskInstanceManager = null;
+        public ITaskInstanceManager TaskInstanceManager
+        {
+            get { return _taskInstanceManager; }
+            set
+            {
+                this._taskInstanceManager = value;
+                this._taskInstanceManager.RuntimeContext = this;
+            }
+        }
 
         /// <summary>日历服务</summary>
         private ICalendarService calendarService = null;
@@ -45,8 +137,6 @@ namespace FireWorkflow.Net.Engine
         /// <summary>bean工厂，fire workflow默认使用spring作为其实现</summary>
         private IBeanFactory beanFactory = null;
 
-        /// <summary>是否打开流程跟踪，如果打开，则会往T_FF_HIST_TRACE表中插入纪录。</summary>
-        private Boolean enableTrace = false;
 
         //    private ThreadLocal<Object> currentDBSession = new ThreadLocal<Object>();
         //	private ThreadLocal<IFireflowSession> currentFireflowSession = new ThreadLocal<IFireflowSession>();
@@ -58,6 +148,8 @@ namespace FireWorkflow.Net.Engine
 
         public RuntimeContext()
         {
+            IsInitialized = false;
+            EnableTrace = false;
         }
 
 
@@ -88,65 +180,23 @@ namespace FireWorkflow.Net.Engine
         //        return currentDBSession.get();
         //    }
 
-        /// <summary>返回条件解析器</summary>
-        public IConditionResolver getConditionResolver()
-        {
-            return conditionResolver;
-        }
 
-        /// <summary>设置条件解析器</summary>
-        public void setConditionResolver(IConditionResolver resolver)
-        {
-            this.conditionResolver = resolver;
-            if (this.conditionResolver is IRuntimeContextAware)
-            {
-                ((IRuntimeContextAware)this.conditionResolver).setRuntimeContext(this);
-            }
-        }
 
-        /// <summary>返回TaskInstance管理器</summary>
-        public ITaskInstanceManager getTaskInstanceManager()
-        {
-            return taskInstanceManager;
-        }
+        
 
-        public void setTaskInstanceManager(ITaskInstanceManager taskInstanceManager)
-        {
-            this.taskInstanceManager = taskInstanceManager;
-            this.taskInstanceManager.setRuntimeContext(this);
-        }
+       
 
-        public IPersistenceService getPersistenceService()
-        {
-            return this.persistenceService;
-        }
-
-        public void setPersistenceService(IPersistenceService persistenceService)
-        {
-            this.persistenceService = persistenceService;
-            this.persistenceService.setRuntimeContext(this);
-        }
-
-        public IDefinitionService getDefinitionService()
-        {
-            return definitionService;
-        }
-
-        public void setDefinitionService(IDefinitionService service)
-        {
-            this.definitionService = service;
-            this.definitionService.setRuntimeContext(this);
-        }
+        
 
         public KernelManager getKernelManager()
         {
-            return kernelManager;
+            return _kernelManager;
         }
 
         public void setKernelManager(KernelManager arg0)
         {
-            this.kernelManager = arg0;
-            this.kernelManager.setRuntimeContext(this);
+            this._kernelManager = arg0;
+            this._kernelManager.RuntimeContext=this;
         }
 
         public ICalendarService getCalendarService()
@@ -157,7 +207,7 @@ namespace FireWorkflow.Net.Engine
         public void setCalendarService(ICalendarService calendarService)
         {
             this.calendarService = calendarService;
-            this.calendarService.setRuntimeContext(this);
+            this.calendarService.RuntimeContext=this;
         }
 
         public IWorkflowSession getWorkflowSession()
@@ -165,10 +215,6 @@ namespace FireWorkflow.Net.Engine
             return new WorkflowSession(this);
         }
 
-        public Boolean isIsInitialized()
-        {
-            return isInitialized;
-        }
 
         public IBeanFactory getBeanFactory()
         {
@@ -185,11 +231,11 @@ namespace FireWorkflow.Net.Engine
         {
             //		System.out.println("执行initialize(),the isInitialized="+this.isInitialized);
             //		System.out.println("看看有没有 受理环节实例"+this.getKenelManager().getWFElementInstance("受理"));
-            if (!isInitialized)
+            if (!IsInitialized)
             {
                 //			initKenelExtensions();
                 initAllNetInstances();
-                isInitialized = true;
+                IsInitialized = true;
             }
         }
 
@@ -207,12 +253,12 @@ namespace FireWorkflow.Net.Engine
 
         public Boolean isEnableTrace()
         {
-            return enableTrace;
+            return EnableTrace;
         }
 
         public void setEnableTrace(Boolean enableTrace)
         {
-            this.enableTrace = enableTrace;
+            this.EnableTrace = enableTrace;
         }
     }
 

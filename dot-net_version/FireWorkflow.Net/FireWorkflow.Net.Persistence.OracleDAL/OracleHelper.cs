@@ -1,4 +1,4 @@
-﻿/* 
+﻿/* Copyright 2009 无忧lwz0721@gmail.com
  * @author 无忧lwz0721@gmail.com
  */
 using System;
@@ -324,49 +324,49 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             return null;
         }
 
-        /// <summary>返回执行结果。</summary>
-        /// <param name="connString">数据库连接字符串</param>
-        /// <param name="cmdType">指定如何解释命令字符串。</param>
-        /// <param name="cmdText">要执行的Sql语句,或存储过程名称。</param>
-        /// <param name="commandParameters">传入或传出的参数值</param>
-        /// <returns>放回执行结果集合</returns>
-        public static IList<T> ExecuteInfo<T>(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters) 
-            where T : IReaderToInfo, new()
-        {
-            IList<T> Ts = new List<T>();
+        ///// <summary>返回执行结果。</summary>
+        ///// <param name="connString">数据库连接字符串</param>
+        ///// <param name="cmdType">指定如何解释命令字符串。</param>
+        ///// <param name="cmdText">要执行的Sql语句,或存储过程名称。</param>
+        ///// <param name="commandParameters">传入或传出的参数值</param>
+        ///// <returns>放回执行结果集合</returns>
+        //public static IList<T> ExecuteInfo<T>(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters) 
+        //    where T : IReaderToInfo, new()
+        //{
+        //    IList<T> Ts = new List<T>();
 
-            OracleConnection connection = new OracleConnection(connectionString);
-            OracleDataReader reader = null;
+        //    OracleConnection connection = new OracleConnection(connectionString);
+        //    OracleDataReader reader = null;
             
-            try
-            {
-                reader = OracleHelper.ExecuteReader(connection, cmdType, cmdText, commandParameters);
-                if (reader != null)
-                {
-                    while (reader.Read())
-                    {
-                        T t = new T();
-                        t.ReaderToInfo(reader);
-                        Ts.Add(t);
-                    }
-                }
-            }
-            finally
-            {
-                if (reader != null)
-                {
-                    reader.Close();
-                    reader = null;
-                }
-                if (connection.State != ConnectionState.Closed)
-                {
-                    connection.Close();
-                    connection = null;
-                }
-            }
-            if (Ts == null || Ts.Count <= 0) return null;
-            return Ts;
-        }
+        //    try
+        //    {
+        //        reader = OracleHelper.ExecuteReader(connection, cmdType, cmdText, commandParameters);
+        //        if (reader != null)
+        //        {
+        //            while (reader.Read())
+        //            {
+        //                T t = new T();
+        //                t.ReaderToInfo(reader);
+        //                Ts.Add(t);
+        //            }
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        if (reader != null)
+        //        {
+        //            reader.Close();
+        //            reader = null;
+        //        }
+        //        if (connection.State != ConnectionState.Closed)
+        //        {
+        //            connection.Close();
+        //            connection = null;
+        //        }
+        //    }
+        //    if (Ts == null || Ts.Count <= 0) return null;
+        //    return Ts;
+        //}
 
         /// <summary>分页返回执行结果</summary>
         /// <param name="connectionString">数据库连接字符串</param>

@@ -9,7 +9,7 @@ namespace FireWorkflow.Net.Engine.Beanfactory
     /// <summary>用Spring 的IOC容器作为Fire Workflow 的BeanFactory</summary>
     public class SpringBeanFactory : IBeanFactory
     {
-        IApplicationContext springBeanFactory = new XmlApplicationContext("FireflowContext.xml");
+        IApplicationContext springBeanFactory = new XmlApplicationContext(@"E:\Visual Studio 2010\Projects\FireWorkflow.Net\FireWorkflow.Net\FireflowContext.xml");
 
         public Object getBean(String beanName)
         {

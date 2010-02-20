@@ -31,20 +31,10 @@ namespace FireWorkflow.Net.Engine.Impl
         private String parentProcessInstanceId = null;
         private String parentTaskInstanceId = null;
         private Dictionary<String, Object> processInstanceVariables = new Dictionary<String, Object>();
-        [NonSerialized]
-        protected RuntimeContext rtCtx = null;
-        [NonSerialized]
-        protected IWorkflowSession workflowSession = null;
+        //[NonSerialized]
+        public RuntimeContext RuntimeContext { get; set; }
 
-        public void setRuntimeContext(RuntimeContext ctx)
-        {
-            this.rtCtx = ctx;
-        }
-
-        public RuntimeContext getRuntimeContext()
-        {
-            return this.rtCtx;
-        }
+        public IWorkflowSession CurrentWorkflowSession { get; set; }
 
         public ProcessInstance()
         {
@@ -132,7 +122,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 throw new EngineException(this.getId(), this.getWorkflowProcess(),
                         synchInst.getSynchronizer().Id, "The process definition [" + this.getName() + "] is invalid，the synchronizer[" + synchInst.getSynchronizer() + "] has no entering transition");
             }
-            IPersistenceService persistenceService = rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             //保存到数据库
             persistenceService.saveOrUpdateToken(token);
 
@@ -143,14 +133,14 @@ namespace FireWorkflow.Net.Engine.Impl
             if (enterTransInstanceCount == 1)
             {
                 // 生成一个不存储到数据库中的JoinPoint
-                resultJoinPoint.addValue(token.getValue());
+                resultJoinPoint.addValue(token.Value);
 
-                if (token.isAlive())
+                if (token.IsAlive)
                 {
                     resultJoinPoint.setAlive(true);
-                    resultJoinPoint.setFromActivityId(token.getFromActivityId());
+                    resultJoinPoint.setFromActivityId(token.FromActivityId);
                 }
-                resultJoinPoint.setStepNumber(token.getStepNumber() + 1);
+                resultJoinPoint.setStepNumber(token.StepNumber + 1);
 
                 return resultJoinPoint;
             }
@@ -164,7 +154,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 for (int i = 0; i < tokensList_0.Count; i++)
                 {
                     IToken tmpToken = (IToken)tokensList_0[i];
-                    String tmpFromActivityId = tmpToken.getFromActivityId();
+                    String tmpFromActivityId = tmpToken.FromActivityId;
                     if (!tokensMap.ContainsKey(tmpFromActivityId))
                     {
                         tokensMap.Add(tmpFromActivityId, tmpToken);
@@ -172,7 +162,7 @@ namespace FireWorkflow.Net.Engine.Impl
                     else
                     {
                         IToken tmpToken2 = (IToken)tokensMap[tmpFromActivityId];
-                        if (tmpToken2.getStepNumber() > tmpToken.getStepNumber())
+                        if (tmpToken2.StepNumber > tmpToken.StepNumber)
                         {
                             tokensMap[tmpFromActivityId] = tmpToken2;
                         }
@@ -184,24 +174,24 @@ namespace FireWorkflow.Net.Engine.Impl
                 for (int i = 0; i < tokensList.Count; i++)
                 {
                     IToken _token = (IToken)tokensList[i];
-                    resultJoinPoint.addValue(_token.getValue());
-                    if (_token.isAlive())
+                    resultJoinPoint.addValue(_token.Value);
+                    if (_token.IsAlive)
                     {
                         resultJoinPoint.setAlive(true);
                         String oldFromActivityId = resultJoinPoint.getFromActivityId();
                         if (oldFromActivityId == null || oldFromActivityId.Trim().Equals(""))
                         {
-                            resultJoinPoint.setFromActivityId(_token.getFromActivityId());
+                            resultJoinPoint.setFromActivityId(_token.FromActivityId);
                         }
                         else
                         {
-                            resultJoinPoint.setFromActivityId(oldFromActivityId + IToken.FROM_ACTIVITY_ID_SEPARATOR + _token.getFromActivityId());
+                            resultJoinPoint.setFromActivityId(oldFromActivityId + TokenFrom.FROM_ACTIVITY_ID_SEPARATOR + _token.FromActivityId);
                         }
 
                     }
-                    if (token.getStepNumber() > stepNumber)
+                    if (token.StepNumber > stepNumber)
                     {
-                        stepNumber = token.getStepNumber();
+                        stepNumber = token.StepNumber;
                     }
                 }
 
@@ -215,7 +205,7 @@ namespace FireWorkflow.Net.Engine.Impl
             resultJoinPoint = new JoinPoint();
             resultJoinPoint.addValue(token.getValue());
 
-            if (token.isAlive()) {
+            if (token.IsAlive) {
             resultJoinPoint.setAlive(true);
             }
             resultJoinPoint.setProcessInstance(this);
@@ -223,7 +213,7 @@ namespace FireWorkflow.Net.Engine.Impl
             } else {
             // 1、首先从数据库中查询，看看是否已经存在该JoinPoint
             //对于循环的情况,此处会存在一些问题...
-            IPersistenceService persistenceService = rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             List<IJoinPoint> joinPointList = persistenceService.findJoinPointsForProcessInstance(this.getId(), synchInst.getSynchronizer().getId());
             IJoinPoint joinPoint = null;
             if (joinPointList != null && joinPointList.Count > 0) {
@@ -240,7 +230,7 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             resultJoinPoint.addValue(token.getValue());
 
-            if (token.isAlive()) {
+            if (token.IsAlive) {
             resultJoinPoint.setAlive(true);
             }
 
@@ -259,7 +249,7 @@ namespace FireWorkflow.Net.Engine.Impl
                         this.getProcessId(), "The state of the process instance is " + this.getState() + ",can not run it ");
             }
 
-            INetInstance netInstance = (INetInstance)rtCtx.getKernelManager().getNetInstance(this.getProcessId(), this.getVersion());
+            INetInstance netInstance = (INetInstance)this.RuntimeContext.getKernelManager().getNetInstance(this.getProcessId(), this.getVersion());
             if (netInstance == null)
             {
                 throw new EngineException(this.getId(),
@@ -273,8 +263,8 @@ namespace FireWorkflow.Net.Engine.Impl
             this.fireProcessInstanceEvent(pevent);
 
             this.setState(IProcessInstance.RUNNING);
-            this.setStartedTime(rtCtx.getCalendarService().getSysDate());
-            rtCtx.getPersistenceService().saveOrUpdateProcessInstance(this);
+            this.setStartedTime(this.RuntimeContext.getCalendarService().getSysDate());
+            this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstance(this);
             netInstance.run(this);
         }
 
@@ -301,7 +291,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public override WorkflowProcess getWorkflowProcess()
         {
-            WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+            WorkflowDefinition workflowDef = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
             WorkflowProcess workflowProcess = null;
 
             workflowProcess = workflowDef.getWorkflowProcess();
@@ -358,12 +348,12 @@ namespace FireWorkflow.Net.Engine.Impl
          */
         public void complete()
         {
-            List<IToken> tokens = rtCtx.getPersistenceService().findTokensForProcessInstance(this.getId(), null);
+            List<IToken> tokens = this.RuntimeContext.PersistenceService.findTokensForProcessInstance(this.getId(), null);
             Boolean canBeCompleted = true;
             for (int i = 0; tokens != null && i < tokens.Count; i++)
             {
                 IToken token = tokens[i];
-                if (token.isAlive())
+                if (token.IsAlive)
                 {
                     canBeCompleted = false;
                     break;
@@ -376,8 +366,8 @@ namespace FireWorkflow.Net.Engine.Impl
 
             this.setState(IProcessInstance.COMPLETED);
             //记录结束时间
-            this.setEndTime(rtCtx.getCalendarService().getSysDate());
-            rtCtx.getPersistenceService().saveOrUpdateProcessInstance(this);
+            this.setEndTime(this.RuntimeContext.getCalendarService().getSysDate());
+            this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstance(this);
 
             //触发事件
             ProcessInstanceEvent pevent = new ProcessInstanceEvent();
@@ -386,9 +376,9 @@ namespace FireWorkflow.Net.Engine.Impl
             this.fireProcessInstanceEvent(pevent);
             if (this.getParentTaskInstanceId() != null && !this.getParentTaskInstanceId().Trim().Equals(""))
             {
-                ITaskInstance taskInstance = rtCtx.getPersistenceService().findAliveTaskInstanceById(this.getParentTaskInstanceId());
-                ((IRuntimeContextAware)taskInstance).setRuntimeContext(rtCtx);
-                ((IWorkflowSessionAware)taskInstance).setCurrentWorkflowSession(workflowSession);
+                ITaskInstance taskInstance = this.RuntimeContext.PersistenceService.findAliveTaskInstanceById(this.getParentTaskInstanceId());
+                ((IRuntimeContextAware)taskInstance).RuntimeContext=this.RuntimeContext;
+                ((IWorkflowSessionAware)taskInstance).CurrentWorkflowSession = this.CurrentWorkflowSession;
                 ((TaskInstance)taskInstance).complete(null);
             }
         }
@@ -399,7 +389,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be aborted,the state of this process instance is " + this.getState());
             }
-            IPersistenceService persistenceService = rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.abortProcessInstance(this);
         }
 
@@ -421,7 +411,7 @@ namespace FireWorkflow.Net.Engine.Impl
             for (int i = 0; i < listeners.Count; i++)
             {
                 EventListener listener = (EventListener)listeners[i];
-                Object obj = rtCtx.getBeanByName(listener.ClassName);
+                Object obj = this.RuntimeContext.getBeanByName(listener.ClassName);
                 if (obj != null)
                 {
                     ((IProcessInstanceEventListener)obj).onProcessInstanceEventFired(e);
@@ -440,15 +430,6 @@ namespace FireWorkflow.Net.Engine.Impl
 
         }
 
-        public  IWorkflowSession getCurrentWorkflowSession()
-        {
-            return this.workflowSession;
-        }
-
-        public  void setCurrentWorkflowSession(IWorkflowSession session)
-        {
-            this.workflowSession = session;
-        }
 
         public override String getCreatorId()
         {
@@ -485,7 +466,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 return;
             }
-            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.suspendProcessInstance(this);
         }
 
@@ -500,7 +481,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 return;
             }
 
-            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.restoreProcessInstance(this);
 
         }

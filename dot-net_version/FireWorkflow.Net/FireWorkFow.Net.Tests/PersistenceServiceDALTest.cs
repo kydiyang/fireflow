@@ -137,11 +137,11 @@ namespace FireWorkFow.Net.Tests
         {
             PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
             WorkflowDefinition workflowDef = new WorkflowDefinition(); // TODO: Initialize to an appropriate value
-            workflowDef.setDefinitionType("asdf");
-            workflowDef.setProcessId("ssss");
-            workflowDef.setName("asdfasdf");
-            workflowDef.setState(true);
-            workflowDef.setProcessContent("asdfasdf");
+            workflowDef.DefinitionType="asdf";
+            workflowDef.ProcessId="ssss";
+            workflowDef.Name="asdfasdf";
+            workflowDef.State=true;
+            workflowDef.ProcessContent="asdfasdf";
             bool expected = false; // TODO: Initialize to an appropriate value
             bool actual;
             actual = target.saveOrUpdateWorkflowDefinition(workflowDef);

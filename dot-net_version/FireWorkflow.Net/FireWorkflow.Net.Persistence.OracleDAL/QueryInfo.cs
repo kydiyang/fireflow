@@ -1,4 +1,4 @@
-﻿/* 
+﻿/* Copyright 2009 无忧lwz0721@gmail.com
  * @author 无忧lwz0721@gmail.com
  */
 using System;

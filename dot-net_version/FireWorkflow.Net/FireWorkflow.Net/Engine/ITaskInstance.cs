@@ -7,77 +7,74 @@ using FireWorkflow.Net.Model.Net;
 
 namespace FireWorkflow.Net.Engine
 {
+    public enum TaskInstanceStateEnum
+    {
+        /// <summary>初始化状态</summary>
+        INITIALIZED = 0,
+        /// <summary>运行状态</summary>
+        RUNNING = 1,
+        /// <summary>已经结束</summary>
+        COMPLETED = 7,
+        /// <summary>被撤销</summary>
+        CANCELED = 9
+    }
+
     /// <summary>
     /// 任务实例
     /// 对任务实例的状态字段作如下规定：小于5的状态为“活动”状态，大于等于5的状态为“非活动”状态。
     /// 活动状态包括：INITIALIZED,RUNNING,SUSPENDED
     /// 非活动状态包括：COMPLETED,CANCELED
     /// </summary>
-    public abstract class ITaskInstance
+    public interface ITaskInstance
     {
-        /// <summary>初始化状态</summary>
-        public const int INITIALIZED = 0;
-
-        /// <summary>运行状态</summary>
-        public const int RUNNING = 1;
-
-        //被挂起
-        // public const int SUSPENDED = 3;
-
-        /// <summary>已经结束</summary>
-        public const int COMPLETED = 7;
-
-        /// <summary>被撤销</summary>
-        public const int CANCELED = 9;
-
         /// <summary>返回任务实例的Id</summary>
-        public abstract String getId();
+        String Id { get; }
 
         /// <summary>返回对应的任务Id</summary>
-        public abstract String getTaskId();
+        String TaskId { get; }
 
         /// <summary>返回任务Name</summary>
-        public abstract String getName();
+        String Name { get; }
 
         /// <summary>返回任务显示名</summary>
-        public abstract String getDisplayName();
+        String DisplayName { get; }
 
         // public IProcessInstance getProcessInstance();
 
         /// <summary>返回对应的流程实例Id</summary>
-        public abstract String getProcessInstanceId();
+        String ProcessInstanceId { get; }
 
         /// <summary>返回对应的流程的Id</summary>
-        public abstract String getProcessId();
+        String ProcessId { get; }
 
         /// <summary>返回流程的版本</summary>
-        public abstract Int32 getVersion();
+        Int32 Version { get; }
 
         /// <summary>返回任务实例创建的时间</summary>
-        public abstract DateTime? getCreatedTime();
+        DateTime? CreatedTime { get; }
 
         /// <summary>返回任务实例启动的时间</summary>
-        public abstract DateTime? getStartedTime();
+        DateTime? StartedTime { get; }
 
         /// <summary>返回任务实例结束的时间</summary>
-        public abstract DateTime? getEndTime();
+        DateTime? EndTime { get; }
 
         /// <summary>返回任务实例到期日期</summary>
-        public abstract DateTime? getExpiredTime();// 过期时间
+        DateTime? ExpiredTime { get; }// 过期时间
 
         /// <summary>返回任务实例的状态，取值为：INITIALIZED(已初始化），STARTED(已启动),COMPLETED(已结束),CANCELD(被取消)</summary>
-        public abstract Int32? getState();
+        TaskInstanceStateEnum State { get; }
 
         /// <summary>返回任务实例的分配策略，取值为 org.fireflow.model.Task.ALL或者org.fireflow.model.Task.ANY</summary>
-        public abstract String getAssignmentStrategy();
+        FormTaskEnum AssignmentStrategy { get; }
 
         /// <summary>返回任务实例所属的环节的Id</summary>
-        public abstract String getActivityId();
+        String ActivityId { get; }
 
         /// <summary>
         /// 返回任务类型，取值为TaskTypeEnum:FORM,TOOL,SUBFLOW,DUMMY
         /// </summary>
-        public abstract TaskTypeEnum getTaskType();
+        TaskTypeEnum TaskType { get; }
 
         // 取消该任务（保留，未实现） 这个方法暂时取消，因为abort无清晰的无二义性的业务含义。（2009-04-12）
         // public void abort() throws EngineException,KernelException;
@@ -86,36 +83,36 @@ namespace FireWorkflow.Net.Engine
         /// 返回任务是里对应的环节
         /// fireflow.engine.EngineException
         /// </summary>
-        public abstract Activity getActivity();// throws EngineException;
+        Activity Activity { get; }// throws EngineException;
 
         /// <summary>
         /// 返回任务实例对应的流程
         /// fireflow.engine.EngineException
         /// </summary>
-        public abstract WorkflowProcess getWorkflowProcess();// throws EngineException;
+        WorkflowProcess WorkflowProcess { get; }// throws EngineException;
 
         /// <summary>
         /// 返回任务实例对应的Task对象
         /// fireflow.engine.EngineException
         /// </summary>
-        public abstract Task getTask();// throws EngineException;
+        Task Task { get; }// throws EngineException;
 
         /// <summary>当执行JumpTo和LoopTo操作时，返回目标Activity 的Id</summary>
-        public abstract String getTargetActivityId();
+        String TargetActivityId { get; }
 
         /// <summary>返回TaskInstance的"步数"。</summary>
-        public abstract Int32 getStepNumber();
+        Int32 StepNumber { get; }
 
         /// <summary></summary>
-        public abstract void suspend();// throws EngineException;
+        void suspend();// throws EngineException;
 
-        public abstract Boolean? IsSuspended();
+        Boolean IsSuspended();
 
         /// <summary>
         /// 从挂起状态恢复到挂起前的状态
         /// fireflow.engine.EngineException
         /// </summary>
-        public abstract void restore();// throws EngineException;
+        void restore();// throws EngineException;
 
         // public Set getWorkItems() ;
     }

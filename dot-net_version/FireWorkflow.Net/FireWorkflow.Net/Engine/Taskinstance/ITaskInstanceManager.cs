@@ -11,7 +11,6 @@ namespace FireWorkflow.Net.Engine.Taskinstance
     /// <summary>任务实例管理器</summary>
     public interface ITaskInstanceManager : IRuntimeContextAware
     {
-
         /// <summary>
         /// 创建taskinstance实例
         /// </summary>
@@ -44,6 +43,25 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         void completeTaskInstance(IWorkflowSession currentSession, IProcessInstance processInstance, ITaskInstance taskInstance, IActivityInstance targetActivityInstance);// throws EngineException, KernelException;
 
         /// <summary>
+        /// 中止task instance。
+        /// </summary>
+        /// <param name="currentSession"></param>
+        /// <param name="processInstance"></param>
+        /// <param name="taskInstance"></param>
+        /// <param name="targetActivityId"></param>
+        void abortTaskInstance(IWorkflowSession currentSession, IProcessInstance processInstance, ITaskInstance taskInstance, String targetActivityId);
+
+        /// <summary>
+        /// 中止task instance。
+        /// </summary>
+        /// <param name="currentSession"></param>
+        /// <param name="processInstance"></param>
+        /// <param name="taskInstance"></param>
+        /// <param name="targetActivityId"></param>
+        void abortTaskInstanceEx(IWorkflowSession currentSession, IProcessInstance processInstance, ITaskInstance taskInstance, String targetActivityId);
+
+
+        /// <summary>
         /// 根据TaskInstance创建workItem。
         /// </summary>
         WorkItem createWorkItem(IWorkflowSession currentSession, IProcessInstance processInstance, ITaskInstance taskInstance, String actorId);// throws EngineException;
@@ -58,8 +76,16 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         /// </summary>
         void completeWorkItem(IWorkItem workItem, IActivityInstance targetActivityInstance, String comments);//throws EngineException, KernelException ;
 
-
+        /// <summary>
+        /// 结束工单并跳转
+        /// </summary>
         void completeWorkItemAndJumpTo(IWorkItem workItem, String targetActivityId, String comments);// throws EngineException, KernelException ;
+
+        /// <summary>
+        /// 结束工单并跳转（超级）
+        /// </summary>
+        void completeWorkItemAndJumpToEx(IWorkItem workItem, String targetActivityId, String comments);
+
 
         /// <summary>
         /// 撤销刚才执行的Complete动作，系统将创建并返回一个新的Running状态的WorkItem
@@ -67,6 +93,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         /// <returns>新创建的工作项</returns>
         IWorkItem withdrawWorkItem(IWorkItem workItem);// throws EngineException, KernelException ;
 
+        /// <summary>
+        /// 拒收
+        /// </summary>
         void rejectWorkItem(IWorkItem workItem, String comments);// throws  EngineException, KernelException ;
 
         /// <summary>
