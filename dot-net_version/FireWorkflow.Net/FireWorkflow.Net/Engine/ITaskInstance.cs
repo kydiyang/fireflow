@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FireWorkflow.Net.Model;
 using FireWorkflow.Net.Model.Net;
+using FireWorkflow.Net.Engine.Taskinstance;
 
 namespace FireWorkflow.Net.Engine
 {
@@ -39,7 +40,6 @@ namespace FireWorkflow.Net.Engine
         /// <summary>返回任务显示名</summary>
         String DisplayName { get; }
 
-        // public IProcessInstance getProcessInstance();
 
         /// <summary>返回对应的流程实例Id</summary>
         String ProcessInstanceId { get; }
@@ -76,34 +76,34 @@ namespace FireWorkflow.Net.Engine
         /// </summary>
         TaskTypeEnum TaskType { get; }
 
-        // 取消该任务（保留，未实现） 这个方法暂时取消，因为abort无清晰的无二义性的业务含义。（2009-04-12）
-        // public void abort() throws EngineException,KernelException;
-
-        /// <summary>
-        /// 返回任务是里对应的环节
-        /// fireflow.engine.EngineException
-        /// </summary>
-        Activity Activity { get; }// throws EngineException;
-
-        /// <summary>
-        /// 返回任务实例对应的流程
-        /// fireflow.engine.EngineException
-        /// </summary>
-        WorkflowProcess WorkflowProcess { get; }// throws EngineException;
-
-        /// <summary>
-        /// 返回任务实例对应的Task对象
-        /// fireflow.engine.EngineException
-        /// </summary>
-        Task Task { get; }// throws EngineException;
-
         /// <summary>当执行JumpTo和LoopTo操作时，返回目标Activity 的Id</summary>
         String TargetActivityId { get; }
 
         /// <summary>返回TaskInstance的"步数"。</summary>
         Int32 StepNumber { get; }
+        
 
-        /// <summary></summary>
+        /// <summary>
+        /// 返回任务实例对应的流程
+        /// fireflow.engine.EngineException
+        /// </summary>
+        WorkflowProcess getWorkflowProcess();// throws EngineException;
+
+        /// <summary>
+        /// 返回任务实例对应的Task对象
+        /// fireflow.engine.EngineException
+        /// </summary>
+        Task getTask();// throws EngineException;
+
+        IProcessInstance getAliveProcessInstance();
+
+        /// <summary>
+        /// 返回任务是里对应的环节
+        /// fireflow.engine.EngineException
+        /// </summary>
+        Activity getActivity();// throws EngineException;
+
+        /// <summary>挂起 </summary>
         void suspend();// throws EngineException;
 
         Boolean IsSuspended();
@@ -114,6 +114,40 @@ namespace FireWorkflow.Net.Engine
         /// </summary>
         void restore();// throws EngineException;
 
-        // public Set getWorkItems() ;
+        /// <summary>
+        /// <para>将该TaskInstance中止，并且使得当前流程实例按照流程定义往下流转。</para>
+        /// <para>与该TaskInstance相关的WorkItem都被置为Canceled状态。</para>
+        /// 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。
+        /// </summary>
+        void abort();
+
+        /// <summary>
+        /// 将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。
+        /// 与该TaskInstance相关的WorkItem都被置为Canceled状态。
+        /// 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。
+        /// </summary>
+        /// <param name="targetActivityId"></param>
+        void abort(String targetActivityId);
+
+        /// <summary>
+        /// <para>将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。该环节任务的操作人从dynamicAssignmentHandler获取。</para>
+        /// <para>当前环节和目标环节必须在同一条“执行线”上</para>
+        /// <para>与该TaskInstance相关的WorkItem都被置为Canceled状态。</para> 
+        /// 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。
+        /// </summary>
+        /// <param name="targetActivityId"></param>
+        /// <param name="dynamicAssignmentHandler"></param>
+        void abort(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler);
+
+        /// <summary>
+        /// <para>将该TaskInstance中止，并且使得当前流程实例跳转到targetActivityId指定的环节。该环节任务的操作人从dynamicAssignmentHandler获取。</para> 
+        /// <para>当前环节和目标环节 可以不在 同一条“执行线”上</para> 
+        /// <para>与该TaskInstance相关的WorkItem都被置为Canceled状态。</para> 
+        /// 如果该TaskInstance的状态已经是Completed或者Canceled，则抛出异常。
+        /// </summary>
+        /// <param name="targetActivityId"></param>
+        /// <param name="dynamicAssignmentHandler"></param>
+        void abortEx(String targetActivityId, DynamicAssignmentHandler dynamicAssignmentHandler);
+
     }
 }

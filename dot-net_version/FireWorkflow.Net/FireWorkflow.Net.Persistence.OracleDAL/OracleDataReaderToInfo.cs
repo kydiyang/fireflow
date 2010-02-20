@@ -56,29 +56,29 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public static TaskInstance GetTaskInstance(IDataReader dr)
         {
             TaskInstance taskInstance = new TaskInstance();
-            taskInstance.setId(Convert.ToString(dr["id"]));
+            taskInstance.Id=Convert.ToString(dr["id"]);
             // 20090922 wmj2003 没有给biz_type赋值 是否需要给基于jdbc的数据增加 setBizType()方法？
-            taskInstance.setTaskId(Convert.ToString(dr["task_id"]));
-            taskInstance.setActivityId(Convert.ToString(dr["activity_id"]));
-            taskInstance.setName(Convert.ToString(dr["name"]));
+            taskInstance.TaskId=Convert.ToString(dr["task_id"]);
+            taskInstance.ActivityId=Convert.ToString(dr["activity_id"]);
+            taskInstance.Name=Convert.ToString(dr["name"]);
 
-            taskInstance.setDisplayName(Convert.ToString(dr["display_name"]));
+            taskInstance.DisplayName=Convert.ToString(dr["display_name"]);
             taskInstance.State=(TaskInstanceStateEnum)Convert.ToInt32(dr["state"]);
-            taskInstance.setSuspended(Convert.ToInt32(dr["suspended"]) == 1 ? true : false);
-            taskInstance.setTaskType((TaskTypeEnum)Enum.Parse(typeof(TaskTypeEnum),Convert.ToString(dr["task_type"])));
-            if (!(dr["created_time"] is DBNull)) taskInstance.setCreatedTime(Convert.ToDateTime(dr["created_time"]));
+            taskInstance.Suspended=Convert.ToInt32(dr["suspended"]) == 1 ? true : false;
+            taskInstance.TaskType=(TaskTypeEnum)Enum.Parse(typeof(TaskTypeEnum),Convert.ToString(dr["task_type"]));
+            if (!(dr["created_time"] is DBNull)) taskInstance.CreatedTime=Convert.ToDateTime(dr["created_time"]);
 
-            if (!(dr["started_time"] is DBNull)) taskInstance.setStartedTime(Convert.ToDateTime(dr["started_time"]));
-            if (!(dr["end_time"] is DBNull)) taskInstance.setEndTime(Convert.ToDateTime(dr["end_time"]));
-            taskInstance.setAssignmentStrategy((FormTaskEnum)Enum.Parse(typeof(FormTaskEnum), Convert.ToString((dr["assignment_strategy"]))));
-            taskInstance.setProcessInstanceId(Convert.ToString(dr["processinstance_id"]));
-            taskInstance.setProcessId(Convert.ToString(dr["process_id"]));
+            if (!(dr["started_time"] is DBNull)) taskInstance.StartedTime=Convert.ToDateTime(dr["started_time"]);
+            if (!(dr["end_time"] is DBNull)) taskInstance.EndTime=Convert.ToDateTime(dr["end_time"]);
+            taskInstance.AssignmentStrategy=(FormTaskEnum)Enum.Parse(typeof(FormTaskEnum), Convert.ToString((dr["assignment_strategy"])));
+            taskInstance.ProcessInstanceId=Convert.ToString(dr["processinstance_id"]);
+            taskInstance.ProcessId=Convert.ToString(dr["process_id"]);
 
-            taskInstance.setVersion(Convert.ToInt32(dr["version"]));
-            taskInstance.setTargetActivityId(Convert.ToString(dr["target_activity_id"]));
-            taskInstance.setFromActivityId(Convert.ToString(dr["from_activity_id"]));
-            taskInstance.setStepNumber(Convert.ToInt32(dr["step_number"]));
-            taskInstance.setCanBeWithdrawn(Convert.ToInt32(dr["can_be_withdrawn"]) == 1 ? true : false);
+            taskInstance.Version=Convert.ToInt32(dr["version"]);
+            taskInstance.TargetActivityId=Convert.ToString(dr["target_activity_id"]);
+            taskInstance.FromActivityId=Convert.ToString(dr["from_activity_id"]);
+            taskInstance.StepNumber=Convert.ToInt32(dr["step_number"]);
+            taskInstance.CanBeWithdrawn=Convert.ToInt32(dr["can_be_withdrawn"]) == 1 ? true : false;
 
             return taskInstance;
         }
