@@ -418,7 +418,7 @@ namespace FireWorkflow.Net.Model.Io
                     case EXTENDED_ATTRIBUTES: loadExtendedAttributes(activity.ExtendedAttributes, node); break;
 
                     case TASKS: loadTasks(activity, activity.InlineTasks, node); break;
-                    case TASKREFS: loadTaskRefs((WorkflowProcess)activity.Parent, activity, activity.TaskRefs, node); break;
+                    case TASKREFS: loadTaskRefs((WorkflowProcess)activity.ParentElement, activity, activity.TaskRefs, node); break;
                 }
             }
             return activity;

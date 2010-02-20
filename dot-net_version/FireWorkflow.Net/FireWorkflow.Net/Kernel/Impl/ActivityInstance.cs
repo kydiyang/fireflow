@@ -94,9 +94,9 @@ namespace FireWorkflow.Net.Kernel.Impl
             else
             {
                 //按照定义，activity有且只有一个输出弧，所以此处只进行一次循环。
-                for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.Count; i++)
+                for (int i = 0; LeavingTransitionInstances != null && i < LeavingTransitionInstances.Count; i++)
                 {
-                    ITransitionInstance transInst = leavingTransitionInstances[i];
+                    ITransitionInstance transInst = LeavingTransitionInstances[i];
                     transInst.take(token);
                 }
             }
@@ -131,7 +131,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 if (extension is INodeInstanceEventListener)
                 {
-                    this.eventListeners.Add((INodeInstanceEventListener)extension);
+                    this.EventListeners.Add((INodeInstanceEventListener)extension);
                 }
                 else
                 {

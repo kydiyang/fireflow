@@ -71,11 +71,6 @@ namespace FireWorkflow.Net.Engine.Impl
         /// <summary>返回或设置</summary>
         public Int32 StepNumber { get; set; }
 
-
-
-
-
-
         /// <summary>返回或设置</summary>
         public Boolean Suspended { get; set; }
 

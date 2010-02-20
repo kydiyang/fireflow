@@ -21,6 +21,10 @@ namespace FireWorkflow.Net.Kernel.Impl
         public static List<String> Extension_Point_Names = new List<String>();
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
 
+        /// <summary>
+        /// volume是同步器的容量
+        /// </summary>
+        public int Volume { get; set; }
 
         static EndNodeInstance()
         {
@@ -58,15 +62,6 @@ namespace FireWorkflow.Net.Kernel.Impl
             return tokenValue;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.fireflow.kenel.ISynchronizerInstance#getVolume()
-         */
-        public int getVolume()
-        {
-            return volume;
-        }
 
         /*
          * (non-Javadoc)
@@ -78,15 +73,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             this.tokenValue = tokenNum;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.fireflow.kenel.ISynchronizerInstance#setVolume(int)
-         */
-        public void setVolume(int k)
-        {
-            this.volume = k;
-        }
+
 
         /*
          * (non-Javadoc)
@@ -147,9 +134,9 @@ namespace FireWorkflow.Net.Kernel.Impl
                 tokenForLoop.StepNumber=joinPoint.getStepNumber() - 1;
                 tokenForLoop.FromActivityId=joinPoint.getFromActivityId();
 
-                for (int i = 0; i < this.leavingLoopInstances.Count; i++)
+                for (int i = 0; i < this.LeavingLoopInstances.Count; i++)
                 {
-                    ILoopInstance loopInstance = this.leavingLoopInstances[i];
+                    ILoopInstance loopInstance = this.LeavingLoopInstances[i];
                     doLoop = loopInstance.take(tokenForLoop);
                     if (doLoop)
                     {
@@ -208,7 +195,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 if (extension is INodeInstanceEventListener)
                 {
-                    this.eventListeners.Add((INodeInstanceEventListener)extension);
+                    this.EventListeners.Add((INodeInstanceEventListener)extension);
                 }
                 else
                 {

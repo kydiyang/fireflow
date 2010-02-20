@@ -43,13 +43,13 @@ namespace FireWorkflow.Net.Model
         {
             get
             {
-                if (this.Parent == null) return this.Name;
-                else return this.Parent.Id + "." + this.Name;
+                if (this.ParentElement == null) return this.Name;
+                else return this.ParentElement.Id + "." + this.Name;
             }
         }
 
         /// <summary>获取或设置父元素</summary>
-        public IWFElement Parent { get; set; }
+        public IWFElement ParentElement { get; set; }
 
         /// <summary>获取或设置名称，不为空</summary>
         public virtual String Name { get; set; }
@@ -77,14 +77,25 @@ namespace FireWorkflow.Net.Model
         /// <summary></summary>
         /// <param name="parentElement">父流程元素</param>
         /// <param name="name">本流程元素的名称</param>
-        public AbstractWFElement(IWFElement parentElement, String name) : this()
+        public AbstractWFElement(IWFElement parentElement, String name)
+            : this()
         {
-            this.Parent = parentElement;
+            this.ParentElement = parentElement;
             this.Name = name;
         }
 
-        public override String ToString() {
+        public override String ToString()
+        {
             return (String.IsNullOrEmpty(DisplayName)) ? this.Name : this.DisplayName;
+        }
+        public override bool Equals(object obj)
+        {
+            return ((obj is IWFElement) &&
+                    this.Id.Equals(((AbstractWFElement)obj).Id));
+        }
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
         }
     }
 }

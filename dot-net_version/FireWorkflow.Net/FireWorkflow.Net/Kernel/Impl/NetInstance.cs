@@ -119,7 +119,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     INodeInstance enteringNodeInstance = (INodeInstance)wfElementInstanceMap[fromNodeId];
                     if (enteringNodeInstance != null)
                     {
-                        enteringNodeInstance.addLeavingTransitionInstance(transitionInstance);
+                        enteringNodeInstance.AddLeavingTransitionInstance(transitionInstance);
                         transitionInstance.setEnteringNodeInstance(enteringNodeInstance);
                     }
                 }
@@ -130,7 +130,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     INodeInstance leavingNodeInstance = (INodeInstance)wfElementInstanceMap[toNodeId];
                     if (leavingNodeInstance != null)
                     {
-                        leavingNodeInstance.addEnteringTransitionInstance(transitionInstance);
+                        leavingNodeInstance.AddEnteringTransitionInstance(transitionInstance);
                         transitionInstance.setLeavingNodeInstance(leavingNodeInstance);
                     }
                 }
@@ -157,7 +157,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     if (enteringNodeInstance != null)
                     {
 
-                        enteringNodeInstance.addLeavingLoopInstance(loopInstance);
+                        enteringNodeInstance.AddLeavingLoopInstance(loopInstance);
                         loopInstance.setEnteringNodeInstance(enteringNodeInstance);
                     }
                 }
@@ -168,7 +168,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     INodeInstance leavingNodeInstance = (INodeInstance)wfElementInstanceMap[toNodeId];
                     if (leavingNodeInstance != null)
                     {
-                        leavingNodeInstance.addEnteringLoopInstance(loopInstance);
+                        leavingNodeInstance.AddEnteringLoopInstance(loopInstance);
                         loopInstance.setLeavingNodeInstance(leavingNodeInstance);
                     }
                 }
@@ -210,7 +210,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             Token token = new Token();//初始化token
             token.IsAlive = true;//活动的
             token.ProcessInstance = processInstance;//对应流程实例
-            token.Value = startNodeInstance.getVolume();//token容量
+            token.Value = startNodeInstance.Volume;//token容量
             token.StepNumber = 0;//步骤号，开始节点的第一步默认为0
             token.FromActivityId = TokenFrom.FROM_START_NODE;//从哪个节点来 "FROM_START_NODE" 规定的节点。
 

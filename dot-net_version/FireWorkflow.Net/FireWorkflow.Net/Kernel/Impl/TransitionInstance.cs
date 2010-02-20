@@ -48,14 +48,14 @@ namespace FireWorkflow.Net.Kernel.Impl
             else if (leavingNodeInstance is ActivityInstance)
             {
                 SynchronizerInstance synchronizerInstance = (SynchronizerInstance)enteringNodeInstance;
-                weight = synchronizerInstance.getVolume() / enteringNodeInstance.getLeavingTransitionInstances().Count;
+                weight = synchronizerInstance.Volume / enteringNodeInstance.LeavingTransitionInstances.Count;
                 return weight;
 
             }
             else if (leavingNodeInstance is SynchronizerInstance)
             {
                 SynchronizerInstance synchronizerInstance = (SynchronizerInstance)leavingNodeInstance;
-                weight = synchronizerInstance.getVolume() / leavingNodeInstance.getEnteringTransitionInstances().Count;
+                weight = synchronizerInstance.Volume / leavingNodeInstance.EnteringTransitionInstances.Count;
                 return weight;
             }
         }

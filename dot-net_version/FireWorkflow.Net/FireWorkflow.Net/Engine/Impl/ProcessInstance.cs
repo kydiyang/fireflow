@@ -115,7 +115,7 @@ namespace FireWorkflow.Net.Engine.Impl
         public IJoinPoint createJoinPoint(ISynchronizerInstance synchInst, IToken token)// throws EngineException 
         {
 
-            int enterTransInstanceCount = synchInst.getEnteringTransitionInstances().Count;
+            int enterTransInstanceCount = synchInst.EnteringTransitionInstances.Count;
             if (enterTransInstanceCount == 0)
             {
 

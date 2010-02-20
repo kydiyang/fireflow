@@ -43,7 +43,7 @@ namespace FireWorkflow.Net.Model
         String Id { get; }
 
         /// <summary>获取或设置父元素</summary>
-        IWFElement Parent { get; set; }
+        IWFElement ParentElement { get; set; }
 
         /// <summary>获取或设置名称，不为空</summary>
         String Name { get; set; }

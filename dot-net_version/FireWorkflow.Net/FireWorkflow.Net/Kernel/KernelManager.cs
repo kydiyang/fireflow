@@ -78,6 +78,7 @@ namespace FireWorkflow.Net.Kernel
             INetInstance netInstance = this.netInstanceMap[processId + "_V_" + version];
             if (netInstance == null)
             {
+                //数据流定义在runtimeContext初始化的时候，就被加载了，将流程定义的xml读入到内存中 
                 WorkflowDefinition def = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(processId, version);
                 netInstance = this.createNetInstance(def);
             }
@@ -97,22 +98,22 @@ namespace FireWorkflow.Net.Kernel
         {
             if (workflowDef == null) return null;
             WorkflowProcess workflowProcess = null;
-            workflowProcess = workflowDef.getWorkflowProcess();
+            workflowProcess = workflowDef.getWorkflowProcess();//解析fpdl 
 
             //Map nodeInstanceMap = new HashMap();
             if (workflowProcess == null)
             {
                 throw new KernelException(null, null, "The WorkflowProcess property of WorkflowDefinition[processId=" + workflowDef.ProcessId + "] is null. ");
             }
-            String validateMsg = workflowProcess.validate();
+            String validateMsg = workflowProcess.validate();//校验工作流定义是否有效 
             if (validateMsg != null)
             {
                 throw new KernelException(null, null, validateMsg);
             }
             NetInstance netInstance = new NetInstance(workflowProcess, KernelExtensions);
             //netInstance.setWorkflowProcess(workflowProcess);
-            netInstance.setVersion(workflowDef.Version);
-
+            netInstance.setVersion(workflowDef.Version);//设置版本号
+            //map的key的组成规则：流程定义ID_V_版本号 
             netInstanceMap.Add(workflowDef.ProcessId + "_V_" + workflowDef.Version, netInstance);
 
             //netInstance.setRtCxt(new RuntimeContext());
