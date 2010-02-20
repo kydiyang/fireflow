@@ -203,6 +203,7 @@
     <Compile Include="Model\Resource\IResource.cs" />
     <Compile Include="Model\Resource\IResourceManager.cs" />
     <Compile Include="Model\Resource\Participant.cs" />
+    <Compile Include="Model\Resource\ResourceManager4XmlFile.cs" />
     <Compile Include="Model\Resource\SubWorkflowProcess.cs" />
     <Compile Include="Model\SubflowTask.cs" />
     <Compile Include="Model\Task.cs" />

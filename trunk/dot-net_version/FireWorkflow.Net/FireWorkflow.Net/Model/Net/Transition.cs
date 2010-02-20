@@ -26,8 +26,6 @@ namespace FireWorkflow.Net.Model.Net
     /// <summary>流程转移</summary>
     public class Transition : Edge
     {
-        //        String fromSn = null;
-        //        String toSn = null;
         public Transition()
         {
         }
@@ -43,38 +41,5 @@ namespace FireWorkflow.Net.Model.Net
             this.FromNode = fromNode;
             this.ToNode = toNode;
         }
-        //	public String getFromNodeId() {
-        //		return fromNodeId;
-        //	}
-        //
-        //	public void setFromNodeId(String fromNodeId) {
-        //		this.fromNodeId = fromNodeId;
-        //	}
-        //
-        //	public String getToNodeId() {
-        //		return toNodeId;
-        //	}
-        //
-        //	public void setToNodeId(String toNodeId) {
-        //		this.toNodeId = toNodeId;
-        //	}
-
-
-        //    public String getFromSn() {
-        //        return fromSn;
-        //    }
-        //
-        //    public void setFromSn(String fromSn) {
-        //        this.fromSn = fromSn;
-        //    }
-        //
-        //    public String getToSn() {
-        //        return toSn;
-        //    }
-        //
-        //    public void setToSn(String toSn) {
-        //        this.toSn = toSn;
-        //    }
-
     }
 }

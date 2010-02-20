@@ -102,7 +102,6 @@ namespace FireWorkflow.Net.Model
         {
             int value = Value;
             UnitEnum unit = getUnit(defaultUnit);
-
             if (value == 0)
             {
                 return value;
@@ -130,7 +129,7 @@ namespace FireWorkflow.Net.Model
             }
         }
 
-        public String toString()
+        public override String ToString()
         {
             StringBuilder buffer = new StringBuilder();
             buffer.Append(Value);

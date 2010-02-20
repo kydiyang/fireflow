@@ -14,26 +14,25 @@ namespace FireWorkflow.Net.Kernel
     public interface INodeInstance
     {
         String getId();
+        /// <summary>node 触发 (最核心的方法) </summary>
+        /// <param name="token"></param>
         void fire(IToken token);// throws KernelException;
 
-        List<ITransitionInstance> getLeavingTransitionInstances();
-        void addLeavingTransitionInstance(ITransitionInstance transitionInstance);
+        /// <summary>获取输出弧的实例</summary>
+        /// <returns></returns>
+        List<ITransitionInstance> LeavingTransitionInstances { get; set; }
+        void AddLeavingTransitionInstance(ITransitionInstance transitionInstance);
 
-        List<ITransitionInstance> getEnteringTransitionInstances();
-        void addEnteringTransitionInstance(ITransitionInstance transitionInstance);
+        List<ITransitionInstance> EnteringTransitionInstances { get; set; }
+        void AddEnteringTransitionInstance(ITransitionInstance transitionInstance);
 
-        List<ILoopInstance> getLeavingLoopInstances();
-        void addLeavingLoopInstance(ILoopInstance loopInstance);
+        List<ILoopInstance> LeavingLoopInstances { get; set; }
+        void AddLeavingLoopInstance(ILoopInstance loopInstance);
 
-        List<ILoopInstance> getEnteringLoopInstances();
-        void addEnteringLoopInstance(ILoopInstance loopInstance);
+        List<ILoopInstance> EnteringLoopInstances { get; set; }
+        void AddEnteringLoopInstance(ILoopInstance loopInstance);
 
-        //	public void fireNodeEnteredEvent(NodeInstanceEvent event)throws KenelException;
-        //	public void fireNodeLeavingEvent(NodeInstanceEvent event) throws KenelException;
-
-        void setEventListeners(List<INodeInstanceEventListener> listeners);
-
-        List<INodeInstanceEventListener> getEventListeners();
+        List<INodeInstanceEventListener> EventListeners { get; set; }
 
 
     }

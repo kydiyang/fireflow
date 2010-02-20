@@ -156,18 +156,18 @@ namespace FireWorkflow.Net.Model
             List<Activity> activityList = this.Activities;
             for (int i = 0; i < activityList.Count; i++)
             {
-                IWFElement wfElement = (IWFElement)activityList[i];
-                if (wfElement.Id.Equals(id))
+                Activity activity = activityList[i];
+                if (activity.Id.Equals(id))
                 {
-                    return wfElement;
+                    return activity;
                 }
-                List<Task> taskList = ((Activity)wfElement).getTasks();
+                List<Task> taskList = activity.getTasks();
                 for (int j = 0; j < taskList.Count; j++)
                 {
-                    IWFElement wfElement2 = (IWFElement)taskList[j];
-                    if (wfElement2.Id.Equals(id))
+                    Task task = taskList[j];
+                    if (task.Id.Equals(id))
                     {
-                        return wfElement2;
+                        return task;
                     }
                 }
             }
@@ -178,50 +178,50 @@ namespace FireWorkflow.Net.Model
             List<Synchronizer> synchronizerList = this.Synchronizers;
             for (int i = 0; i < synchronizerList.Count; i++)
             {
-                IWFElement wfElement = (IWFElement)synchronizerList[i];
-                if (wfElement.Id.Equals(id))
+                Synchronizer synchronizer = synchronizerList[i];
+                if (synchronizer.Id.Equals(id))
                 {
-                    return wfElement;
+                    return synchronizer;
                 }
             }
 
             List<EndNode> endNodeList = this.EndNodes;
             for (int i = 0; i < endNodeList.Count; i++)
             {
-                IWFElement wfElement = (IWFElement)endNodeList[i];
-                if (wfElement.Id.Equals(id))
+                EndNode endNode = endNodeList[i];
+                if (endNode.Id.Equals(id))
                 {
-                    return wfElement;
+                    return endNode;
                 }
             }
 
             List<Transition> transitionList = this.Transitions;
             for (int i = 0; i < transitionList.Count; i++)
             {
-                IWFElement wfElement = (IWFElement)transitionList[i];
-                if (wfElement.Id.Equals(id))
+                Transition transition = transitionList[i];
+                if (transition.Id.Equals(id))
                 {
-                    return wfElement;
+                    return transition;
                 }
             }
 
             List<DataField> dataFieldList = this.DataFields;
             for (int i = 0; i < dataFieldList.Count; i++)
             {
-                IWFElement wfElement = (IWFElement)dataFieldList[i];
-                if (wfElement.Id.Equals(id))
+                DataField dataField = dataFieldList[i];
+                if (dataField.Id.Equals(id))
                 {
-                    return wfElement;
+                    return dataField;
                 }
             }
 
             List<Loop> loopList = this.Loops;
             for (int i = 0; i < loopList.Count; i++)
             {
-                IWFElement wfElement = (IWFElement)loopList[i];
-                if (wfElement.Id.Equals(id))
+                Loop loop = loopList[i];
+                if (loop.Id.Equals(id))
                 {
-                    return wfElement;
+                    return loop;
                 }
             }
             return null;
@@ -347,12 +347,12 @@ namespace FireWorkflow.Net.Model
                 }
             }
 
-            //check datafield
+            //check datafield 不再需要 DataType不肯能为空
             //List<DataField> dataFieldList = this.DataFields;
             //for (int i = 0; i < dataFieldList.Count; i++)
             //{
-            //    DataField df = (DataField)dataFieldList[i];
-            //    if (df.DataType == null)
+            //    DataField df = dataFieldList[i];
+            //    if (df.DataType == DataTypeEnum. null)
             //    {
             //        return errHead + "unknown data type of datafield[" + df.Id + "]";
             //    }
@@ -427,7 +427,6 @@ namespace FireWorkflow.Net.Model
                 return false;
             }
 
-
             for (int i = 0; i < connectableNodes4Activity1.Count; i++)
             {
                 Node node = (Node)connectableNodes4Activity1[i];
@@ -446,6 +445,9 @@ namespace FireWorkflow.Net.Model
             return true;
         }
 
+        /// <summary>获取可以到达的节点</summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
         public List<Node> getReachableNodes(String nodeId)
         {
             List<Node> reachableNodesList = new List<Node>();
@@ -484,6 +486,7 @@ namespace FireWorkflow.Net.Model
                 }
             }
 
+            //剔除重复节点 
             List<Node> tmp = new List<Node>();
             Boolean alreadyInTheList = false;
             for (int i = 0; i < reachableNodesList.Count; i++)
@@ -508,6 +511,9 @@ namespace FireWorkflow.Net.Model
             return reachableNodesList;
         }
 
+        /// <summary>获取进入的节点(activity 或者synchronizer)</summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
         public List<Node> getEnterableNodes(String nodeId)
         {
             List<Node> enterableNodesList = new List<Node>();
@@ -546,6 +552,8 @@ namespace FireWorkflow.Net.Model
                 }
             }
 
+            //剔除重复节点
+            //TODO mingjie.mj 20091018 改为使用集合是否更好?
             List<Node> tmp = new List<Node>();
             Boolean alreadyInTheList = false;
             for (int i = 0; i < enterableNodesList.Count; i++)

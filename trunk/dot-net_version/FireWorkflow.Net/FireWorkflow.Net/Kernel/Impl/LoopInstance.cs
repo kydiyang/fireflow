@@ -39,11 +39,11 @@ namespace FireWorkflow.Net.Kernel.Impl
     public override int getWeight() {
         if (weight==0){
             if (leavingNodeInstance is SynchronizerInstance){
-                weight=((SynchronizerInstance)this.leavingNodeInstance).getVolume();
+                weight=((SynchronizerInstance)this.leavingNodeInstance).Volume;
             }else if (leavingNodeInstance is StartNodeInstance){
-                weight = ((StartNodeInstance)this.leavingNodeInstance).getVolume();
+                weight = ((StartNodeInstance)this.leavingNodeInstance).Volume;
             }else if (leavingNodeInstance is EndNodeInstance){
-                weight = ((EndNodeInstance)this.leavingNodeInstance).getVolume();
+                weight = ((EndNodeInstance)this.leavingNodeInstance).Volume;
             }
         }
         return weight;

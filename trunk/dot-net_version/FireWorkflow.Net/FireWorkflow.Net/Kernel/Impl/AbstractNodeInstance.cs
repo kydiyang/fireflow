@@ -10,86 +10,59 @@ namespace FireWorkflow.Net.Kernel.Impl
 {
     public abstract class AbstractNodeInstance : INodeInstance, IPlugable
     {
-        [NonSerialized]
-        protected List<ITransitionInstance> leavingTransitionInstances = new List<ITransitionInstance>();
-        [NonSerialized]
-        protected List<ITransitionInstance> enteringTransitionInstances = new List<ITransitionInstance>();
-        [NonSerialized]
-        protected List<INodeInstanceEventListener> eventListeners = new List<INodeInstanceEventListener>();
+        public List<ITransitionInstance> LeavingTransitionInstances { get; set; }
 
-        [NonSerialized]
-        protected List<ILoopInstance> leavingLoopInstances = new List<ILoopInstance>();
-        [NonSerialized]
-        protected List<ILoopInstance> enteringLoopInstances = new List<ILoopInstance>();
-        /* (non-Javadoc)
-         * @see org.fireflow.kenel.INodeInstance#addLeavingTransitionInstance(org.fireflow.kenel.ITransitionInstance)
-         */
-        public void addLeavingTransitionInstance(
-                ITransitionInstance transitionInstance)
+        public List<ITransitionInstance> EnteringTransitionInstances { get; set; }
+
+        public List<INodeInstanceEventListener> EventListeners { get; set; }
+
+        public List<ILoopInstance> LeavingLoopInstances { get; set; }
+
+        public List<ILoopInstance> EnteringLoopInstances { get; set; }
+
+        public AbstractNodeInstance()
         {
-            leavingTransitionInstances.Add(transitionInstance);
-
+            this.LeavingTransitionInstances = new List<ITransitionInstance>();
+            this.EnteringTransitionInstances = new List<ITransitionInstance>();
+            this.EventListeners = new List<INodeInstanceEventListener>();
+            this.LeavingLoopInstances = new List<ILoopInstance>();
+            this.EnteringLoopInstances = new List<ILoopInstance>();
         }
 
-        public List<ITransitionInstance> getLeavingTransitionInstances()
+
+        public void AddLeavingTransitionInstance(ITransitionInstance transitionInstance)
         {
-            return this.leavingTransitionInstances;
+            LeavingTransitionInstances.Add(transitionInstance);
         }
 
-        public List<ITransitionInstance> getEnteringTransitionInstances()
+        public void AddEnteringTransitionInstance(ITransitionInstance transitionInstance)
         {
-            return this.enteringTransitionInstances;
-        }
-        public void addEnteringTransitionInstance(ITransitionInstance transitionInstance)
-        {
-            this.enteringTransitionInstances.Add(transitionInstance);
+            this.EnteringTransitionInstances.Add(transitionInstance);
         }
 
-        public void addLeavingLoopInstance(
-                ILoopInstance loopInstance)
+        public void AddLeavingLoopInstance(ILoopInstance loopInstance)
         {
-            leavingLoopInstances.Add(loopInstance);
-
+            LeavingLoopInstances.Add(loopInstance);
         }
 
-        public List<ILoopInstance> getLeavingLoopInstances()
+        public void AddEnteringLoopInstance(ILoopInstance loopInstance)
         {
-            return this.leavingLoopInstances;
-        }
-
-        public List<ILoopInstance> getEnteringLoopInstances()
-        {
-            return this.enteringLoopInstances;
-        }
-
-        public void addEnteringLoopInstance(ILoopInstance loopInstance)
-        {
-            this.enteringLoopInstances.Add(loopInstance);
-        }
-        //TODO 此处是addAll还是直接替换？
-        public void setEventListeners(List<INodeInstanceEventListener> listeners)
-        {
-            eventListeners.AddRange(listeners);
-        }
-
-        public List<INodeInstanceEventListener> getEventListeners()
-        {
-            return eventListeners;
+            this.EnteringLoopInstances.Add(loopInstance);
         }
 
         public void fireNodeEnteredEvent(NodeInstanceEvent neevent)
         {
-            for (int i = 0; i < this.eventListeners.Count; i++)
+            for (int i = 0; i < this.EventListeners.Count; i++)
             {
-                INodeInstanceEventListener listener = this.eventListeners[i];
+                INodeInstanceEventListener listener = this.EventListeners[i];
                 listener.onNodeInstanceEventFired(neevent);
             }
         }
         public void fireNodeLeavingEvent(NodeInstanceEvent neevent)
         {
-            for (int i = 0; i < this.eventListeners.Count; i++)
+            for (int i = 0; i < this.EventListeners.Count; i++)
             {
-                INodeInstanceEventListener listener = this.eventListeners[i];
+                INodeInstanceEventListener listener = this.EventListeners[i];
                 listener.onNodeInstanceEventFired(neevent);
             }
         }

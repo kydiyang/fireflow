@@ -1496,9 +1496,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     }
                 }
 
-                ITransitionInstance theLeavingTransitionInstance = (ITransitionInstance)fromActivityInstance.getLeavingTransitionInstances()[0];
+                ITransitionInstance theLeavingTransitionInstance = (ITransitionInstance)fromActivityInstance.LeavingTransitionInstances[0];
                 ISynchronizerInstance synchronizerInstance = (ISynchronizerInstance)theLeavingTransitionInstance.getLeavingNodeInstance();
-                if (synchronizerInstance.getEnteringTransitionInstances().Count > fromActivityIdList.Count)
+                if (synchronizerInstance.EnteringTransitionInstances.Count > fromActivityIdList.Count)
                 {
                     Token supplementToken = new Token();
                     ((Token)supplementToken).IsAlive = false;
@@ -1507,7 +1507,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     supplementToken.ProcessInstance = ((TaskInstance)thisTaskInstance).getAliveProcessInstance();
                     supplementToken.FromActivityId = "EMPTY(created by reject)";
                     supplementToken.StepNumber = (int)thisTaskInstance.StepNumber + 1;
-                    supplementToken.Value = synchronizerInstance.getVolume() - theLeavingTransitionInstance.getWeight() * fromActivityIdList.Count;
+                    supplementToken.Value = synchronizerInstance.Volume - theLeavingTransitionInstance.getWeight() * fromActivityIdList.Count;
                     persistenceService.saveOrUpdateToken(supplementToken);
                 }
             }
@@ -1644,9 +1644,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     }
                 }
 
-                ITransitionInstance thisLeavingTransitionInstance = (ITransitionInstance)thisActivityInstance.getLeavingTransitionInstances()[0];
+                ITransitionInstance thisLeavingTransitionInstance = (ITransitionInstance)thisActivityInstance.LeavingTransitionInstances[0];
                 ISynchronizerInstance synchronizerInstance = (ISynchronizerInstance)thisLeavingTransitionInstance.getLeavingNodeInstance();
-                if (synchronizerInstance.getEnteringTransitionInstances().Count > 1)
+                if (synchronizerInstance.EnteringTransitionInstances.Count > 1)
                 {
                     Token supplementToken = new Token();
                     ((Token)supplementToken).IsAlive = false;
@@ -1655,7 +1655,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     supplementToken.ProcessInstance = ((TaskInstance)thisTaskInstance).getAliveProcessInstance();
                     supplementToken.FromActivityId = "Empty(created by withdraw)";
                     supplementToken.StepNumber = newStepNumber;
-                    supplementToken.Value = synchronizerInstance.getVolume() - thisLeavingTransitionInstance.getWeight();
+                    supplementToken.Value = synchronizerInstance.Volume - thisLeavingTransitionInstance.getWeight();
                     persistenceService.saveOrUpdateToken(supplementToken);
                 }
 

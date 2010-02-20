@@ -25,6 +25,10 @@ namespace FireWorkflow.Net.Kernel.Impl
         [NonSerialized]
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
 
+        /// <summary>
+        /// volume是同步器的容量
+        /// </summary>
+        public int Volume { get; set; }
 
         static SynchronizerInstance()
         {
@@ -113,9 +117,9 @@ namespace FireWorkflow.Net.Kernel.Impl
                 tokenForLoop.StepNumber=joinPoint.getStepNumber() - 1;
                 tokenForLoop.FromActivityId=joinPoint.getFromActivityId();
 
-                for (int i = 0; i < this.leavingLoopInstances.Count; i++)
+                for (int i = 0; i < this.LeavingLoopInstances.Count; i++)
                 {
-                    ILoopInstance loopInstance = this.leavingLoopInstances[i];
+                    ILoopInstance loopInstance = this.LeavingLoopInstances[i];
                     doLoop = loopInstance.take(tokenForLoop);
                     if (doLoop)
                     {
@@ -128,9 +132,9 @@ namespace FireWorkflow.Net.Kernel.Impl
                 //非顺序流转的需要生成新的token，
                 Boolean activiateDefaultCondition = true;
                 ITransitionInstance defaultTransInst = null;
-                for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.Count; i++)
+                for (int i = 0; LeavingTransitionInstances != null && i < LeavingTransitionInstances.Count; i++)
                 {
-                    ITransitionInstance transInst = leavingTransitionInstances[i];
+                    ITransitionInstance transInst = LeavingTransitionInstances[i];
                     String condition = transInst.getTransition().Condition;
                     if (condition != null && condition.Equals(ConditionConstant.DEFAULT))
                     {
@@ -168,16 +172,6 @@ namespace FireWorkflow.Net.Kernel.Impl
             fireNodeLeavingEvent(event3);
         }
 
-        public void setVolume(int arg)
-        {
-            volume = arg;
-        }
-
-        public int getVolume()
-        {
-            return volume;
-        }
-
         // public int getValue() {
         // return value;
         // }
@@ -207,7 +201,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 if (extension is INodeInstanceEventListener)
                 {
-                    this.eventListeners.Add((INodeInstanceEventListener)extension);
+                    this.EventListeners.Add((INodeInstanceEventListener)extension);
                 }
                 else
                 {

@@ -18,6 +18,11 @@ namespace FireWorkflow.Net.Kernel.Impl
         public static List<String> Extension_Point_Names = new List<String>();
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
 
+        /// <summary>
+        /// volume是同步器的容量
+        /// </summary>
+        public int Volume { get; set; }
+
         static StartNodeInstance()
         {
             Extension_Point_Names.Add(Extension_Point_NodeInstanceEventListener);
@@ -80,9 +85,9 @@ namespace FireWorkflow.Net.Kernel.Impl
 
             Boolean activiateDefaultCondition = true;
             ITransitionInstance defaultTransInst = null;
-            for (int i = 0; leavingTransitionInstances != null && i < leavingTransitionInstances.Count; i++)
+            for (int i = 0; LeavingTransitionInstances != null && i < LeavingTransitionInstances.Count; i++)
             {
-                ITransitionInstance transInst = leavingTransitionInstances[i];
+                ITransitionInstance transInst = LeavingTransitionInstances[i];
                 String condition = transInst.getTransition().Condition;
                 if (condition != null && condition.Equals(ConditionConstant.DEFAULT))
                 {
@@ -121,16 +126,6 @@ namespace FireWorkflow.Net.Kernel.Impl
             fireNodeLeavingEvent(event3);
         }
 
-        public int getVolume()
-        {
-            return volume;
-        }
-
-        public void setVolume(int volume)
-        {
-            this.volume = volume;
-        }
-
         public override String getExtensionTargetName()
         {
             return Extension_Target_Name;
@@ -155,7 +150,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 if (extension is INodeInstanceEventListener)
                 {
-                    this.eventListeners.Add((INodeInstanceEventListener)extension);
+                    this.EventListeners.Add((INodeInstanceEventListener)extension);
                 }
                 else
                 {
