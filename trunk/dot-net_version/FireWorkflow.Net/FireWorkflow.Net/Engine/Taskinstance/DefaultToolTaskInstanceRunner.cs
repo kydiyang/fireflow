@@ -12,7 +12,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
         public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance, ITaskInstance taskInstance)// throws EngineException, KernelException 
         {
-            if (taskInstance.getTaskType() != TaskTypeEnum.TOOL)
+            if (taskInstance.TaskType != TaskTypeEnum.TOOL)
             {
                 throw new EngineException(processInstance,
                         taskInstance.getActivity(),
@@ -22,15 +22,15 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (task == null)
             {
                 WorkflowProcess process = taskInstance.getWorkflowProcess();
-                throw new EngineException(taskInstance.getProcessInstanceId(), process,
-                        taskInstance.getTaskId(),
+                throw new EngineException(taskInstance.ProcessInstanceId, process,
+                        taskInstance.TaskId,
                         "The Task is null,can NOT start the taskinstance,");
             }
             if (((ToolTask)task).Application == null || ((ToolTask)task).Application.Handler == null)
             {
                 WorkflowProcess process = taskInstance.getWorkflowProcess();
-                throw new EngineException(taskInstance.getProcessInstanceId(), process,
-                        taskInstance.getTaskId(),
+                throw new EngineException(taskInstance.ProcessInstanceId, process,
+                        taskInstance.TaskId,
                         "The task.getApplication() is null or task.getApplication().getHandler() is null,can NOT start the taskinstance,");
             }
 
@@ -39,8 +39,8 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (obj == null || !(obj is IApplicationHandler))
             {
                 WorkflowProcess process = taskInstance.getWorkflowProcess();
-                throw new EngineException(taskInstance.getProcessInstanceId(), process,
-                        taskInstance.getTaskId(),
+                throw new EngineException(taskInstance.ProcessInstanceId, process,
+                        taskInstance.TaskId,
                         "Run tool task instance error! Not found the instance of " + ((ToolTask)task).Application.Handler + " or the instance not implements IApplicationHandler");
 
             }

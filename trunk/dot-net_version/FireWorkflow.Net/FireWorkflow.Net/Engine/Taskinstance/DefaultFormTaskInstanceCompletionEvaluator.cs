@@ -15,7 +15,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 IProcessInstance processInstance, ITaskInstance taskInstance)//throws EngineException ,KernelException 
         {
             IPersistenceService persistenceService = runtimeContext.PersistenceService;
-            Int32 aliveWorkItemCount = persistenceService.getAliveWorkItemCountForTaskInstance(taskInstance.getId());
+            Int32 aliveWorkItemCount = persistenceService.getAliveWorkItemCountForTaskInstance(taskInstance.Id);
             if (aliveWorkItemCount == 0)
             {
                 return true;

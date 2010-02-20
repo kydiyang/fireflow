@@ -448,7 +448,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public bool saveOrUpdateTaskInstance(ITaskInstance taskInstance)
         {
-            if (String.IsNullOrEmpty(taskInstance.getId()))
+            if (String.IsNullOrEmpty(taskInstance.Id))
             {
                 string taskInstanceId = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_TASKINSTANCE (" +
@@ -460,25 +460,25 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     			OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId), 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
-    				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskInstance.getTaskId()), 
-    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.getActivityId()), 
-    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 100, taskInstance.getName()), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 128, taskInstance.getDisplayName()), 
+    				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskInstance.TaskId), 
+    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.ActivityId), 
+    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 100, taskInstance.Name), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 128, taskInstance.DisplayName), 
     				OracleHelper.NewOracleParameter(":7", OracleType.Int32, (int)taskInstance.State), 
     				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(taskInstance.IsSuspended())), 
-    				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 10, taskInstance.getTaskType()), 
-    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, taskInstance.getCreatedTime()), 
-    				OracleHelper.NewOracleParameter(":11", OracleType.Timestamp, 11, taskInstance.getStartedTime()), 
-    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, taskInstance.getExpiredTime()), 
-    				OracleHelper.NewOracleParameter(":13", OracleType.Timestamp, 11, taskInstance.getEndTime()), 
-    				OracleHelper.NewOracleParameter(":14", OracleType.VarChar, 10, taskInstance.getAssignmentStrategy()), 
-    				OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, taskInstance.getProcessInstanceId()), 
-    				OracleHelper.NewOracleParameter(":16", OracleType.VarChar, 100, taskInstance.getProcessId()), 
-    				OracleHelper.NewOracleParameter(":17", OracleType.Int32, taskInstance.getVersion()), 
-    				OracleHelper.NewOracleParameter(":18", OracleType.VarChar, 100, taskInstance.getTargetActivityId()), 
-    				OracleHelper.NewOracleParameter(":19", OracleType.VarChar, 600, ((TaskInstance) taskInstance).getFromActivityId()), 
-    				OracleHelper.NewOracleParameter(":20", OracleType.Int32, taskInstance.getStepNumber()), 
-    				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).getCanBeWithdrawn()))
+    				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 10, taskInstance.TaskType), 
+    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, taskInstance.CreatedTime), 
+    				OracleHelper.NewOracleParameter(":11", OracleType.Timestamp, 11, taskInstance.StartedTime), 
+    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, taskInstance.ExpiredTime), 
+    				OracleHelper.NewOracleParameter(":13", OracleType.Timestamp, 11, taskInstance.EndTime), 
+    				OracleHelper.NewOracleParameter(":14", OracleType.VarChar, 10, taskInstance.AssignmentStrategy), 
+    				OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, taskInstance.ProcessInstanceId), 
+    				OracleHelper.NewOracleParameter(":16", OracleType.VarChar, 100, taskInstance.ProcessId), 
+    				OracleHelper.NewOracleParameter(":17", OracleType.Int32, taskInstance.Version), 
+    				OracleHelper.NewOracleParameter(":18", OracleType.VarChar, 100, taskInstance.TargetActivityId), 
+    				OracleHelper.NewOracleParameter(":19", OracleType.VarChar, 600, ((TaskInstance) taskInstance).FromActivityId), 
+    				OracleHelper.NewOracleParameter(":20", OracleType.Int32, taskInstance.StepNumber), 
+    				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).CanBeWithdrawn))
     			};
     			if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
     				return false;
@@ -494,26 +494,26 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
-    				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskInstance.getTaskId()), 
-    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.getActivityId()), 
-    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 100, taskInstance.getName()), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 128, taskInstance.getDisplayName()), 
+    				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskInstance.TaskId), 
+    				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.ActivityId), 
+    				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 100, taskInstance.Name), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 128, taskInstance.DisplayName), 
     				OracleHelper.NewOracleParameter(":7", OracleType.Int32, (int)taskInstance.State), 
     				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(taskInstance.IsSuspended())), 
-    				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 10, taskInstance.getTaskType()), 
-    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, taskInstance.getCreatedTime()), 
-    				OracleHelper.NewOracleParameter(":11", OracleType.Timestamp, 11, taskInstance.getStartedTime()), 
-    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, taskInstance.getExpiredTime()), 
-    				OracleHelper.NewOracleParameter(":13", OracleType.Timestamp, 11, taskInstance.getEndTime()), 
-    				OracleHelper.NewOracleParameter(":14", OracleType.VarChar, 10, taskInstance.getAssignmentStrategy()), 
-    				OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, taskInstance.getProcessInstanceId()), 
-    				OracleHelper.NewOracleParameter(":16", OracleType.VarChar, 100, taskInstance.getProcessId()), 
-    				OracleHelper.NewOracleParameter(":17", OracleType.Int32, taskInstance.getVersion()), 
-    				OracleHelper.NewOracleParameter(":18", OracleType.VarChar, 100, taskInstance.getTargetActivityId()), 
-    				OracleHelper.NewOracleParameter(":19", OracleType.VarChar, 600, ((TaskInstance) taskInstance).getFromActivityId()), 
-    				OracleHelper.NewOracleParameter(":20", OracleType.Int32, taskInstance.getStepNumber()), 
-    				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).getCanBeWithdrawn())),
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstance.getId())
+    				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 10, taskInstance.TaskType), 
+    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, taskInstance.CreatedTime), 
+    				OracleHelper.NewOracleParameter(":11", OracleType.Timestamp, 11, taskInstance.StartedTime), 
+    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, taskInstance.ExpiredTime), 
+    				OracleHelper.NewOracleParameter(":13", OracleType.Timestamp, 11, taskInstance.EndTime), 
+    				OracleHelper.NewOracleParameter(":14", OracleType.VarChar, 10, taskInstance.AssignmentStrategy), 
+    				OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, taskInstance.ProcessInstanceId), 
+    				OracleHelper.NewOracleParameter(":16", OracleType.VarChar, 100, taskInstance.ProcessId), 
+    				OracleHelper.NewOracleParameter(":17", OracleType.Int32, taskInstance.Version), 
+    				OracleHelper.NewOracleParameter(":18", OracleType.VarChar, 100, taskInstance.TargetActivityId), 
+    				OracleHelper.NewOracleParameter(":19", OracleType.VarChar, 600, ((TaskInstance) taskInstance).FromActivityId), 
+    				OracleHelper.NewOracleParameter(":20", OracleType.Int32, taskInstance.StepNumber), 
+    				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).CanBeWithdrawn)),
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstance.Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
                     return false;
@@ -533,7 +533,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 String sql = "update t_ff_rt_taskinstance set state=" + TaskInstanceStateEnum.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.getCalendarService().getSysDate()),
-                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.getId())
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.Id)
                     );
                 if (count <= 0)
                 {
@@ -547,7 +547,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         + " where taskinstance_id =:2 ";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.getCalendarService().getSysDate()),
-                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.getId())
+                    OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.Id)
                     );
                 if (count <= 0)
                 {
@@ -796,7 +796,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.getEndTime()), 
     				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, workitem.getActorId()), 
     				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 1024, workitem.getComments()), 
-    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.getTaskInstance().getId())
+    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.getTaskInstance().Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
                     return false;
@@ -815,7 +815,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.getEndTime()), 
     				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, workitem.getActorId()), 
     				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 1024, workitem.getComments()), 
-    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.getTaskInstance().getId()),
+    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.getTaskInstance().Id),
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workitem.getId())
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)

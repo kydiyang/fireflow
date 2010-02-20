@@ -20,7 +20,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         public void run(IWorkflowSession currentSession, RuntimeContext runtimeContext, IProcessInstance processInstance,
                 ITaskInstance taskInstance)// throws EngineException, KernelException 
         {
-            if (taskInstance.getTaskType() != TaskTypeEnum.SUBFLOW)
+            if (taskInstance.TaskType != TaskTypeEnum.SUBFLOW)
             {
                 throw new EngineException(processInstance,
                         taskInstance.getActivity(),
@@ -33,8 +33,8 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (subWorkflowDef == null)
             {
                 WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
-                throw new EngineException(taskInstance.getProcessInstanceId(), parentWorkflowProcess,
-                        taskInstance.getTaskId(),
+                throw new EngineException(taskInstance.ProcessInstanceId, parentWorkflowProcess,
+                        taskInstance.TaskId,
                         "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
             }
             WorkflowProcess subWorkflowProcess = subWorkflowDef.getWorkflowProcess();
@@ -42,15 +42,15 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (subWorkflowProcess == null)
             {
                 WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
-                throw new EngineException(taskInstance.getProcessInstanceId(), parentWorkflowProcess,
-                        taskInstance.getTaskId(),
+                throw new EngineException(taskInstance.ProcessInstanceId, parentWorkflowProcess,
+                        taskInstance.TaskId,
                         "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
             }
 
             IPersistenceService persistenceService = runtimeContext.PersistenceService;
 
             ((TaskInstance)taskInstance).State=TaskInstanceStateEnum.RUNNING;
-            ((TaskInstance)taskInstance).setStartedTime(runtimeContext.getCalendarService().getSysDate());
+            ((TaskInstance)taskInstance).StartedTime = runtimeContext.getCalendarService().getSysDate();
             persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
 

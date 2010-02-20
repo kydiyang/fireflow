@@ -51,9 +51,9 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public IProcessInstance createProcessInstance(String workflowProcessName, ITaskInstance parentTaskInstance)
         {
-            return _createProcessInstance(workflowProcessName, parentTaskInstance.getId()
-                    , parentTaskInstance.getProcessInstanceId(),
-                    parentTaskInstance.getId());
+            return _createProcessInstance(workflowProcessName, parentTaskInstance.Id
+                    , parentTaskInstance.ProcessInstanceId,
+                    parentTaskInstance.Id);
         }
 
         protected IProcessInstance _createProcessInstance(String workflowProcessId, String creatorId, String parentProcessInstanceId, String parentTaskInstanceId)
