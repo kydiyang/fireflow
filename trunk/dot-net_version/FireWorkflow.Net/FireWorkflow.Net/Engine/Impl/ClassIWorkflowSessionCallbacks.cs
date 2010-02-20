@@ -28,8 +28,7 @@ namespace FireWorkflow.Net.Engine.Impl
         public object doInWorkflowSession(RuntimeContext ctx)
         {
 
-            WorkflowDefinition workflowDef = ctx.getDefinitionService()
-                    .getTheLatestVersionOfWorkflowDefinition(wfprocessId);
+            WorkflowDefinition workflowDef = ctx.DefinitionService.GetTheLatestVersionOfWorkflowDefinition(wfprocessId);
             WorkflowProcess wfProcess = null;
 
             wfProcess = workflowDef.getWorkflowProcess();
@@ -42,7 +41,7 @@ namespace FireWorkflow.Net.Engine.Impl
             ProcessInstance processInstance = new ProcessInstance();
             processInstance.setCreatorId(creatorId);
             processInstance.setProcessId(wfProcess.Id);
-            processInstance.setVersion(workflowDef.getVersion());
+            processInstance.setVersion(workflowDef.Version);
             processInstance.setDisplayName(wfProcess.DisplayName);
             processInstance.setName(wfProcess.Name);
             processInstance.setState(IProcessInstance.INITIALIZED);
@@ -50,7 +49,7 @@ namespace FireWorkflow.Net.Engine.Impl
             processInstance.setParentProcessInstanceId(parentProcessInstanceId);
             processInstance.setParentTaskInstanceId(parentTaskInstanceId);
 
-            ctx.getPersistenceService().saveOrUpdateProcessInstance(
+            ctx.PersistenceService.saveOrUpdateProcessInstance(
                     processInstance);
 
             // 初始化流程变量
@@ -167,7 +166,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 }
             }
 
-            ctx.getPersistenceService().saveOrUpdateProcessInstance(
+            ctx.PersistenceService.saveOrUpdateProcessInstance(
                     processInstance);
 
             return processInstance;
@@ -186,7 +185,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
-            IPersistenceService persistenceService = ctx.getPersistenceService();
+            IPersistenceService persistenceService = ctx.PersistenceService;
 
             return persistenceService.findWorkItemById(workItemId);
         }
@@ -204,7 +203,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
-            IPersistenceService persistenceService = ctx.getPersistenceService();
+            IPersistenceService persistenceService = ctx.PersistenceService;
             return persistenceService.findTaskInstanceById(taskInstanceId);
         }
     }
@@ -241,9 +240,9 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             switch (t)
             {
-                case '2': return ctx.getPersistenceService().findTodoWorkItems(actorId, processId);
-                case '3': return ctx.getPersistenceService().findTodoWorkItems(actorId, processId, taskId);
-                default: return ctx.getPersistenceService().findTodoWorkItems(actorId);
+                case '2': return ctx.PersistenceService.findTodoWorkItems(actorId, processId);
+                case '3': return ctx.PersistenceService.findTodoWorkItems(actorId, processId, taskId);
+                default: return ctx.PersistenceService.findTodoWorkItems(actorId);
             }
         }
     }
@@ -261,7 +260,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
-            IPersistenceService persistenceService = ctx.getPersistenceService();
+            IPersistenceService persistenceService = ctx.PersistenceService;
             return persistenceService.findProcessInstanceById(id);
         }
     }
@@ -290,9 +289,9 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             switch (t)
             {
-                case '2': return ctx.getPersistenceService().findProcessInstancesByProcessIdAndVersion(processId, version);
-                //case '3': return ctx.getPersistenceService().findProcessInstancesByProcessId(actorId, processId, taskId);
-                default: return ctx.getPersistenceService().findProcessInstancesByProcessId(processId);
+                case '2': return ctx.PersistenceService.findProcessInstancesByProcessIdAndVersion(processId, version);
+                //case '3': return ctx.PersistenceService.findProcessInstancesByProcessId(actorId, processId, taskId);
+                default: return ctx.PersistenceService.findProcessInstancesByProcessId(processId);
             }
 
         }
@@ -312,7 +311,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
-            IPersistenceService persistenceService = ctx.getPersistenceService();
+            IPersistenceService persistenceService = ctx.PersistenceService;
             return persistenceService.findTaskInstancesForProcessInstance(processInstanceId, activityId);
         }
     }

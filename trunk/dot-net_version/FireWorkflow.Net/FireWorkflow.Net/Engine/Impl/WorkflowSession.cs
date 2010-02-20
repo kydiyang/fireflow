@@ -13,19 +13,19 @@ namespace FireWorkflow.Net.Engine.Impl
     public class WorkflowSession : IWorkflowSession, IRuntimeContextAware
     {
 
-        protected RuntimeContext runtimeContext = null;
+        public RuntimeContext RuntimeContext { get; set; }
         protected DynamicAssignmentHandler dynamicAssignmentHandler = null;
         protected Boolean inWithdrawOrRejectOperation = false;
         protected Dictionary<String, Object> attributes = new Dictionary<String, Object>();
 
         public void setRuntimeContext(RuntimeContext ctx)
         {
-            this.runtimeContext = ctx;
+            this.RuntimeContext = ctx;
         }
 
         public WorkflowSession(RuntimeContext ctx)
         {
-            this.runtimeContext = ctx;
+            this.RuntimeContext = ctx;
         }
 
         public void setCurrentDynamicAssignmentHandler(
@@ -98,16 +98,16 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             try
             {
-                Object result = callback.doInWorkflowSession(runtimeContext);
+                Object result = callback.doInWorkflowSession(RuntimeContext);
                 if (result != null)
                 {
                     if (result is IRuntimeContextAware)
                     {
-                        ((IRuntimeContextAware)result).setRuntimeContext(this.runtimeContext);
+                        ((IRuntimeContextAware)result).RuntimeContext = this.RuntimeContext;
                     }
                     if (result is IWorkflowSessionAware)
                     {
-                        ((IWorkflowSessionAware)result).setCurrentWorkflowSession(this);
+                        ((IWorkflowSessionAware)result).CurrentWorkflowSession=this;
                     }
 
                     if (result is List<Object>)
@@ -118,10 +118,10 @@ namespace FireWorkflow.Net.Engine.Impl
                             Object item = l[i];
                             if (item is IRuntimeContextAware)
                             {
-                                ((IRuntimeContextAware)item).setRuntimeContext(runtimeContext);
+                                ((IRuntimeContextAware)item).RuntimeContext = this.RuntimeContext;
                                 if (item is IWorkflowSessionAware)
                                 {
-                                    ((IWorkflowSessionAware)item).setCurrentWorkflowSession(this);
+                                    ((IWorkflowSessionAware)item).CurrentWorkflowSession=this;
                                 }
                             }
                             else
@@ -141,7 +141,7 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public RuntimeContext getRuntimeContext()
         {
-            return runtimeContext;
+            return RuntimeContext;
         }
 
         public ITaskInstance findTaskInstanceById(String id)
@@ -250,7 +250,7 @@ namespace FireWorkflow.Net.Engine.Impl
         //				public Object doInWorkflowSession(RuntimeContext ctx)
         //						throws EngineException, KernelException {
         //					ITaskInstanceManager taskInstanceMgr = ctx
-        //							.getTaskInstanceManager();
+        //							.TaskInstanceManager;
         //					IWorkItem workItem = taskInstanceMgr.claimWorkItem(
         //							workItemId, taskInstanceId);
         //					return workItem;

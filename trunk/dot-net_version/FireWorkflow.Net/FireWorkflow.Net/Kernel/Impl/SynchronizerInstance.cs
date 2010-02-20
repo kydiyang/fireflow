@@ -54,7 +54,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public IJoinPoint synchronized(IToken tk, SynchronizerInstance sthis)
         {
             IJoinPoint joinPoint = null;
-            tk.setNodeId(this.getSynchronizer().Id);
+            tk.NodeId=this.getSynchronizer().Id;
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             // 触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(sthis);
@@ -64,13 +64,13 @@ namespace FireWorkflow.Net.Kernel.Impl
 
             //汇聚检查
 
-            joinPoint = ((ProcessInstance)tk.getProcessInstance()).createJoinPoint(sthis, tk);// JoinPoint由谁生成比较好？
+            joinPoint = ((ProcessInstance)tk.ProcessInstance).createJoinPoint(sthis, tk);// JoinPoint由谁生成比较好？
             int value = (int)joinPoint.getValue();
             //log.debug("The volume of " + this.toString() + " is " + volume);
             //log.debug("The value of " + this.toString() + " is " + value);
             if (value > volume)
             {
-                KernelException exception = new KernelException(tk.getProcessInstance(),
+                KernelException exception = new KernelException(tk.ProcessInstance,
                         this.getSynchronizer(),
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
                 throw exception;
@@ -88,7 +88,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             IJoinPoint joinPoint = synchronized(tk, this);
             if (joinPoint == null) return;
 
-            IProcessInstance processInstance = tk.getProcessInstance();
+            IProcessInstance processInstance = tk.ProcessInstance;
             // Synchronize的fire条件应该只与joinPoint的value有关（value==volume），与alive无关
             NodeInstanceEvent event2 = new NodeInstanceEvent(this);
             event2.setToken(tk);
@@ -108,10 +108,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                 IToken tokenForLoop = null;
 
                 tokenForLoop = new Token(); // 产生新的token
-                tokenForLoop.setAlive(joinPoint.getAlive());
-                tokenForLoop.setProcessInstance(processInstance);
-                tokenForLoop.setStepNumber(joinPoint.getStepNumber() - 1);
-                tokenForLoop.setFromActivityId(joinPoint.getFromActivityId());
+                tokenForLoop.IsAlive=joinPoint.getAlive();
+                tokenForLoop.ProcessInstance=processInstance;
+                tokenForLoop.StepNumber=joinPoint.getStepNumber() - 1;
+                tokenForLoop.FromActivityId=joinPoint.getFromActivityId();
 
                 for (int i = 0; i < this.leavingLoopInstances.Count; i++)
                 {
@@ -139,10 +139,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                     }
 
                     Token token = new Token(); // 产生新的token
-                    token.setAlive(joinPoint.getAlive());
-                    token.setProcessInstance(processInstance);
-                    token.setStepNumber(joinPoint.getStepNumber());
-                    token.setFromActivityId(joinPoint.getFromActivityId());
+                    token.IsAlive=joinPoint.getAlive();
+                    token.ProcessInstance=processInstance;
+                    token.StepNumber=joinPoint.getStepNumber();
+                    token.FromActivityId=joinPoint.getFromActivityId();
                     Boolean alive = transInst.take(token);
                     if (alive)
                     {
@@ -153,10 +153,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                 if (defaultTransInst != null)
                 {
                     Token token = new Token();
-                    token.setAlive(activiateDefaultCondition && joinPoint.getAlive());
-                    token.setProcessInstance(processInstance);
-                    token.setStepNumber(joinPoint.getStepNumber());
-                    token.setFromActivityId(joinPoint.getFromActivityId());
+                    token.IsAlive=activiateDefaultCondition && joinPoint.getAlive();
+                    token.ProcessInstance=processInstance;
+                    token.StepNumber=joinPoint.getStepNumber();
+                    token.FromActivityId=joinPoint.getFromActivityId();
                     defaultTransInst.take(token);
                 }
 

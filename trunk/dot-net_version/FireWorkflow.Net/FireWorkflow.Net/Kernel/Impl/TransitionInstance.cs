@@ -78,8 +78,8 @@ namespace FireWorkflow.Net.Kernel.Impl
         }
 
         INodeInstance nodeInst = this.getLeavingNodeInstance();
-        token.setValue(this.getWeight());
-        Boolean alive = token.isAlive();
+        token.Value=this.getWeight();
+        Boolean alive = token.IsAlive;
 
 
         nodeInst.fire(token);

@@ -31,19 +31,19 @@ namespace FireWorkflow.Net.Engine
                 String workflowElementId, String errMsg)
             : base(null, null, errMsg)
         {
-            this.setProcessInstanceId(processInstanceId);
+            this.ProcessInstanceId=processInstanceId;
             if (process != null)
             {
-                this.setProcessId(process.Id);
-                this.setProcessName(process.Name);
-                this.setProcessDisplayName(process.DisplayName);
+                this.ProcessId=process.Id;
+                this.ProcessName=process.Name;
+                this.ProcessDisplayName=process.DisplayName;
 
                 IWFElement workflowElement = process.findWFElementById(workflowElementId);
                 if (workflowElement != null)
                 {
-                    this.setWorkflowElementId(workflowElement.Id);
-                    this.setWorkflowElementName(workflowElement.Name);
-                    this.setWorkflowElementDisplayName(workflowElement.DisplayName);
+                    this.WorkflowElementId=workflowElement.Id;
+                    this.WorkflowElementName=workflowElement.Name;
+                    this.WorkflowElementDisplayName=workflowElement.DisplayName;
                 }
             }
         }

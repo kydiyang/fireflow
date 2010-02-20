@@ -16,15 +16,13 @@ namespace FireWorkflow.Net.Kernel.Impl
     public  static List<String> Extension_Point_Names = new List<String>();
     [NonSerialized]
     public  const String Extension_Point_LoopInstanceEventListener = "LoopInstanceEventListener";
- //   [NonSerialized]
-//    public  const String Extension_Point_ConditionEvaluator = "ConditionEvaluator";
 
     static LoopInstance(){
         Extension_Point_Names.Add(Extension_Point_LoopInstanceEventListener);
 //        Extension_Point_Names.add(Extension_Point_ConditionEvaluator);
     }
 
-//    private 
+//private 
     
     [NonSerialized]
     private  Loop loop = null;
@@ -53,7 +51,7 @@ namespace FireWorkflow.Net.Kernel.Impl
 
     public override Boolean take(IToken token)
     {
-        Boolean oldAlive = token.isAlive();
+        Boolean oldAlive = token.IsAlive;
 
         EdgeInstanceEvent e = new EdgeInstanceEvent(this);
         e.setToken(token);
@@ -65,15 +63,15 @@ namespace FireWorkflow.Net.Kernel.Impl
         }
 
 
-        Boolean newAlive = token.isAlive();
+        Boolean newAlive = token.IsAlive;
 
         if (!newAlive){//循环条件不满足，则恢复token的alive标示
-            token.setAlive(oldAlive);
+            token.IsAlive=oldAlive;
             return newAlive;
         }else{//否则流转到下一个节点
 
             INodeInstance nodeInst = this.getLeavingNodeInstance();
-            token.setValue(this.getWeight());
+            token.Value=this.getWeight();
             nodeInst.fire(token);
             return newAlive;
         }

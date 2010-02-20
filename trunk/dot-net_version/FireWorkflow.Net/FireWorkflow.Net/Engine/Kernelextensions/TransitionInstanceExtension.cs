@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,17 +36,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
         IEdgeInstanceEventListener, IRuntimeContextAware
     {
 
-        protected RuntimeContext rtCtx = null;
-
-        public void setRuntimeContext(RuntimeContext ctx)
-        {
-            this.rtCtx = ctx;
-        }
-
-        public RuntimeContext getRuntimeContext()
-        {
-            return this.rtCtx;
-        }
+        public RuntimeContext RuntimeContext { get; set; }
 
         /// <summary>
         /// 执行分支判断策略，即设置token的alive属性 首先，如果this.alive==false,则所有的token的Alive属性皆为false
@@ -40,45 +48,23 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
         /// <returns></returns>
         private Boolean determineTheAliveOfToken(Dictionary<String, Object> vars, String condition)
         {
-            //        System.out.println("Inside SynchronizerInstance.DeterminTheAliveOfToken():: joinPoint.getAlive =" + joinPoint.getAlive());
-            //        if (!joinPoint.getAlive()) {
-            //            return false;
-            //        }
-            //        Set<String> nextTransitionInstanceNames = joinPoint.getAppointedTransitionNames();
-            //        if (nextTransitionInstanceNames.Count > 0) {
-            //            Iterator nextTransNamesIterator = nextTransitionInstanceNames.iterator();
-            //            while (nextTransNamesIterator.hasNext()) {
-            //                String transName = (String) nextTransNamesIterator.next();
-            //                if (transName.Equals(transInst.getTransition().Name)) {
-            //                    return true;
-            //                }
-            //            }
-            //        }
-            //
-            //        if (transInst.getTransition().getCondition() == null || transInst.getTransition().getCondition().trim().Equals("")) {
-            //            return true;
-            //        }
-
             // TODO通过计算transition上的表达式来确定alive的值
-
-            IConditionResolver elResolver = this.rtCtx.getConditionResolver();
+            IConditionResolver elResolver = this.RuntimeContext.ConditionResolver;
             Boolean b = elResolver.resolveBooleanExpression(vars, condition);
-
             return b;
         }
 
+        /// <summary>计算value值</summary>
         public void calculateTheAliveValue(IToken token, String condition)
         {
-
-            if (!token.isAlive())
+            if (!token.IsAlive)
             {
                 return;//如果token是dead状态，表明synchronizer的joinpoint是dead状态，不需要重新计算。
             }
-
             //1、如果没有转移条件，默认为true
             if (condition == null || condition.Trim().Equals(""))
             {
-                token.setAlive(true);
+                token.IsAlive=true;
                 return;
             }
             //2、default类型的不需要计算其alive值，该值由synchronizer决定
@@ -90,26 +76,29 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
             //3、计算EL表达式
             try
             {
-                Boolean alive = determineTheAliveOfToken(token.getProcessInstance().getProcessInstanceVariables(), condition);
-                token.setAlive(alive);
+                Boolean alive = determineTheAliveOfToken(token.ProcessInstance.getProcessInstanceVariables(), condition);
+                token.IsAlive=alive;
             }
             catch (Exception ex)
             {
-                throw new EngineException(token.getProcessInstanceId(), token.getProcessInstance().getWorkflowProcess(), token.getNodeId(), ex.Message);
+                throw new EngineException(token.ProcessInstanceId, token.ProcessInstance.getWorkflowProcess(), token.NodeId, ex.Message);
             }
 
         }
 
+        /// <summary>获取扩展目标名称</summary>
         public String getExtentionTargetName()
         {
             return TransitionInstance.Extension_Target_Name;
         }
 
+        /// <summary>获取扩展点名称</summary>
         public String getExtentionPointName()
         {
             return TransitionInstance.Extension_Point_TransitionInstanceEventListener;
         }
 
+        /// <summary>节点实例监听器</summary>
         public void onEdgeInstanceEventFired(EdgeInstanceEvent e)
         {
             if (e.getEventType() == EdgeInstanceEvent.ON_TAKING_THE_TOKEN)
@@ -119,7 +108,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                 String condition = transInst.getTransition().Condition;
                 calculateTheAliveValue(token, condition);
 
-                if (rtCtx.isEnableTrace() && token.isAlive())
+                if (RuntimeContext.isEnableTrace() && token.IsAlive)
                 {
                     Transition transition = transInst.getTransition();
                     IWFElement fromNode = transition.FromNode;
@@ -134,14 +123,15 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                     }
 
                     ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                    trace.setProcessInstanceId(e.getToken().getProcessInstanceId());
-                    trace.setStepNumber(e.getToken().getStepNumber());
+                    trace.setProcessInstanceId(e.getToken().ProcessInstanceId);
+                    trace.setStepNumber(e.getToken().StepNumber);
                     trace.setType(ProcessInstanceTrace.TRANSITION_TYPE);
                     trace.setFromNodeId(transInst.getTransition().FromNode.Id);
                     trace.setToNodeId(transInst.getTransition().ToNode.Id);
                     trace.setEdgeId(transInst.getTransition().Id);
                     trace.setMinorNumber(minorNumber);
-                    rtCtx.getPersistenceService().saveOrUpdateProcessInstanceTrace(trace);
+                    //TODO wmj2003 这里应该是insert。一旦token从当前边上经过，那么就保存流程运行轨迹.
+                    RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
                 }
             }
 

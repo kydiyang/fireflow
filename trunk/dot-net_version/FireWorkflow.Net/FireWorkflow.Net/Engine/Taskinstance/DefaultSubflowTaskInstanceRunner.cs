@@ -29,7 +29,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             Task task = taskInstance.getTask();
             SubWorkflowProcess Subflow = ((SubflowTask)task).SubWorkflowProcess;
 
-            WorkflowDefinition subWorkflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(Subflow.WorkflowProcessId);
+            WorkflowDefinition subWorkflowDef = runtimeContext.DefinitionService.GetTheLatestVersionOfWorkflowDefinition(Subflow.WorkflowProcessId);
             if (subWorkflowDef == null)
             {
                 WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
@@ -47,9 +47,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
             }
 
-            IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+            IPersistenceService persistenceService = runtimeContext.PersistenceService;
 
-            ((TaskInstance)taskInstance).setState(ITaskInstance.RUNNING);
+            ((TaskInstance)taskInstance).State=TaskInstanceStateEnum.RUNNING;
             ((TaskInstance)taskInstance).setStartedTime(runtimeContext.getCalendarService().getSysDate());
             persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
@@ -138,7 +138,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 }
             }
 
-            runtimeContext.getPersistenceService().saveOrUpdateProcessInstance(subProcessInstance);
+            runtimeContext.PersistenceService.saveOrUpdateProcessInstance(subProcessInstance);
             subProcessInstance.run();
         }
     }

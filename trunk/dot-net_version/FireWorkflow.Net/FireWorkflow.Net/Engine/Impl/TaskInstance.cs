@@ -17,51 +17,77 @@ namespace FireWorkflow.Net.Engine.Impl
     [Serializable]
     public class TaskInstance : ITaskInstance, IAssignable, IRuntimeContextAware, IWorkflowSessionAware
     {
+        /// <summary>返回或设置任务实例的Id</summary>
+        public String Id { get; set; }
 
-        private String id = null;
-        private String taskId = null;
-        private String activityId = null;
+        /// <summary>返回或设置对应的任务Id</summary>
+        public String TaskId { get; set; }
+
+        /// <summary>返回或设置</summary>
+        private String ActivityId = null;
+
+        /// <summary>返回或设置</summary>
         private String name = null;
+
+        /// <summary>返回或设置</summary>
         private String displayName = null;
-        private Int32? state = null;
-        private Boolean? suspended = null;
+
+        /// <summary>返回或设置</summary>
+        public TaskInstanceStateEnum State { get; set; }
+
+        /// <summary>返回或设置</summary>
+        private Boolean suspended = false;
+
+        /// <summary>返回或设置</summary>
         private DateTime? createdTime = null;
+
+        /// <summary>返回或设置</summary>
         private DateTime? startedTime = null;
+
+        /// <summary>返回或设置</summary>
         private DateTime? expiredTime = null;
+
+        /// <summary>返回或设置</summary>
         private DateTime? endTime = null;
-        private String assignmentStrategy = null;
+
+        /// <summary>返回或设置</summary>
+        private FormTaskEnum assignmentStrategy;
+
+        /// <summary>返回或设置</summary>
         private String processInstanceId = null;
+
+        /// <summary>返回或设置</summary>
         private String processId = null;
+
+        /// <summary>返回或设置</summary>
         private Int32 version ;
         //	private Set workItems = new HashSet(0);
+
+        /// <summary>返回或设置</summary>
         private TaskTypeEnum taskType;
+
+        /// <summary>返回或设置</summary>
         private String targetActivityId = null;
+
+        /// <summary>返回或设置</summary>
         private String fromActivityId = null;
         //    private String tokenId = null;
+
+        /// <summary>返回或设置</summary>
         private Int32 stepNumber ;
 
+        /// <summary>返回或设置</summary>
         private Boolean canBeWithdrawn = true;
 
-        [NonSerialized]
-        protected RuntimeContext rtCtx = null;
+        //[NonSerialized]
+        public RuntimeContext RuntimeContext { get; set; }
 
-        [NonSerialized]
-        protected IWorkflowSession workflowSession = null;
+        public IWorkflowSession CurrentWorkflowSession { get; set; }
 
         [NonSerialized]
         private IProcessInstance processInsatance = null;
 
-        public void setRuntimeContext(RuntimeContext ctx)
-        {
-            this.rtCtx = ctx;
-        }
-
-        public RuntimeContext getRuntimeContext()
-        {
-            return this.rtCtx;
-        }
-
-        public override TaskTypeEnum getTaskType()
+        public TaskTypeEnum getTaskType()
         {
             return taskType;
         }
@@ -73,13 +99,13 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public TaskInstance()
         {
-            this.state = ITaskInstance.INITIALIZED;
+            this.State = TaskInstanceStateEnum.INITIALIZED;
             this.suspended = false;
         }
 
         public TaskInstance(ProcessInstance workflowProcessInsatnce)
         {
-            this.state = ITaskInstance.INITIALIZED;
+            this.State = TaskInstanceStateEnum.INITIALIZED;
             this.suspended = false;
             this.processInsatance = workflowProcessInsatnce;
         }
@@ -101,37 +127,19 @@ namespace FireWorkflow.Net.Engine.Impl
         //		this.processInsatnce = workflowProcessInsatnceId;
         //		this.workItems = workItems;
         //	}
-        public override String getId()
-        {
-            return this.id;
-        }
 
-        public void setId(String id)
-        {
-            this.id = id;
-        }
 
-        public override String getTaskId()
+        public String getActivityId()
         {
-            return this.taskId;
-        }
-
-        public void setTaskId(String taskId)
-        {
-            this.taskId = taskId;
-        }
-
-        public override String getActivityId()
-        {
-            return this.activityId;
+            return this.ActivityId;
         }
 
         public void setActivityId(String activityId)
         {
-            this.activityId = activityId;
+            this.ActivityId = activityId;
         }
 
-        public override String getName()
+        public String getName()
         {
             return this.name;
         }
@@ -141,7 +149,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.name = name;
         }
 
-        public override String getDisplayName()
+        public String getDisplayName()
         {
             return this.displayName;
         }
@@ -151,17 +159,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.displayName = label;
         }
 
-        public override Int32? getState()
-        {
-            return this.state;
-        }
-
-        public void setState(Int32 state)
-        {
-            this.state = state;
-        }
-
-        public override DateTime? getCreatedTime()
+        public DateTime? getCreatedTime()
         {
             return this.createdTime;
         }
@@ -171,7 +169,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.createdTime = createdTime;
         }
 
-        public override DateTime? getStartedTime()
+        public DateTime? getStartedTime()
         {
             return this.startedTime;
         }
@@ -181,7 +179,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.startedTime = startedTime;
         }
 
-        public override DateTime? getExpiredTime()
+        public DateTime? getExpiredTime()
         {
             return this.expiredTime;
         }
@@ -191,7 +189,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.expiredTime = expiredTime;
         }
 
-        public override DateTime? getEndTime()
+        public DateTime? getEndTime()
         {
             return this.endTime;
         }
@@ -201,17 +199,17 @@ namespace FireWorkflow.Net.Engine.Impl
             this.endTime = endTime;
         }
 
-        public override String getAssignmentStrategy()
+        public FormTaskEnum getAssignmentStrategy()
         {
             return assignmentStrategy;
         }
 
-        public void setAssignmentStrategy(String completionStrategy)
+        public void setAssignmentStrategy(FormTaskEnum completionStrategy)
         {
             this.assignmentStrategy = completionStrategy;
         }
 
-        public override Boolean? IsSuspended()
+        public Boolean IsSuspended()
         {
             return suspended;
         }
@@ -232,21 +230,21 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             if (this.processInsatance == null)
             {
-                if (this.rtCtx != null)
+                if (this.RuntimeContext != null)
                 {
-                    IPersistenceService persistenceService = rtCtx.getPersistenceService();
+                    IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                     this.processInsatance = persistenceService.findAliveProcessInstanceById(this.processInstanceId);
                 }
             }
             if (this.processInsatance != null)
             {
-                if (this.workflowSession != null)
+                if (this.CurrentWorkflowSession != null)
                 {
-                    ((IWorkflowSessionAware)this.processInsatance).setCurrentWorkflowSession(this.workflowSession);
+                    ((IWorkflowSessionAware)this.processInsatance).CurrentWorkflowSession = this.CurrentWorkflowSession;
                 }
-                if (this.rtCtx != null)
+                if (this.RuntimeContext != null)
                 {
-                    ((IRuntimeContextAware)this.processInsatance).setRuntimeContext(this.rtCtx);
+                    ((IRuntimeContextAware)this.processInsatance).RuntimeContext = this.RuntimeContext;
                 }
 
             }
@@ -273,8 +271,8 @@ namespace FireWorkflow.Net.Engine.Impl
         //	}
         public IWorkItem asignToActor(String id)// throws EngineException, KernelException 
         {
-            ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
-            WorkItem wi = taskInstanceMgr.createWorkItem(this.workflowSession, this.getAliveProcessInstance(), this, id);
+            ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
+            WorkItem wi = taskInstanceMgr.createWorkItem(this.CurrentWorkflowSession, this.getAliveProcessInstance(), this, id);
             return wi;
         }
 
@@ -284,20 +282,20 @@ namespace FireWorkflow.Net.Engine.Impl
             List<IWorkItem> workItemList = new List<IWorkItem>();
             for (int i = 0; ids != null && i < ids.Count; i++)
             {
-                ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
-                WorkItem wi = taskInstanceMgr.createWorkItem(this.workflowSession, this.getAliveProcessInstance(), this, ids[i]);
-                wi.setCurrentWorkflowSession(workflowSession);
+                ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
+                WorkItem wi = taskInstanceMgr.createWorkItem(this.CurrentWorkflowSession, this.getAliveProcessInstance(), this, ids[i]);
+                wi.CurrentWorkflowSession = this.CurrentWorkflowSession;
                 workItemList.Add(wi);
             }
             return workItemList;
         }
 
-        public override Task getTask()// throws EngineException 
+        public Task getTask()// throws EngineException 
         {
-            if (rtCtx == null) return null; //System.out.println("====Inside taskInstance rtCtx is null");
-            IDefinitionService definitionService = rtCtx.getDefinitionService();
+            if (this.RuntimeContext == null) return null; //System.out.println("====Inside taskInstance this.RuntimeContext is null");
+            IDefinitionService definitionService = this.RuntimeContext.DefinitionService;
             if (definitionService == null) return null;//System.out.println("====Inside taskInstance definitionService is null");
-            WorkflowDefinition workflowDef = definitionService.getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+            WorkflowDefinition workflowDef = definitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
             if (workflowDef == null)
             {
                 return null;
@@ -307,9 +305,9 @@ namespace FireWorkflow.Net.Engine.Impl
 
         }
 
-        public override Activity getActivity()
+        public Activity getActivity()
         {
-            WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+            WorkflowDefinition workflowDef = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
             if (workflowDef == null)
             {
                 return null;
@@ -317,9 +315,9 @@ namespace FireWorkflow.Net.Engine.Impl
             return (Activity)workflowDef.getWorkflowProcess().findWFElementById(this.getActivityId());
         }
 
-        public override WorkflowProcess getWorkflowProcess()
+        public WorkflowProcess getWorkflowProcess()
         {
-            WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+            WorkflowDefinition workflowDef = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
             if (workflowDef == null)
             {
                 return null;
@@ -330,21 +328,21 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public /*final*/ void start()
         {
-            ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
-            taskInstanceMgr.startTaskInstance(workflowSession, this.getAliveProcessInstance(), this);
+            ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
+            taskInstanceMgr.startTaskInstance(this.CurrentWorkflowSession, this.getAliveProcessInstance(), this);
             //        taskInstanceMgr.startTaskInstance(this);
         }
 
         public void complete(IActivityInstance targetActivityInstance)
         {
-            ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
-            taskInstanceMgr.completeTaskInstance(workflowSession, this.getAliveProcessInstance(), this, targetActivityInstance);
+            ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
+            taskInstanceMgr.completeTaskInstance(this.CurrentWorkflowSession, this.getAliveProcessInstance(), this, targetActivityInstance);
             //        taskInstanceMgr.completeTaskInstance(this, targetActivityInstance);
         }
 
         /*
             public IWorkItem asignToActor(String id, Boolean needClaim) throws EngineException, KernelException {
-                ITaskInstanceManager taskInstanceMgr = this.rtCtx.getTaskInstanceManager();
+                ITaskInstanceManager taskInstanceMgr = this.this.RuntimeContext.TaskInstanceManager;
                 WorkItem wi = taskInstanceMgr.createWorkItem(this, id);
                 if (!needClaim) {
                     wi.claim();
@@ -352,17 +350,8 @@ namespace FireWorkflow.Net.Engine.Impl
                 return wi;
             }
         */
-        public IWorkflowSession getCurrentWorkflowSession()
-        {
-            return this.workflowSession;
-        }
 
-        public void setCurrentWorkflowSession(IWorkflowSession session)
-        {
-            this.workflowSession = session;
-        }
-
-        public override String getProcessInstanceId()
+        public String getProcessInstanceId()
         {
             return this.processInstanceId;
         }
@@ -372,7 +361,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.processInstanceId = s;
         }
 
-        public override String getProcessId()
+        public String getProcessId()
         {
             return this.processId;
         }
@@ -382,7 +371,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.processId = s;
         }
 
-        public override Int32 getVersion()
+        public Int32 getVersion()
         {
             return this.version;
         }
@@ -392,7 +381,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.version = v;
         }
 
-        public override String getTargetActivityId()
+        public String getTargetActivityId()
         {
             return this.targetActivityId;
         }
@@ -402,7 +391,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.targetActivityId = s;
         }
 
-        public override Int32 getStepNumber()
+        public Int32 getStepNumber()
         {
             return this.stepNumber;
         }
@@ -432,33 +421,33 @@ namespace FireWorkflow.Net.Engine.Impl
             this.fromActivityId = fromActivityId;
         }
 
-        public override void suspend()
+        public void suspend()
         {
-            if (this.state == ITaskInstance.COMPLETED || this.state == ITaskInstance.CANCELED)
+            if (this.State == TaskInstanceStateEnum.COMPLETED || this.State == TaskInstanceStateEnum.CANCELED)
             {
-                throw new EngineException(this.getAliveProcessInstance(), this.getTask(), "The task instance can not be suspended,the state of this task instance is " + this.state);
+                throw new EngineException(this.getAliveProcessInstance(), this.getTask(), "The task instance can not be suspended,the state of this task instance is " + this.State);
             }
-            if (this.IsSuspended() != null && (Boolean)this.IsSuspended())
+            if (this.IsSuspended())
             {
                 return;
             }
             this.setSuspended(true);
-            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.saveOrUpdateTaskInstance(this);
         }
 
-        public override void restore()
+        public void restore()
         {
-            if (this.state == ITaskInstance.COMPLETED || this.state == ITaskInstance.CANCELED)
+            if (this.State == TaskInstanceStateEnum.COMPLETED || this.State == TaskInstanceStateEnum.CANCELED)
             {
-                throw new EngineException(this.getAliveProcessInstance(), this.getTask(), "The task instance can not be restored,the state of this task instance is " + this.state);
+                throw new EngineException(this.getAliveProcessInstance(), this.getTask(), "The task instance can not be restored,the state of this task instance is " + this.State);
             }
-            if (!(this.IsSuspended() != null && (Boolean)this.IsSuspended()))
+            if (!this.IsSuspended())
             {
                 return;
             }
             this.setSuspended(false);
-            IPersistenceService persistenceService = this.rtCtx.getPersistenceService();
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.saveOrUpdateTaskInstance(this);
         }
 

@@ -1,4 +1,4 @@
-﻿/* 
+﻿/* Copyright 2009 无忧lwz0721@gmail.com
  * @author 无忧lwz0721@gmail.com
  */
 using System;
@@ -63,14 +63,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             taskInstance.setName(Convert.ToString(dr["name"]));
 
             taskInstance.setDisplayName(Convert.ToString(dr["display_name"]));
-            taskInstance.setState(Convert.ToInt32(dr["state"]));
+            taskInstance.State=(TaskInstanceStateEnum)Convert.ToInt32(dr["state"]);
             taskInstance.setSuspended(Convert.ToInt32(dr["suspended"]) == 1 ? true : false);
             taskInstance.setTaskType((TaskTypeEnum)Enum.Parse(typeof(TaskTypeEnum),Convert.ToString(dr["task_type"])));
             if (!(dr["created_time"] is DBNull)) taskInstance.setCreatedTime(Convert.ToDateTime(dr["created_time"]));
 
             if (!(dr["started_time"] is DBNull)) taskInstance.setStartedTime(Convert.ToDateTime(dr["started_time"]));
             if (!(dr["end_time"] is DBNull)) taskInstance.setEndTime(Convert.ToDateTime(dr["end_time"]));
-            taskInstance.setAssignmentStrategy(Convert.ToString(dr["assignment_strategy"]));
+            taskInstance.setAssignmentStrategy((FormTaskEnum)Enum.Parse(typeof(FormTaskEnum), Convert.ToString((dr["assignment_strategy"]))));
             taskInstance.setProcessInstanceId(Convert.ToString(dr["processinstance_id"]));
             taskInstance.setProcessId(Convert.ToString(dr["process_id"]));
 
@@ -104,13 +104,13 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public static Token GetToken(IDataReader dr)
         {
             Token token = new Token();
-            token.setId(Convert.ToString(dr["id"]));
-            token.setAlive(Convert.ToInt32(dr["alive"]) == 1 ? true : false);
-            token.setValue(Convert.ToInt32(dr["value"]));
-            token.setNodeId(Convert.ToString(dr["node_id"]));
-            token.setProcessInstanceId(Convert.ToString(dr["processinstance_id"]));
-            token.setStepNumber(Convert.ToInt32(dr["step_number"]));
-            token.setFromActivityId(Convert.ToString(dr["from_activity_id"]));
+            token.Id=Convert.ToString(dr["id"]);
+            token.IsAlive=Convert.ToInt32(dr["alive"]) == 1 ? true : false;
+            token.Value=Convert.ToInt32(dr["value"]);
+            token.NodeId=Convert.ToString(dr["node_id"]);
+            token.ProcessInstanceId=Convert.ToString(dr["processinstance_id"]);
+            token.StepNumber=Convert.ToInt32(dr["step_number"]);
+            token.FromActivityId=Convert.ToString(dr["from_activity_id"]);
 
             return token;
         }
@@ -118,22 +118,22 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public static WorkflowDefinition GetWorkflowDefinition(IDataReader dr)
         {
             WorkflowDefinition workFlowDefinition = new WorkflowDefinition();
-            workFlowDefinition.setId(Convert.ToString(dr["id"]));
-            workFlowDefinition.setDefinitionType(Convert.ToString(dr["definition_type"]));
-            workFlowDefinition.setProcessId(Convert.ToString(dr["process_id"]));
-            workFlowDefinition.setName(Convert.ToString(dr["name"]));
-            workFlowDefinition.setDisplayName(Convert.ToString(dr["display_name"]));
+            workFlowDefinition.Id=Convert.ToString(dr["id"]);
+            workFlowDefinition.DefinitionType=Convert.ToString(dr["definition_type"]);
+            workFlowDefinition.ProcessId=Convert.ToString(dr["process_id"]);
+            workFlowDefinition.Name=Convert.ToString(dr["name"]);
+            workFlowDefinition.DisplayName=Convert.ToString(dr["display_name"]);
 
-            workFlowDefinition.setDescription(Convert.ToString(dr["description"]));
-            workFlowDefinition.setVersion(Convert.ToInt32(dr["version"]));
-            workFlowDefinition.setState(Convert.ToInt32(dr["state"]) == 1 ? true : false);
-            workFlowDefinition.setUploadUser(Convert.ToString(dr["upload_user"]));
-            if (!(dr["upload_time"] is DBNull)) workFlowDefinition.setUploadTime(Convert.ToDateTime(dr["upload_time"]));
+            workFlowDefinition.Description=Convert.ToString(dr["description"]);
+            workFlowDefinition.Version=Convert.ToInt32(dr["version"]);
+            workFlowDefinition.State=Convert.ToInt32(dr["state"]) == 1 ? true : false;
+            workFlowDefinition.UploadUser=Convert.ToString(dr["upload_user"]);
+            if (!(dr["upload_time"] is DBNull)) workFlowDefinition.UploadTime=Convert.ToDateTime(dr["upload_time"]);
 
-            workFlowDefinition.setPublishUser(Convert.ToString(dr["publish_user"]));
-            if (!(dr["publish_time"] is DBNull)) workFlowDefinition.setPublishTime(Convert.ToDateTime(dr["publish_time"]));
+            workFlowDefinition.PublishUser=Convert.ToString(dr["publish_user"]);
+            if (!(dr["publish_time"] is DBNull)) workFlowDefinition.PublishTime=Convert.ToDateTime(dr["publish_time"]);
             // 读取blob大字段
-            workFlowDefinition.setProcessContent(Convert.ToString(dr["process_content"]));
+            workFlowDefinition.ProcessContent=Convert.ToString(dr["process_content"]);
             return workFlowDefinition;
         }
 

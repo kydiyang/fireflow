@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -15,25 +33,10 @@ namespace FireWorkflow.Net.Engine.Definition
     /// </summary>
     public class DefinitionService4FileSystem : IDefinitionService
     {
-        protected RuntimeContext rtCtx = null;
-
+        public RuntimeContext RuntimeContext { get; set; }
+        /// <summary>流程名到流程定义的id</summary>
         protected Dictionary<String, WorkflowDefinition> workflowDefinitionMap = new Dictionary<String, WorkflowDefinition>();// 流程名到流程定义的id
         protected Dictionary<String, String> latestVersionKeyMap = new Dictionary<String, String>();
-
-
-
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.fireflow.engine.definition.IDefinitionService#getWorkflowProcess(java.lang.String)
-         */
-
-        //    public WorkflowProcess getWorkflowProcessByName(String name) {
-        //        // TODO Auto-generated method stub
-        //        return workflowProcessMap.get(name);
-        //    }
-
 
         public void setDefinitionFiles(List<String> workflowProcessFileNames)// throws IOException, FPDLParserException,EngineException 
         {
@@ -54,99 +57,43 @@ namespace FireWorkflow.Net.Engine.Definition
                     WorkflowProcess workflowProcess = parser.parse(inStream);
 
                     WorkflowDefinition workflowDef = new WorkflowDefinition();
-                    workflowDef.setVersion(1);
+                    workflowDef.Version=1;
 
                     workflowDef.setWorkflowProcess(workflowProcess);
 
-                    String latestVersionKey = workflowProcess.Id + "_V_" + workflowDef.getVersion();
+                    String latestVersionKey = workflowProcess.Id + "_V_" + workflowDef.Version;
                     workflowDefinitionMap.Add(latestVersionKey, workflowDef);
                     latestVersionKeyMap.Add(workflowProcess.Id, latestVersionKey);
-                    //                workflowProcessMap.put(workflowProcess.Name, workflowProcess);
-                    //
-                    //                List<Activity> activities = workflowProcess.Activities;
-                    //                for (int k = 0; activities != null && k < activities.Count; k++) {
-                    //                    Activity activity = activities.get(k);
-                    //                    activityMap.put(activity.Id, activity);
-                    //
-                    //                    List<Task> tasks = activity.getTasks();
-                    //                    for (int j = 0; tasks != null && j < tasks.Count; j++) {
-                    //                        Task task = tasks.get(j);
-                    //                        taskMap.put(task.Id, task);
-                    //                    }
-                    //                }
-                    //
-                    //                List<Transition> transitions = workflowProcess.Transitions;
-                    //                for (int k = 0; transitions != null && k < transitions.Count; k++) {
-                    //                    Transition trans = transitions.get(k);
-                    //                    transitionMap.put(trans.Id, trans);
-                    //                }
-                    //
-                    //                List<DataField> datafields = workflowProcess.DataFields;
-                    //                for (int k = 0; datafields != null && k < datafields.Count; k++) {
-                    //                    DataField df = datafields.get(k);
-                    //                    dataFieldMap.put(df.Id, df);
-                    //                }
-
                 }
             }
-
         }
 
-        public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition()
+        #region 实现IDefinitionService
+        /// <summary>返回所有流程的最新版本</summary>
+        /// <returns></returns>
+        public List<WorkflowDefinition> GetAllLatestVersionsOfWorkflowDefinition()
         {
             return new List<WorkflowDefinition>(workflowDefinitionMap.Values);
         }
 
-        public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Int32 version)
+
+        /// <summary>根据流程Id和版本号查找流程定义</summary>
+        public WorkflowDefinition GetWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Int32 version)
         {
             return this.workflowDefinitionMap[processId + "_V_" + version];
         }
 
-        public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId)
+        /// <summary>通过流程Id查找其最新版本的流程定义</summary>
+        public WorkflowDefinition GetTheLatestVersionOfWorkflowDefinition(String processId)
         {
             return this.workflowDefinitionMap[this.latestVersionKeyMap[processId]];
         }
 
-        public void setRuntimeContext(RuntimeContext ctx)
-        {
-            this.rtCtx = ctx;
-        }
-        public RuntimeContext getRuntimeContext()
-        {
-            return this.rtCtx;
-        }
-        //    public List<WorkflowProcess> getAllWorkflowProcesses() {
-        //        return new ArrayList(workflowProcessMap.values());
-        //    }
-        //
-        //    public WorkflowProcess getWorkflowProcessById(String id) {
-        //        return workflowProcessMap.get(id);
-        //    }
+        #endregion
 
-        //    public Activity getActivityById(String id) {
-        //        return activityMap.get(id);
-        //    }
-        //
-        //    public Task getTaskById(String id) {
-        //        return taskMap.get(id);
-        //    }
-        //
-        //    public Transition getTransitionById(String id) {
-        //        return transitionMap.get(id);
-        //    }
-        //
-        //    public DataField getDataFieldById(String id) {
-        //        return dataFieldMap.get(id);
-        //    }
-
-        #region IDefinitionService 成员
-
-
-        public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(string processId, int? version)
-        {
-            throw new NotImplementedException();
-        }
-
+        #region 构造
+        public DefinitionService4FileSystem() { }
+        public DefinitionService4FileSystem(RuntimeContext rc) { this.RuntimeContext = rc; }
         #endregion
     }
 }

@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,143 +27,47 @@ namespace FireWorkflow.Net.Kernel
 {
     public class KernelException : Exception
     {
+
+        private const long serialVersionUID = -7219349319943347690L;
+
         /// <summary>抛出异常的流程实例的Id</summary>
-        String processInstanceId = null;
+        public String ProcessInstanceId { get; set; }
 
         /// <summary>抛出异常的流程定义的Id</summary>
-        String processId = null;
+        public String ProcessId { get; set; }
 
         /// <summary>抛出异常的流程的名称</summary>
-        String processName = null;
+        public String ProcessName { get; set; }
 
         /// <summary>抛出异常的流程的显示名称</summary>
-        String processDisplayName = null;
+        public String ProcessDisplayName { get; set; }
 
         /// <summary>抛出异常的流程元素的Id</summary>
-        String workflowElementId = null;
+        public String WorkflowElementId { get; set; }
 
         /// <summary>抛出异常的流程元素的名称</summary>
-        String workflowElementName = null;
+        public String WorkflowElementName { get; set; }
 
         /// <summary>抛出异常的流程元素的显示名称</summary>
-        String workflowElementDisplayName = null;
+        public String WorkflowElementDisplayName { get; set; }
 
         public KernelException(IProcessInstance processInstance, IWFElement workflowElement, String errMsg)
             : base(errMsg)
         {
             if (processInstance != null)
             {
-                this.setProcessInstanceId(processInstance.getId());
-                this.setProcessId(processInstance.getProcessId());
-                this.setProcessName(processInstance.getName());
-                this.setProcessDisplayName(processInstance.getDisplayName());
+                this.ProcessInstanceId = processInstance.getId();
+                this.ProcessId=processInstance.getProcessId();
+                this.ProcessName=processInstance.getName();
+                this.ProcessDisplayName=processInstance.getDisplayName();
             }
             if (workflowElement != null)
             {
-                this.setWorkflowElementId(workflowElement.Id);
-                this.setWorkflowElementName(workflowElement.Name);
-                this.setWorkflowElementDisplayName(workflowElement.DisplayName);
+                this.WorkflowElementId=workflowElement.Id;
+                this.WorkflowElementName=workflowElement.Name;
+                this.WorkflowElementDisplayName=workflowElement.DisplayName;
             }
             // TODO Auto-generated constructor stub
         }
-
-        //    public KenelException() {
-        //        super();
-        //        // TODO Auto-generated constructor stub
-        //    }
-        //
-        //    public KenelException(String processInstanceId, String processId, String processName, String message) {
-        //
-        //    }
-        public String getProcessId()
-        {
-            return processId;
-        }
-
-        public void setProcessId(String processId)
-        {
-            this.processId = processId;
-        }
-
-        public String getProcessInstanceId()
-        {
-            return processInstanceId;
-        }
-
-        public void setProcessInstanceId(String processInstanceId)
-        {
-            this.processInstanceId = processInstanceId;
-        }
-
-        public String getProcessName()
-        {
-            return processName;
-        }
-
-        public void setProcessName(String processName)
-        {
-            this.processName = processName;
-        }
-
-        public String getWorkflowElementId()
-        {
-            return workflowElementId;
-        }
-
-        public void setWorkflowElementId(String workflowElementId)
-        {
-            this.workflowElementId = workflowElementId;
-        }
-
-        public String getWorkflowElementName()
-        {
-            return workflowElementName;
-        }
-
-        public void setWorkflowElementName(String workflowElementName)
-        {
-            this.workflowElementName = workflowElementName;
-        }
-
-        public String getProcessDisplayName()
-        {
-            return processDisplayName;
-        }
-
-        public void setProcessDisplayName(String processDisplayName)
-        {
-            this.processDisplayName = processDisplayName;
-        }
-
-        public String getWorkflowElementDisplayName()
-        {
-            return workflowElementDisplayName;
-        }
-
-        public void setWorkflowElementDisplayName(String workflowElementDisplayName)
-        {
-            this.workflowElementDisplayName = workflowElementDisplayName;
-        }
-        /*
-        public KenelException() {
-        super();
-        // TODO Auto-generated constructor stub
-        }
-
-        public KenelException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
-        // TODO Auto-generated constructor stub
-        }
-
-        public KenelException(String arg0) {
-        super(arg0);
-        // TODO Auto-generated constructor stub
-        }
-
-        public KenelException(Throwable arg0) {
-        super(arg0);
-        // TODO Auto-generated constructor stub
-        }
-         */
     }
 }

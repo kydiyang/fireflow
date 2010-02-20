@@ -54,7 +54,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 //TODO, 对tool类型的task抛出的错误应该怎么处理？
             }
 
-            ITaskInstanceManager taskInstanceManager = runtimeContext.getTaskInstanceManager();
+            ITaskInstanceManager taskInstanceManager = runtimeContext.TaskInstanceManager;
             taskInstanceManager.completeTaskInstance(currentSession, processInstance, taskInstance, null);
             //        taskInstanceManager.completeTaskInstance(taskInstance, null);
         }

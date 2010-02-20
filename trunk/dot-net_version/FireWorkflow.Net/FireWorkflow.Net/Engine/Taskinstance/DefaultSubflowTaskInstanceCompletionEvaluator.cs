@@ -17,7 +17,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             //如果系统动态创建了多个并发子流程实例，则需要检查是否存在活动的子流程实例，如果存在则返回false，否则返回true。
             //可以用下面的代码实现
-            //        IPersistenceService persistenceService = runtimeContext.getPersistenceService();
+            //        IPersistenceService persistenceService = runtimeContext.PersistenceService;
             //        Int32 count = persistenceService.getAliveProcessInstanceCountForParentTaskInstance(taskInstance.Id);
             //        if (count>0){
             //            return false;

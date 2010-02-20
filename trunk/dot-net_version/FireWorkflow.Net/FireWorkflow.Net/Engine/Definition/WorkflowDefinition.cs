@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -18,84 +36,61 @@ namespace FireWorkflow.Net.Engine.Definition
         [NonSerialized]
         protected WorkflowProcess workflowProcess;
 
-        protected String processContent;
+        /// <summary>获取或设置流程定义文件的内容。</summary>
+        public String ProcessContent { get; set; }//
 
-
-        public String getProcessContent()
-        {
-            return processContent;
-        }
-
-        public void setProcessContent(String processContent)
-        {
-            this.processContent = processContent;
-        }
-
+        /// <summary>获取业务流程对象</summary>
         public WorkflowProcess getWorkflowProcess()// throws RuntimeException
         {
-            /*
-            if (workflowProcess == null) {
-                if (this.processContent != null && !this.processContent.trim().Equals("")) {
+            if (workflowProcess == null)
+            {
+                if (ProcessContent != null && !String.IsNullOrEmpty(this.ProcessContent.Trim()))
+                {
+                    MemoryStream msin = null;
 
-                    ByteArrayInputStream in = null;
-                    try {
+                    try
+                    {
                         Dom4JFPDLParser parser = new Dom4JFPDLParser();
-                        in = new ByteArrayInputStream(this.processContent.getBytes("utf-8"));
-                        this.workflowProcess = parser.parse(in);
-
-                    } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
-                        throw new RuntimeException(ex.getMessage());
-                    } catch (IOException ex) {
-                        Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
-                        throw new RuntimeException(ex.getMessage());
-                    } 
-                    catch(FPDLParserException ex){
-                        Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
-                        throw new RuntimeException(ex.getMessage());
+                        msin = new MemoryStream(Encoding.UTF8.GetBytes(this.ProcessContent));
+                        this.workflowProcess = parser.parse(msin);
                     }
-                    finally {
-                        try {
-                            in.close();
-                        } catch (IOException ex) {
-                            Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        if (msin != null) msin.Close();
                     }
 
                 }
-            }*/
+            }
             return workflowProcess;
         }
 
         public void setWorkflowProcess(WorkflowProcess process)// throws  RuntimeException 
         {
+            this.workflowProcess = process;
+            this.ProcessId = workflowProcess.Id;
+            this.Name = workflowProcess.Name;
+            this.DisplayName = workflowProcess.DisplayName;
+            this.Description = workflowProcess.Description;
+
+            Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
+            MemoryStream so = new MemoryStream();
             try
             {
-                this.workflowProcess = process;
-                this.processId = workflowProcess.Id;
-                this.name = workflowProcess.Name;
-                this.displayName = workflowProcess.DisplayName;
-                this.description = workflowProcess.Description;
-
-                Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
-                MemoryStream so = new MemoryStream();
-
                 ser.serialize(workflowProcess, so);
-
-                this.processContent = Encoding.UTF8.GetString(so.ToArray());
-
+                this.ProcessContent = Encoding.UTF8.GetString(so.ToArray());
             }
-            catch (FPDLSerializerException ex)
+            catch
             {
-                //Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
-                throw new Exception(ex.Message);
+                throw;
             }
-            catch (IOException ex)
+            finally
             {
-                //Logger.getLogger(WorkflowDefinition.class.getName()).log(Level.SEVERE, null, ex);
-                throw new Exception(ex.Message);
+                if (so != null) so.Close();
             }
         }
-
     }
 }
