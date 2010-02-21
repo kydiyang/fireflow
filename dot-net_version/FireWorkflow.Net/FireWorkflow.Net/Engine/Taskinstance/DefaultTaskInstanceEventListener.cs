@@ -10,19 +10,19 @@ namespace FireWorkflow.Net.Engine.Taskinstance
     {
         public void onTaskInstanceEventFired(TaskInstanceEvent e)// throws EngineException 
         {
-            IWorkflowSession session = e.getWorkflowSession();
-            IProcessInstance proceInst = e.getProcessInstance();
-            ITaskInstance taskInst = (ITaskInstance)e.getSource();
-            IWorkItem wi = e.getWorkItem();
-            if (e.getEventType() == TaskInstanceEvent.BEFORE_TASK_INSTANCE_START)
+            IWorkflowSession session = e.WorkflowSession;
+            IProcessInstance proceInst = e.ProcessInstance;
+            ITaskInstance taskInst = (ITaskInstance)e.Source;
+            IWorkItem wi = e.WorkItem;
+            if (e.EventType == TaskInstanceEventEnum.BEFORE_TASK_INSTANCE_START)
             {
                 beforeTaskInstanceStart(session, proceInst, taskInst);
             }
-            else if (e.getEventType() == TaskInstanceEvent.AFTER_TASK_INSTANCE_COMPLETE)
+            else if (e.EventType == TaskInstanceEventEnum.AFTER_TASK_INSTANCE_COMPLETE)
             {
                 afterTaskInstanceCompleted(session, proceInst, taskInst);
             }
-            else if (e.getEventType() == TaskInstanceEvent.AFTER_WORKITEM_CREATED)
+            else if (e.EventType == TaskInstanceEventEnum.AFTER_WORKITEM_CREATED)
             {
                 afterWorkItemCreated(session, proceInst, taskInst, wi);
             }

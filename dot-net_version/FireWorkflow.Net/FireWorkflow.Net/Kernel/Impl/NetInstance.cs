@@ -33,12 +33,30 @@ namespace FireWorkflow.Net.Kernel.Impl
     {
 
         private WorkflowProcess workflowProcess = null;
-        private Int32 version = 0;
-        private StartNodeInstance startNodeInstance = null;
+        //private Int32 version = 0;
         //	private List<EndNodeInstance> endNodeInstances = new ArrayList<EndNodeInstance>();
         private Dictionary<String, Object> wfElementInstanceMap = new Dictionary<String, Object>();
         //	private IRuntimeContext runtimeContext = null;
         protected List<INodeInstanceEventListener> eventListeners = new List<INodeInstanceEventListener>();
+
+        public StartNodeInstance StartNodeInstance { get; set; }
+
+        public String Id
+        {
+            get { return this.workflowProcess.Id; }
+        }
+
+        public Int32 Version { get; set; }
+
+
+        public WorkflowProcess WorkflowProcess { get { return workflowProcess; } }
+
+  
+
+        public Object getWFElementInstance(String wfElementId)
+        {
+            return wfElementInstanceMap[wfElementId];
+        }
 
         /// <summary>wangmj  初始化一个工作流网实例,将引擎的扩展属性，注入到对应的工作流元素中</summary>
         /// <param name="process"></param>
@@ -49,15 +67,15 @@ namespace FireWorkflow.Net.Kernel.Impl
 
             //开始节点
             StartNode startNode = workflowProcess.StartNode;
-            startNodeInstance = new StartNodeInstance(startNode);
-            List<IKernelExtension> extensionList = kenelExtensions[startNodeInstance.getExtensionTargetName()];
+            StartNodeInstance = new StartNodeInstance(startNode);
+            List<IKernelExtension> extensionList = kenelExtensions[StartNodeInstance.ExtensionTargetName];
             for (int i = 0; extensionList != null && i < extensionList.Count; i++)
             {
                 IKernelExtension extension = extensionList[i];
-                startNodeInstance.registExtension(extension);
+                StartNodeInstance.registExtension(extension);
             }
-            this.setStartNodeInstance(startNodeInstance);
-            wfElementInstanceMap.Add(startNode.Id, startNodeInstance);
+            //this.StartNodeInstance = StartNodeInstance; 自身赋值自身没用。
+            wfElementInstanceMap.Add(startNode.Id, StartNodeInstance);
 
             //活动节点activity
             List<Activity> activities = workflowProcess.Activities;
@@ -65,7 +83,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 Activity activity = (Activity)activities[i];
                 ActivityInstance activityInstance = new ActivityInstance(activity);
-                extensionList = kenelExtensions[activityInstance.getExtensionTargetName()];
+                extensionList = kenelExtensions[activityInstance.ExtensionTargetName];
                 for (int j = 0; extensionList != null && j < extensionList.Count; j++)
                 {
                     IKernelExtension extension = extensionList[j];
@@ -80,7 +98,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 Synchronizer synchronizer = (Synchronizer)synchronizers[i];
                 SynchronizerInstance synchronizerInstance = new SynchronizerInstance(synchronizer);
-                extensionList = kenelExtensions[synchronizerInstance.getExtensionTargetName()];
+                extensionList = kenelExtensions[synchronizerInstance.ExtensionTargetName];
                 for (int j = 0; extensionList != null && j < extensionList.Count; j++)
                 {
                     IKernelExtension extension = extensionList[j];
@@ -97,7 +115,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                 EndNode endNode = endNodes[i];
                 EndNodeInstance endNodeInstance = new EndNodeInstance(endNode);
                 //            endNodeInstances.add(endNodeInstance);
-                extensionList = kenelExtensions[endNodeInstance.getExtensionTargetName()];
+                extensionList = kenelExtensions[endNodeInstance.ExtensionTargetName];
                 for (int j = 0; extensionList != null && j < extensionList.Count; j++)
                 {
                     IKernelExtension extension = extensionList[j];
@@ -120,7 +138,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                     if (enteringNodeInstance != null)
                     {
                         enteringNodeInstance.AddLeavingTransitionInstance(transitionInstance);
-                        transitionInstance.setEnteringNodeInstance(enteringNodeInstance);
+                        transitionInstance.EnteringNodeInstance=enteringNodeInstance;
                     }
                 }
 
@@ -131,16 +149,16 @@ namespace FireWorkflow.Net.Kernel.Impl
                     if (leavingNodeInstance != null)
                     {
                         leavingNodeInstance.AddEnteringTransitionInstance(transitionInstance);
-                        transitionInstance.setLeavingNodeInstance(leavingNodeInstance);
+                        transitionInstance.LeavingNodeInstance=leavingNodeInstance;
                     }
                 }
-                extensionList = kenelExtensions[transitionInstance.getExtensionTargetName()];
+                extensionList = kenelExtensions[transitionInstance.ExtensionTargetName];
                 for (int j = 0; extensionList != null && j < extensionList.Count; j++)
                 {
                     IKernelExtension extension = extensionList[j];
                     transitionInstance.registExtension(extension);
                 }
-                wfElementInstanceMap.Add(transitionInstance.getId(), transitionInstance);
+                wfElementInstanceMap.Add(transitionInstance.Id, transitionInstance);
             }
 
             //循环线
@@ -156,9 +174,8 @@ namespace FireWorkflow.Net.Kernel.Impl
                     INodeInstance enteringNodeInstance = (INodeInstance)wfElementInstanceMap[fromNodeId];
                     if (enteringNodeInstance != null)
                     {
-
                         enteringNodeInstance.AddLeavingLoopInstance(loopInstance);
-                        loopInstance.setEnteringNodeInstance(enteringNodeInstance);
+                        loopInstance.EnteringNodeInstance=enteringNodeInstance;
                     }
                 }
 
@@ -169,40 +186,26 @@ namespace FireWorkflow.Net.Kernel.Impl
                     if (leavingNodeInstance != null)
                     {
                         leavingNodeInstance.AddEnteringLoopInstance(loopInstance);
-                        loopInstance.setLeavingNodeInstance(leavingNodeInstance);
+                        loopInstance.LeavingNodeInstance=leavingNodeInstance;
                     }
                 }
-                extensionList = kenelExtensions[loopInstance.getExtensionTargetName()];
+                extensionList = kenelExtensions[loopInstance.ExtensionTargetName];
                 for (int j = 0; extensionList != null && j < extensionList.Count; j++)
                 {
                     IKernelExtension extension = extensionList[j];
                     loopInstance.registExtension(extension);
                 }
-                wfElementInstanceMap.Add(loopInstance.getId(), loopInstance);
+                wfElementInstanceMap.Add(loopInstance.Id, loopInstance);
             }
         }
 
-        public String getId()
-        {
-            return this.workflowProcess.Id;
-        }
-
-        public Int32 getVersion()
-        {
-            return version;
-        }
-
-        public void setVersion(Int32 v)
-        {
-            this.version = v;
-        }
 
         public void run(IProcessInstance processInstance)
         {
-            if (startNodeInstance == null)
+            if (StartNodeInstance == null)
             {
                 KernelException exception = new KernelException(processInstance,
-                        this.getWorkflowProcess(),
+                        this.WorkflowProcess,
                         "Error:NetInstance is illegal ，the startNodeInstance can NOT be NULL ");
                 throw exception;
             }
@@ -210,12 +213,12 @@ namespace FireWorkflow.Net.Kernel.Impl
             Token token = new Token();//初始化token
             token.IsAlive = true;//活动的
             token.ProcessInstance = processInstance;//对应流程实例
-            token.Value = startNodeInstance.Volume;//token容量
+            token.Value = StartNodeInstance.Volume;//token容量
             token.StepNumber = 0;//步骤号，开始节点的第一步默认为0
             token.FromActivityId = TokenFrom.FROM_START_NODE;//从哪个节点来 "FROM_START_NODE" 规定的节点。
 
             //注意这里并没有保存token
-            startNodeInstance.fire(token);//启动开始节点
+            StartNodeInstance.fire(token);//启动开始节点
         }
 
         /// <summary>结束流程实例，如果流程状态没有达到终态，则直接返回。</summary>
@@ -227,24 +230,5 @@ namespace FireWorkflow.Net.Kernel.Impl
             //4、返回主流程
         }
 
-        public WorkflowProcess getWorkflowProcess()
-        {
-            return workflowProcess;
-        }
-
-        public StartNodeInstance getStartNodeInstance()
-        {
-            return startNodeInstance;
-        }
-
-        public void setStartNodeInstance(StartNodeInstance startNodeInstance)
-        {
-            this.startNodeInstance = startNodeInstance;
-        }
-
-        public Object getWFElementInstance(String wfElementId)
-        {
-            return wfElementInstanceMap[wfElementId];
-        }
     }
 }

@@ -97,22 +97,22 @@ namespace FireWorkflow.Net.Engine
             {
                 this._kernelManager = value;
                 //KernelExtensions  Spring.net还没想到方法解决初始化
-                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.StartNodeInstance",
+                this._kernelManager.KernelExtensions.Add("FireWorkflow.Net.Kernel.StartNodeInstance",
                     new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.StartNodeInstanceExtension() }
                     );
-                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.ActivityInstance",
+                this._kernelManager.KernelExtensions.Add("FireWorkflow.Net.Kernel.ActivityInstance",
                     new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.ActivityInstanceExtension() }
                     );
-                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.SynchronizerInstance",
+                this._kernelManager.KernelExtensions.Add("FireWorkflow.Net.Kernel.SynchronizerInstance",
                     new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.SynchronizerInstanceExtension() }
                     );
-                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.EndNodeInstance",
+                this._kernelManager.KernelExtensions.Add("FireWorkflow.Net.Kernel.EndNodeInstance",
                     new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.EndNodeInstanceExtension() }
                     );
-                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.TransitionInstance",
+                this._kernelManager.KernelExtensions.Add("FireWorkflow.Net.Kernel.TransitionInstance",
                     new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.TransitionInstanceExtension() }
                     );
-                this._kernelManager.KernelExtensions.Add("org.fireflow.kernel.LoopInstance",
+                this._kernelManager.KernelExtensions.Add("FireWorkflow.Net.Kernel.LoopInstance",
                     new List<Kernel.Plugin.IKernelExtension>() { new FireWorkflow.Net.Engine.Kernelextensions.LoopInstanceExtension() }
                     );
                 this._kernelManager.RuntimeContext = this;
@@ -163,7 +163,7 @@ namespace FireWorkflow.Net.Engine
         {
             if (beanFactory != null)
             {
-                return beanFactory.getBean(beanName);
+                return beanFactory.GetBean(beanName);
             }
             else
             {

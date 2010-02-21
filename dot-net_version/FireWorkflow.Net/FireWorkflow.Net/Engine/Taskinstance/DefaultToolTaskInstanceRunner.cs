@@ -15,30 +15,30 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (taskInstance.TaskType != TaskTypeEnum.TOOL)
             {
                 throw new EngineException(processInstance,
-                        taskInstance.getActivity(),
+                        taskInstance.Activity,
                         "DefaultToolTaskInstanceRunner：TaskInstance的任务类型错误，只能为TOOL类型");
             }
-            Task task = taskInstance.getTask();
+            Task task = taskInstance.Task;
             if (task == null)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "The Task is null,can NOT start the taskinstance,");
             }
             if (((ToolTask)task).Application == null || ((ToolTask)task).Application.Handler == null)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
-                        "The task.getApplication() is null or task.getApplication().getHandler() is null,can NOT start the taskinstance,");
+                        "The task.Application is null or task.Application.Handler is null,can NOT start the taskinstance,");
             }
 
             Object obj = runtimeContext.getBeanByName(((ToolTask)task).Application.Handler);
 
             if (obj == null || !(obj is IApplicationHandler))
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "Run tool task instance error! Not found the instance of " + ((ToolTask)task).Application.Handler + " or the instance not implements IApplicationHandler");

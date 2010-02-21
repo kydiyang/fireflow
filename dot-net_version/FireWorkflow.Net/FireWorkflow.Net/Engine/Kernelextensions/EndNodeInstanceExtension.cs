@@ -29,36 +29,28 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
 {
     public class EndNodeInstanceExtension : SynchronizerInstanceExtension
     {
-        /// <summary>获取扩展点名称</summary>
-        public override String getExtentionPointName()
-        {
-            // TODO Auto-generated method stub
-            return EndNodeInstance.Extension_Point_NodeInstanceEventListener;
-        }
-
         /// <summary>获取扩展目标名称</summary>
-        public override String getExtentionTargetName()
-        {
-            // TODO Auto-generated method stub
-            return EndNodeInstance.Extension_Target_Name;
-        }
+        public override String ExtentionTargetName { get { return EndNodeInstance.Extension_Target_Name; } }
+
+        /// <summary>获取扩展点名称</summary>
+        public override String ExtentionPointName { get { return EndNodeInstance.Extension_Point_NodeInstanceEventListener; } }
 
         /// <summary>节点实例监听器</summary>
         public override void onNodeInstanceEventFired(NodeInstanceEvent e)
         {
             //同步器节点的监听器触发条件，是在离开这个节点的时候
-            if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_LEAVING)
+            if (e.EventType == NodeInstanceEventEnum.NODEINSTANCE_LEAVING)
             {
                 ISynchronizerInstance syncInst = (ISynchronizerInstance)e.getSource();
                 IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                 //删除同步器节点的token
-                persistenceService.deleteTokensForNode(e.getToken().ProcessInstanceId, syncInst.getSynchronizer().Id);
+                persistenceService.deleteTokensForNode(e.Token.ProcessInstanceId, syncInst.Synchronizer.Id);
             }
             //如果节点实例结束，就触发
-            if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED)
+            if (e.EventType == NodeInstanceEventEnum.NODEINSTANCE_COMPLETED)
             {
                 // 执行ProcessInstance的complete操作
-                IToken tk = e.getToken();
+                IToken tk = e.Token;
                 ProcessInstance currentProcessInstance = (ProcessInstance)tk.ProcessInstance;
                 currentProcessInstance.complete();
             }

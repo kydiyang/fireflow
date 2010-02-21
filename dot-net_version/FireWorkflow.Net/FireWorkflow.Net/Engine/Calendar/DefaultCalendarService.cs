@@ -428,7 +428,7 @@ namespace FireWorkflow.Net.Engine.Calendar
             throw new NotImplementedException();
         }
 
-        public bool isBusinessDay(DateTime d)
+        public bool IsBusinessDay(DateTime d)
         {
             throw new NotImplementedException();
         }

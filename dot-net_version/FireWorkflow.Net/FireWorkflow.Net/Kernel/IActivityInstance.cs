@@ -31,6 +31,6 @@ namespace FireWorkflow.Net.Kernel
         void complete(IToken token, IActivityInstance targetActivityInstance);
 
         /// <summary>获取当前活动</summary>
-        Activity getActivity();
+        Activity Activity { get; }
     }
 }

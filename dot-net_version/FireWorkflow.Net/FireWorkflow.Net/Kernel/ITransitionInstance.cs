@@ -25,6 +25,6 @@ namespace FireWorkflow.Net.Kernel
 {
     public interface ITransitionInstance : IEdgeInstance
     {
-        Transition getTransition();
+        Transition Transition { get; }
     }
 }

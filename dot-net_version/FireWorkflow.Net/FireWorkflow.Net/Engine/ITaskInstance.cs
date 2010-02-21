@@ -82,26 +82,25 @@ namespace FireWorkflow.Net.Engine
         /// <summary>返回TaskInstance的"步数"。</summary>
         Int32 StepNumber { get; }
         
-
         /// <summary>
         /// 返回任务实例对应的流程
         /// fireflow.engine.EngineException
         /// </summary>
-        WorkflowProcess getWorkflowProcess();// throws EngineException;
+        WorkflowProcess WorkflowProcess { get; }// throws EngineException;
 
         /// <summary>
         /// 返回任务实例对应的Task对象
         /// fireflow.engine.EngineException
         /// </summary>
-        Task getTask();// throws EngineException;
+        Task Task { get; }// throws EngineException;
 
-        IProcessInstance getAliveProcessInstance();
+        IProcessInstance AliveProcessInstance { get; }
 
         /// <summary>
         /// 返回任务是里对应的环节
         /// fireflow.engine.EngineException
         /// </summary>
-        Activity getActivity();// throws EngineException;
+        Activity Activity { get; }// throws EngineException;
 
         /// <summary>挂起 </summary>
         void suspend();// throws EngineException;

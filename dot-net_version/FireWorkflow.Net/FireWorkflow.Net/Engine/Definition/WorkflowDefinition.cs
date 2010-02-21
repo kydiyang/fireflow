@@ -32,8 +32,6 @@ namespace FireWorkflow.Net.Engine.Definition
     /// </summary>
     public class WorkflowDefinition : WorkflowDefinitionInfo
     {
-
-        [NonSerialized]
         protected WorkflowProcess workflowProcess;
 
         /// <summary>获取或设置流程定义文件的内容。</summary>

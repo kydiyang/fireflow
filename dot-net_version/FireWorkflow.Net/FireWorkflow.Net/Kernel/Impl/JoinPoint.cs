@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,158 +33,55 @@ namespace FireWorkflow.Net.Kernel.Impl
     [Serializable]
     public class JoinPoint : IJoinPoint
     {
-
-        private String id;
-        private String synchronizerId;
-        private Int32? value=null;
-        private Boolean alive = false;
-        private String processInstanceId = null;
-        //	private Set<String> appointedTransitionNames = new HashSet<String>(0);
-        [NonSerialized]
-        private IProcessInstance processInstance;
-
-        private Int32? stepNumber = null;
-
-        private String fromActivityId = null;
-
-        public JoinPoint()
-        {
-        }
+        public JoinPoint() { }
 
         public JoinPoint(ProcessInstance processInstance)
         {
-            this.processInstance = processInstance;
+            this._processInstance = processInstance;
         }
 
-        /*
-	public JoinPoint(String synchronizerID, Int32 value, Boolean alive,
-			Set<String> appointedTransitionNames, ProcessInstance processInstance) {
-		this.synchronizerId = synchronizerID;
-		this.value = value;
-		this.alive = alive;
-//		this.appointedTransitionNames = appointedTransitionNames;
-		this.processInstance = processInstance;
-	}
-         */
-        public String getId()
+        public String Id { get; set; }
+
+        private IProcessInstance _processInstance;
+        public IProcessInstance ProcessInstance
         {
-            return this.id;
+            get { return this._processInstance; }
+            set
+            {
+                this._processInstance = value;
+                if (this._processInstance != null)
+                {
+                    this.ProcessInstanceId = value.Id;
+                }
+                else
+                {
+                    this.ProcessInstanceId = null;
+                }
+            }
         }
 
-        public void setId(String id)
-        {
-            this.id = id;
-        }
-        public String getSynchronizerId()
-        {
-            return this.synchronizerId;
-        }
+        public String ProcessInstanceId { get; set; }
 
-        public void setSynchronizerId(String synchronizerId)
-        {
-            this.synchronizerId = synchronizerId;
-        }
+        public Int32? Value { get; set; }
 
-        public Int32? getValue()
-        {
-            return this.value;
-        }
+        public Boolean Alive { get; set; }
 
-        public void setValue(Int32 value)
-        {
-            this.value = value;
-        }
+        public String SynchronizerId { get; set; }
+
+        public Int32 StepNumber { get; set; }
+
+        public String FromActivityId { get; set; }
 
         public void addValue(Int32 v)
         {
-            if (this.value == null)
+            if (this.Value == null)
             {
-                this.value = v;
+                this.Value = v;
             }
             else
             {
-                this.value = this.value + v;
+                this.Value = this.Value + v;
             }
         }
-
-        public Boolean getAlive()
-        {
-            return this.alive;
-        }
-
-        public void setAlive(Boolean alive)
-        {
-            this.alive = alive;
-        }
-
-        //	public Set<String> getAppointedTransitionNames() {
-        //		return this.appointedTransitionNames;
-        //	}
-        //
-        //	public void setAppointedTransitionNames(Set<String> appointedTransitionNames) {
-        //		this.appointedTransitionNames = appointedTransitionNames;
-        //	}
-
-        public IProcessInstance getProcessInstance()
-        {
-            return this.processInstance;
-        }
-
-        public void setProcessInstance(IProcessInstance processInstance)
-        {
-            this.processInstance = processInstance;
-            if (this.processInstance != null)
-            {
-                this.processInstanceId = processInstance.getId();
-            }
-            else
-            {
-                this.processInstanceId = null;
-            }
-        }
-
-        public String getProcessInstanceId()
-        {
-            return this.processInstanceId;
-        }
-
-        public void setProcessInstanceId(String id)
-        {
-            this.processInstanceId = id;
-        }
-
-        public Int32? getStepNumber()
-        {
-            return this.stepNumber;
-        }
-
-        public void setStepNumber(Int32 i)
-        {
-            this.stepNumber = i;
-        }
-
-        public String getFromActivityId()
-        {
-            return this.fromActivityId;
-        }
-
-        public void setFromActivityId(String s)
-        {
-            this.fromActivityId = s;
-        }
-        //	public void addAppointedTransitionNames(Set<String> arg){
-        //		appointedTransitionNames.addAll(arg);
-        //	}
-
-        #region IJoinPoint 成员
-
-
-        int IJoinPoint.getStepNumber()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
-
 }

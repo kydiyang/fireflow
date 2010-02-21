@@ -76,7 +76,7 @@ namespace FireWorkFow.Net.Tests
         public void RuntimeContextConstructorTest()
         {
             SpringBeanFactory mySpringBeanFactory = new SpringBeanFactory();
-            RuntimeContext rtCtx = (RuntimeContext)mySpringBeanFactory.getBean("runtimeContext");
+            RuntimeContext rtCtx = (RuntimeContext)mySpringBeanFactory.GetBean("runtimeContext");
             IWorkflowSession workflowSession = rtCtx.getWorkflowSession();
 
         }

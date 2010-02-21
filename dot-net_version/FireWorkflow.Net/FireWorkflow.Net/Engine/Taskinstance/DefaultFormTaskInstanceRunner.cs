@@ -21,18 +21,18 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (taskInstance.TaskType!= TaskTypeEnum.FORM)//!Task.FORM.Equals(taskInstance.TaskType))
             {
                 throw new EngineException(processInstance,
-                        taskInstance.getActivity(),
+                        taskInstance.Activity,
                         "DefaultFormTaskInstanceRunner：TaskInstance的任务类型错误，只能为FORM类型");
             }
 
             DynamicAssignmentHandler dynamicAssignmentHandler = ((WorkflowSession)currentSession).consumeCurrentDynamicAssignmentHandler();
-            FormTask task = (FormTask)taskInstance.getTask();
+            FormTask task = (FormTask)taskInstance.Task;
             // performer(id,name,type,handler)
             Participant performer = task.Performer;
             if (performer == null || performer.AssignmentHandler.Trim().Equals(""))
             {
                 throw new EngineException(processInstance,
-                        taskInstance.getActivity(),
+                        taskInstance.Activity,
                         "流程定义错误，Form类型的 task必须指定performer及其AssignmentHandler");
             }
             assign(currentSession, processInstance, runtimeContext, taskInstance, task, performer, dynamicAssignmentHandler);
@@ -89,7 +89,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 else
                 {
                     IBeanFactory beanFactory = runtimeContext.getBeanFactory();
-                    IAssignmentHandler assignmentHandler = (IAssignmentHandler)beanFactory.getBean(part.AssignmentHandler);
+                    IAssignmentHandler assignmentHandler = (IAssignmentHandler)beanFactory.GetBean(part.AssignmentHandler);
                     ((IAssignmentHandler)assignmentHandler).assign((IAssignable)taskInstance, part.Name);
                 }
             }

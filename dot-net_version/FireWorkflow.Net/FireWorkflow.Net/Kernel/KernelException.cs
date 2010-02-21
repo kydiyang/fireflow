@@ -56,10 +56,10 @@ namespace FireWorkflow.Net.Kernel
         {
             if (processInstance != null)
             {
-                this.ProcessInstanceId = processInstance.getId();
-                this.ProcessId=processInstance.getProcessId();
-                this.ProcessName=processInstance.getName();
-                this.ProcessDisplayName=processInstance.getDisplayName();
+                this.ProcessInstanceId = processInstance.Id;
+                this.ProcessId=processInstance.ProcessId;
+                this.ProcessName=processInstance.Name;
+                this.ProcessDisplayName=processInstance.DisplayName;
             }
             if (workflowElement != null)
             {

@@ -158,7 +158,6 @@
     <Compile Include="Kernel\Impl\ActivityInstance.cs" />
     <Compile Include="Kernel\Impl\EdgeInstance.cs" />
     <Compile Include="Kernel\Impl\EndNodeInstance.cs" />
-    <Compile Include="Kernel\Impl\ExecutionThread.cs" />
     <Compile Include="Kernel\Impl\JoinPoint.cs" />
     <Compile Include="Kernel\Impl\LoopInstance.cs" />
     <Compile Include="Kernel\Impl\NetInstance.cs" />

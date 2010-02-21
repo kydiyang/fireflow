@@ -26,9 +26,9 @@ namespace FireWorkflow.Net.Kernel.Plugin
     public interface IKernelExtension
     {
         /// <summary>获取扩展目标名称</summary>
-        String getExtentionTargetName();
+        String ExtentionTargetName { get; }
 
         /// <summary>获取扩展点名称</summary>
-        String getExtentionPointName();
+        String ExtentionPointName { get; }
     }
 }

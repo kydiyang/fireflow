@@ -42,7 +42,7 @@ namespace FireWorkflow.Net.Engine.Persistence
         /******************************************************************************/
 
         /// <summary>
-        /// 插入或者更新ProcessInstance 。<br/>
+        /// 插入或者更新ProcessInstance 。同时也会保存或更新流程变量<br/>
         /// Save or update processinstance. 
         /// If the processInstance.id is null then insert a new process instance record
         /// and genarate a new id for it (save operation);
@@ -113,6 +113,23 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// <param name="processInstance"></param>
         bool restoreProcessInstance(ProcessInstance processInstance);
 
+        /******************************************************************************/
+        /************                                                        **********/
+        /************            与流程变量相关的持久化方法                    **********/
+        /************            Persistence methods for process instance    **********/
+        /************                                                        **********/
+        /******************************************************************************/
+
+        /// <summary>查询流程实例的所有变量</summary>
+        /// <param name="processInstanceId">流程实例的Id</param>
+        /// <returns>流程实例的所有变量</returns>
+        List<ProcessInstanceVar> findProcessInstanceVariable(String processInstanceId);
+
+        ProcessInstanceVar findProcessInstanceVariable(String processInstanceId, String name);
+
+        void updateProcessInstanceVariable(ProcessInstanceVar var);
+
+        void saveProcessInstanceVariable(ProcessInstanceVar var);
 
         /******************************************************************************/
         /************                                                        **********/
@@ -320,30 +337,6 @@ namespace FireWorkflow.Net.Engine.Persistence
         /// <returns></returns>
         List<IWorkItem> findHaveDoneWorkItems(String actorId, String processId, String taskId);
 
-
-
-        /*************************Persistence methods for joinpoint*********************/
-        /**
-         * Save joinpoint
-         *
-         * @param joinPoint
-         */
-        //    void saveOrUpdateJoinPoint(IJoinPoint joinPoint);
-
-        /**
-         * Find the joinpoint id
-         * (Engine没有引用到该方法，提供给业务系统使用，20090303)
-         */
-        //    IJoinPoint findJoinPointById(String id);
-
-        /**
-         * Find all the joinpoint of the process instance, and the synchronizerId of the joinpoint must Equals to the seconds argument.
-         * @param processInstanceId
-         * @param synchronizerId if the synchronizerId is null ,then all the joinpoint of the process instance will be returned.
-         */
-        //    List<IJoinPoint> findJoinPointsForProcessInstance(String processInstanceId, String synchronizerId);
-
-
         /******************************************************************************/
         /************                                                        **********/
         /************            token 相关的持久化方法                       **********/
@@ -357,10 +350,6 @@ namespace FireWorkflow.Net.Engine.Persistence
 
         /// <summary>统计流程任意节点的活动Token的数量。对于Activity节点，该数量只能取值1或者0，大于1表明有流程实例出现异常。</summary>
         Int32 getAliveTokenCountForNode(String processInstanceId, String nodeId);
-
-        //查找到状态为Dead的token
-
-        //    IToken findDeadTokenById(String id);
 
         /// <summary>(Engine没有引用到该方法，提供给业务系统使用，20090303)</summary>
         IToken findTokenById(String id);

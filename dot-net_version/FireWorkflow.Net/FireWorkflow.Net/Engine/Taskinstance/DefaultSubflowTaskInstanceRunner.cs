@@ -23,16 +23,16 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (taskInstance.TaskType != TaskTypeEnum.SUBFLOW)
             {
                 throw new EngineException(processInstance,
-                        taskInstance.getActivity(),
+                        taskInstance.Activity,
                         "DefaultSubflowTaskInstanceRunner：TaskInstance的任务类型错误，只能为SUBFLOW类型");
             }
-            Task task = taskInstance.getTask();
+            Task task = taskInstance.Task;
             SubWorkflowProcess Subflow = ((SubflowTask)task).SubWorkflowProcess;
 
             WorkflowDefinition subWorkflowDef = runtimeContext.DefinitionService.GetTheLatestVersionOfWorkflowDefinition(Subflow.WorkflowProcessId);
             if (subWorkflowDef == null)
             {
-                WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
+                WorkflowProcess parentWorkflowProcess = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, parentWorkflowProcess,
                         taskInstance.TaskId,
                         "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
@@ -41,7 +41,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (subWorkflowProcess == null)
             {
-                WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
+                WorkflowProcess parentWorkflowProcess = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, parentWorkflowProcess,
                         taskInstance.TaskId,
                         "系统中没有Id为" + Subflow.WorkflowProcessId + "的流程定义");
@@ -57,7 +57,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             IProcessInstance subProcessInstance = currentSession.createProcessInstance(subWorkflowProcess.Name, taskInstance);
 
             //初始化流程变量,从父实例获得初始值
-            Dictionary<String, Object> processVars = ((TaskInstance)taskInstance).getAliveProcessInstance().getProcessInstanceVariables();
+            Dictionary<String, Object> processVars = ((TaskInstance)taskInstance).AliveProcessInstance.ProcessInstanceVariables;
             List<DataField> datafields = subWorkflowProcess.DataFields;
             for (int i = 0; datafields != null && i < datafields.Count; i++)
             {

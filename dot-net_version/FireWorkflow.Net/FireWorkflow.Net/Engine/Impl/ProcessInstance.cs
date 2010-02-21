@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,111 +34,71 @@ namespace FireWorkflow.Net.Engine.Impl
     [Serializable]
     public class ProcessInstance : IProcessInstance, IRuntimeContextAware, IWorkflowSessionAware
     {
-        private String id = null;
-        private String processId = null;
-        private Int32 version ;
-        private String name = null;
-        private String displayName = null;
-        private Int32 state;
-        private Boolean? suspended = null;
-        private String creatorId = null;
-        private DateTime? createdTime = null;
-        private DateTime? startedTime = null;
-        private DateTime? endTime = null;
-        private DateTime? expiredTime = null;
-        private String parentProcessInstanceId = null;
-        private String parentTaskInstanceId = null;
-        private Dictionary<String, Object> processInstanceVariables = new Dictionary<String, Object>();
-        //[NonSerialized]
+        public String Id { get; set; }
+        public String ProcessId { get; set; }
+        public Int32 Version { get; set; }
+        public String Name { get; set; }
+        public String DisplayName { get; set; }
+        public ProcessInstanceEnum State { get; set; }
+        public Boolean? Suspended { get; set; }
+        public String CreatorId { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? StartedTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public DateTime? ExpiredTime { get; set; }
+        public String ParentProcessInstanceId { get; set; }
+        public String ParentTaskInstanceId { get; set; }
+        private Dictionary<String, Object> _processInstanceVariables;
+        public Dictionary<String, Object> ProcessInstanceVariables
+        {
+            get
+            {
+                IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
+                if (_processInstanceVariables == null)
+                {
+                    //通过数据库查询进行初始化
+                    List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.Id);
+                    _processInstanceVariables = new Dictionary<String, Object>();
+                    if (allVars != null && allVars.Count != 0)
+                    {
+                        foreach (ProcessInstanceVar theVar in allVars)
+                        {
+                            _processInstanceVariables.Add(theVar.VarPrimaryKey.Name, theVar.Value);
+
+                        }
+                    }
+                }
+                return _processInstanceVariables;
+            }
+            set
+            {
+                _processInstanceVariables = value;
+            }
+        }
+
         public RuntimeContext RuntimeContext { get; set; }
 
         public IWorkflowSession CurrentWorkflowSession { get; set; }
 
         public ProcessInstance()
         {
-            this.state = IProcessInstance.INITIALIZED;
-            this.suspended = false;
+            this.State = ProcessInstanceEnum.INITIALIZED;
+            this.Suspended = false;
+            this.ProcessInstanceVariables = new Dictionary<String, Object>();
         }
 
-        public override String getId()
-        {
-            return this.id;
-        }
-
-        public void setId(String id)
-        {
-            this.id = id;
-        }
-
-        public override String getProcessId()
-        {
-            return this.processId;
-        }
-
-        public void setProcessId(String processID)
-        {
-            this.processId = processID;
-        }
-
-        public override Int32 getVersion()
-        {
-            return version;
-        }
-
-        public void setVersion(Int32 version)
-        {
-            this.version = version;
-        }
-
-        public override String getName()
-        {
-            return this.name;
-        }
-
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
-        public override String getDisplayName()
-        {
-            return this.displayName;
-        }
-
-        public void setDisplayName(String label)
-        {
-            this.displayName = label;
-        }
-
-        public override Int32 getState()
-        {
-            return this.state;
-        }
-
-        public void setState(Int32 state)
-        {
-            this.state = state;
-        }
-
-        public override String getParentProcessInstanceId()
-        {
-            return parentProcessInstanceId;
-        }
-
-        public void setParentProcessInstanceId(String parentProcessInstanceId)
-        {
-            this.parentProcessInstanceId = parentProcessInstanceId;
-        }
-
+        /// <summary>生成joinPoint</summary>
+        /// <param name="synchInst"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public IJoinPoint createJoinPoint(ISynchronizerInstance synchInst, IToken token)// throws EngineException 
         {
 
             int enterTransInstanceCount = synchInst.EnteringTransitionInstances.Count;
-            if (enterTransInstanceCount == 0)
+            if (enterTransInstanceCount == 0)//检查流程定义是否合法，同步器节点必须有输入边
             {
-
-                throw new EngineException(this.getId(), this.getWorkflowProcess(),
-                        synchInst.getSynchronizer().Id, "The process definition [" + this.getName() + "] is invalid，the synchronizer[" + synchInst.getSynchronizer() + "] has no entering transition");
+                throw new EngineException(this.Id, this.WorkflowProcess,
+                        synchInst.Synchronizer.Id, "The process definition [" + this.Name + "] is invalid，the synchronizer[" + synchInst.Synchronizer + "] has no entering transition");
             }
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             //保存到数据库
@@ -128,8 +106,8 @@ namespace FireWorkflow.Net.Engine.Impl
 
             IJoinPoint resultJoinPoint = null;
             resultJoinPoint = new JoinPoint();
-            resultJoinPoint.setProcessInstance(this);
-            resultJoinPoint.setSynchronizerId(synchInst.getSynchronizer().Id);
+            resultJoinPoint.ProcessInstance=this;
+            resultJoinPoint.SynchronizerId=synchInst.Synchronizer.Id;
             if (enterTransInstanceCount == 1)
             {
                 // 生成一个不存储到数据库中的JoinPoint
@@ -137,19 +115,18 @@ namespace FireWorkflow.Net.Engine.Impl
 
                 if (token.IsAlive)
                 {
-                    resultJoinPoint.setAlive(true);
-                    resultJoinPoint.setFromActivityId(token.FromActivityId);
+                    resultJoinPoint.Alive=true;
+                    resultJoinPoint.FromActivityId=token.FromActivityId;
                 }
-                resultJoinPoint.setStepNumber(token.StepNumber + 1);
+                resultJoinPoint.StepNumber=token.StepNumber + 1;
 
                 return resultJoinPoint;
             }
             else
             {
-
                 int stepNumber = 0;
 
-                List<IToken> tokensList_0 = persistenceService.findTokensForProcessInstance(this.getId(), synchInst.getSynchronizer().Id);
+                List<IToken> tokensList_0 = persistenceService.findTokensForProcessInstance(this.Id, synchInst.Synchronizer.Id);
                 Dictionary<String, IToken> tokensMap = new Dictionary<String, IToken>();
                 for (int i = 0; i < tokensList_0.Count; i++)
                 {
@@ -161,11 +138,13 @@ namespace FireWorkflow.Net.Engine.Impl
                     }
                     else
                     {
+                        //TODO  ====下面的代码有意义吗？===start===wmj2003
                         IToken tmpToken2 = (IToken)tokensMap[tmpFromActivityId];
                         if (tmpToken2.StepNumber > tmpToken.StepNumber)
                         {
                             tokensMap[tmpFromActivityId] = tmpToken2;
                         }
+                        //TODO  ====下面的代码有意义吗？===end===wmj2003
                     }
                 }
 
@@ -175,19 +154,18 @@ namespace FireWorkflow.Net.Engine.Impl
                 {
                     IToken _token = (IToken)tokensList[i];
                     resultJoinPoint.addValue(_token.Value);
-                    if (_token.IsAlive)
+                    if (_token.IsAlive)//如果token的状态是alive
                     {
-                        resultJoinPoint.setAlive(true);
-                        String oldFromActivityId = resultJoinPoint.getFromActivityId();
-                        if (oldFromActivityId == null || oldFromActivityId.Trim().Equals(""))
+                        resultJoinPoint.Alive=true;
+                        String oldFromActivityId = resultJoinPoint.FromActivityId;
+                        if (String.IsNullOrEmpty(oldFromActivityId.Trim()))
                         {
-                            resultJoinPoint.setFromActivityId(_token.FromActivityId);
+                            resultJoinPoint.FromActivityId=_token.FromActivityId;
                         }
                         else
                         {
-                            resultJoinPoint.setFromActivityId(oldFromActivityId + TokenFrom.FROM_ACTIVITY_ID_SEPARATOR + _token.FromActivityId);
+                            resultJoinPoint.FromActivityId=oldFromActivityId + TokenFrom.FROM_ACTIVITY_ID_SEPARATOR + _token.FromActivityId;
                         }
-
                     }
                     if (token.StepNumber > stepNumber)
                     {
@@ -195,160 +173,115 @@ namespace FireWorkflow.Net.Engine.Impl
                     }
                 }
 
-                resultJoinPoint.setStepNumber(stepNumber + 1);
+                resultJoinPoint.StepNumber=stepNumber + 1;
 
                 return resultJoinPoint;
             }
-            /*
-            if (enterTransInstanceCount == 1) {
-            // 生成一个不存储到数据库中的JoinPoint
-            resultJoinPoint = new JoinPoint();
-            resultJoinPoint.addValue(token.getValue());
-
-            if (token.IsAlive) {
-            resultJoinPoint.setAlive(true);
-            }
-            resultJoinPoint.setProcessInstance(this);
-            return resultJoinPoint;
-            } else {
-            // 1、首先从数据库中查询，看看是否已经存在该JoinPoint
-            //对于循环的情况,此处会存在一些问题...
-            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            List<IJoinPoint> joinPointList = persistenceService.findJoinPointsForProcessInstance(this.getId(), synchInst.getSynchronizer().getId());
-            IJoinPoint joinPoint = null;
-            if (joinPointList != null && joinPointList.Count > 0) {
-            joinPoint = joinPointList.get(0);
-            }
-            if (joinPoint != null) {
-            resultJoinPoint = joinPoint;
-            resultJoinPoint.setProcessInstance(this);
-            } else {
-            // 2、生成一个存储到数据库中的joinPoint
-            resultJoinPoint = new JoinPoint();
-            resultJoinPoint.setProcessInstance(this);
-            resultJoinPoint.setSynchronizerId(synchInst.getSynchronizer().getId());
-            }
-            resultJoinPoint.addValue(token.getValue());
-
-            if (token.IsAlive) {
-            resultJoinPoint.setAlive(true);
-            }
-
-            persistenceService.saveOrUpdateJoinPoint(resultJoinPoint);
-            return resultJoinPoint;
-            }
-             */
         }
 
-        public override void run()
+        public void run()
         {
-            if (this.getState() != IProcessInstance.INITIALIZED)
+            if (this.State != ProcessInstanceEnum.INITIALIZED)
             {
-                throw new EngineException(this.getId(),
-                        this.getWorkflowProcess(),
-                        this.getProcessId(), "The state of the process instance is " + this.getState() + ",can not run it ");
+                throw new EngineException(this.Id,
+                        this.WorkflowProcess,
+                        this.ProcessId, "The state of the process instance is " + this.State + ",can not run it ");
             }
 
-            INetInstance netInstance = (INetInstance)this.RuntimeContext.getKernelManager().getNetInstance(this.getProcessId(), this.getVersion());
+            INetInstance netInstance = (INetInstance)this.RuntimeContext.getKernelManager().getNetInstance(this.ProcessId, this.Version);
             if (netInstance == null)
             {
-                throw new EngineException(this.getId(),
-                        this.getWorkflowProcess(),
-                        this.getProcessId(), "The net instance for the  workflow process [Id=" + this.getProcessId() + "] is Not found");
+                throw new EngineException(this.Id,
+                        this.WorkflowProcess,
+                        this.ProcessId, "The net instance for the  workflow process [Id=" + this.ProcessId + "] is Not found");
             }
             //触发事件
             ProcessInstanceEvent pevent = new ProcessInstanceEvent();
-            pevent.setEventType(ProcessInstanceEvent.BEFORE_PROCESS_INSTANCE_RUN);
-            pevent.setSource(this);
+            pevent.EventType = ProcessInstanceEventEnum.BEFORE_PROCESS_INSTANCE_RUN;
+            pevent.Source=this;
             this.fireProcessInstanceEvent(pevent);
 
-            this.setState(IProcessInstance.RUNNING);
-            this.setStartedTime(this.RuntimeContext.getCalendarService().getSysDate());
+            this.State=ProcessInstanceEnum.RUNNING;
+            this.StartedTime=this.RuntimeContext.getCalendarService().getSysDate();
             this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstance(this);
             netInstance.run(this);
         }
 
-        public override Dictionary<String, Object> getProcessInstanceVariables()
+
+        public Object getProcessInstanceVariable(String name)
         {
-            return processInstanceVariables;
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
+            if (_processInstanceVariables == null)
+            {
+                //通过数据库查询进行初始化
+                List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.Id);
+                _processInstanceVariables = new Dictionary<String, Object>();
+                if (allVars != null && allVars.Count != 0)
+                {
+                    foreach (ProcessInstanceVar theVar in allVars)
+                    {
+                        _processInstanceVariables.Add(theVar.VarPrimaryKey.Name, theVar.Value);
+                    }
+                }
+            }
+            return _processInstanceVariables[name];
         }
 
-        public override void setProcessInstanceVariables(Dictionary<String, Object> vars)
+        public void setProcessInstanceVariable(String name, Object value)
         {
-            processInstanceVariables = vars;
-            //        processInstanceVariables.putAll(vars);
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
+            if (_processInstanceVariables == null)
+            {
+                //通过数据库查询进行初始化
+                List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.Id);
+                _processInstanceVariables = new Dictionary<String, Object>();
+                if (allVars != null && allVars.Count != 0)
+                {
+                    foreach (ProcessInstanceVar theVar in allVars)
+                    {
+                        _processInstanceVariables.Add(theVar.VarPrimaryKey.Name, theVar.Value);
+                    }
+                }
+            }
+            ProcessInstanceVar procInstVar = new ProcessInstanceVar();
+            ProcessInstanceVarPk pk = new ProcessInstanceVarPk();
+            pk.ProcessInstanceId=this.Id;
+            pk.Name=name;
+            procInstVar.VarPrimaryKey=pk;
+            procInstVar.Value = value.ToString();
+            procInstVar.ValueType=value.GetType().Name;
+
+            if (_processInstanceVariables.ContainsKey(name))
+            {
+                persistenceService.updateProcessInstanceVariable(procInstVar);
+            }
+            else
+            {
+                persistenceService.saveProcessInstanceVariable(procInstVar);
+            }
+            _processInstanceVariables.Add(name, value);
         }
 
-        public override Object getProcessInstanceVariable(String name)
+        public WorkflowProcess WorkflowProcess
         {
-            return processInstanceVariables[name];
+            get
+            {
+                WorkflowDefinition workflowDef = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.ProcessId, this.Version);
+                WorkflowProcess workflowProcess = null;
+                workflowProcess = workflowDef.getWorkflowProcess();
+                return workflowProcess;
+            }
         }
 
-        public override void setProcessInstanceVariable(String name, Object var)
-        {
-            processInstanceVariables.Add(name, var);
-        }
-
-        public override WorkflowProcess getWorkflowProcess()
-        {
-            WorkflowDefinition workflowDef = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
-            WorkflowProcess workflowProcess = null;
-
-            workflowProcess = workflowDef.getWorkflowProcess();
-
-
-            return workflowProcess;
-        }
-
-        public override String getParentTaskInstanceId()
-        {
-            return parentTaskInstanceId;
-        }
-
-        public  void setParentTaskInstanceId(String taskInstId)
-        {
-            parentTaskInstanceId = taskInstId;
-        }
-
-        public override DateTime? getCreatedTime()
-        {
-            return this.createdTime;
-        }
-
-        public override DateTime? getStartedTime()
-        {
-            return this.startedTime;
-        }
-
-        public override DateTime? getEndTime()
-        {
-            return this.endTime;
-        }
-
-        public void setCreatedTime(DateTime createdTime)
-        {
-            this.createdTime = createdTime;
-        }
-
-        public void setEndTime(DateTime endTime)
-        {
-            this.endTime = endTime;
-        }
-
-        public void setStartedTime(DateTime startedTime)
-        {
-            this.startedTime = startedTime;
-        }
-
-        /**
-         * 正常结束工作流
-         * 1、首先检查有无活动的token,如果有则直接返回，如果没有则结束当前流程
-         * 2、执行结束流程的操作，将state的值设置为结束状态
-         * 3、然后检查parentTaskInstanceId是否为null，如果不为null则，调用父taskinstance的complete操作。
-         */
+        /// <summary>
+        /// <para>正常结束工作流</para>
+        /// <para>1、首先检查有无活动的token,如果有则直接返回，如果没有则结束当前流程</para>
+        /// <para>2、执行结束流程的操作，将state的值设置为结束状态</para>
+        /// 3、然后检查parentTaskInstanceId是否为null，如果不为null则，调用父taskinstance的complete操作。
+        /// </summary>
         public void complete()
         {
-            List<IToken> tokens = this.RuntimeContext.PersistenceService.findTokensForProcessInstance(this.getId(), null);
+            List<IToken> tokens = this.RuntimeContext.PersistenceService.findTokensForProcessInstance(this.Id, null);
             Boolean canBeCompleted = true;
             for (int i = 0; tokens != null && i < tokens.Count; i++)
             {
@@ -364,44 +297,47 @@ namespace FireWorkflow.Net.Engine.Impl
                 return;
             }
 
-            this.setState(IProcessInstance.COMPLETED);
+            this.State=ProcessInstanceEnum.COMPLETED;
             //记录结束时间
-            this.setEndTime(this.RuntimeContext.getCalendarService().getSysDate());
+            this.EndTime=this.RuntimeContext.getCalendarService().getSysDate();
             this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstance(this);
+
+            //删除所有的token
+            for (int i = 0; tokens != null && i < tokens.Count; i++)
+            {
+                IToken token = tokens[i];
+                this.RuntimeContext.PersistenceService.deleteToken(token);
+            }
 
             //触发事件
             ProcessInstanceEvent pevent = new ProcessInstanceEvent();
-            pevent.setEventType(ProcessInstanceEvent.AFTER_PROCESS_INSTANCE_COMPLETE);
-            pevent.setSource(this);
+            pevent.EventType=ProcessInstanceEventEnum.AFTER_PROCESS_INSTANCE_COMPLETE;
+            pevent.Source=this;
             this.fireProcessInstanceEvent(pevent);
-            if (this.getParentTaskInstanceId() != null && !this.getParentTaskInstanceId().Trim().Equals(""))
+            if ( !String.IsNullOrEmpty(this.ParentTaskInstanceId.Trim()))
             {
-                ITaskInstance taskInstance = this.RuntimeContext.PersistenceService.findAliveTaskInstanceById(this.getParentTaskInstanceId());
+                ITaskInstance taskInstance = this.RuntimeContext.PersistenceService.findAliveTaskInstanceById(this.ParentTaskInstanceId);
                 ((IRuntimeContextAware)taskInstance).RuntimeContext=this.RuntimeContext;
                 ((IWorkflowSessionAware)taskInstance).CurrentWorkflowSession = this.CurrentWorkflowSession;
                 ((TaskInstance)taskInstance).complete(null);
             }
         }
 
-        public override void abort()
+        public void abort()
         {
-            if (this.state == IProcessInstance.COMPLETED || this.state == IProcessInstance.CANCELED)
+            if (this.State == ProcessInstanceEnum.COMPLETED || this.State == ProcessInstanceEnum.CANCELED)
             {
-                throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be aborted,the state of this process instance is " + this.getState());
+                throw new EngineException(this, this.WorkflowProcess, "The process instance can not be aborted,the state of this process instance is " + this.State);
             }
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.abortProcessInstance(this);
         }
 
-
-        /**
-         * 触发process instance相关的事件
-         * @param e
-         * @throws org.fireflow.engine.EngineException
-         */
+        /// <summary>触发process instance相关的事件</summary>
+        /// <param name="e"></param>
         protected void fireProcessInstanceEvent(ProcessInstanceEvent e)
         {
-            WorkflowProcess workflowProcess = this.getWorkflowProcess();
+            WorkflowProcess workflowProcess = this.WorkflowProcess;
             if (workflowProcess == null)
             {
                 return;
@@ -419,48 +355,16 @@ namespace FireWorkflow.Net.Engine.Impl
             }
         }
 
-        public override DateTime? getExpiredTime()
+        public Boolean? IsSuspended()
         {
-            return this.expiredTime;
+            return Suspended;
         }
 
-        public  void setExpiredTime(DateTime arg)
+        public void suspend()
         {
-            this.expiredTime = arg;
-
-        }
-
-
-        public override String getCreatorId()
-        {
-            return this.creatorId;
-        }
-
-        public  void setCreatorId(String s)
-        {
-            this.creatorId = s;
-        }
-
-        public override Boolean? IsSuspended()
-        {
-            return suspended;
-        }
-
-        public  Boolean? getSuspended()
-        {
-            return suspended;
-        }
-
-        public  void setSuspended(Boolean isSuspended)
-        {
-            this.suspended = isSuspended;
-        }
-
-        public override void suspend()
-        {
-            if (this.state == IProcessInstance.COMPLETED || this.state == IProcessInstance.CANCELED)
+            if (this.State == ProcessInstanceEnum.COMPLETED || this.State == ProcessInstanceEnum.CANCELED)
             {
-                throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be suspended,the state of this process instance is " + this.state);
+                throw new EngineException(this, this.WorkflowProcess, "The process instance can not be suspended,the state of this process instance is " + this.State);
             }
             if (this.IsSuspended() != null && (bool)this.IsSuspended())
             {
@@ -470,21 +374,18 @@ namespace FireWorkflow.Net.Engine.Impl
             persistenceService.suspendProcessInstance(this);
         }
 
-        public override void restore()
+        public void restore()
         {
-            if (this.state == IProcessInstance.COMPLETED || this.state == IProcessInstance.CANCELED)
+            if (this.State == ProcessInstanceEnum.COMPLETED || this.State == ProcessInstanceEnum.CANCELED)
             {
-                throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be restored,the state of this process instance is " + this.state);
+                throw new EngineException(this, this.WorkflowProcess, "The process instance can not be restored,the state of this process instance is " + this.State);
             }
             if (!(this.IsSuspended() != null && (bool)this.IsSuspended()))
             {
                 return;
             }
-
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             persistenceService.restoreProcessInstance(this);
-
         }
-
     }
 }

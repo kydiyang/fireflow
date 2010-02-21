@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +33,8 @@ namespace FireWorkflow.Net.Kernel.Impl
 {
     public class SynchronizerInstance : AbstractNodeInstance, ISynchronizerInstance
     {
-
-        //[NonSerialized]
-        //public  const Log log = LogFactory.getLog(SynchronizerInstance.class);
-        [NonSerialized]
-        public const String Extension_Target_Name = "org.fireflow.kernel.SynchronizerInstance";
-        [NonSerialized]
+        public const String Extension_Target_Name = "FireWorkflow.Net.Kernel.SynchronizerInstance";
         public static List<String> Extension_Point_Names = new List<String>();
-        [NonSerialized]
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
 
         /// <summary>
@@ -35,13 +47,12 @@ namespace FireWorkflow.Net.Kernel.Impl
             Extension_Point_Names.Add(Extension_Point_NodeInstanceEventListener);
         }
         private int volume = 0;// 即节点的容量
-        [NonSerialized]
         private Synchronizer synchronizer = null;
 
 
-        public override String getId()
+        public override String Id
         {
-            return this.synchronizer.Id;
+            get { return this.synchronizer.Id; }
         }
 
         public SynchronizerInstance(Synchronizer s)
@@ -55,32 +66,29 @@ namespace FireWorkflow.Net.Kernel.Impl
         }
 
 
-        public IJoinPoint synchronized(IToken tk, SynchronizerInstance sthis)
+        public IJoinPoint synchronized(IToken tk)
         {
             IJoinPoint joinPoint = null;
-            tk.NodeId=this.getSynchronizer().Id;
+            tk.NodeId=this.Synchronizer.Id;
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             // 触发TokenEntered事件
-            NodeInstanceEvent event1 = new NodeInstanceEvent(sthis);
-            event1.setToken(tk);
-            event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-            fireNodeLeavingEvent(event1);
+            NodeInstanceEvent event1 = new NodeInstanceEvent(this);
+            event1.Token=tk;
+            event1.EventType=NodeInstanceEventEnum.NODEINSTANCE_TOKEN_ENTERED;//token 进入
+            this.fireNodeEvent(event1);
 
             //汇聚检查
-
-            joinPoint = ((ProcessInstance)tk.ProcessInstance).createJoinPoint(sthis, tk);// JoinPoint由谁生成比较好？
-            int value = (int)joinPoint.getValue();
-            //log.debug("The volume of " + this.toString() + " is " + volume);
-            //log.debug("The value of " + this.toString() + " is " + value);
-            if (value > volume)
+            joinPoint = ((ProcessInstance)tk.ProcessInstance).createJoinPoint(this, tk);// JoinPoint由谁生成比较好？
+            int value = (int)joinPoint.Value;
+            if (value > volume)//如果value大于同步器容量，那说明出错了
             {
                 KernelException exception = new KernelException(tk.ProcessInstance,
-                        this.getSynchronizer(),
+                        this.Synchronizer,
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
                 throw exception;
             }
             if (value < volume)
-            {// 如果Value小于容量则继续等待其他弧的汇聚。
+            {// 如果Value小于容量则继续等待其他弧的汇聚。 (哪些状态为dead的token到此结束，不再向下传递)
                 return null;
             }
             return joinPoint;
@@ -89,33 +97,36 @@ namespace FireWorkflow.Net.Kernel.Impl
         public override void fire(IToken tk)
         {
             //TODO 此处性能需要改善一下,20090312
-            IJoinPoint joinPoint = synchronized(tk, this);
+            IJoinPoint joinPoint = synchronized(tk);
             if (joinPoint == null) return;
 
+            //如果汇聚点的容量和同步器节点的容量相同
             IProcessInstance processInstance = tk.ProcessInstance;
             // Synchronize的fire条件应该只与joinPoint的value有关（value==volume），与alive无关
             NodeInstanceEvent event2 = new NodeInstanceEvent(this);
-            event2.setToken(tk);
-            event2.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
-            fireNodeEnteredEvent(event2);
+            event2.Token=tk;
+            event2.EventType=NodeInstanceEventEnum.NODEINSTANCE_FIRED;
+            this.fireNodeEvent(event2);
 
             //在此事件监听器中，删除原有的token
             NodeInstanceEvent event4 = new NodeInstanceEvent(this);
-            event4.setToken(tk);
-            event4.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
-            fireNodeLeavingEvent(event4);
+            event4.Token=tk;
+            event4.EventType=NodeInstanceEventEnum.NODEINSTANCE_LEAVING;
+            
+            this.fireNodeEvent(event4);
 
-            //首先必须检查是否有满足条件的循环
+            //首先必须检查是否有满足条件的循环，loop比transition有更高的优先级，
+            //（只能够有一个loop的条件为true，流程定义的时候需要注意）
             Boolean doLoop = false;//表示是否有满足条件的循环，false表示没有，true表示有。
-            if (joinPoint.getAlive())
+            if (joinPoint.Alive)
             {
                 IToken tokenForLoop = null;
 
                 tokenForLoop = new Token(); // 产生新的token
-                tokenForLoop.IsAlive=joinPoint.getAlive();
+                tokenForLoop.IsAlive=joinPoint.Alive;
                 tokenForLoop.ProcessInstance=processInstance;
-                tokenForLoop.StepNumber=joinPoint.getStepNumber() - 1;
-                tokenForLoop.FromActivityId=joinPoint.getFromActivityId();
+                tokenForLoop.StepNumber=joinPoint.StepNumber - 1;
+                tokenForLoop.FromActivityId=joinPoint.FromActivityId;
 
                 for (int i = 0; i < this.LeavingLoopInstances.Count; i++)
                 {
@@ -135,7 +146,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                 for (int i = 0; LeavingTransitionInstances != null && i < LeavingTransitionInstances.Count; i++)
                 {
                     ITransitionInstance transInst = LeavingTransitionInstances[i];
-                    String condition = transInst.getTransition().Condition;
+                    String condition = transInst.Transition.Condition;
                     if (condition != null && condition.Equals(ConditionConstant.DEFAULT))
                     {
                         defaultTransInst = transInst;
@@ -143,10 +154,10 @@ namespace FireWorkflow.Net.Kernel.Impl
                     }
 
                     Token token = new Token(); // 产生新的token
-                    token.IsAlive=joinPoint.getAlive();
+                    token.IsAlive=joinPoint.Alive;
                     token.ProcessInstance=processInstance;
-                    token.StepNumber=joinPoint.getStepNumber();
-                    token.FromActivityId=joinPoint.getFromActivityId();
+                    token.StepNumber=joinPoint.StepNumber;
+                    token.FromActivityId=joinPoint.FromActivityId;
                     Boolean alive = transInst.take(token);
                     if (alive)
                     {
@@ -157,47 +168,35 @@ namespace FireWorkflow.Net.Kernel.Impl
                 if (defaultTransInst != null)
                 {
                     Token token = new Token();
-                    token.IsAlive=activiateDefaultCondition && joinPoint.getAlive();
+                    token.IsAlive=activiateDefaultCondition && joinPoint.Alive;
                     token.ProcessInstance=processInstance;
-                    token.StepNumber=joinPoint.getStepNumber();
-                    token.FromActivityId=joinPoint.getFromActivityId();
+                    token.StepNumber=joinPoint.StepNumber;
+                    token.FromActivityId=joinPoint.FromActivityId;
                     defaultTransInst.take(token);
                 }
 
             }
 
             NodeInstanceEvent event3 = new NodeInstanceEvent(this);
-            event3.setToken(tk);
-            event3.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
-            fireNodeLeavingEvent(event3);
+            event3.Token=tk;
+            event3.EventType=NodeInstanceEventEnum.NODEINSTANCE_COMPLETED;
+            this.fireNodeEvent(event3);
         }
 
-        // public int getValue() {
-        // return value;
-        // }
-        //
-        // public void setValue(int tokens) {
-        // this.value = tokens;
-        // }
-        public override String getExtensionTargetName()
-        {
-            return Extension_Target_Name;
-        }
 
-        public override List<String> getExtensionPointNames()
-        {
-            return Extension_Point_Names;
-        }
+        public override String ExtensionTargetName { get { return Extension_Target_Name; } }
+
+        public override List<String> ExtensionPointNames { get { return Extension_Point_Names; } }
 
         // TODO extesion是单态还是多实例？单态应该效率高一些。
         public override void registExtension(IKernelExtension extension)
         {
-            if (!Extension_Target_Name.Equals(extension.getExtentionTargetName()))
+            if (!Extension_Target_Name.Equals(extension.ExtentionTargetName))
             {
                 throw new Exception(
                         "Error:When construct the SynchronizerInstance,the Extension_Target_Name is mismatching");
             }
-            if (Extension_Point_NodeInstanceEventListener.Equals(extension.getExtentionPointName()))
+            if (Extension_Point_NodeInstanceEventListener.Equals(extension.ExtentionPointName))
             {
                 if (extension is INodeInstanceEventListener)
                 {
@@ -216,10 +215,8 @@ namespace FireWorkflow.Net.Kernel.Impl
             return "SynchronizerInstance_4_[" + synchronizer.Id + "]";
         }
 
-        public Synchronizer getSynchronizer()
-        {
-            return this.synchronizer;
-        }
+        public Synchronizer Synchronizer { get { return this.synchronizer; } }
+ 
     }
 
 }

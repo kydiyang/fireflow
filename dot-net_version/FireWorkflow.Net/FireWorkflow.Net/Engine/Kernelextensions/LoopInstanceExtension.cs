@@ -34,17 +34,12 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
 
         public RuntimeContext RuntimeContext { get; set; }
 
+
         /// <summary>获取扩展目标名称</summary>
-        public String getExtentionTargetName()
-        {
-            return LoopInstance.Extension_Target_Name;
-        }
+        public String ExtentionTargetName { get { return LoopInstance.Extension_Target_Name; } }
 
         /// <summary>获取扩展点名称</summary>
-        public String getExtentionPointName()
-        {
-            return LoopInstance.Extension_Point_LoopInstanceEventListener;
-        }
+        public String ExtentionPointName { get { return LoopInstance.Extension_Point_LoopInstanceEventListener; } }
 
         private Boolean determineTheAliveOfToken(Dictionary<String, Object> vars, String condition)
         {
@@ -70,36 +65,36 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
             // 3、计算EL表达式
             try
             {
-                Boolean alive = determineTheAliveOfToken(token.ProcessInstance.getProcessInstanceVariables(), condition);
+                Boolean alive = determineTheAliveOfToken(token.ProcessInstance.ProcessInstanceVariables, condition);
                 token.IsAlive = alive;
             }
             catch (Exception ex)
             {
-                throw new EngineException(token.ProcessInstanceId, token.ProcessInstance.getWorkflowProcess(), token.NodeId, ex.Message);
+                throw new EngineException(token.ProcessInstanceId, token.ProcessInstance.WorkflowProcess, token.NodeId, ex.Message);
             }
         }
 
         /// <summary>节点实例监听器</summary>
         public void onEdgeInstanceEventFired(EdgeInstanceEvent e)
         {
-            if (e.getEventType() == EdgeInstanceEvent.ON_TAKING_THE_TOKEN)
+            if (e.EventType == EdgeInstanceEventEnum.ON_TAKING_THE_TOKEN)
             {
-                IToken token = e.getToken();
+                IToken token = e.Token;
                 // 计算token的alive值
                 ILoopInstance transInst = (ILoopInstance)e.getSource();
-                String condition = transInst.getLoop().Condition;
+                String condition = transInst.Loop.Condition;
 
                 calculateTheAliveValue(token, condition);
 
                 if (RuntimeContext.isEnableTrace() && token.IsAlive)
                 {
                     ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                    trace.setProcessInstanceId(e.getToken().ProcessInstanceId);
-                    trace.setStepNumber(e.getToken().StepNumber + 1);
-                    trace.setType(ProcessInstanceTrace.LOOP_TYPE);
-                    trace.setFromNodeId(transInst.getLoop().FromNode.Id);
-                    trace.setToNodeId(transInst.getLoop().ToNode.Id);
-                    trace.setEdgeId(transInst.getLoop().Id);
+                    trace.ProcessInstanceId=e.Token.ProcessInstanceId;
+                    trace.StepNumber=e.Token.StepNumber + 1;
+                    trace.Type=ProcessInstanceTraceEnum.LOOP_TYPE;
+                    trace.FromNodeId=transInst.Loop.FromNode.Id;
+                    trace.ToNodeId=transInst.Loop.ToNode.Id;
+                    trace.EdgeId=transInst.Loop.Id;
                     //TODO wmj2003 一旦token从当前边上经过，那么就保存流程运行轨迹,这里应该是insert
                     RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
                 }
