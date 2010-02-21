@@ -33,34 +33,26 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
     {
         public RuntimeContext RuntimeContext { get; set; }
 
-        /// <summary>获取扩展点名称</summary>
-        public String getExtentionPointName()
-        {
-            // TODO Auto-generated method stub
-            return ActivityInstance.Extension_Point_NodeInstanceEventListener;
-        }
-
         /// <summary>获取扩展目标名称</summary>
-        public String getExtentionTargetName()
-        {
-            // TODO Auto-generated method stub
-            return ActivityInstance.Extension_Target_Name;
-        }
+        public String ExtentionTargetName { get { return ActivityInstance.Extension_Target_Name; } }
+
+        /// <summary>获取扩展点名称</summary>
+        public String ExtentionPointName { get { return ActivityInstance.Extension_Point_NodeInstanceEventListener; } }
 
         /// <summary>节点实例监听器</summary>
         public void onNodeInstanceEventFired(NodeInstanceEvent e)
         {
             // TODO Auto-generated method stub
-            if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_FIRED)
+            if (e.EventType == NodeInstanceEventEnum.NODEINSTANCE_FIRED)
             {
                 //保存token，并创建taskinstance
                 IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                 //TODO wmj2003 这里是插入还是更新token
-                persistenceService.saveOrUpdateToken(e.getToken());
+                persistenceService.saveOrUpdateToken(e.Token);
                 //触发activity节点，就要创建新的task
-                this.RuntimeContext.TaskInstanceManager.createTaskInstances(e.getToken(), (IActivityInstance)e.getSource());
+                this.RuntimeContext.TaskInstanceManager.createTaskInstances(e.Token, (IActivityInstance)e.getSource());
             }
-            else if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_COMPLETED)
+            else if (e.EventType == NodeInstanceEventEnum.NODEINSTANCE_COMPLETED)
             {
                 //			RuntimeContext.getInstance()
                 //			.TaskInstanceManager

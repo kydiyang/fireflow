@@ -32,9 +32,9 @@ namespace FireWorkflow.Net.Kernel
     /// </summary>
     public interface INetInstance
     {
-        String getId();
+        String Id { get; }
 
-        Int32 getVersion();
+        Int32 Version { get; }
 
         //TODO 实参-形参如何体现？通过Context?
         /// <summary>启动工作流的实例</summary>
@@ -47,7 +47,7 @@ namespace FireWorkflow.Net.Kernel
         /// </summary>
         void complete();//throws KernelException;
 
-        WorkflowProcess getWorkflowProcess();
+        WorkflowProcess WorkflowProcess { get; }
 
         Object getWFElementInstance(String wfElementId);
     }

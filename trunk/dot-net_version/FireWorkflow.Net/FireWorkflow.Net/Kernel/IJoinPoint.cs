@@ -31,6 +31,8 @@ namespace FireWorkflow.Net.Kernel
 
         Int32? Value { get; set; }
 
+        void addValue(Int32 v);
+
         Boolean Alive { get; set; }
 
         String SynchronizerId { get; set; }

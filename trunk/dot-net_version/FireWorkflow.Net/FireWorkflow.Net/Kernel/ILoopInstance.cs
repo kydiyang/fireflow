@@ -26,6 +26,6 @@ namespace FireWorkflow.Net.Kernel
 {
     public interface ILoopInstance : IEdgeInstance
     {
-        Loop getLoop();
+        Loop Loop { get; }
     }
 }

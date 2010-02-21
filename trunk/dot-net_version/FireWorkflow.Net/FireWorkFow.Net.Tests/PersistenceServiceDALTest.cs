@@ -76,14 +76,14 @@ namespace FireWorkFow.Net.Tests
         {
             PersistenceServiceDAL target = new PersistenceServiceDAL(); // TODO: Initialize to an appropriate value
             ProcessInstance processInstance = new ProcessInstance(); // TODO: Initialize to an appropriate value
-            processInstance.setCreatedTime(DateTime.Now);
-            processInstance.setDisplayName("test");
-            processInstance.setStartedTime(DateTime.Now);
-            processInstance.setExpiredTime(DateTime.Now);
-            processInstance.setEndTime(DateTime.Now);
-            processInstance.setProcessId(Guid.NewGuid().ToString().Replace("-", ""));
-            processInstance.setName("namet");
-            processInstance.setCreatorId("0033");
+            processInstance.CreatedTime=DateTime.Now;
+            processInstance.DisplayName="test";
+            processInstance.StartedTime=DateTime.Now;
+            processInstance.ExpiredTime=DateTime.Now;
+            processInstance.EndTime=DateTime.Now;
+            processInstance.ProcessId=Guid.NewGuid().ToString().Replace("-", "");
+            processInstance.Name="namet";
+            processInstance.CreatorId="0033";
             //processInstance.setParentProcessInstanceId("asdfasdf");
             //processInstance.setParentTaskInstanceId("asdf");
             bool expected = true; // TODO: Initialize to an appropriate value
@@ -91,7 +91,7 @@ namespace FireWorkFow.Net.Tests
             actual = target.saveOrUpdateProcessInstance(processInstance);
 
             ProcessInstance processInstance1 = (ProcessInstance)target.findProcessInstanceById("3377237c170342adad0f1654747b609a");
-            processInstance1.setName(DateTime.Now.ToString());
+            processInstance1.Name=DateTime.Now.ToString();
 
             actual = target.saveOrUpdateProcessInstance(processInstance1);
 

@@ -44,7 +44,7 @@ namespace FireWorkflow.Net.Kernel.Impl
                 this.contextInfo.Add(EngineConstant.CURRENT_PROCESS_INSTANCE, value);
                 if (value != null)
                 {
-                    this.ProcessInstanceId = value.getId();
+                    this.ProcessInstanceId = value.Id;
                 }
                 else
                 {
@@ -70,10 +70,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         /// 返回Engine的当前上下文信息，如WorkflowSession,等。
         /// 这些信息不保存到数据库 
         /// </summary>
-        public Dictionary<string, IProcessInstance> getContextInfo()
-        {
-            return this.contextInfo;
-        }
+        public Dictionary<string, IProcessInstance> ContextInfo { get { return this.contextInfo; } }
     }
 
 }

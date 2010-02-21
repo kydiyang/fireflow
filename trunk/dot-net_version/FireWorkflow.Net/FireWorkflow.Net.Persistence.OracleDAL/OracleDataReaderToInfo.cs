@@ -26,23 +26,23 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
             ProcessInstance processInstance = new ProcessInstance();
 
-            processInstance.setId(Convert.ToString(dr["id"]));
-            processInstance.setProcessId(Convert.ToString(dr["process_id"])); 
-            processInstance.setVersion(Convert.ToInt32(dr["version"])); 
-            processInstance.setName(Convert.ToString(dr["name"])); 
-            processInstance.setDisplayName(Convert.ToString(dr["display_name"])); 
+            processInstance.Id=Convert.ToString(dr["id"]);
+            processInstance.ProcessId=Convert.ToString(dr["process_id"]); 
+            processInstance.Version=Convert.ToInt32(dr["version"]); 
+            processInstance.Name=Convert.ToString(dr["name"]); 
+            processInstance.DisplayName=Convert.ToString(dr["display_name"]); 
 
-            processInstance.setState(Convert.ToInt32(dr["state"])); 
-            processInstance.setSuspended(Convert.ToInt32(dr["suspended"]) == 1); 
-            processInstance.setCreatorId(Convert.ToString(dr["creator_id"])); 
-            if (!(dr["created_time"] is DBNull)) processInstance.setCreatedTime(Convert.ToDateTime(dr["created_time"])); 
-            if (!(dr["started_time"] is DBNull)) processInstance.setStartedTime(Convert.ToDateTime(dr["started_time"])); 
+            processInstance.State= (ProcessInstanceEnum)Convert.ToInt32(dr["state"]); 
+            processInstance.Suspended=Convert.ToInt32(dr["suspended"]) == 1; 
+            processInstance.CreatorId=Convert.ToString(dr["creator_id"]); 
+            if (!(dr["created_time"] is DBNull)) processInstance.CreatedTime=Convert.ToDateTime(dr["created_time"]); 
+            if (!(dr["started_time"] is DBNull)) processInstance.StartedTime=Convert.ToDateTime(dr["started_time"]); 
 
-            if (!(dr["expired_time"] is DBNull)) processInstance.setExpiredTime(Convert.ToDateTime(dr["expired_time"])); 
-            if (!(dr["end_time"] is DBNull)) processInstance.setEndTime(Convert.ToDateTime(dr["end_time"])); 
+            if (!(dr["expired_time"] is DBNull)) processInstance.ExpiredTime=Convert.ToDateTime(dr["expired_time"]); 
+            if (!(dr["end_time"] is DBNull)) processInstance.EndTime=Convert.ToDateTime(dr["end_time"]); 
 
-            processInstance.setParentProcessInstanceId(Convert.ToString(dr["parent_processinstance_id"]));
-            processInstance.setParentTaskInstanceId(Convert.ToString(dr["parent_taskinstance_id"]));
+            processInstance.ParentProcessInstanceId=Convert.ToString(dr["parent_processinstance_id"]);
+            processInstance.ParentTaskInstanceId=Convert.ToString(dr["parent_taskinstance_id"]);
 
             return processInstance;
         }
@@ -141,15 +141,15 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
                  ProcessInstanceTrace processInstanceTrace = new ProcessInstanceTrace(); 
   
-                 processInstanceTrace.setId(Convert.ToString(dr["id"]));
-                 processInstanceTrace.setProcessInstanceId(Convert.ToString(dr["processinstance_id"]));
-                 processInstanceTrace.setStepNumber(Convert.ToInt32(dr["step_number"]));
-                 processInstanceTrace.setMinorNumber(Convert.ToInt32(dr["minor_number"]));
-                 processInstanceTrace.setType(Convert.ToString(dr["type"]));
+                 processInstanceTrace.Id=Convert.ToString(dr["id"]);
+                 processInstanceTrace.ProcessInstanceId=Convert.ToString(dr["processinstance_id"]);
+                 processInstanceTrace.StepNumber=Convert.ToInt32(dr["step_number"]);
+                 processInstanceTrace.MinorNumber=Convert.ToInt32(dr["minor_number"]);
+                 processInstanceTrace.Type = (ProcessInstanceTraceEnum)Enum.Parse( typeof(ProcessInstanceTraceEnum), Convert.ToString(dr["type"]));
   
-                 processInstanceTrace.setEdgeId(Convert.ToString(dr["edge_id"]));
-                 processInstanceTrace.setFromNodeId(Convert.ToString(dr["from_node_id"]));
-                 processInstanceTrace.setToNodeId(Convert.ToString(dr["to_node_id"]));
+                 processInstanceTrace.EdgeId=Convert.ToString(dr["edge_id"]);
+                 processInstanceTrace.FromNodeId=Convert.ToString(dr["from_node_id"]);
+                 processInstanceTrace.ToNodeId=Convert.ToString(dr["to_node_id"]);
   
                  return processInstanceTrace; 
   

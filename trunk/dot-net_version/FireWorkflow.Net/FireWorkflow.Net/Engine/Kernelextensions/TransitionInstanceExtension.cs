@@ -76,41 +76,35 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
             //3、计算EL表达式
             try
             {
-                Boolean alive = determineTheAliveOfToken(token.ProcessInstance.getProcessInstanceVariables(), condition);
+                Boolean alive = determineTheAliveOfToken(token.ProcessInstance.ProcessInstanceVariables, condition);
                 token.IsAlive=alive;
             }
             catch (Exception ex)
             {
-                throw new EngineException(token.ProcessInstanceId, token.ProcessInstance.getWorkflowProcess(), token.NodeId, ex.Message);
+                throw new EngineException(token.ProcessInstanceId, token.ProcessInstance.WorkflowProcess, token.NodeId, ex.Message);
             }
 
         }
 
         /// <summary>获取扩展目标名称</summary>
-        public String getExtentionTargetName()
-        {
-            return TransitionInstance.Extension_Target_Name;
-        }
+        public String ExtentionTargetName { get { return TransitionInstance.Extension_Target_Name; } }
 
         /// <summary>获取扩展点名称</summary>
-        public String getExtentionPointName()
-        {
-            return TransitionInstance.Extension_Point_TransitionInstanceEventListener;
-        }
+        public String ExtentionPointName { get { return TransitionInstance.Extension_Point_TransitionInstanceEventListener; } }
 
         /// <summary>节点实例监听器</summary>
         public void onEdgeInstanceEventFired(EdgeInstanceEvent e)
         {
-            if (e.getEventType() == EdgeInstanceEvent.ON_TAKING_THE_TOKEN)
+            if (e.EventType == EdgeInstanceEventEnum.ON_TAKING_THE_TOKEN)
             {
-                IToken token = e.getToken();
+                IToken token = e.Token;
                 ITransitionInstance transInst = (ITransitionInstance)e.getSource();
-                String condition = transInst.getTransition().Condition;
+                String condition = transInst.Transition.Condition;
                 calculateTheAliveValue(token, condition);
 
                 if (RuntimeContext.isEnableTrace() && token.IsAlive)
                 {
-                    Transition transition = transInst.getTransition();
+                    Transition transition = transInst.Transition;
                     IWFElement fromNode = transition.FromNode;
                     int minorNumber = 1;
                     if (fromNode is Activity)
@@ -123,13 +117,13 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                     }
 
                     ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                    trace.setProcessInstanceId(e.getToken().ProcessInstanceId);
-                    trace.setStepNumber(e.getToken().StepNumber);
-                    trace.setType(ProcessInstanceTrace.TRANSITION_TYPE);
-                    trace.setFromNodeId(transInst.getTransition().FromNode.Id);
-                    trace.setToNodeId(transInst.getTransition().ToNode.Id);
-                    trace.setEdgeId(transInst.getTransition().Id);
-                    trace.setMinorNumber(minorNumber);
+                    trace.ProcessInstanceId=e.Token.ProcessInstanceId;
+                    trace.StepNumber=e.Token.StepNumber;
+                    trace.Type = ProcessInstanceTraceEnum.TRANSITION_TYPE;
+                    trace.FromNodeId=transInst.Transition.FromNode.Id;
+                    trace.ToNodeId=transInst.Transition.ToNode.Id;
+                    trace.EdgeId=transInst.Transition.Id;
+                    trace.MinorNumber=minorNumber;
                     //TODO wmj2003 这里应该是insert。一旦token从当前边上经过，那么就保存流程运行轨迹.
                     RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
                 }

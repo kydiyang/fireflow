@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,82 +30,65 @@ namespace FireWorkflow.Net.Kernel.Impl
 {
     public class ActivityInstance : AbstractNodeInstance, IActivityInstance
     {
-
-        //[NonSerialized]
-        //public const Log log = LogFactory.getLog(ActivityInstance.class);
-        [NonSerialized]
-        public const String Extension_Target_Name = "org.fireflow.kernel.ActivityInstance";
-        [NonSerialized]
+        public const String Extension_Target_Name = "FireWorkflow.Net.Kernel.ActivityInstance";
         public static List<String> Extension_Point_Names = new List<String>();
-        [NonSerialized]
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
-
 
         static ActivityInstance()
         {
             Extension_Point_Names.Add(Extension_Point_NodeInstanceEventListener);
         }
-        [NonSerialized]
-        private Activity activity = null;
 
         public ActivityInstance(Activity a)
         {
-            activity = a;
+            Activity = a;
         }
 
-        public override String getId()
+        public override String Id
         {
-            return activity.Id;
+            get { return Activity.Id; }
         }
 
         public override void fire(IToken tk)
         {
             //log.debug("The weight of the Entering TransitionInstance is " + tk.getValue());
             IToken token = tk;
-            token.NodeId=this.getActivity().Id;
+            token.NodeId=this.Activity.Id;
 
             //触发TokenEntered事件
             NodeInstanceEvent event1 = new NodeInstanceEvent(this);
-            event1.setToken(tk);
-            event1.setEventType(NodeInstanceEvent.NODEINSTANCE_TOKEN_ENTERED);
-            fireNodeEnteredEvent(event1);
-            if (token.IsAlive)
+            event1.Token=tk;
+            event1.EventType=NodeInstanceEventEnum.NODEINSTANCE_TOKEN_ENTERED;//token 来了
+            
+            this.fireNodeEvent(event1);
+            if (token.IsAlive)//如果token是活动的，那么就保存token，并创建taskinstance
             {
                 NodeInstanceEvent neevent = new NodeInstanceEvent(this);
-                neevent.setToken(token);
-                neevent.setEventType(NodeInstanceEvent.NODEINSTANCE_FIRED);
-                fireNodeEnteredEvent(neevent);
-
-                //如果没有task,即该activity是一个dummy activity，则直接complete
-                //注释:2009-06-01,complete工作被移植到了BasicTaskInstanceManager.createTaskInstances(...)
-                //            if (this.getActivity().getTasks().Count == 0) {
-                //                this.complete(token, null);
-                //            }
+                neevent.Token=token;
+                neevent.EventType=NodeInstanceEventEnum.NODEINSTANCE_FIRED;//token 被触发,创建taskinstance，等待
+                this.fireNodeEvent(neevent);
             }
-            else
+            else//如果token是dead状态，那么就直接结束当前节点。
             {
                 this.complete(token, null);
             }
         }
 
+        /// <summary>结束活动</summary>
+        /// <param name="token"></param>
+        /// <param name="targetActivityInstance"></param>
         public void complete(IToken token, IActivityInstance targetActivityInstance)
         {
             NodeInstanceEvent event2 = new NodeInstanceEvent(this);
-            event2.setToken(token);
-            event2.setEventType(NodeInstanceEvent.NODEINSTANCE_LEAVING);
-            fireNodeLeavingEvent(event2);
+            event2.Token=token;
+            event2.EventType=NodeInstanceEventEnum.NODEINSTANCE_LEAVING;//token leaving
+            this.fireNodeEvent(event2);
 
 
-            token.FromActivityId=this.getActivity().Id;
+            token.FromActivityId=this.Activity.Id;
 
             if (targetActivityInstance != null)
             {
-                /*为什么要新建一个Token?似乎没有必要。20090122
-                Token newtoken = new Token();
-                newtoken.setAlive(token.IsAlive);
-                newtoken.setProcessInstance(token.getProcessInstance());
-                targetActivityInstance.fire(newtoken);
-                 */
                 token.StepNumber=token.StepNumber + 1;
                 targetActivityInstance.fire(token);
             }
@@ -104,30 +105,24 @@ namespace FireWorkflow.Net.Kernel.Impl
             if (token.IsAlive)
             {
                 NodeInstanceEvent neevent = new NodeInstanceEvent(this);
-                neevent.setToken(token);
-                neevent.setEventType(NodeInstanceEvent.NODEINSTANCE_COMPLETED);
-                fireNodeLeavingEvent(neevent);
+                neevent.Token=token;
+                neevent.EventType=NodeInstanceEventEnum.NODEINSTANCE_COMPLETED;//token completed
+                this.fireNodeEvent(neevent);
             }
         }
 
-        public override String getExtensionTargetName()
-        {
-            return Extension_Target_Name;
-        }
+        public override String ExtensionTargetName { get { return Extension_Target_Name; } }
 
-        public override List<String> getExtensionPointNames()
-        {
-            return Extension_Point_Names;
-        }
+        public override List<String> ExtensionPointNames { get { return Extension_Point_Names; } }
 
         //TODO extesion是单态还是多实例？单态应该效率高一些。
         public override void registExtension(IKernelExtension extension)
         {
-            if (!Extension_Target_Name.Equals(extension.getExtentionTargetName()))
+            if (!Extension_Target_Name.Equals(extension.ExtentionTargetName))
             {
                 throw new Exception("Error:When construct the ActivityInstance,the Extension_Target_Name is mismatching");
             }
-            if (Extension_Point_NodeInstanceEventListener.Equals(extension.getExtentionPointName()))
+            if (Extension_Point_NodeInstanceEventListener.Equals(extension.ExtentionPointName))
             {
                 if (extension is INodeInstanceEventListener)
                 {
@@ -140,16 +135,12 @@ namespace FireWorkflow.Net.Kernel.Impl
             }
         }
 
-
         public override String ToString()
         {
-            return "ActivityInstance_4_[" + activity.Name + "]";
+            return "ActivityInstance_4_[" + Activity.Name + "]";
         }
 
-        public Activity getActivity()
-        {
-            return activity;
-        }
+        public Activity Activity { get; set; }
     }
 
 }

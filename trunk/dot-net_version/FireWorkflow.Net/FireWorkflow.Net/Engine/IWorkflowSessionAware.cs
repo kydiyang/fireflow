@@ -17,7 +17,5 @@ namespace FireWorkflow.Net.Engine
         /// <summary>设置或返回当前的IWorkflowSession</summary>
         /// <returns></returns>
         IWorkflowSession CurrentWorkflowSession { get; set; }
-
-        //void setCurrentWorkflowSession(IWorkflowSession session);
     }
 }

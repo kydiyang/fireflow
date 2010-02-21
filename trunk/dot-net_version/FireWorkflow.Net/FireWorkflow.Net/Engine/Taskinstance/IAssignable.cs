@@ -24,7 +24,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         /// </summary>
         /// <param name="actorId">操作员Id</param>
         /// <returns>返回创建的WorkItem</returns>
-        IWorkItem asignToActor(String actorId);// throws EngineException,KernelException;
+        IWorkItem assignToActor(String actorId);// throws EngineException,KernelException;
 
         /// <summary>
         /// 将TaskInstance分配给列表中的操作员。即创建N个WorkItem，每个操作员一个WorkItem，并且这些WorkItem都需要签收。
@@ -34,6 +34,6 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         /// </summary>
         /// <param name="actorIds">操作员Id</param>
         /// <returns>返回创建的WorkItem列表</returns>
-        List<IWorkItem> asignToActors(List<String> actorIds);// throws EngineException, KernelException;
+        List<IWorkItem> assignToActors(List<String> actorIds);// throws EngineException, KernelException;
     }
 }

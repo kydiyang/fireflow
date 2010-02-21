@@ -186,13 +186,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current workflow session is null.");
             }
             if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current runtime context is null.");
             }
             ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
@@ -210,13 +210,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current workflow session is null.");
             }
             if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current runtime context is null.");
             }
             ITaskInstanceManager taskInstanceMgr = this.RuntimeContext.TaskInstanceManager;
@@ -240,13 +240,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current workflow session is null.");
             }
             if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current runtime context is null.");
             }
             if (dynamicAssignmentHandler != null)
@@ -267,13 +267,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current workflow session is null.");
             }
             if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current runtime context is null.");
             }
 
@@ -301,13 +301,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current workflow session is null.");
             }
             if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current runtime context is null.");
             }
 
@@ -350,13 +350,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (this._workflowSession == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current workflow session is null.");
             }
             if (this.RuntimeContext == null)
             {
                 new EngineException(this.getTaskInstance().ProcessInstanceId,
-                        this.getTaskInstance().getWorkflowProcess(), this.getTaskInstance().TaskId,
+                        this.getTaskInstance().WorkflowProcess, this.getTaskInstance().TaskId,
                         "The current runtime context is null.");
             }
             if (dynamicAssignmentHandler != null)
@@ -366,8 +366,5 @@ namespace FireWorkflow.Net.Engine.Impl
             ITaskInstanceManager taskInstanceManager = this.RuntimeContext.TaskInstanceManager;
             taskInstanceManager.completeWorkItemAndJumpTo(this, targetActivityId, comments);
         }
-
-
-
     }
 }

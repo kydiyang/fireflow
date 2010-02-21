@@ -34,6 +34,6 @@ namespace FireWorkflow.Net.Kernel
         /// </summary>
         int Volume { get; set; }
 
-        Synchronizer getSynchronizer();
+        Synchronizer Synchronizer { get; }
     }
 }

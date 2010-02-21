@@ -112,7 +112,7 @@ namespace FireWorkflow.Net.Kernel
             }
             NetInstance netInstance = new NetInstance(workflowProcess, KernelExtensions);
             //netInstance.setWorkflowProcess(workflowProcess);
-            netInstance.setVersion(workflowDef.Version);//设置版本号
+            netInstance.Version = workflowDef.Version;//设置版本号
             //map的key的组成规则：流程定义ID_V_版本号 
             netInstanceMap.Add(workflowDef.ProcessId + "_V_" + workflowDef.Version, netInstance);
 

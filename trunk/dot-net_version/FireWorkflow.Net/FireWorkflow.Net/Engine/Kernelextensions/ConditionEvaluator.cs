@@ -32,16 +32,10 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
         public RuntimeContext RuntimeContext { get; set; }
 
         /// <summary>获取扩展目标名称</summary>
-        public String getExtentionTargetName()
-        {
-            throw new NotImplementedException("Not supported yet.");
-        }
+        public String ExtentionTargetName { get { return String.Empty; } }
 
         /// <summary>获取扩展点名称</summary>
-        public String getExtentionPointName()
-        {
-            throw new NotImplementedException("Not supported yet.");
-        }
+        public String ExtentionPointName { get { return String.Empty; } }
 
 
     }

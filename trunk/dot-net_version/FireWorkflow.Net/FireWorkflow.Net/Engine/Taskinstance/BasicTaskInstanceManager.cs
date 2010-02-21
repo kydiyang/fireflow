@@ -60,9 +60,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         public void createTaskInstances(IToken token, IActivityInstance activityInstance) //throws EngineException, KernelException 
         {
             // TODO Auto-generated method stub
-            Activity activity = activityInstance.getActivity();
-            IPersistenceService persistenceService = RuntimeContext.PersistenceService;
-            ICalendarService calService = RuntimeContext.getCalendarService();
+            Activity activity = activityInstance.Activity;
+            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
+            ICalendarService calService = this.RuntimeContext.getCalendarService();
 
             IProcessInstance processInstance = token.ProcessInstance;
             WorkflowSession workflowSession = (WorkflowSession)((IWorkflowSessionAware)processInstance).CurrentWorkflowSession;
@@ -70,7 +70,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (workflowSession == null)
             {
                 throw new EngineException(token.ProcessInstance,
-                        activityInstance.getActivity(),
+                        activityInstance.Activity,
                         "The workflow session in process instance can NOT be null");
             }
 
@@ -92,9 +92,9 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 ((TaskInstance)taskInstance).TaskType=taskType;
                 ((TaskInstance)taskInstance).StepNumber=token.StepNumber;
                 //            ((TaskInstance) taskInstance).TokenId=token.Id;
-                ((TaskInstance)taskInstance).ProcessInstanceId=processInstance.getId();
-                ((TaskInstance)taskInstance).ProcessId=processInstance.getProcessId();
-                ((TaskInstance)taskInstance).Version=processInstance.getVersion();
+                ((TaskInstance)taskInstance).ProcessInstanceId=processInstance.Id;
+                ((TaskInstance)taskInstance).ProcessId=processInstance.ProcessId;
+                ((TaskInstance)taskInstance).Version=processInstance.Version;
                 ((TaskInstance)taskInstance).ActivityId=activity.Id;
                 if (TaskTypeEnum.FORM==taskType)
                 {
@@ -125,8 +125,6 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     ((TaskInstance)taskInstance).ExpiredTime=calService.dateAfter(calService.getSysDate(), duration);
                 }
 
-
-
                 // 2、保存实例taskInstance
                 persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
@@ -150,7 +148,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (LoopStrategyEnum.SKIP == loopStrategy && !currentSession.isInWithdrawOrRejectOperation())
             {
                 //检查是否已经执行过的task instance
-                Int32 count = persistenceService.getCompletedTaskInstanceCountForTask(processInstance.getId(), task.Id);
+                Int32 count = persistenceService.getCompletedTaskInstanceCountForTask(processInstance.Id, task.Id);
                 if (count > 0)
                 {
                     return null;
@@ -162,19 +160,19 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             //首先查找Task级别的TaskInstanceCreator
             taskInstanceCreatorName = task.TaskInstanceCreator;
-            if (taskInstanceCreatorName != null && !taskInstanceCreatorName.Trim().Equals(""))
+            if (!String.IsNullOrEmpty(taskInstanceCreatorName.Trim()))
             {
                 IBeanFactory beanFactory = this.RuntimeContext.getBeanFactory();
-                taskInstanceCreator = (ITaskInstanceCreator)beanFactory.getBean(taskInstanceCreatorName);
+                taskInstanceCreator = (ITaskInstanceCreator)beanFactory.GetBean(taskInstanceCreatorName);
             }
             //如果没有，则查询流程级别的TaskInstanceCreator
             if (taskInstanceCreator == null)
             {
-                taskInstanceCreatorName = processInstance.getWorkflowProcess().TaskInstanceCreator;
-                if (taskInstanceCreatorName != null && !taskInstanceCreatorName.Trim().Equals(""))
+                taskInstanceCreatorName = processInstance.WorkflowProcess.TaskInstanceCreator;
+                if (!String.IsNullOrEmpty(taskInstanceCreatorName.Trim()))
                 {
                     IBeanFactory beanFactory = this.RuntimeContext.getBeanFactory();
-                    taskInstanceCreator = (ITaskInstanceCreator)beanFactory.getBean(taskInstanceCreatorName);
+                    taskInstanceCreator = (ITaskInstanceCreator)beanFactory.GetBean(taskInstanceCreatorName);
                 }
             }
 
@@ -193,13 +191,12 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         /// </summary>
         public void startTaskInstance(IWorkflowSession currentSession, IProcessInstance processInstance, ITaskInstance taskInstance)
         {
-
             //触发事件
             TaskInstanceEvent e = new TaskInstanceEvent();
-            e.setSource(taskInstance);
-            e.setWorkflowSession(currentSession);
-            e.setProcessInstance(processInstance);
-            e.setEventType(TaskInstanceEvent.BEFORE_TASK_INSTANCE_START);
+            e.Source=taskInstance;
+            e.WorkflowSession=currentSession;
+            e.ProcessInstance=processInstance;
+            e.EventType = TaskInstanceEventEnum.BEFORE_TASK_INSTANCE_START;
             if (DefaultTaskInstanceEventListener != null)
             {
                 DefaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
@@ -210,37 +207,37 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             ((TaskInstance)taskInstance).StartedTime=this.RuntimeContext.getCalendarService().getSysDate();
             this.RuntimeContext.PersistenceService.saveOrUpdateTaskInstance(taskInstance);
 
-            Task task = taskInstance.getTask();
+            Task task = taskInstance.Task;
             String taskInstanceRunnerName = null;
             ITaskInstanceRunner taskInstanceRunner = null;
 
             TaskTypeEnum taskType = task.TaskType;
 
             taskInstanceRunnerName = task.TaskInstanceRunner;
-            if (taskInstanceRunnerName != null && !taskInstanceRunnerName.Trim().Equals(""))
+            if (!String.IsNullOrEmpty(taskInstanceRunnerName.Trim()))
             {
                 IBeanFactory beanFactory = this.RuntimeContext.getBeanFactory();
-                taskInstanceRunner = (ITaskInstanceRunner)beanFactory.getBean(taskInstanceRunnerName);
+                taskInstanceRunner = (ITaskInstanceRunner)beanFactory.GetBean(taskInstanceRunnerName);
             }
 
             if (taskInstanceRunner == null)
             {
                 if (TaskTypeEnum.FORM == taskType)
                 {
-                    taskInstanceRunnerName = processInstance.getWorkflowProcess().FormTaskInstanceRunner;
+                    taskInstanceRunnerName = processInstance.WorkflowProcess.FormTaskInstanceRunner;
                 }
                 else if (TaskTypeEnum.TOOL == taskType)
                 {
-                    taskInstanceRunnerName = processInstance.getWorkflowProcess().ToolTaskInstanceRunner;
+                    taskInstanceRunnerName = processInstance.WorkflowProcess.ToolTaskInstanceRunner;
                 }
                 else if (TaskTypeEnum.SUBFLOW == taskType)
                 {
-                    taskInstanceRunnerName = processInstance.getWorkflowProcess().SubflowTaskInstanceRunner;
+                    taskInstanceRunnerName = processInstance.WorkflowProcess.SubflowTaskInstanceRunner;
                 }
-                if (taskInstanceRunnerName != null && !taskInstanceRunnerName.Trim().Equals(""))
+                if (!String.IsNullOrEmpty(taskInstanceRunnerName.Trim()))
                 {
                     IBeanFactory beanFactory = this.RuntimeContext.getBeanFactory();
-                    taskInstanceRunner = (ITaskInstanceRunner)beanFactory.getBean(taskInstanceRunnerName);
+                    taskInstanceRunner = (ITaskInstanceRunner)beanFactory.GetBean(taskInstanceRunnerName);
                 }
             }
 
@@ -265,7 +262,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             else
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "无法获取TaskInstanceRunner,TaskId=" + task.Id + ", taskType=" + taskInstance.TaskType);
@@ -284,37 +281,37 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         protected Boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession, RuntimeContext runtimeContext,
                 IProcessInstance processInstance, ITaskInstance taskInstance)
         {
-            Task task = taskInstance.getTask();
+            Task task = taskInstance.Task;
             String taskInstanceCompletionEvaluatorName = null;
             ITaskInstanceCompletionEvaluator taskInstanceCompletionEvaluator = null;
 
             TaskTypeEnum taskType = task.TaskType;
 
             taskInstanceCompletionEvaluatorName = task.TaskInstanceCompletionEvaluator;
-            if (taskInstanceCompletionEvaluatorName != null && !taskInstanceCompletionEvaluatorName.Trim().Equals(""))
+            if (!String.IsNullOrEmpty(taskInstanceCompletionEvaluatorName.Trim()))
             {
                 IBeanFactory beanFactory = runtimeContext.getBeanFactory();
-                taskInstanceCompletionEvaluator = (ITaskInstanceCompletionEvaluator)beanFactory.getBean(taskInstanceCompletionEvaluatorName);
+                taskInstanceCompletionEvaluator = (ITaskInstanceCompletionEvaluator)beanFactory.GetBean(taskInstanceCompletionEvaluatorName);
             }
 
             if (taskInstanceCompletionEvaluator == null)
             {
                 if (TaskTypeEnum.FORM == taskType)
                 {
-                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().FormTaskInstanceCompletionEvaluator;
+                    taskInstanceCompletionEvaluatorName = processInstance.WorkflowProcess.FormTaskInstanceCompletionEvaluator;
                 }
                 else if (TaskTypeEnum.TOOL == taskType)
                 {
-                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().ToolTaskInstanceCompletionEvaluator;
+                    taskInstanceCompletionEvaluatorName = processInstance.WorkflowProcess.ToolTaskInstanceCompletionEvaluator;
                 }
                 else if (TaskTypeEnum.SUBFLOW == taskType)
                 {
-                    taskInstanceCompletionEvaluatorName = processInstance.getWorkflowProcess().SubflowTaskInstanceCompletionEvaluator;
+                    taskInstanceCompletionEvaluatorName = processInstance.WorkflowProcess.SubflowTaskInstanceCompletionEvaluator;
                 }
-                if (taskInstanceCompletionEvaluatorName != null && !taskInstanceCompletionEvaluatorName.Trim().Equals(""))
+                if (!String.IsNullOrEmpty(taskInstanceCompletionEvaluatorName.Trim()))
                 {
                     IBeanFactory beanFactory = runtimeContext.getBeanFactory();
-                    taskInstanceCompletionEvaluator = (ITaskInstanceCompletionEvaluator)beanFactory.getBean(taskInstanceCompletionEvaluatorName);
+                    taskInstanceCompletionEvaluator = (ITaskInstanceCompletionEvaluator)beanFactory.GetBean(taskInstanceCompletionEvaluatorName);
                 }
             }
 
@@ -339,7 +336,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             else
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "无法获取TaskInstanceCompletionEvaluator,TaskId=" + task.Id + ", taskType=" + taskInstance.TaskType);
@@ -349,7 +346,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         protected Boolean activityInstanceCanBeCompleted(ITaskInstance taskInstance)
         {
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            Activity thisActivity = (Activity)taskInstance.getActivity();
+            Activity thisActivity = (Activity)taskInstance.Activity;
             //检查是否有尚未创建的TaskInstance
             if (thisActivity.getTasks().Count > 1)
             {
@@ -396,14 +393,14 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (taskInstance.State == TaskInstanceStateEnum.INITIALIZED)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "Complete task insatance failed.The state of the task insatnce[id=" + taskInstance.Id + "] is " + taskInstance.State);
             }
             if (taskInstance.IsSuspended())
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "Complete task insatance failed. The task instance [id=" + taskInstance.Id + "] is suspended");
@@ -411,7 +408,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (targetActivityInstance != null)
             {
-                ((TaskInstance)taskInstance).TargetActivityId=targetActivityInstance.getActivity().Id;
+                ((TaskInstance)taskInstance).TargetActivityId=targetActivityInstance.Activity.Id;
             }
 
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
@@ -427,10 +424,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             persistenceService.saveOrUpdateTaskInstance(taskInstance);
             //触发相应的事件
             TaskInstanceEvent e = new TaskInstanceEvent();
-            e.setSource(taskInstance);
-            e.setWorkflowSession(currentSession);
-            e.setProcessInstance(processInstance);
-            e.setEventType(TaskInstanceEvent.AFTER_TASK_INSTANCE_COMPLETE);
+            e.Source=taskInstance;
+            e.WorkflowSession=currentSession;
+            e.ProcessInstance=processInstance;
+            e.EventType = TaskInstanceEventEnum.AFTER_TASK_INSTANCE_COMPLETE;
             if (this.DefaultTaskInstanceEventListener != null)
             {
                 this.DefaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
@@ -453,7 +450,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (tokens.Count > 1)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "与activityId=" + taskInstance.ActivityId + "对应的token数量(=" + tokens.Count + ")不正确，正确只能为1，因此无法完成complete操作");
@@ -466,7 +463,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (token.IsAlive == false)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "与activityId=" + taskInstance.ActivityId + "对应的token.alive=false，因此无法完成complete操作");
@@ -476,7 +473,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             Object obj = netInstance.getWFElementInstance(taskInstance.ActivityId);
             if (obj == null)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId, process,
                         taskInstance.TaskId,
                         "系统没有找到与activityId=" + taskInstance.ActivityId + "对应activityInstance，无法执行complete操作。");
@@ -517,7 +514,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             // }
             if (taskInstance.IsSuspended())
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId,
                         process, taskInstance.TaskId,
                         "Abort task insatance failed. The task instance [id="
@@ -525,7 +522,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
 
             // 1）检查是否在同一个“执行线”上
-            WorkflowProcess workflowProcess = taskInstance.getWorkflowProcess();
+            WorkflowProcess workflowProcess = taskInstance.WorkflowProcess;
             if (targetActivityId != null)
             {
                 String thisActivityId = taskInstance.ActivityId;
@@ -535,7 +532,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 {
                     throw new EngineException(
                             taskInstance.ProcessInstanceId,
-                            taskInstance.getWorkflowProcess(),
+                            taskInstance.WorkflowProcess,
                             taskInstance.TaskId,
                             "Jumpto refused because of the current activitgy and the target activity are NOT in the same 'Execution Thread'.");
                 }
@@ -548,7 +545,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             IActivityInstance thisActivityInstance = (IActivityInstance)netInstance.getWFElementInstance(taskInstance.ActivityId);
             if (thisActivityInstance == null)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId,
                         process, taskInstance.TaskId, "系统没有找到与activityId="
                                 + taskInstance.ActivityId
@@ -557,7 +554,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (targetActivityInstance != null)
             {
-                ((TaskInstance)taskInstance).TargetActivityId=targetActivityInstance.getActivity().Id;
+                ((TaskInstance)taskInstance).TargetActivityId=targetActivityInstance.Activity.Id;
             }
 
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
@@ -567,10 +564,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             // 触发相应的事件
             TaskInstanceEvent e = new TaskInstanceEvent();
-            e.setSource(taskInstance);
-            e.setWorkflowSession(currentSession);
-            e.setProcessInstance(processInstance);
-            e.setEventType(TaskInstanceEvent.AFTER_TASK_INSTANCE_COMPLETE);
+            e.Source=taskInstance;
+            e.WorkflowSession=currentSession;
+            e.ProcessInstance=processInstance;
+            e.EventType = TaskInstanceEventEnum.AFTER_TASK_INSTANCE_COMPLETE;
             if (this.DefaultTaskInstanceEventListener != null)
             {
                 this.DefaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
@@ -595,7 +592,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (tokens.Count > 1)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId,
                         process, taskInstance.TaskId, "与activityId="
                                 + taskInstance.ActivityId + "对应的token数量(="
@@ -609,7 +606,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (token.IsAlive == false)
             {
-                WorkflowProcess process = taskInstance.getWorkflowProcess();
+                WorkflowProcess process = taskInstance.WorkflowProcess;
                 throw new EngineException(taskInstance.ProcessInstanceId,
                         process, taskInstance.TaskId, "与activityId="
                                 + taskInstance.ActivityId
@@ -643,7 +640,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             // }
             if (thisTaskInst.IsSuspended())
             {
-                WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+                WorkflowProcess process = thisTaskInst.WorkflowProcess;
                 throw new EngineException(thisTaskInst.ProcessInstanceId,
                         process, thisTaskInst.TaskId,
                         "Abort task insatance failed. The task instance [id="
@@ -652,7 +649,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             // 
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            WorkflowProcess workflowProcess = thisTaskInst.getWorkflowProcess();
+            WorkflowProcess workflowProcess = thisTaskInst.WorkflowProcess;
             List<IToken> allTokens = null;
             List<String> aliveActivityIdsAfterJump = new List<String>();
             if (targetActivityId != null)
@@ -685,7 +682,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                         {
                             throw new EngineException(
                                     thisTaskInst.ProcessInstanceId,
-                                    thisTaskInst.getWorkflowProcess(),
+                                    thisTaskInst.WorkflowProcess,
                                     thisTaskInst.TaskId,
                                     "Abort refused because of the business-logic conflict!");
 
@@ -716,7 +713,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     .getWFElementInstance(thisTaskInst.ActivityId);
             if (thisActivityInstance == null)
             {
-                WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+                WorkflowProcess process = thisTaskInst.WorkflowProcess;
                 throw new EngineException(thisTaskInst.ProcessInstanceId,
                         process, thisTaskInst.TaskId, "系统没有找到与activityId="
                                 + thisTaskInst.ActivityId
@@ -725,7 +722,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             if (targetActivityInstance != null)
             {
-                ((TaskInstance)thisTaskInst).TargetActivityId=targetActivityInstance.getActivity().Id;
+                ((TaskInstance)thisTaskInst).TargetActivityId=targetActivityInstance.Activity.Id;
             }
 
             // 第一步，首先Abort当前taskInstance
@@ -733,10 +730,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             // 触发相应的事件
             TaskInstanceEvent e = new TaskInstanceEvent();
-            e.setSource(thisTaskInst);
-            e.setWorkflowSession(currentSession);
-            e.setProcessInstance(processInstance);
-            e.setEventType(TaskInstanceEvent.AFTER_TASK_INSTANCE_COMPLETE);
+            e.Source=thisTaskInst;
+            e.WorkflowSession=currentSession;
+            e.ProcessInstance=processInstance;
+            e.EventType = TaskInstanceEventEnum.AFTER_TASK_INSTANCE_COMPLETE;
             if (this.DefaultTaskInstanceEventListener != null)
             {
                 this.DefaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
@@ -761,7 +758,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (tokens.Count > 1)
             {
-                WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+                WorkflowProcess process = thisTaskInst.WorkflowProcess;
                 throw new EngineException(thisTaskInst.ProcessInstanceId,
                         process, thisTaskInst.TaskId, "与activityId="
                                 + thisTaskInst.ActivityId + "对应的token数量(="
@@ -775,7 +772,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             }
             if (token.IsAlive == false)
             {
-                WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+                WorkflowProcess process = thisTaskInst.WorkflowProcess;
                 throw new EngineException(thisTaskInst.ProcessInstanceId,
                         process, thisTaskInst.TaskId, "与activityId="
                                 + thisTaskInst.ActivityId
@@ -866,7 +863,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         /// <param name="e"></param>
         protected void fireTaskInstanceEvent(ITaskInstance taskInstance, TaskInstanceEvent e)
         {
-            Task task = taskInstance.getTask();
+            Task task = taskInstance.Task;
             if (task == null)
             {
                 return;
@@ -901,12 +898,12 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             //触发事件
             //触发相应的事件
             TaskInstanceEvent e = new TaskInstanceEvent();
-            e.setSource(taskInstance);
-            e.setWorkItem(wi);
-            e.setWorkflowSession(currentSession);
-            e.setProcessInstance(processInstance);
+            e.Source=taskInstance;
+            e.WorkItem=wi;
+            e.WorkflowSession=currentSession;
+            e.ProcessInstance=processInstance;
 
-            e.setEventType(TaskInstanceEvent.AFTER_WORKITEM_CREATED);
+            e.EventType = TaskInstanceEventEnum.AFTER_WORKITEM_CREATED;
             if (this.DefaultTaskInstanceEventListener != null)
             {
                 this.DefaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
@@ -929,14 +926,14 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (workItem.getState() != IWorkItem.INITIALIZED)
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Claim work item failed. The state of the work item is " + workItem.getState());
             }
             if (workItem.getTaskInstance().State != TaskInstanceStateEnum.INITIALIZED && workItem.getTaskInstance().State != TaskInstanceStateEnum.RUNNING)
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Claim work item failed .The state of the correspond task instance is " + workItem.getTaskInstance().State);
             }
@@ -944,12 +941,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (workItem.getTaskInstance().IsSuspended())
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Claim work item failed .The  correspond task instance is suspended");
             }
-
-
 
             //0、首先修改workitem的状态
             ((WorkItem)workItem).setState(IWorkItem.RUNNING);
@@ -976,7 +971,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
                 //			System.out.println("WorkItem的当前状态为"+this.getState()+"，不可以执行complete操作。");
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Complete work item failed . The state of the work item [id=" + workItem.getId() + "] is " + workItem.getState());
             }
@@ -984,7 +979,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (workItem.getTaskInstance().IsSuspended())
             {
                 TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
-                WorkflowProcess process = thisTaskInst.getWorkflowProcess();
+                WorkflowProcess process = thisTaskInst.WorkflowProcess;
                 throw new EngineException(thisTaskInst.ProcessInstanceId, process,
                         thisTaskInst.TaskId,
                         "Complete work item failed. The correspond task instance [id=" + thisTaskInst.Id + "] is suspended");
@@ -999,10 +994,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             // 触发AFTER_WORKITEM_COMPLETE事件
             TaskInstanceEvent e = new TaskInstanceEvent();
-            e.setSource(workItem.getTaskInstance());
-            e.setWorkflowSession(((IWorkflowSessionAware)workItem).CurrentWorkflowSession);
-            e.setProcessInstance(((TaskInstance)workItem.getTaskInstance()).getAliveProcessInstance());
-            e.setEventType(TaskInstanceEvent.AFTER_WORKITEM_COMPLETE);
+            e.Source=workItem.getTaskInstance();
+            e.WorkflowSession=((IWorkflowSessionAware)workItem).CurrentWorkflowSession;
+            e.ProcessInstance=((TaskInstance)workItem.getTaskInstance()).AliveProcessInstance;
+            e.EventType = TaskInstanceEventEnum.AFTER_WORKITEM_COMPLETE;
             if (this.DefaultTaskInstanceEventListener != null)
             {
                 this.DefaultTaskInstanceEventListener.onTaskInstanceEventFired(e);
@@ -1018,13 +1013,13 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             WorkflowSession workflowSession = (WorkflowSession)((IWorkflowSessionAware)workItem).CurrentWorkflowSession;
             //首先检查是否可以正确跳转
             //1）检查是否在同一个“执行线”上
-            WorkflowProcess workflowProcess = workItem.getTaskInstance().getWorkflowProcess();
+            WorkflowProcess workflowProcess = workItem.getTaskInstance().WorkflowProcess;
             String thisActivityId = workItem.getTaskInstance().ActivityId;
             Boolean isInSameLine = workflowProcess.isInSameLine(thisActivityId, targetActivityId);
             TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
             if (!isInSameLine)
             {
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId, "Jumpto refused because of the current activitgy and the target activity are NOT in the same 'Execution Thread'.");
             }
 
@@ -1042,19 +1037,18 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             Int32 aliveWorkItemCount = persistenceService.getAliveWorkItemCountForTaskInstance(thisTaskInst.Id);
             if (aliveWorkItemCount > 1)
             {
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId, "Jumpto refused because of current taskinstance can NOT be completed. some workitem of this taskinstance is in runing state or initialized state");
-
             }
 
             //4)检查当前的activity instance是否可以结束
-            if (workItem.getTaskInstance().getActivity().CompletionStrategy == FormTaskEnum.ALL)
+            if (workItem.getTaskInstance().Activity.CompletionStrategy == FormTaskEnum.ALL)
             {
 
                 Int32 aliveTaskInstanceCount4ThisActivity = persistenceService.getAliveTaskInstanceCountForActivity(workItem.getTaskInstance().ProcessInstanceId, workItem.getTaskInstance().ActivityId);
                 if (aliveTaskInstanceCount4ThisActivity > 1)
                 {//大于2表明当前Activity不可以complete
-                    throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                    throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                             thisTaskInst.TaskId, "Jumpto refused because of current activity instance can NOT be completed. some task instance of this activity instance is in runing state or initialized state");
                 }
             }
@@ -1062,14 +1056,14 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             INetInstance netInstance = RuntimeContext.getKernelManager().getNetInstance(workflowProcess.Id, workItem.getTaskInstance().Version);
             if (netInstance == null)
             {
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId, "Not find the net instance for workflow process [id=" + workflowProcess.Id + ", version=" + workItem.getTaskInstance().Version + "]");
             }
             Object obj = netInstance.getWFElementInstance(targetActivityId);
             IActivityInstance targetActivityInstance = (IActivityInstance)obj;
             if (targetActivityInstance == null)
             {
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.getWorkflowProcess(),
+                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId, "Not find the activity instance  for activity[process id=" + workflowProcess.Id + ", version=" + workItem.getTaskInstance().Version + ",activity id=" + targetActivityId + "]");
             }
 
@@ -1078,12 +1072,12 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
 
                 ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                trace.setProcessInstanceId(workItem.getTaskInstance().ProcessInstanceId);
-                trace.setStepNumber(workItem.getTaskInstance().StepNumber + 1);
-                trace.setType(ProcessInstanceTrace.JUMPTO_TYPE);
-                trace.setFromNodeId(workItem.getTaskInstance().ActivityId);
-                trace.setToNodeId(targetActivityId);
-                trace.setEdgeId("");
+                trace.ProcessInstanceId=workItem.getTaskInstance().ProcessInstanceId;
+                trace.StepNumber=workItem.getTaskInstance().StepNumber + 1;
+                trace.Type = ProcessInstanceTraceEnum.JUMPTO_TYPE;
+                trace.FromNodeId=workItem.getTaskInstance().ActivityId;
+                trace.ToNodeId=targetActivityId;
+                trace.EdgeId="";
                 RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
             }
 
@@ -1099,7 +1093,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
         public void completeWorkItemAndJumpToEx(IWorkItem workItem, String targetActivityId, String comments)
         {
             // 首先检查是否可以正确跳转	
-            WorkflowProcess workflowProcess = workItem.getTaskInstance().getWorkflowProcess();
+            WorkflowProcess workflowProcess = workItem.getTaskInstance().WorkflowProcess;
             String thisActivityId = workItem.getTaskInstance().ActivityId;
             TaskInstance thisTaskInst = (TaskInstance)workItem.getTaskInstance();
             //如果是在同一条执行线上，那么可以直接跳过去，只是重复判断了是否在同一条执行线上
@@ -1136,14 +1130,14 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
                 throw new EngineException(
                         thisTaskInst.ProcessInstanceId,
-                        thisTaskInst.getWorkflowProcess(),
+                        thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Jumpto refused because of current taskinstance can NOT be completed. some workitem of this taskinstance is in runing state or initialized state");
 
             }
 
             // 4)检查当前的activity instance是否可以结束
-            if (workItem.getTaskInstance().getActivity().CompletionStrategy == FormTaskEnum.ALL)
+            if (workItem.getTaskInstance().Activity.CompletionStrategy == FormTaskEnum.ALL)
             {
 
                 Int32 aliveTaskInstanceCount4ThisActivity = persistenceService
@@ -1154,7 +1148,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 {// 大于1表明当前Activity不可以complete
                     throw new EngineException(
                             thisTaskInst.ProcessInstanceId,
-                            thisTaskInst.getWorkflowProcess(),
+                            thisTaskInst.WorkflowProcess,
                             thisTaskInst.TaskId,
                             "Jumpto refused because of current activity instance can NOT be completed. some task instance of this activity instance is in runing state or initialized state");
                 }
@@ -1162,7 +1156,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             //4)首先检查目标状态M是否存在冲突,如果存在冲突则不允许跳转；如果不存在冲突，则需要调整token
             List<IToken> allTokens = persistenceService.findTokensForProcessInstance(thisTaskInst.ProcessInstanceId, null);
-            WorkflowProcess thisProcess = thisTaskInst.getWorkflowProcess();//找到当前的工作里模型
+            WorkflowProcess thisProcess = thisTaskInst.WorkflowProcess;//找到当前的工作里模型
             List<String> aliveActivityIdsAfterJump = new List<String>();//计算跳转后，哪些activity节点复活
             aliveActivityIdsAfterJump.Add(targetActivityId);
 
@@ -1180,7 +1174,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     {
                         throw new EngineException(
                                 thisTaskInst.ProcessInstanceId,
-                                thisTaskInst.getWorkflowProcess(),
+                                thisTaskInst.WorkflowProcess,
                                 thisTaskInst.TaskId,
                                 "Jumpto refused because of the business-logic conflict!");
 
@@ -1196,7 +1190,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (netInstance == null)
             {
                 throw new EngineException(thisTaskInst.ProcessInstanceId,
-                        thisTaskInst.getWorkflowProcess(),
+                        thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Not find the net instance for workflow process [id="
                                 + workflowProcess.Id + ", version="
@@ -1207,7 +1201,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (targetActivityInstance == null)
             {
                 throw new EngineException(thisTaskInst.ProcessInstanceId,
-                        thisTaskInst.getWorkflowProcess(),
+                        thisTaskInst.WorkflowProcess,
                         thisTaskInst.TaskId,
                         "Not find the activity instance  for activity[process id="
                                 + workflowProcess.Id + ", version="
@@ -1219,13 +1213,12 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
 
                 ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                trace.setProcessInstanceId(workItem.getTaskInstance()
-                        .ProcessInstanceId);
-                trace.setStepNumber(workItem.getTaskInstance().StepNumber + 1);
-                trace.setType(ProcessInstanceTrace.JUMPTO_TYPE);
-                trace.setFromNodeId(workItem.getTaskInstance().ActivityId);
-                trace.setToNodeId(targetActivityId);
-                trace.setEdgeId("");
+                trace.ProcessInstanceId=workItem.getTaskInstance().ProcessInstanceId;
+                trace.StepNumber=workItem.getTaskInstance().StepNumber + 1;
+                trace.Type = ProcessInstanceTraceEnum.JUMPTO_TYPE;
+                trace.FromNodeId=workItem.getTaskInstance().ActivityId;
+                trace.ToNodeId=targetActivityId;
+                trace.EdgeId="";
                 this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(
                         trace);
             }
@@ -1290,7 +1283,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
                     if (tokenTmp.Value != 0)
                     {
-                        tokenTmp.ProcessInstance = thisTaskInst.getAliveProcessInstance();
+                        tokenTmp.ProcessInstance = thisTaskInst.AliveProcessInstance;
                         persistenceService.saveOrUpdateToken(tokenTmp);
                     }
                 }
@@ -1368,25 +1361,25 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
         public void rejectWorkItem(IWorkItem workItem, String comments)
         {
-            Activity thisActivity = workItem.getTaskInstance().getActivity();
+            Activity thisActivity = workItem.getTaskInstance().Activity;
             TaskInstance thisTaskInstance = (TaskInstance)workItem.getTaskInstance();
             if (workItem.getState() > 5 || workItem.getTaskInstance().IsSuspended())
             {//处于非活动状态,或者被挂起,则不允许reject
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId,
                         "Reject operation refused!Current work item is completed or the correspond task instance is suspended!!");
             }
             //当前Activity只允许一个Form类型的Task
             if (thisActivity.getTasks().Count > 1)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId,
                         "Reject operation refused!The correspond activity has more than 1 tasks");
             }
             //汇签Task不允许Reject
             if (FormTaskEnum.ALL.Equals(thisTaskInstance.AssignmentStrategy))
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId,
                         "Reject operation refused!The assignment strategy is 'ALL'");
             }
@@ -1396,7 +1389,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
                 throw new EngineException(
                                 thisTaskInstance.ProcessInstanceId,
-                                thisTaskInstance.getWorkflowProcess(),
+                                thisTaskInstance.WorkflowProcess,
                                 thisTaskInstance.TaskId,
                                 "Reject operation refused!Because the from activityId equals " + TokenFrom.FROM_START_NODE);
             }
@@ -1411,7 +1404,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             //如果执行了split操作，则不允许reject
             if (siblingTaskInstancesList.Count > 1)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId, "Reject operation refused!Because the process instance has taken a split operation.");
             }
 
@@ -1423,7 +1416,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             //while (tokenizer.hasMoreTokens()) {
             //    fromActivityIdList.add(tokenizer.nextToken());
             //}
-            WorkflowProcess workflowProcess = workItem.getTaskInstance().getWorkflowProcess();
+            WorkflowProcess workflowProcess = workItem.getTaskInstance().WorkflowProcess;
             for (int i = 0; i < fromActivityIdList.Count; i++)
             {
                 String fromActivityId = (String)fromActivityIdList[i];
@@ -1432,11 +1425,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 for (int j = 0; j < fromTaskList.Count; j++)
                 {
                     Task task = (Task)fromTaskList[j];
-                    if (TaskTypeEnum.TOOL.Equals(task.TaskType) || TaskTypeEnum.SUBFLOW.Equals(task.TaskType))
+                    if (TaskTypeEnum.TOOL == task.TaskType || TaskTypeEnum.SUBFLOW == task.TaskType)
                     {
-                        throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                        throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                                 thisTaskInstance.TaskId, "Reject operation refused!The previous activity contains tool-task or subflow-task");
-
                     }
                 }
             }
@@ -1444,7 +1436,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             INetInstance netInstance = RuntimeContext.getKernelManager().getNetInstance(workflowProcess.Id, workItem.getTaskInstance().Version);
             if (netInstance == null)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId, "Not find the net instance for workflow process [id=" + workflowProcess.Id + ", version=" + workItem.getTaskInstance().Version + "]");
             }
 
@@ -1475,7 +1467,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     ((Token)newToken).IsAlive = true;
                     ((Token)newToken).NodeId = fromActivityId;
                     newToken.ProcessInstanceId = thisTaskInstance.ProcessInstanceId;
-                    newToken.ProcessInstance = ((TaskInstance)thisTaskInstance).getAliveProcessInstance();
+                    newToken.ProcessInstance = ((TaskInstance)thisTaskInstance).AliveProcessInstance;
                     newToken.FromActivityId = thisTaskInstance.ActivityId;
                     newToken.StepNumber = newStepNumber;
                     newToken.Value = 0;
@@ -1486,28 +1478,28 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     if (this.RuntimeContext.isEnableTrace())
                     {
                         ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                        trace.setProcessInstanceId(thisTaskInstance.ProcessInstanceId);
-                        trace.setStepNumber(newStepNumber);
-                        trace.setType(ProcessInstanceTrace.REJECT_TYPE);
-                        trace.setFromNodeId(thisActivity.Id);
-                        trace.setToNodeId(fromActivityId);
-                        trace.setEdgeId("");
+                        trace.ProcessInstanceId=thisTaskInstance.ProcessInstanceId;
+                        trace.StepNumber=newStepNumber;
+                        trace.Type=ProcessInstanceTraceEnum.REJECT_TYPE;
+                        trace.FromNodeId=thisActivity.Id;
+                        trace.ToNodeId=fromActivityId;
+                        trace.EdgeId="";
                         this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
                     }
                 }
 
                 ITransitionInstance theLeavingTransitionInstance = (ITransitionInstance)fromActivityInstance.LeavingTransitionInstances[0];
-                ISynchronizerInstance synchronizerInstance = (ISynchronizerInstance)theLeavingTransitionInstance.getLeavingNodeInstance();
+                ISynchronizerInstance synchronizerInstance = (ISynchronizerInstance)theLeavingTransitionInstance.LeavingNodeInstance;
                 if (synchronizerInstance.EnteringTransitionInstances.Count > fromActivityIdList.Count)
                 {
                     Token supplementToken = new Token();
                     ((Token)supplementToken).IsAlive = false;
-                    ((Token)supplementToken).NodeId = synchronizerInstance.getSynchronizer().Id;
+                    ((Token)supplementToken).NodeId = synchronizerInstance.Synchronizer.Id;
                     supplementToken.ProcessInstanceId = thisTaskInstance.ProcessInstanceId;
-                    supplementToken.ProcessInstance = ((TaskInstance)thisTaskInstance).getAliveProcessInstance();
+                    supplementToken.ProcessInstance = ((TaskInstance)thisTaskInstance).AliveProcessInstance;
                     supplementToken.FromActivityId = "EMPTY(created by reject)";
                     supplementToken.StepNumber = (int)thisTaskInstance.StepNumber + 1;
-                    supplementToken.Value = synchronizerInstance.Volume - theLeavingTransitionInstance.getWeight() * fromActivityIdList.Count;
+                    supplementToken.Value = synchronizerInstance.Volume - theLeavingTransitionInstance.Weight * fromActivityIdList.Count;
                     persistenceService.saveOrUpdateToken(supplementToken);
                 }
             }
@@ -1519,26 +1511,26 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
         public IWorkItem withdrawWorkItem(IWorkItem workItem)
         {
-            Activity thisActivity = workItem.getTaskInstance().getActivity();
+            Activity thisActivity = workItem.getTaskInstance().Activity;
             TaskInstance thisTaskInstance = (TaskInstance)workItem.getTaskInstance();
             if (workItem.getState() < 5)
             {//小于5的状态为活动状态
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId,
                         "Withdraw operation is refused! Current workitem is in running state!!");
             }
             //当前Activity只允许一个Form类型的Task
             if (thisActivity.getTasks().Count > 1)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId,
                         "Withdraw operation is refused! The activity[id=" + thisActivity.Id + "] has more than 1 tasks");
             }
 
             //汇签Task不允许撤销
-            if (FormTaskEnum.ALL.Equals(thisTaskInstance.AssignmentStrategy))
+            if (FormTaskEnum.ALL == thisTaskInstance.AssignmentStrategy)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId,
                         "Withdraw operation is refused! The assignment strategy for activity[id=" + thisActivity.Id + "] is 'ALL'");
             }
@@ -1551,11 +1543,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
 
             // String targetActivityId = workItem.getTaskInstance().getTargetActivityId();
 
-
             //如果targetTaskInstancesList为空或size 等于0,则表示流程实例执行了汇聚操作。
             if (targetTaskInstancesList == null || targetTaskInstancesList.Count == 0)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId, "Withdraw operation is refused!Because the process instance has taken a join operation after this activity[id=" + thisActivity.Id + "].");
             }
             else
@@ -1563,7 +1554,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 TaskInstance taskInstance = (TaskInstance)targetTaskInstancesList[0];
                 if (!taskInstance.FromActivityId.Equals(thisTaskInstance.ActivityId))
                 {
-                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                             thisTaskInstance.TaskId, "Withdraw operation is refused!Because the process instance has taken a join operation after this activity[id=" + thisActivity.Id + "].");
                 }
             }
@@ -1574,7 +1565,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 if (!targetTaskInstanceTmp.CanBeWithdrawn)
                 {
                     //说明已经有某些WorkItem处于已签收状态，或者已经处于完毕状态，此时不允许退回
-                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                             thisTaskInstance.TaskId,
                             "Withdraw operation is refused! Some task instances of the  next activity[id=" + targetTaskInstanceTmp.ActivityId + "] are not in 'Initialized' state");
                 }
@@ -1583,7 +1574,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             INetInstance netInstance = this.RuntimeContext.getKernelManager().getNetInstance(thisTaskInstance.ProcessId, workItem.getTaskInstance().Version);
             if (netInstance == null)
             {
-                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                         thisTaskInstance.TaskId, "Withdraw operation failed.Not find the net instance for workflow process [id=" + thisTaskInstance.ProcessId + ", version=" + workItem.getTaskInstance().Version + "]");
             }
             Object obj = netInstance.getWFElementInstance(thisTaskInstance.ActivityId);
@@ -1634,28 +1625,28 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                     {
                         String tmpActId = (String)targetActivityIdList[i];
                         ProcessInstanceTrace trace = new ProcessInstanceTrace();
-                        trace.setProcessInstanceId(thisTaskInstance.ProcessInstanceId);
-                        trace.setStepNumber(newStepNumber);
-                        trace.setType(ProcessInstanceTrace.WITHDRAW_TYPE);
-                        trace.setFromNodeId(tmpActId);
-                        trace.setToNodeId(thisActivity.Id);
-                        trace.setEdgeId("");
+                        trace.ProcessInstanceId=thisTaskInstance.ProcessInstanceId;
+                        trace.StepNumber=newStepNumber;
+                        trace.Type=ProcessInstanceTraceEnum.WITHDRAW_TYPE;
+                        trace.FromNodeId=tmpActId;
+                        trace.ToNodeId=thisActivity.Id;
+                        trace.EdgeId="";
                         this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
                     }
                 }
 
                 ITransitionInstance thisLeavingTransitionInstance = (ITransitionInstance)thisActivityInstance.LeavingTransitionInstances[0];
-                ISynchronizerInstance synchronizerInstance = (ISynchronizerInstance)thisLeavingTransitionInstance.getLeavingNodeInstance();
+                ISynchronizerInstance synchronizerInstance = (ISynchronizerInstance)thisLeavingTransitionInstance.LeavingNodeInstance;
                 if (synchronizerInstance.EnteringTransitionInstances.Count > 1)
                 {
                     Token supplementToken = new Token();
                     ((Token)supplementToken).IsAlive = false;
-                    ((Token)supplementToken).NodeId = synchronizerInstance.getSynchronizer().Id;
+                    ((Token)supplementToken).NodeId = synchronizerInstance.Synchronizer.Id;
                     supplementToken.ProcessInstanceId = thisTaskInstance.ProcessInstanceId;
-                    supplementToken.ProcessInstance = ((TaskInstance)thisTaskInstance).getAliveProcessInstance();
+                    supplementToken.ProcessInstance = ((TaskInstance)thisTaskInstance).AliveProcessInstance;
                     supplementToken.FromActivityId = "Empty(created by withdraw)";
                     supplementToken.StepNumber = newStepNumber;
-                    supplementToken.Value = synchronizerInstance.Volume - thisLeavingTransitionInstance.getWeight();
+                    supplementToken.Value = synchronizerInstance.Volume - thisLeavingTransitionInstance.Weight;
                     persistenceService.saveOrUpdateToken(supplementToken);
                 }
 
@@ -1663,7 +1654,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 ((Token)newToken).IsAlive = true;
                 ((Token)newToken).NodeId = workItem.getTaskInstance().ActivityId;
                 newToken.ProcessInstanceId = thisTaskInstance.ProcessInstanceId;
-                newToken.ProcessInstance = ((TaskInstance)thisTaskInstance).getAliveProcessInstance();
+                newToken.ProcessInstance = ((TaskInstance)thisTaskInstance).AliveProcessInstance;
                 newToken.FromActivityId = theFromActivityIds.ToString();
                 newToken.StepNumber = newStepNumber;
                 newToken.Value = 0;
@@ -1674,12 +1665,12 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 List<IWorkItem> workItems = persistenceService.findTodoWorkItems(workItem.getActorId(), workItem.getTaskInstance().ProcessId, workItem.getTaskInstance().TaskId);
                 if (workItems == null || workItems.Count == 0)
                 {
-                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                             thisTaskInstance.TaskId, "Withdraw operation failed.No work item has been created for Task[id=" + thisTaskInstance.TaskId + "]");
                 }
                 if (workItems.Count > 1)
                 {
-                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.getWorkflowProcess(),
+                    throw new EngineException(thisTaskInstance.ProcessInstanceId, thisTaskInstance.WorkflowProcess,
                             thisTaskInstance.TaskId, "Withdraw operation failed.More than one work item have been created for Task[id=" + thisTaskInstance.TaskId + "]");
 
                 }

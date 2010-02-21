@@ -13,7 +13,7 @@ namespace FireWorkflow.Net.Kernel
     /// </summary>
     public interface INodeInstance
     {
-        String getId();
+        String Id { get; }
         /// <summary>node 触发 (最核心的方法) </summary>
         /// <param name="token"></param>
         void fire(IToken token);// throws KernelException;

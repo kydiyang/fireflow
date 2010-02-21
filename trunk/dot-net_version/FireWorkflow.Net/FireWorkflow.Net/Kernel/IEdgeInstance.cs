@@ -25,23 +25,21 @@ namespace FireWorkflow.Net.Kernel
 {
     public interface IEdgeInstance
     {
-        String getId();
+        String Id { get; }
 
         /// <summary>
         /// 弧的权
         /// </summary>
-        /// <returns></returns>
-        int getWeight();
-        //	public void setWeight(int i);
+        int Weight { get; }
 
+        /// <summary>获取输出到达的节点实例</summary>
+        INodeInstance LeavingNodeInstance { get; set; }
 
-        INodeInstance getLeavingNodeInstance();
+        //void setLeavingNodeInstance(INodeInstance nodeInst);
 
-        void setLeavingNodeInstance(INodeInstance nodeInst);
+        INodeInstance EnteringNodeInstance { get; set; }
 
-        INodeInstance getEnteringNodeInstance();
-
-        void setEnteringNodeInstance(INodeInstance nodeInst);
+        //void setEnteringNodeInstance(INodeInstance nodeInst);
 
         /// <summary>
         /// 接受一个token，并移交给下一个节点

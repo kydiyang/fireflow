@@ -35,9 +35,11 @@ namespace FireWorkflow.Net.Kernel
     /// </summary>
     public interface IToken
     {
+        /// <summary>获取或设置流程实例对象</summary>
         IProcessInstance ProcessInstance { get; set; }
         //public abstract void setProcessInstance(IProcessInstance inst);
 
+        /// <summary>获取或设置流程实例对象ID</summary>
         String ProcessInstanceId { get; set; }
         //public abstract void setProcessInstanceId(String id);
 
@@ -70,7 +72,7 @@ namespace FireWorkflow.Net.Kernel
         /// 返回Engine的当前上下文信息，如WorkflowSession,等。
         /// 这些信息不保存到数据库 
         /// </summary>
-        Dictionary<String, IProcessInstance> getContextInfo();
+        Dictionary<String, IProcessInstance> ContextInfo { get; }
     }
 
 }

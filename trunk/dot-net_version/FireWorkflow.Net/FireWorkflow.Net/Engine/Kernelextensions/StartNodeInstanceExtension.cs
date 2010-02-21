@@ -27,20 +27,11 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
     public class StartNodeInstanceExtension : SynchronizerInstanceExtension
     {
 
-        public override String getExtentionPointName()
-        {
-            // TODO Auto-generated method stub
-            return StartNodeInstance.Extension_Point_NodeInstanceEventListener;
-        }
+        /// <summary>获取扩展目标名称</summary>
+        public override String ExtentionTargetName { get { return StartNodeInstance.Extension_Target_Name; } }
 
-        /* (non-Javadoc)
-         * @see org.fireflow.kenel.plugin.IKenelExtension#getExtentionTargetName()
-         */
-        public override String getExtentionTargetName()
-        {
-            // TODO Auto-generated method stub
-            return StartNodeInstance.Extension_Target_Name;
-        }
+        /// <summary>获取扩展点名称</summary>
+        public override String ExtentionPointName { get { return StartNodeInstance.Extension_Point_NodeInstanceEventListener; } }
 
         public override void onNodeInstanceEventFired(NodeInstanceEvent e)
         {

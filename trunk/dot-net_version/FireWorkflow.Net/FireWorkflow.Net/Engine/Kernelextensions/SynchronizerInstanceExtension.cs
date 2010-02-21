@@ -28,36 +28,27 @@ using FireWorkflow.Net.Kernel.Impl;
 
 namespace FireWorkflow.Net.Engine.Kernelextensions
 {
-    public class SynchronizerInstanceExtension : IKernelExtension,
-        INodeInstanceEventListener, IRuntimeContextAware
+    public class SynchronizerInstanceExtension : IKernelExtension, INodeInstanceEventListener, IRuntimeContextAware
     {
 
         public RuntimeContext RuntimeContext { get; set; }
 
-        /// <summary>获取扩展点名称</summary>
-        public virtual String getExtentionPointName()
-        {
-            // TODO Auto-generated method stub
-            return SynchronizerInstance.Extension_Point_NodeInstanceEventListener;
-        }
-
         /// <summary>获取扩展目标名称</summary>
-        public virtual String getExtentionTargetName()
-        {
-            // TODO Auto-generated method stub
-            return SynchronizerInstance.Extension_Target_Name;
-        }
+        public virtual String ExtentionTargetName { get { return SynchronizerInstance.Extension_Target_Name; } }
+
+        /// <summary>获取扩展点名称</summary>
+        public virtual String ExtentionPointName { get { return SynchronizerInstance.Extension_Point_NodeInstanceEventListener; } }
 
         /// <summary>节点实例监听器</summary>
         public virtual void onNodeInstanceEventFired(NodeInstanceEvent e)
         {
             //同步器节点的监听器触发条件，是在离开这个节点的时候
-            if (e.getEventType() == NodeInstanceEvent.NODEINSTANCE_LEAVING)
+            if (e.EventType == NodeInstanceEventEnum.NODEINSTANCE_LEAVING)
             {
                 ISynchronizerInstance syncInst = (ISynchronizerInstance)e.getSource();
                 IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                 //删除同步器节点的token
-                persistenceService.deleteTokensForNode(e.getToken().ProcessInstanceId, syncInst.getSynchronizer().Id);
+                persistenceService.deleteTokensForNode(e.Token.ProcessInstanceId, syncInst.Synchronizer.Id);
             }
         }
     }
