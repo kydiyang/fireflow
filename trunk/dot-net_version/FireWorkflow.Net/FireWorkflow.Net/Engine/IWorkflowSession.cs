@@ -76,20 +76,18 @@ namespace FireWorkflow.Net.Engine
         /// <summary>
         /// 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
         /// </summary>
-        /// <param name="processInstanceId"></param>
+        /// <param name="processInstanceId">流程实例Id</param>
         IProcessInstance abortProcessInstance(String processInstanceId);//throws EngineException;
 
         /// <summary>
         /// 挂起流程实例
         /// </summary>
-        /// <param name="processInstanceId"></param>
+        /// <param name="processInstanceId">流程实例Id</param>
         IProcessInstance suspendProcessInstance(String processInstanceId);//throws EngineException;
 
-        /// <summary>
-        /// 恢复被挂起的流程实例
-        /// </summary>
-        /// <param name="processInstanceId"></param>
-        IProcessInstance restoreProcessInstance(String processInstanceId);//throws EngineException;
+        /// <summary>恢复被挂起的流程实例</summary>
+        /// <param name="processInstanceId">流程实例Id</param>
+        IProcessInstance restoreProcessInstance(String processInstanceId);
 
 
 
@@ -162,7 +160,7 @@ namespace FireWorkflow.Net.Engine
         /// <summary>
         /// 根据任务实例的Id查找任务实例。
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">任务实例的Id</param>
         /// <returns></returns>
         ITaskInstance findTaskInstanceById(String id);
 
@@ -344,10 +342,7 @@ namespace FireWorkflow.Net.Engine
         /// <returns>被挂起的任务实例</returns>
         ITaskInstance suspendTaskInstance(String taskInstanceId);//throws EngineException;
 
-        /// <summary>
-        /// 恢复被挂起的TaskInstance
-        /// @throws EngineException
-        /// </summary>
+        /// <summary>恢复被挂起的TaskInstance</summary>
         /// <param name="taskInstanceId"></param>
         /// <returns></returns>
         ITaskInstance restoreTaskInstance(String taskInstanceId);// throws EngineException;

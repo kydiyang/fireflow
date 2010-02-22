@@ -52,6 +52,12 @@ namespace FireWorkflow.Net.Engine.Impl
             return handler;
         }
 
+        /// <summary>
+        /// 创建流程实例。如果流程定义了流程变量(DataField）,则自动把流程变量初始化成流程实例变量。
+        /// </summary>
+        /// <param name="workflowProcessName">流程的Name属性，在Fire workflow中，流程的Name和Id是相等的而且都是唯一的。</param>
+        /// <param name="parentTaskInstance">父TaskInstance</param>
+        /// <returns>新创建的流程实例</returns>
         public IProcessInstance createProcessInstance(String workflowProcessName, ITaskInstance parentTaskInstance)
         {
             return _createProcessInstance(workflowProcessName, parentTaskInstance.Id,
@@ -63,7 +69,6 @@ namespace FireWorkflow.Net.Engine.Impl
         /// <param name="creatorId">创建人ID</param>
         /// <param name="parentProcessInstanceId">父流程实例ID</param>
         /// <param name="parentTaskInstanceId">父任务实例ID</param>
-        /// <returns></returns>
         protected IProcessInstance _createProcessInstance(String workflowProcessId, String creatorId, String parentProcessInstanceId, String parentTaskInstanceId)
         {
             String wfprocessId = workflowProcessId;
@@ -188,11 +193,21 @@ namespace FireWorkflow.Net.Engine.Impl
             return processInstance;
         }
 
+        /// <summary>
+        /// <para>创建流程实例，并将creatorId填充到ProcessInstance的CreatorId字段。</para>
+        /// 如果流程定义了流程变量(DataField）,则自动把流程变量初始化成流程实例变量。
+        /// </summary>
+        /// <param name="workflowProcessName">流程定义的名称</param>
+        /// <param name="creatorId">创建者Id</param>
+        /// <returns>新创建的流程实例</returns>
         public IProcessInstance createProcessInstance(String workflowProcessId, String creatorId)
         {
             return _createProcessInstance(workflowProcessId, creatorId, null, null);
         }
 
+        /// <summary>通过workitem的id查找到该workitem</summary>
+        /// <param name="id">workitem id</param>
+        /// <returns>Workitem对象</returns>
         public IWorkItem findWorkItemById(String id)
         {
             String workItemId = id;
@@ -206,9 +221,13 @@ namespace FireWorkflow.Net.Engine.Impl
             }
         }
 
-        /// <summary>WorkflowSession采用了模板模式，以便将来有需要时可以在本方法中进行扩展。</summary>
-        /// <param name="callback"></param>
-        /// <returns></returns>
+        /// <summary>模板方法</summary>
+        /// <param name="callbak"></param>
+        /// <returns>
+        /// <para>返回的对象一般有三种情况：</para>
+        /// <para>1、单个工作流引擎API对象（如IProcessInstance,ITaskInstance,IworkItem等）</para>
+        /// <para>2、工作流引擎对象的列表、3、null</para>
+        /// </returns>
         public Object execute(IWorkflowSessionCallback callback)
         {
             try
@@ -254,6 +273,9 @@ namespace FireWorkflow.Net.Engine.Impl
             }
         }
 
+        /// <summary>根据任务实例的Id查找任务实例。</summary>
+        /// <param name="id">任务实例的Id</param>
+        /// <returns></returns>
         public ITaskInstance findTaskInstanceById(String id)
         {
             String taskInstanceId = id;
@@ -301,6 +323,8 @@ namespace FireWorkflow.Net.Engine.Impl
             return result;
         }
 
+        /// <summary>设置当前WorkflowSession是在一个取回或者拒收的操作环境中。</summary>
+        /// <param name="b">true表示是在一个取回或者拒收的操作环境中；false表示不是在取回或者拒收的操作环境中</param>
         public void setWithdrawOrRejectOperationFlag(Boolean b)
         {
             this.inWithdrawOrRejectOperation = b;
@@ -405,6 +429,13 @@ namespace FireWorkflow.Net.Engine.Impl
             catch { return null; }
         }
 
+        /// <summary>
+        /// <para>查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance</para>
+        /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
+        /// </summary>
+        /// <param name="processInstanceId">the id of the process instance</param>
+        /// <param name="activityId">if the activityId is null, then return all the taskinstance of the processinstance;</param>
+        /// <returns>符合条件的TaskInstance列表</returns>
         public List<ITaskInstance> findTaskInstancesForProcessInstance(String processInstanceId, String activityId)
         {
             try
@@ -414,30 +445,56 @@ namespace FireWorkflow.Net.Engine.Impl
             catch { return null; }
         }
 
+        /// <summary>将工作项委派给其他人，自己的工作项变成CANCELED状态</summary>    
+        /// <param name="workItemId">工作项Id</param>
+        /// <param name="actorId">接受任务的操作员Id</param>
+        /// <returns>新创建的工作项</returns>
         public IWorkItem reasignWorkItemTo(String workItemId, String actorId)
         {
             IWorkItem workItem = this.findWorkItemById(workItemId);
             return workItem.reassignTo(actorId);
         }
 
+        /// <summary>将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项</summary>    
+        /// <param name="workItemId">工作项Id</param>
+        /// <param name="actorId">接受任务的操作员Id</param>
+        /// <param name="comments">相关的备注信息</param>
+        /// <returns>新创建的工作项</returns>
         public IWorkItem reasignWorkItemTo(String workItemId, String actorId, String comments)
         {
             IWorkItem workItem = this.findWorkItemById(workItemId);
             return workItem.reassignTo(actorId, comments);
         }
 
+        /// <summary>
+        /// <para>执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。</para>
+        /// <para>该操作必须满足如下条件：</para>
+        /// <para>1、前驱环节中没有没有Tool类型和Subflow类型的Task；</para>
+        /// <para>2、没有合当前TaskInstance并行的其他TaskInstance；</para> 
+        /// </summary>
+        /// <param name="workItemId">工作项Id</param>
         public void rejectWorkItem(String workItemId)
         {
             IWorkItem workItem = this.findWorkItemById(workItemId);
             workItem.reject();
         }
 
+        /// <summary>
+        /// <para>执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。</para>
+        /// <para>该操作必须满足如下条件：</para>
+        /// <para>1、前驱环节中没有没有Tool类型和Subflow类型的Task；</para>
+        /// <para>2、没有合当前TaskInstance并行的其他TaskInstance；</para>
+        /// </summary>  
+        /// <param name="workItemId">工作项Id</param>
+        /// <param name="comments">备注信息</param>
         public void rejectWorkItem(String workItemId, String comments)
         {
             IWorkItem workItem = this.findWorkItemById(workItemId);
             workItem.reject(comments);
         }
 
+        /// <summary>恢复被挂起的流程实例</summary>
+        /// <param name="processInstanceId">流程实例Id</param>
         public IProcessInstance restoreProcessInstance(String processInstanceId)
         {
             IProcessInstance processInstance = this.findProcessInstanceById(processInstanceId);
@@ -445,6 +502,9 @@ namespace FireWorkflow.Net.Engine.Impl
             return processInstance;
         }
 
+        /// <summary>恢复被挂起的TaskInstance</summary>
+        /// <param name="taskInstanceId"></param>
+        /// <returns></returns>
         public ITaskInstance restoreTaskInstance(String taskInstanceId)
         {
             ITaskInstance taskInst = this.findTaskInstanceById(taskInstanceId);
