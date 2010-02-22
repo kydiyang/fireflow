@@ -48,7 +48,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                 //保存token，并创建taskinstance
                 IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                 //TODO wmj2003 这里是插入还是更新token
-                persistenceService.saveOrUpdateToken(e.Token);
+                persistenceService.SaveOrUpdateToken(e.Token);
                 //触发activity节点，就要创建新的task
                 this.RuntimeContext.TaskInstanceManager.createTaskInstances(e.Token, (IActivityInstance)e.getSource());
             }

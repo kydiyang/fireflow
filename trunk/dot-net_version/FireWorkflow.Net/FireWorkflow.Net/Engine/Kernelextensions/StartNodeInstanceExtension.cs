@@ -26,7 +26,6 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
 {
     public class StartNodeInstanceExtension : SynchronizerInstanceExtension
     {
-
         /// <summary>获取扩展目标名称</summary>
         public override String ExtentionTargetName { get { return StartNodeInstance.Extension_Target_Name; } }
 

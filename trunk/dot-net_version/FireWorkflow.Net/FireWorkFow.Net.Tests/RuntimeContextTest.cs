@@ -6,6 +6,8 @@ using FireWorkflow.Net.Model.Resource;
 using FireWorkflow.Net.Engine;
 using FireWorkflow.Net.Engine.Impl;
 using FireWorkflow.Net.Engine.Beanfactory;
+using Spring.Context;
+using Spring.Context.Support;
 
 namespace FireWorkFow.Net.Tests
 {
@@ -75,10 +77,14 @@ namespace FireWorkFow.Net.Tests
         [TestMethod()]
         public void RuntimeContextConstructorTest()
         {
-            SpringBeanFactory mySpringBeanFactory = new SpringBeanFactory();
-            RuntimeContext rtCtx = (RuntimeContext)mySpringBeanFactory.GetBean("runtimeContext");
-            IWorkflowSession workflowSession = rtCtx.getWorkflowSession();
+            RuntimeContext actual;
+            actual = RuntimeContextFactory.getRuntimeContext();
 
+            SpringBeanFactory mySpringBeanFactory = new SpringBeanFactory();
+            mySpringBeanFactory.setBeanFactory(new XmlApplicationContext(@"E:\Visual Studio 2010\Projects\FireWorkflow.Net\FireWorkflow.Net\FireflowContext.xml"));
+            RuntimeContext rtCtx;
+            rtCtx = (RuntimeContext)mySpringBeanFactory.GetBean("runtimeContext");
+            IWorkflowSession workflowSession = rtCtx.getWorkflowSession();
         }
     }
 }

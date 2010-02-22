@@ -31,9 +31,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
 {
     public class LoopInstanceExtension : IKernelExtension, IEdgeInstanceEventListener, IRuntimeContextAware
     {
-
         public RuntimeContext RuntimeContext { get; set; }
-
 
         /// <summary>获取扩展目标名称</summary>
         public String ExtentionTargetName { get { return LoopInstance.Extension_Target_Name; } }
@@ -86,7 +84,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
 
                 calculateTheAliveValue(token, condition);
 
-                if (RuntimeContext.isEnableTrace() && token.IsAlive)
+                if (this.RuntimeContext.IsEnableTrace && token.IsAlive)
                 {
                     ProcessInstanceTrace trace = new ProcessInstanceTrace();
                     trace.ProcessInstanceId=e.Token.ProcessInstanceId;
@@ -96,7 +94,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                     trace.ToNodeId=transInst.Loop.ToNode.Id;
                     trace.EdgeId=transInst.Loop.Id;
                     //TODO wmj2003 一旦token从当前边上经过，那么就保存流程运行轨迹,这里应该是insert
-                    RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
+                    RuntimeContext.PersistenceService.SaveOrUpdateProcessInstanceTrace(trace);
                 }
             }
         }

@@ -63,11 +63,11 @@ namespace FireWorkflow.Net.Engine.Impl
             processInstance.DisplayName=wfProcess.DisplayName;
             processInstance.Name=wfProcess.Name;
             processInstance.State=ProcessInstanceEnum.INITIALIZED;
-            processInstance.CreatedTime=ctx.getCalendarService().getSysDate();
+            processInstance.CreatedTime=ctx.CalendarService.getSysDate();
             processInstance.ParentProcessInstanceId=parentProcessInstanceId;
             processInstance.ParentTaskInstanceId=parentTaskInstanceId;
 
-            ctx.PersistenceService.saveOrUpdateProcessInstance(
+            ctx.PersistenceService.SaveOrUpdateProcessInstance(
                     processInstance);
 
             // 初始化流程变量
@@ -184,13 +184,14 @@ namespace FireWorkflow.Net.Engine.Impl
                 }
             }
 
-            ctx.PersistenceService.saveOrUpdateProcessInstance(
+            ctx.PersistenceService.SaveOrUpdateProcessInstance(
                     processInstance);
 
             return processInstance;
         }
     }
     #endregion
+
 
     #region WorkflowSessionIWorkItem
     public class WorkflowSessionIWorkItem : IWorkflowSessionCallback
@@ -205,10 +206,13 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             IPersistenceService persistenceService = ctx.PersistenceService;
 
-            return persistenceService.findWorkItemById(workItemId);
+            return persistenceService.FindWorkItemById(workItemId);
         }
     }
     #endregion
+
+
+
 
     #region WorkflowSessionITaskInstance
     public class WorkflowSessionITaskInstance : IWorkflowSessionCallback
@@ -222,7 +226,7 @@ namespace FireWorkflow.Net.Engine.Impl
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
             IPersistenceService persistenceService = ctx.PersistenceService;
-            return persistenceService.findTaskInstanceById(taskInstanceId);
+            return persistenceService.FindTaskInstanceById(taskInstanceId);
         }
     }
     #endregion
@@ -258,9 +262,9 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             switch (t)
             {
-                case '2': return ctx.PersistenceService.findTodoWorkItems(actorId, processId);
-                case '3': return ctx.PersistenceService.findTodoWorkItems(actorId, processId, taskId);
-                default: return ctx.PersistenceService.findTodoWorkItems(actorId);
+                case '2': return ctx.PersistenceService.FindTodoWorkItems(actorId, processId);
+                case '3': return ctx.PersistenceService.FindTodoWorkItems(actorId, processId, taskId);
+                default: return ctx.PersistenceService.FindTodoWorkItems(actorId);
             }
         }
     }
@@ -279,11 +283,47 @@ namespace FireWorkflow.Net.Engine.Impl
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
             IPersistenceService persistenceService = ctx.PersistenceService;
-            return persistenceService.findProcessInstanceById(id);
+            return persistenceService.FindProcessInstanceById(id);
+        }
+    }
+    public class WorkflowSessionIProcessInstanceCreateProcessInstance : IWorkflowSessionCallback
+    {
+        String creatorId;
+        WorkflowProcess wfProcess;
+        WorkflowDefinition workflowDef;
+        String parentProcessInstanceId;
+        String parentTaskInstanceId;
+
+        public WorkflowSessionIProcessInstanceCreateProcessInstance(String creatorId, WorkflowProcess wfProcess, 
+            WorkflowDefinition workflowDef, String parentProcessInstanceId,String parentTaskInstanceId)
+        {
+            this.creatorId = creatorId;
+            this.wfProcess = wfProcess;
+            this.workflowDef = workflowDef;
+            this.parentProcessInstanceId = parentProcessInstanceId;
+            this.parentTaskInstanceId = parentTaskInstanceId;
+        }
+
+        public Object doInWorkflowSession(RuntimeContext ctx)
+        {
+
+            ProcessInstance processInstance = new ProcessInstance();
+            processInstance.CreatorId=creatorId;
+            processInstance.ProcessId=wfProcess.Id;
+            processInstance.Version=workflowDef.Version;
+            processInstance.DisplayName = wfProcess.DisplayName;
+            processInstance.Name = wfProcess.Name;
+            processInstance.State = ProcessInstanceEnum.INITIALIZED;
+            processInstance.CreatedTime=ctx.CalendarService.getSysDate();
+            processInstance.ParentProcessInstanceId=parentProcessInstanceId;
+            processInstance.ParentTaskInstanceId=parentTaskInstanceId;
+
+            ctx.PersistenceService.SaveOrUpdateProcessInstance(processInstance);
+
+            return processInstance;
         }
     }
     #endregion
-
 
     #region WorkflowSessionIProcessInstances
     public class WorkflowSessionIProcessInstances : IWorkflowSessionCallback
@@ -307,9 +347,9 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             switch (t)
             {
-                case '2': return ctx.PersistenceService.findProcessInstancesByProcessIdAndVersion(processId, version);
+                case '2': return ctx.PersistenceService.FindProcessInstancesByProcessIdAndVersion(processId, version);
                 //case '3': return ctx.PersistenceService.findProcessInstancesByProcessId(actorId, processId, taskId);
-                default: return ctx.PersistenceService.findProcessInstancesByProcessId(processId);
+                default: return ctx.PersistenceService.FindProcessInstancesByProcessId(processId);
             }
 
         }
@@ -330,7 +370,7 @@ namespace FireWorkflow.Net.Engine.Impl
         public Object doInWorkflowSession(RuntimeContext ctx)
         {
             IPersistenceService persistenceService = ctx.PersistenceService;
-            return persistenceService.findTaskInstancesForProcessInstance(processInstanceId, activityId);
+            return persistenceService.FindTaskInstancesForProcessInstance(processInstanceId, activityId);
         }
     }
     #endregion

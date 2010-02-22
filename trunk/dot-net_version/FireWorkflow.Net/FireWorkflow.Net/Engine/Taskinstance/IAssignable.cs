@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,14 +28,6 @@ namespace FireWorkflow.Net.Engine.Taskinstance
     /// </summary>
     public interface IAssignable
     {
-        /**
-         * 将TaskInstance分配给编号为actorId的操作员。即系统只创建一个WorkItem，并分配给编号为actorId的操作员
-         * @param actorId 操作员Id
-         * @param needClaim 是否需要签收，true表示需要操作员执行签收动作,系统将WorkItem设置为INITIALIZED状态；false不需要签收，Workitem直接被设置为STARTED状态。
-         * @return  返回创建的WorkItem
-         */
-        //    public IWorkItem asignToActor(String actorId, Boolean needClaim) throws EngineException,KernelException;
-
         /// <summary>
         /// 将TaskInstance分配给编号为actorId的操作员。即系统只创建一个WorkItem，并分配给编号为actorId的操作员
         /// 该WorkItem需要签收

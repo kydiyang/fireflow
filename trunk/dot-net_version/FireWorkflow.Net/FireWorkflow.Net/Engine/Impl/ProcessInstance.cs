@@ -57,7 +57,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 if (_processInstanceVariables == null)
                 {
                     //通过数据库查询进行初始化
-                    List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.Id);
+                    List<ProcessInstanceVar> allVars = persistenceService.FindProcessInstanceVariable(this.Id);
                     _processInstanceVariables = new Dictionary<String, Object>();
                     if (allVars != null && allVars.Count != 0)
                     {
@@ -102,7 +102,7 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             //保存到数据库
-            persistenceService.saveOrUpdateToken(token);
+            persistenceService.SaveOrUpdateToken(token);
 
             IJoinPoint resultJoinPoint = null;
             resultJoinPoint = new JoinPoint();
@@ -126,7 +126,7 @@ namespace FireWorkflow.Net.Engine.Impl
             {
                 int stepNumber = 0;
 
-                List<IToken> tokensList_0 = persistenceService.findTokensForProcessInstance(this.Id, synchInst.Synchronizer.Id);
+                List<IToken> tokensList_0 = persistenceService.FindTokensForProcessInstance(this.Id, synchInst.Synchronizer.Id);
                 Dictionary<String, IToken> tokensMap = new Dictionary<String, IToken>();
                 for (int i = 0; i < tokensList_0.Count; i++)
                 {
@@ -188,7 +188,7 @@ namespace FireWorkflow.Net.Engine.Impl
                         this.ProcessId, "The state of the process instance is " + this.State + ",can not run it ");
             }
 
-            INetInstance netInstance = (INetInstance)this.RuntimeContext.getKernelManager().getNetInstance(this.ProcessId, this.Version);
+            INetInstance netInstance = (INetInstance)this.RuntimeContext.KernelManager.getNetInstance(this.ProcessId, this.Version);
             if (netInstance == null)
             {
                 throw new EngineException(this.Id,
@@ -202,8 +202,8 @@ namespace FireWorkflow.Net.Engine.Impl
             this.fireProcessInstanceEvent(pevent);
 
             this.State=ProcessInstanceEnum.RUNNING;
-            this.StartedTime=this.RuntimeContext.getCalendarService().getSysDate();
-            this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstance(this);
+            this.StartedTime=this.RuntimeContext.CalendarService.getSysDate();
+            this.RuntimeContext.PersistenceService.SaveOrUpdateProcessInstance(this);
             netInstance.run(this);
         }
 
@@ -214,7 +214,7 @@ namespace FireWorkflow.Net.Engine.Impl
             if (_processInstanceVariables == null)
             {
                 //通过数据库查询进行初始化
-                List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.Id);
+                List<ProcessInstanceVar> allVars = persistenceService.FindProcessInstanceVariable(this.Id);
                 _processInstanceVariables = new Dictionary<String, Object>();
                 if (allVars != null && allVars.Count != 0)
                 {
@@ -233,7 +233,7 @@ namespace FireWorkflow.Net.Engine.Impl
             if (_processInstanceVariables == null)
             {
                 //通过数据库查询进行初始化
-                List<ProcessInstanceVar> allVars = persistenceService.findProcessInstanceVariable(this.Id);
+                List<ProcessInstanceVar> allVars = persistenceService.FindProcessInstanceVariable(this.Id);
                 _processInstanceVariables = new Dictionary<String, Object>();
                 if (allVars != null && allVars.Count != 0)
                 {
@@ -253,11 +253,11 @@ namespace FireWorkflow.Net.Engine.Impl
 
             if (_processInstanceVariables.ContainsKey(name))
             {
-                persistenceService.updateProcessInstanceVariable(procInstVar);
+                persistenceService.UpdateProcessInstanceVariable(procInstVar);
             }
             else
             {
-                persistenceService.saveProcessInstanceVariable(procInstVar);
+                persistenceService.SaveProcessInstanceVariable(procInstVar);
             }
             _processInstanceVariables.Add(name, value);
         }
@@ -281,7 +281,7 @@ namespace FireWorkflow.Net.Engine.Impl
         /// </summary>
         public void complete()
         {
-            List<IToken> tokens = this.RuntimeContext.PersistenceService.findTokensForProcessInstance(this.Id, null);
+            List<IToken> tokens = this.RuntimeContext.PersistenceService.FindTokensForProcessInstance(this.Id, null);
             Boolean canBeCompleted = true;
             for (int i = 0; tokens != null && i < tokens.Count; i++)
             {
@@ -299,14 +299,14 @@ namespace FireWorkflow.Net.Engine.Impl
 
             this.State=ProcessInstanceEnum.COMPLETED;
             //记录结束时间
-            this.EndTime=this.RuntimeContext.getCalendarService().getSysDate();
-            this.RuntimeContext.PersistenceService.saveOrUpdateProcessInstance(this);
+            this.EndTime=this.RuntimeContext.CalendarService.getSysDate();
+            this.RuntimeContext.PersistenceService.SaveOrUpdateProcessInstance(this);
 
             //删除所有的token
             for (int i = 0; tokens != null && i < tokens.Count; i++)
             {
                 IToken token = tokens[i];
-                this.RuntimeContext.PersistenceService.deleteToken(token);
+                this.RuntimeContext.PersistenceService.DeleteToken(token);
             }
 
             //触发事件
@@ -316,7 +316,7 @@ namespace FireWorkflow.Net.Engine.Impl
             this.fireProcessInstanceEvent(pevent);
             if ( !String.IsNullOrEmpty(this.ParentTaskInstanceId.Trim()))
             {
-                ITaskInstance taskInstance = this.RuntimeContext.PersistenceService.findAliveTaskInstanceById(this.ParentTaskInstanceId);
+                ITaskInstance taskInstance = this.RuntimeContext.PersistenceService.FindAliveTaskInstanceById(this.ParentTaskInstanceId);
                 ((IRuntimeContextAware)taskInstance).RuntimeContext=this.RuntimeContext;
                 ((IWorkflowSessionAware)taskInstance).CurrentWorkflowSession = this.CurrentWorkflowSession;
                 ((TaskInstance)taskInstance).complete(null);
@@ -330,7 +330,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 throw new EngineException(this, this.WorkflowProcess, "The process instance can not be aborted,the state of this process instance is " + this.State);
             }
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            persistenceService.abortProcessInstance(this);
+            persistenceService.AbortProcessInstance(this);
         }
 
         /// <summary>触发process instance相关的事件</summary>
@@ -371,7 +371,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 return;
             }
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            persistenceService.suspendProcessInstance(this);
+            persistenceService.SuspendProcessInstance(this);
         }
 
         public void restore()
@@ -385,7 +385,7 @@ namespace FireWorkflow.Net.Engine.Impl
                 return;
             }
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            persistenceService.restoreProcessInstance(this);
+            persistenceService.RestoreProcessInstance(this);
         }
     }
 }
