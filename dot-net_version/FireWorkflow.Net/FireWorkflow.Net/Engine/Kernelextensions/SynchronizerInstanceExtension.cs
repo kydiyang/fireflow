@@ -48,7 +48,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                 ISynchronizerInstance syncInst = (ISynchronizerInstance)e.getSource();
                 IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                 //删除同步器节点的token
-                persistenceService.deleteTokensForNode(e.Token.ProcessInstanceId, syncInst.Synchronizer.Id);
+                persistenceService.DeleteTokensForNode(e.Token.ProcessInstanceId, syncInst.Synchronizer.Id);
             }
         }
     }

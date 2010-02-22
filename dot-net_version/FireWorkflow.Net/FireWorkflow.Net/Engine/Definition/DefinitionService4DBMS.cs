@@ -37,20 +37,20 @@ namespace FireWorkflow.Net.Engine.Definition
         /// <returns></returns>
         public List<WorkflowDefinition> GetAllLatestVersionsOfWorkflowDefinition()
         {
-            return RuntimeContext.PersistenceService.findAllTheLatestVersionsOfWorkflowDefinition();
+            return RuntimeContext.PersistenceService.FindAllTheLatestVersionsOfWorkflowDefinition();
         }
 
 
         /// <summary>根据流程Id和版本号查找流程定义</summary>
         public WorkflowDefinition GetWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Int32 version)
         {
-            return RuntimeContext.PersistenceService.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, version);
+            return RuntimeContext.PersistenceService.FindWorkflowDefinitionByProcessIdAndVersionNumber(processId, version);
         }
 
         /// <summary>通过流程Id查找其最新版本的流程定义</summary>
         public WorkflowDefinition GetTheLatestVersionOfWorkflowDefinition(String processId)
         {
-            return RuntimeContext.PersistenceService.findTheLatestVersionOfWorkflowDefinitionByProcessId(processId);
+            return RuntimeContext.PersistenceService.FindTheLatestVersionOfWorkflowDefinitionByProcessId(processId);
         }
 
         #endregion

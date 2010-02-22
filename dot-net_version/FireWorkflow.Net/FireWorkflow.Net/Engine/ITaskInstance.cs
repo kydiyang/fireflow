@@ -1,4 +1,22 @@
-﻿using System;
+﻿/**
+ * Copyright 2003-2008 非也
+ * All rights reserved. 
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation。
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses. *
+ * @author 非也,nychen2000@163.com
+ * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,9 +39,9 @@ namespace FireWorkflow.Net.Engine
     }
 
     /// <summary>
-    /// 任务实例
-    /// 对任务实例的状态字段作如下规定：小于5的状态为“活动”状态，大于等于5的状态为“非活动”状态。
-    /// 活动状态包括：INITIALIZED,RUNNING,SUSPENDED
+    /// <para>任务实例</para>
+    /// <para>对任务实例的状态字段作如下规定：小于5的状态为“活动”状态，大于等于5的状态为“非活动”状态。</para>
+    /// <para>活动状态包括：INITIALIZED,RUNNING,SUSPENDED</para>
     /// 非活动状态包括：COMPLETED,CANCELED
     /// </summary>
     public interface ITaskInstance
@@ -40,6 +58,7 @@ namespace FireWorkflow.Net.Engine
         /// <summary>返回任务显示名</summary>
         String DisplayName { get; }
 
+        IProcessInstance AliveProcessInstance { get; }
 
         /// <summary>返回对应的流程实例Id</summary>
         String ProcessInstanceId { get; }
@@ -76,12 +95,12 @@ namespace FireWorkflow.Net.Engine
         /// </summary>
         TaskTypeEnum TaskType { get; }
 
-        /// <summary>当执行JumpTo和LoopTo操作时，返回目标Activity 的Id</summary>
-        String TargetActivityId { get; }
+        /// <summary>
+        /// 返回任务是里对应的环节
+        /// fireflow.engine.EngineException
+        /// </summary>
+        Activity Activity { get; }// throws EngineException;
 
-        /// <summary>返回TaskInstance的"步数"。</summary>
-        Int32 StepNumber { get; }
-        
         /// <summary>
         /// 返回任务实例对应的流程
         /// fireflow.engine.EngineException
@@ -94,13 +113,11 @@ namespace FireWorkflow.Net.Engine
         /// </summary>
         Task Task { get; }// throws EngineException;
 
-        IProcessInstance AliveProcessInstance { get; }
+        /// <summary>当执行JumpTo和LoopTo操作时，返回目标Activity 的Id</summary>
+        String TargetActivityId { get; }
 
-        /// <summary>
-        /// 返回任务是里对应的环节
-        /// fireflow.engine.EngineException
-        /// </summary>
-        Activity Activity { get; }// throws EngineException;
+        /// <summary>返回TaskInstance的"步数"。</summary>
+        Int32 StepNumber { get; }
 
         /// <summary>挂起 </summary>
         void suspend();// throws EngineException;

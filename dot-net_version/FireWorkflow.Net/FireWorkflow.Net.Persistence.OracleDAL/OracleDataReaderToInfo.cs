@@ -90,14 +90,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public static WorkItem GetWorkItem(IDataReader dr)
         {
             WorkItem workItem = new WorkItem();
-            workItem.setId(Convert.ToString(dr["id"]));
-            workItem.setState(Convert.ToInt32(dr["state"]));
-            if (!(dr["created_time"] is DBNull)) workItem.setCreatedTime(Convert.ToDateTime(dr["created_time"]));
-            if (!(dr["claimed_time"] is DBNull)) workItem.setClaimedTime(Convert.ToDateTime(dr["claimed_time"]));
-            if (!(dr["end_time"] is DBNull)) workItem.setEndTime(Convert.ToDateTime(dr["end_time"]));
-            workItem.setActorId(Convert.ToString(dr["actor_id"]));
-            workItem.setTaskInstanceId(Convert.ToString(dr["taskinstance_id"]));
-            workItem.setComments(Convert.ToString(dr["comments"]));
+            workItem.Id=Convert.ToString(dr["id"]);
+            workItem.State= (WorkItemEnum)Convert.ToInt32(dr["state"]);
+            if (!(dr["created_time"] is DBNull)) workItem.CreatedTime=Convert.ToDateTime(dr["created_time"]);
+            if (!(dr["claimed_time"] is DBNull)) workItem.ClaimedTime=Convert.ToDateTime(dr["claimed_time"]);
+            if (!(dr["end_time"] is DBNull)) workItem.EndTime=Convert.ToDateTime(dr["end_time"]);
+            workItem.ActorId=Convert.ToString(dr["actor_id"]);
+            workItem.TaskInstanceId=Convert.ToString(dr["taskinstance_id"]);
+            workItem.Comments=Convert.ToString(dr["comments"]);
             return workItem;
         }
 
@@ -153,7 +153,70 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
   
                  return processInstanceTrace; 
   
-         } 
- 
+         }
+
+        public static ProcessInstanceVar GetProcessInstanceVar(IDataReader dr)
+        {
+            ProcessInstanceVar processInstanceVar = new ProcessInstanceVar();
+            ProcessInstanceVarPk pk = new ProcessInstanceVarPk();
+            pk.ProcessInstanceId = Convert.ToString(dr["processinstance_id"]);// (rs.getString("processinstance_id"));
+            pk.Name = Convert.ToString(dr["name"]); //(rs.getString("name"));
+            processInstanceVar.VarPrimaryKey=pk;
+
+            String valueStr = Convert.ToString(dr["value"]); //rs.getString("value");
+            Object valueObj = GetProcessInstanceVarObject(valueStr);
+            processInstanceVar.Value = valueObj;
+
+            return processInstanceVar;
+        }
+
+        public static Object GetProcessInstanceVarObject(String value)
+    	{
+    		if (value == null)
+    			return null;
+    		int index = value.IndexOf("#");
+    		if (index == -1)
+    		{
+    			return null;
+    		}
+    		String type = value.Substring(0, index);
+    		String strValue = value.Substring(index + 1);
+    		if (type=="String")
+    		{
+    			return strValue;
+    		}
+    		if (String.IsNullOrEmpty(strValue.Trim()))
+    		{
+    			return null;
+    		}
+    		if (type=="Int32")
+    		{
+    			return Int32.Parse(strValue);
+    		}
+    		else if (type=="Int64")
+    		{
+    			return long.Parse(strValue);
+    		}
+    		else if (type=="Single")
+    		{
+    			return float.Parse(strValue);
+    		}
+    		else if (type=="Double")
+    		{
+    			return Double.Parse(strValue);
+    		}
+    		else if (type=="Boolean")
+    		{
+    			return Boolean.Parse(strValue);
+    		}
+    		else if (type=="DateTime")
+    		{
+    			return DateTime.Parse(strValue);
+    		}
+    		else
+    		{
+    			throw new Exception("Fireflow不支持数据类型" + type);
+    		}
+    	}
     }
 }

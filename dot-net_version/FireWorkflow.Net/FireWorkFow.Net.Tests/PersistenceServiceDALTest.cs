@@ -88,12 +88,12 @@ namespace FireWorkFow.Net.Tests
             //processInstance.setParentTaskInstanceId("asdf");
             bool expected = true; // TODO: Initialize to an appropriate value
             bool actual;
-            actual = target.saveOrUpdateProcessInstance(processInstance);
+            actual = target.SaveOrUpdateProcessInstance(processInstance);
 
-            ProcessInstance processInstance1 = (ProcessInstance)target.findProcessInstanceById("3377237c170342adad0f1654747b609a");
+            ProcessInstance processInstance1 = (ProcessInstance)target.FindProcessInstanceById("3377237c170342adad0f1654747b609a");
             processInstance1.Name=DateTime.Now.ToString();
 
-            actual = target.saveOrUpdateProcessInstance(processInstance1);
+            actual = target.SaveOrUpdateProcessInstance(processInstance1);
 
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
@@ -109,7 +109,7 @@ namespace FireWorkFow.Net.Tests
             string id = "3377237c170342adad0f1654747b609a"; // TODO: Initialize to an appropriate value
             IProcessInstance expected = null; // TODO: Initialize to an appropriate value
             IProcessInstance actual;
-            actual = target.findAliveProcessInstanceById(id);
+            actual = target.FindAliveProcessInstanceById(id);
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
@@ -124,7 +124,7 @@ namespace FireWorkFow.Net.Tests
             string id = "3377237c170342adad0f1654747b609a"; // TODO: Initialize to an appropriate value
             IProcessInstance expected = null; // TODO: Initialize to an appropriate value
             IProcessInstance actual;
-            actual = target.findProcessInstanceById(id);
+            actual = target.FindProcessInstanceById(id);
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
@@ -144,7 +144,7 @@ namespace FireWorkFow.Net.Tests
             workflowDef.ProcessContent="asdfasdf";
             bool expected = false; // TODO: Initialize to an appropriate value
             bool actual;
-            actual = target.saveOrUpdateWorkflowDefinition(workflowDef);
+            actual = target.SaveOrUpdateWorkflowDefinition(workflowDef);
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
@@ -159,7 +159,7 @@ namespace FireWorkFow.Net.Tests
             string id = "d766dab5222d449998827d75bf59723b"; // TODO: Initialize to an appropriate value
             WorkflowDefinition expected = null; // TODO: Initialize to an appropriate value
             WorkflowDefinition actual;
-            actual = target.findWorkflowDefinitionById(id);
+            actual = target.FindWorkflowDefinitionById(id);
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }

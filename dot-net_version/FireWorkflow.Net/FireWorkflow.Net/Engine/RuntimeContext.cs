@@ -31,9 +31,9 @@ using FireWorkflow.Net.Engine.Condition;
 namespace FireWorkflow.Net.Engine
 {
     /// <summary>
-    /// RuntimeContext是Fire workflow Engine的总线。所有的服务都挂接在这个总线上，并通过这个总线获取。<br/>
-    /// RuntimeContext也是业务代码调用工作流引擎的入口，通过runtimeContext.getWorkflowSession()获得IWorkflowSession 对象，
-    /// 然后通过IWorkflowSession调用各种工作流实例对象及其API。<br/>
+    /// <para>RuntimeContext是Fire workflow Engine的总线。所有的服务都挂接在这个总线上，并通过这个总线获取。</para>
+    /// <para>RuntimeContext也是业务代码调用工作流引擎的入口，通过runtimeContext.getWorkflowSession()获得IWorkflowSession 对象，</para>
+    /// <para>然后通过IWorkflowSession调用各种工作流实例对象及其API。</para>
     /// context管理的各种服务
     /// </summary>
     public class RuntimeContext
@@ -43,7 +43,7 @@ namespace FireWorkflow.Net.Engine
         //context管理的各种服务
 
         /// <summary>是否打开流程跟踪，如果打开，则会往T_FF_HIST_TRACE表中插入纪录。</summary>
-        public Boolean EnableTrace { get; set; }
+        public Boolean IsEnableTrace { get; set; }
 
         /// <summary>转移条件表达式解析服务</summary>
         private IConditionResolver _conditionResolver = null;
@@ -132,26 +132,25 @@ namespace FireWorkflow.Net.Engine
         }
 
         /// <summary>日历服务</summary>
-        private ICalendarService calendarService = null;
+        private ICalendarService _calendarService = null;
+        public ICalendarService CalendarService
+        {
+            get { return _calendarService; }
+            set
+            {
+                this._calendarService = value;
+                this._calendarService.RuntimeContext = this;
+            }
+        }
 
         /// <summary>bean工厂，fire workflow默认使用spring作为其实现</summary>
-        private IBeanFactory beanFactory = null;
-
-
-        //    private ThreadLocal<Object> currentDBSession = new ThreadLocal<Object>();
-        //	private ThreadLocal<IFireflowSession> currentFireflowSession = new ThreadLocal<IFireflowSession>();
-        //保持一个内部用的beanFactory,类似spring的beanfactory,用于注册Listener,ApplicationHandler,AssignmentHandler的
-        //单态实例，可以考虑这个beanfactory是否可以引用spring的beanfactory
-        //将Bean的创建工作委派给IBeanFactory,20090228
-        //    private Map<String, Object> beanCache = new HashMap<String, Object>();
-
+        public IBeanFactory BeanFactory { get; set; }
 
         public RuntimeContext()
         {
             IsInitialized = false;
-            EnableTrace = false;
+            IsEnableTrace = false;
         }
-
 
         /// <summary>
         /// 根据bean的name返回bean的实例。<br/>
@@ -161,9 +160,9 @@ namespace FireWorkflow.Net.Engine
         /// <returns></returns>
         public Object getBeanByName(String beanName)
         {
-            if (beanFactory != null)
+            if (BeanFactory != null)
             {
-                return beanFactory.GetBean(beanName);
+                return BeanFactory.GetBean(beanName);
             }
             else
             {
@@ -171,69 +170,16 @@ namespace FireWorkflow.Net.Engine
             }
         }
 
-        //DBSession 放在哪里比较好些？
-        //    public void setCurrentDBSession(Object dbSession) {
-        //        currentDBSession.set(dbSession);
-        //    }
-        //
-        //    public Object getCurrentDBSession() {
-        //        return currentDBSession.get();
-        //    }
-
-
-
-        
-
-       
-
-        
-
-        public KernelManager getKernelManager()
-        {
-            return _kernelManager;
-        }
-
-        public void setKernelManager(KernelManager arg0)
-        {
-            this._kernelManager = arg0;
-            this._kernelManager.RuntimeContext=this;
-        }
-
-        public ICalendarService getCalendarService()
-        {
-            return calendarService;
-        }
-
-        public void setCalendarService(ICalendarService calendarService)
-        {
-            this.calendarService = calendarService;
-            this.calendarService.RuntimeContext=this;
-        }
-
         public IWorkflowSession getWorkflowSession()
         {
             return new WorkflowSession(this);
         }
 
-
-        public IBeanFactory getBeanFactory()
-        {
-            return beanFactory;
-        }
-
-        public void setBeanFactory(IBeanFactory beanFactory)
-        {
-            this.beanFactory = beanFactory;
-        }
-
         /// <summary>初始化方法</summary>
         public void initialize()// throws EngineException, KernelException 
         {
-            //		System.out.println("执行initialize(),the isInitialized="+this.isInitialized);
-            //		System.out.println("看看有没有 受理环节实例"+this.getKenelManager().getWFElementInstance("受理"));
             if (!IsInitialized)
             {
-                //			initKenelExtensions();
                 initAllNetInstances();
                 IsInitialized = true;
             }
@@ -241,24 +187,6 @@ namespace FireWorkflow.Net.Engine
 
         protected void initAllNetInstances()// throws KernelException
         {
-            /*
-            List<WorkflowProcess> allWfProcess = definitionService.getAllWorkflowProcesses();
-            this.getKenelManager().clearAllNetInstance();
-            for(int i=0;allWfProcess!=null && i<allWfProcess.Count;i++){
-            WorkflowProcess process = allWfProcess.get(i);
-            this.getKenelManager().createNetInstance( process);
-            }
-             */
-        }
-
-        public Boolean isEnableTrace()
-        {
-            return EnableTrace;
-        }
-
-        public void setEnableTrace(Boolean enableTrace)
-        {
-            this.EnableTrace = enableTrace;
         }
     }
 

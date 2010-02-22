@@ -35,12 +35,11 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
     public class TransitionInstanceExtension : IKernelExtension,
         IEdgeInstanceEventListener, IRuntimeContextAware
     {
-
         public RuntimeContext RuntimeContext { get; set; }
 
         /// <summary>
-        /// 执行分支判断策略，即设置token的alive属性 首先，如果this.alive==false,则所有的token的Alive属性皆为false
-        /// 然后，如果在nexttransitionList中有值，则直接执行列表中的tansition
+        /// <para>执行分支判断策略，即设置token的alive属性 首先，如果this.alive==false,则所有的token的Alive属性皆为false</para>
+        /// <para>然后，如果在nexttransitionList中有值，则直接执行列表中的tansition</para>
         /// 否则，通过计算Transition的表达式来确定下一个transition,
         /// </summary>
         /// <param name="vars"></param>
@@ -102,7 +101,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                 String condition = transInst.Transition.Condition;
                 calculateTheAliveValue(token, condition);
 
-                if (RuntimeContext.isEnableTrace() && token.IsAlive)
+                if (this.RuntimeContext.IsEnableTrace && token.IsAlive)
                 {
                     Transition transition = transInst.Transition;
                     IWFElement fromNode = transition.FromNode;
@@ -125,7 +124,7 @@ namespace FireWorkflow.Net.Engine.Kernelextensions
                     trace.EdgeId=transInst.Transition.Id;
                     trace.MinorNumber=minorNumber;
                     //TODO wmj2003 这里应该是insert。一旦token从当前边上经过，那么就保存流程运行轨迹.
-                    RuntimeContext.PersistenceService.saveOrUpdateProcessInstanceTrace(trace);
+                    RuntimeContext.PersistenceService.SaveOrUpdateProcessInstanceTrace(trace);
                 }
             }
 

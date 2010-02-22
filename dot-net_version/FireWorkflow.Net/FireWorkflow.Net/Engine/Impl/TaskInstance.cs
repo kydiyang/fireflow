@@ -130,7 +130,7 @@ namespace FireWorkflow.Net.Engine.Impl
                     if (this.RuntimeContext != null)
                     {
                         IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-                        this.processInsatance = persistenceService.findAliveProcessInstanceById(this.ProcessInstanceId);
+                        this.processInsatance = persistenceService.FindAliveProcessInstanceById(this.ProcessInstanceId);
                     }
                 }
                 if (this.processInsatance != null)
@@ -239,7 +239,7 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             this.Suspended = true;
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            persistenceService.saveOrUpdateTaskInstance(this);
+            persistenceService.SaveOrUpdateTaskInstance(this);
         }
 
         public void restore()
@@ -254,7 +254,7 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             this.Suspended = false;
             IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-            persistenceService.saveOrUpdateTaskInstance(this);
+            persistenceService.SaveOrUpdateTaskInstance(this);
         }
 
 

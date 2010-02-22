@@ -50,8 +50,8 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             if (ActorIdsList == null || ActorIdsList.Count == 0)
             {
                 TaskInstance taskInstance = (TaskInstance)asignable;
-                throw new EngineException(taskInstance.ProcessInstanceId, taskInstance.WorkflowProcess,
-                        taskInstance.TaskId, "actorIdsList can not be empty");
+                throw new EngineException(taskInstance.ProcessInstanceId, taskInstance.WorkflowProcess, taskInstance.TaskId,
+                    "actorIdsList can not be empty");
             }
 
             List<IWorkItem> workItems = asignable.assignToActors(ActorIdsList);
@@ -60,8 +60,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             //如果不需要签收，这里自动进行签收，（FormTask的strategy="all"或者=any并且工作项数量为1） 
             if (!IsNeedClaim)
             {
-                if (FormTaskEnum.ALL==taskInst.AssignmentStrategy ||
-                        (FormTaskEnum.ANY==taskInst.AssignmentStrategy && ActorIdsList.Count == 1))
+                if (FormTaskEnum.ALL==taskInst.AssignmentStrategy || (FormTaskEnum.ANY==taskInst.AssignmentStrategy && ActorIdsList.Count == 1))
                 {
                     for (int i = 0; i < workItems.Count; i++)
                     {
@@ -71,7 +70,5 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 }
             }
         }
-
-
     }
 }

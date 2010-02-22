@@ -45,7 +45,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 插入或者更新ProcessInstance流程实例
         /// </summary>
-        public bool saveOrUpdateProcessInstance(IProcessInstance processInstance)
+        public bool SaveOrUpdateProcessInstance(IProcessInstance processInstance)
         {
             if (String.IsNullOrEmpty(processInstance.Id))
             {
@@ -107,7 +107,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 通过ID获得“活的”ProcessInstance对象。
         /// “活的”是指ProcessInstance.state=INITIALIZED Or ProcessInstance.state=STARTED Or ProcessInstance=SUSPENDED的流程实例
         /// </summary>
-        public IProcessInstance findAliveProcessInstanceById(String id) {
+        public IProcessInstance FindAliveProcessInstanceById(String id) {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 String select = "SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1 and ( state=" + ProcessInstanceEnum.INITIALIZED
@@ -136,7 +136,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 通过ID获得ProcessInstance对象。
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public IProcessInstance findProcessInstanceById(String id)
+        public IProcessInstance FindProcessInstanceById(String id)
         {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
@@ -167,7 +167,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="processId">The id of the process definition.</param>
         /// <returns>A list of processInstance</returns>
-        public List<IProcessInstance> findProcessInstancesByProcessId(String processId)
+        public List<IProcessInstance> FindProcessInstancesByProcessId(String processId)
         {
             List<IProcessInstance> infos = new List<IProcessInstance>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -203,7 +203,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="processId">The id of the process definition.</param>
         /// <param name="version">版本号</param>
         /// <returns>A list of processInstance</returns>
-        public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId, int version)
+        public List<IProcessInstance> FindProcessInstancesByProcessIdAndVersion(String processId, int version)
         {
             List<IProcessInstance> infos = new List<IProcessInstance>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -238,7 +238,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="taskInstanceId">父TaskInstance的Id</param>
         /// <returns></returns>
-        public int getAliveProcessInstanceCountForParentTaskInstance(String taskInstanceId)
+        public int GetAliveProcessInstanceCountForParentTaskInstance(String taskInstanceId)
         {
             String select = String.Format("select count(*) from t_ff_rt_processinstance where parent_taskinstance_id=:1 and state in({0},{1})",
                 ProcessInstanceEnum.INITIALIZED, ProcessInstanceEnum.RUNNING);
@@ -252,13 +252,13 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 终止流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为CANCELED；并删除所有的token
         /// </summary>
-        public bool abortProcessInstance(ProcessInstance processInstance)
+        public bool AbortProcessInstance(ProcessInstance processInstance)
         {
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(this.connectionString);
             try
             {
                 // 更新流程状态，设置为canceled
-                DateTime now = this.RuntimeContext.getCalendarService().getSysDate();
+                DateTime now = this.RuntimeContext.CalendarService.getSysDate();
                 String processSql = "update t_ff_rt_processinstance set state=" + ProcessInstanceEnum.CANCELED
                         + ",end_time=:1 where id=:2 ";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, processSql,
@@ -287,7 +287,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
                 // 更新所有工作项的状态为canceled
                 String workItemSql = " update t_ff_rt_workitem set state="
-                        + IWorkItem.CANCELED
+                        + WorkItemEnum.CANCELED
                         + ",end_time=:1  "
                         + " where taskinstance_id in (select a.id  from t_ff_rt_taskinstance a,t_ff_rt_workitem b where a.id=b.taskinstance_id and a.processinstance_id=:2 ) and (state=0 or state=1) ";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
@@ -336,7 +336,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 挂起流程实例
         /// </summary>
-        public bool suspendProcessInstance(ProcessInstance processInstance) {
+        public bool SuspendProcessInstance(ProcessInstance processInstance) {
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(this.connectionString);
             try
             {
@@ -386,7 +386,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 恢复流程实例
         /// </summary>
-        public bool restoreProcessInstance(ProcessInstance processInstance)
+        public bool RestoreProcessInstance(ProcessInstance processInstance)
         {
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(this.connectionString);
             try
@@ -446,7 +446,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <para>and generate a new id for it { throw new NotImplementedException(); }</para>
         /// <para>otherwise update the existent one. </para>
         /// </summary>
-        public bool saveOrUpdateTaskInstance(ITaskInstance taskInstance)
+        public bool SaveOrUpdateTaskInstance(ITaskInstance taskInstance)
         {
             if (String.IsNullOrEmpty(taskInstance.Id))
             {
@@ -525,14 +525,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 终止TaskInstance。将任务实例及其所有的“活的”WorkItem变成Canceled状态。
         /// "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem.
         /// </summary>
-        public bool abortTaskInstance(TaskInstance taskInstance)
+        public bool AbortTaskInstance(TaskInstance taskInstance)
         {
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(connectionString);
             try
             {
                 String sql = "update t_ff_rt_taskinstance set state=" + TaskInstanceStateEnum.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
-                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.getCalendarService().getSysDate()),
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.CalendarService.getSysDate()),
                     OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.Id)
                     );
                 if (count <= 0)
@@ -543,10 +543,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
 
                 // 将与之关联的WorkItem取消掉
-                String workItemSql = " update t_ff_rt_workitem set state=" + IWorkItem.CANCELED + ",end_time=:1  "
+                String workItemSql = " update t_ff_rt_workitem set state=" + WorkItemEnum.CANCELED + ",end_time=:1  "
                         + " where taskinstance_id =:2 ";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
-                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.getCalendarService().getSysDate()),
+                    OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.CalendarService.getSysDate()),
                     OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.Id)
                     );
                 if (count <= 0)
@@ -580,7 +580,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 返回“活的”TaskInstance。
         /// “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
         /// </summary>
-        public ITaskInstance findAliveTaskInstanceById(String id) {
+        public ITaskInstance FindAliveTaskInstanceById(String id) {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 String select = "select * from t_ff_rt_taskinstance where id=:1 and  (state=" + TaskInstanceStateEnum.INITIALIZED
@@ -609,7 +609,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 获得activity的“活的”TaskInstance的数量
         /// “活的”是指TaskInstance.state=INITIALIZED Or TaskInstance.state=STARTED 。
         /// </summary>
-        public int getAliveTaskInstanceCountForActivity(String processInstanceId, String activityId)
+        public int GetAliveTaskInstanceCountForActivity(String processInstanceId, String activityId)
         {
             String select = "select count(*) from T_FF_RT_TASKINSTANCE where " + " (state=" + TaskInstanceStateEnum.INITIALIZED
                 + " or state=" + TaskInstanceStateEnum.RUNNING + ")" + " and activity_id=:1 and processinstance_id=:2";
@@ -625,7 +625,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 返回某个Task已经结束的TaskInstance的数量
         /// “已经结束”是指TaskInstance.state=COMPLETED。
         /// </summary>
-        public int getCompletedTaskInstanceCountForTask(String processInstanceId, String taskId) {
+        public int GetCompletedTaskInstanceCountForTask(String processInstanceId, String taskId) {
             String select = "select count(*) from T_FF_RT_TASKINSTANCE where state=" + TaskInstanceStateEnum.COMPLETED
                         + " and task_id=:1 and processinstance_id=:2 ";
             OracleParameter[] selectParms = { 
@@ -640,7 +640,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Find the task instance by id
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public ITaskInstance findTaskInstanceById(String id) {
+        public ITaskInstance FindTaskInstanceById(String id) {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 String select = "select * from t_ff_rt_taskinstance where id=:1";
@@ -668,7 +668,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 查询流程实例的所有的TaskInstance,如果activityId不为空，则返回该流程实例下指定环节的TaskInstance
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<ITaskInstance> findTaskInstancesForProcessInstance(String processInstanceId, String activityId)
+        public List<ITaskInstance> FindTaskInstancesForProcessInstance(String processInstanceId, String activityId)
         {
             List<ITaskInstance> infos = new List<ITaskInstance>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -714,7 +714,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 查询出同一个stepNumber的所有TaskInstance实例
         /// </summary>
-        public List<ITaskInstance> findTaskInstancesForProcessInstanceByStepNumber(String processInstanceId, Int32 stepNumber)
+        public List<ITaskInstance> FindTaskInstancesForProcessInstanceByStepNumber(String processInstanceId, Int32 stepNumber)
         {
             List<ITaskInstance> infos = new List<ITaskInstance>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -761,7 +761,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 调用数据库自身的机制所定TaskInstance实例。
         /// 该方法主要用于工单的签收操作，在签收之前先锁定与之对应的TaskInstance。
         /// </summary>
-        public bool lockTaskInstance(String taskInstanceId) {
+        public bool LockTaskInstance(String taskInstanceId) {
             if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, "select * from t_ff_rt_taskinstance where id=:1 for update",
                 OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)) != 1)
                 return false;
@@ -779,9 +779,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 插入或者更新WorkItem
         /// </summary>
-        public bool saveOrUpdateWorkItem(IWorkItem workitem)
+        public bool SaveOrUpdateWorkItem(IWorkItem workitem)
         {
-            if (String.IsNullOrEmpty(workitem.getId()))
+            if (String.IsNullOrEmpty(workitem.Id))
             {
                 String workItemId = Guid.NewGuid().ToString().Replace("-", ""); ;
 
@@ -790,13 +790,13 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "ACTOR_ID, COMMENTS, TASKINSTANCE_ID )VALUES(:1, :2, :3, :4, :5, :6, :7, :8)";
                 OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workItemId), 
-    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.getState()), 
-    				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.getCreatedTime()), 
-    				OracleHelper.NewOracleParameter(":4", OracleType.Timestamp, 11, workitem.getClaimedTime()), 
-    				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.getEndTime()), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, workitem.getActorId()), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 1024, workitem.getComments()), 
-    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.getTaskInstance().Id)
+    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.State), 
+    				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.CreatedTime), 
+    				OracleHelper.NewOracleParameter(":4", OracleType.Timestamp, 11, workitem.ClaimedTime), 
+    				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.EndTime), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, workitem.ActorId), 
+    				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 1024, workitem.Comments), 
+    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.TaskInstance.Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
                     return false;
@@ -809,14 +809,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "COMMENTS=:7, TASKINSTANCE_ID=:8" +
                     " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
-    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.getState()), 
-    				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.getCreatedTime()), 
-    				OracleHelper.NewOracleParameter(":4", OracleType.Timestamp, 11, workitem.getClaimedTime()), 
-    				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.getEndTime()), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, workitem.getActorId()), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 1024, workitem.getComments()), 
-    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.getTaskInstance().Id),
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workitem.getId())
+    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.State), 
+    				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.CreatedTime), 
+    				OracleHelper.NewOracleParameter(":4", OracleType.Timestamp, 11, workitem.ClaimedTime), 
+    				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.EndTime), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, workitem.ActorId), 
+    				OracleHelper.NewOracleParameter(":7", OracleType.VarChar, 1024, workitem.Comments), 
+    				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, workitem.TaskInstance.Id),
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workitem.Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
                     return false;
@@ -828,7 +828,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         ///  返回任务实例的所有"活的"WorkItem的数量。
         ///  "活的"WorkItem 是指状态等于INITIALIZED、STARTED或者SUSPENDED的WorkItem。
         /// </summary>
-        public Int32 getAliveWorkItemCountForTaskInstance(String taskInstanceId)
+        public Int32 GetAliveWorkItemCountForTaskInstance(String taskInstanceId)
         {
             String select = "select count(*) from t_ff_rt_workitem where taskinstance_id=:1 and (state in (0,1,3))";
             OracleParameter[] selectParms = { 
@@ -842,12 +842,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 所以必须有关联条件WorkItem.state=IWorkItem.COMPLTED
         /// </summary>
         /// <param name="taskInstanceId">任务实例Id</param>
-        public List<IWorkItem> findCompletedWorkItemsForTaskInstance(String taskInstanceId)
+        public List<IWorkItem> FindCompletedWorkItemsForTaskInstance(String taskInstanceId)
         {
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                string select = "select * from t_ff_rt_workitem where taskinstance_id=:1 and state=" + IWorkItem.COMPLETED;
+                string select = "select * from t_ff_rt_workitem where taskinstance_id=:1 and state=" + WorkItemEnum.COMPLETED;
                 OracleDataReader reader = null;
                 try
                 {
@@ -856,11 +856,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         );
                     if (reader != null)
                     {
-                        ITaskInstance iTaskInstance = findTaskInstanceById(taskInstanceId);
+                        ITaskInstance iTaskInstance = FindTaskInstanceById(taskInstanceId);
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -876,7 +876,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 查询某任务实例的所有WorkItem
         /// </summary>
-        public List<IWorkItem> findWorkItemsForTaskInstance(String taskInstanceId)
+        public List<IWorkItem> FindWorkItemsForTaskInstance(String taskInstanceId)
         {
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -890,11 +890,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         );
                     if (reader != null)
                     {
-                        ITaskInstance iTaskInstance = findTaskInstanceById(taskInstanceId);
+                        ITaskInstance iTaskInstance = FindTaskInstanceById(taskInstanceId);
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -911,9 +911,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 删除处于初始化状态的workitem。
         /// 此方法用于签收Workitem时，删除其他Actor的WorkItem
         /// </summary>
-        public bool deleteWorkItemsInInitializedState(String taskInstanceId)
+        public bool DeleteWorkItemsInInitializedState(String taskInstanceId)
         {
-            String delete = "delete from t_ff_rt_workitem where taskinstance_id=:1 and  state=" + IWorkItem.INITIALIZED;
+            String delete = "delete from t_ff_rt_workitem where taskinstance_id=:1 and  state=" + WorkItemEnum.INITIALIZED;
             OracleParameter[] deleteParms = { 
                  OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
 			};
@@ -926,7 +926,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Find workItem by id
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public IWorkItem findWorkItemById(String id)
+        public IWorkItem FindWorkItemById(String id)
         {
             WorkItem workItem;
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -943,10 +943,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         if (reader.Read())
                         {
                             workItem = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = findTaskInstanceById(workItem.getTaskInstanceId());
+                            ITaskInstance iTaskInstance = FindTaskInstanceById(workItem.TaskInstanceId);
                             if (iTaskInstance != null)
                             {
-                                ((WorkItem)workItem).setTaskInstance(iTaskInstance);
+                                ((WorkItem)workItem).TaskInstance=iTaskInstance;
                             }
                             return workItem;
                         }
@@ -964,7 +964,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Find all workitems for task
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findWorkItemsForTask(String taskid)
+        public List<IWorkItem> FindWorkItemsForTask(String taskid)
         {
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -981,8 +981,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -1000,9 +1000,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 待办工单是指状态等于INITIALIZED或STARTED工单
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findTodoWorkItems(String actorId)
+        public List<IWorkItem> FindTodoWorkItems(String actorId)
         {
-            return findTodoWorkItems(actorId,String.Empty);
+            return FindTodoWorkItems(actorId,String.Empty);
         }
 
         /// <summary>
@@ -1011,9 +1011,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 待办工单是指状态等于INITIALIZED或STARTED工单
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findTodoWorkItems(String actorId, String processInstanceId)
+        public List<IWorkItem> FindTodoWorkItems(String actorId, String processInstanceId)
         {
-            if (String.IsNullOrEmpty(processInstanceId)) return findTodoWorkItems(actorId);
+            if (String.IsNullOrEmpty(processInstanceId)) return FindTodoWorkItems(actorId);
 
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -1024,12 +1024,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 {
                     if (String.IsNullOrEmpty(actorId))
                     {
-                        select = "select * from t_ff_rt_workitem where  state in (" + IWorkItem.INITIALIZED + "," + IWorkItem.RUNNING + ")  ";
+                        select = "select * from t_ff_rt_workitem where  state in (" + WorkItemEnum.INITIALIZED + "," + WorkItemEnum.RUNNING + ")  ";
                         selectParms = null;
                     }
                     else
                     {
-                        select = "select * from t_ff_rt_workitem where state in (" + IWorkItem.INITIALIZED + "," + IWorkItem.RUNNING +
+                        select = "select * from t_ff_rt_workitem where state in (" + WorkItemEnum.INITIALIZED + "," + WorkItemEnum.RUNNING +
                             ") and actor_id=:1  ";
                         selectParms = new OracleParameter[]{ 
                             OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId)
@@ -1043,7 +1043,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         throw new Exception("挡流程（processInstanceId）不为空时，工单操作员（actorId）不能为空！");
                     }
                     select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
-                        IWorkItem.INITIALIZED + " ," + IWorkItem.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
+                        WorkItemEnum.INITIALIZED + " ," + WorkItemEnum.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
                     selectParms = new OracleParameter[]{ 
                             OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId),
                             OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, processInstanceId)
@@ -1059,8 +1059,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -1079,7 +1079,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 待办工单是指状态等于INITIALIZED或STARTED工单
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findTodoWorkItems(String actorId, String processId, String taskId)
+        public List<IWorkItem> FindTodoWorkItems(String actorId, String processId, String taskId)
         {
             QueryField queryField = new QueryField();
             queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
@@ -1092,8 +1092,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 string select = String.Format(
                     "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
-                    IWorkItem.INITIALIZED,
-                    IWorkItem.RUNNING,
+                    WorkItemEnum.INITIALIZED,
+                    WorkItemEnum.RUNNING,
                     queryInfo.QueryStringAnd);
 
                 OracleDataReader reader = null;
@@ -1105,8 +1105,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -1124,9 +1124,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 已办工单是指状态等于COMPLETED或CANCELED的工单
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId)
+        public List<IWorkItem> FindHaveDoneWorkItems(String actorId)
         {
-            return findHaveDoneWorkItems(actorId, string.Empty);
+            return FindHaveDoneWorkItems(actorId, string.Empty);
         }
 
         /// <summary>
@@ -1135,7 +1135,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 已办工单是指状态等于COMPLETED或CANCELED的工单
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String processInstanceId)
+        public List<IWorkItem> FindHaveDoneWorkItems(String actorId, String processInstanceId)
         {
             QueryField queryField = new QueryField();
             queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
@@ -1147,8 +1147,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 String select = String.Format(
                     "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
-                    IWorkItem.COMPLETED,
-                    IWorkItem.CANCELED,
+                    WorkItemEnum.COMPLETED,
+                    WorkItemEnum.CANCELED,
                     queryInfo.QueryStringAnd);
                 OracleDataReader reader = null;
                 try
@@ -1159,8 +1159,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -1179,7 +1179,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         ///  已办工单是指状态等于COMPLETED或CANCELED的工单
         ///  (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String processId, String taskId)
+        public List<IWorkItem> FindHaveDoneWorkItems(String actorId, String processId, String taskId)
         {
             QueryField queryField = new QueryField();
             queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
@@ -1192,8 +1192,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 String select = String.Format(
                     "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
-                    IWorkItem.COMPLETED,
-                    IWorkItem.CANCELED,
+                    WorkItemEnum.COMPLETED,
+                    WorkItemEnum.CANCELED,
                     queryInfo.QueryStringAnd);
 
                 OracleDataReader reader = null;
@@ -1205,8 +1205,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = findTaskInstanceById(((WorkItem)info).getTaskInstanceId());
-                            ((WorkItem)info).setTaskInstance(iTaskInstance);
+                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
                     }
@@ -1227,7 +1227,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /******************************************************************************/
 
 
-        public bool saveOrUpdateToken(IToken token)
+        public bool SaveOrUpdateToken(IToken token)
         {
             if (String.IsNullOrEmpty(token.Id))
             {
@@ -1272,7 +1272,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 统计流程任意节点的活动Token的数量。对于Activity节点，该数量只能取值1或者0，大于1表明有流程实例出现异常。
         /// </summary>
-        public int getAliveTokenCountForNode(String processInstanceId, String nodeId)
+        public int GetAliveTokenCountForNode(String processInstanceId, String nodeId)
         {
             String select = String.Format("select count(*) from T_FF_RT_TOKEN where alive=1 and processinstance_id=:1 and node_id =:2",
                 ProcessInstanceEnum.INITIALIZED, ProcessInstanceEnum.RUNNING);
@@ -1286,7 +1286,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
-        public IToken findTokenById(String id)
+        public IToken FindTokenById(String id)
         {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
@@ -1317,7 +1317,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="processInstanceId">the id of the process instance</param>
         /// <param name="nodeId">if the nodeId is null ,then return all the tokens of the process instance.</param>
         /// <returns></returns>
-        public List<IToken> findTokensForProcessInstance(String processInstanceId, String nodeId)
+        public List<IToken> FindTokensForProcessInstance(String processInstanceId, String nodeId)
         {
             if (String.IsNullOrEmpty(processInstanceId)) return null;
             QueryField queryField = new QueryField();
@@ -1353,7 +1353,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 删除某个节点的所有token
         /// </summary>
-        public bool deleteTokensForNode(String processInstanceId, String nodeId)
+        public bool DeleteTokensForNode(String processInstanceId, String nodeId)
         {
             String delete = "delete from t_ff_rt_token where processinstance_id = :1 and node_id=:2 ";
             OracleParameter[] deleteParms = { 
@@ -1368,7 +1368,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 删除某些节点的所有token
         /// </summary>
-        public bool deleteTokensForNodes(String processInstanceId, List<String> nodeIdsList)
+        public bool DeleteTokensForNodes(String processInstanceId, List<String> nodeIdsList)
         {
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(connectionString);
             try
@@ -1404,7 +1404,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 删除token
         /// </summary>
-        public bool deleteToken(IToken token)
+        public bool DeleteToken(IToken token)
         {
             string delete = "delete from t_ff_rt_token where id=:1";
             OracleParameter[] deleteParms = { 
@@ -1426,11 +1426,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Save or update the workflow definition. The version will be increased automatically when insert a new record.
         /// 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
         /// </summary>
-        public bool saveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
+        public bool SaveOrUpdateWorkflowDefinition(WorkflowDefinition workflowDef) {
 
             if (String.IsNullOrEmpty(workflowDef.Id))
             {
-                Int32 latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.ProcessId);
+                Int32 latestVersion = FindTheLatestVersionNumberIgnoreState(workflowDef.ProcessId);
                 if (latestVersion > 0)
                 {
                     workflowDef.Version=latestVersion + 1;
@@ -1495,7 +1495,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Find the workflow definition by id .
         /// 根据纪录的ID返回流程定义
         /// </summary>
-        public WorkflowDefinition findWorkflowDefinitionById(String id)
+        public WorkflowDefinition FindWorkflowDefinitionById(String id)
         {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
@@ -1524,7 +1524,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Find workflow definition by workflow process id and version<br>
         /// 根据ProcessId和版本号返回流程定义
         /// </summary>
-        public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String processId, int version)
+        public WorkflowDefinition FindWorkflowDefinitionByProcessIdAndVersionNumber(String processId, int version)
         {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
@@ -1556,17 +1556,17 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="processId">the workflow process id </param>
         /// <returns></returns>
-        public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId)
+        public WorkflowDefinition FindTheLatestVersionOfWorkflowDefinitionByProcessId(String processId)
         {
-            Int32 latestVersion = this.findTheLatestVersionNumber(processId);
-            return this.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, latestVersion);
+            Int32 latestVersion = this.FindTheLatestVersionNumber(processId);
+            return this.FindWorkflowDefinitionByProcessIdAndVersionNumber(processId, latestVersion);
         }
 
         /// <summary>
         /// Find all the workflow definitions for the workflow process id.
         /// 根据ProcessId 返回所有版本的流程定义
         /// </summary>
-        public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String processId)
+        public List<WorkflowDefinition> FindWorkflowDefinitionsByProcessId(String processId)
         {
             List<WorkflowDefinition> infos = new List<WorkflowDefinition>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -1599,7 +1599,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// Find all of the latest version of workflow definitions.
         /// 返回系统中所有的最新版本的有效流程定义
         /// </summary>
-        public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition()
+        public List<WorkflowDefinition> FindAllTheLatestVersionsOfWorkflowDefinition()
         {
             List<WorkflowDefinition> infos = new List<WorkflowDefinition>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -1632,7 +1632,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// 返回最新的有效版本号
         /// </summary>
         /// <returns>the version number ,null if there is no workflow definition stored in the DB.</returns>
-        public int findTheLatestVersionNumber(String processId)
+        public int FindTheLatestVersionNumber(String processId)
         {
             String select = "select max(version) from t_ff_df_workflowdef where process_id=:1 and state=1";
             OracleParameter[] selectParms = { 
@@ -1644,7 +1644,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <summary>
         /// 返回最新版本号,
         /// </summary>
-        public int findTheLatestVersionNumberIgnoreState(String processId)
+        public int FindTheLatestVersionNumberIgnoreState(String processId)
         {
             String select = "select max(version) from t_ff_df_workflowdef where process_id=:1";
             OracleParameter[] selectParms = { 
@@ -1656,7 +1656,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
 
         /********************************process instance trace info **********************/
-        public bool saveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace) {
+        public bool SaveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace) {
             if (String.IsNullOrEmpty(processInstanceTrace.Id))
             {
                 String processInstanceTraceId = Guid.NewGuid().ToString().Replace("-", "");
@@ -1707,7 +1707,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="processInstanceId">流程实例ID</param>
         /// <returns></returns>
-        public List<ProcessInstanceTrace> findProcessInstanceTraces(String processInstanceId)
+        public List<ProcessInstanceTrace> FindProcessInstanceTraces(String processInstanceId)
         {
             List<ProcessInstanceTrace> infos = new List<ProcessInstanceTrace>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -1736,6 +1736,91 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             return infos;
         }
 
+
+        public List<ProcessInstanceVar> FindProcessInstanceVariable(string processInstanceId)
+        {
+            List<ProcessInstanceVar> infos = new List<ProcessInstanceVar>();
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                string select = "select * from t_ff_rt_procinst_var where processinstance_id=:1";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId)
+                        );
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            ProcessInstanceVar info = OracleDataReaderToInfo.GetProcessInstanceVar(reader);
+                            infos.Add(info);
+                        }
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return infos;
+        }
+
+        public ProcessInstanceVar FindProcessInstanceVariable(string processInstanceId, string name)
+        {
+            using (OracleConnection connection = new OracleConnection(connectionString))
+            {
+                String select = "select * from t_ff_rt_procinst_var where processinstance_id=:1 and name=:2";
+                OracleDataReader reader = null;
+                try
+                {
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId),
+                        OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, name)
+                        );
+                    while (reader.Read())
+                    {
+                        ProcessInstanceVar info = OracleDataReaderToInfo.GetProcessInstanceVar(reader);
+                        return info;
+                    }
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+            return null;
+        }
+
+        public bool UpdateProcessInstanceVariable(ProcessInstanceVar var)
+        {
+            string update = "UPDATE T_FF_RT_PROCINST_VAR SET " +
+                "VALUE=:2" +
+                " WHERE PROCESSINSTANCE_ID=:1 AND NAME=:3";
+            OracleParameter[] updateParms = { 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, var.Value), 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, var.ProcessInstanceId),
+				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 255, var.Name)
+			};
+            if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
+                return false;
+            else return true;
+        }
+
+        public bool SaveProcessInstanceVariable(ProcessInstanceVar var)
+        {
+            string insert = "INSERT INTO T_FF_RT_PROCINST_VAR (" +
+                   "PROCESSINSTANCE_ID, VALUE, NAME )VALUES(:1, :2, :3)";
+            OracleParameter[] insertParms = { 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, var.ProcessInstanceId), 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, var.Value), 
+				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 255, var.Name)
+			};
+            if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
+                return false;
+            else return true;
+        }
+
         /******************************** lifw555@gmail.com **********************/
 
         /// <summary>
@@ -1745,7 +1830,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="actorId">操作员主键</param>
         /// <param name="publishUser">流程定义发布者</param>
         /// <returns></returns>
-        public Int32 getTodoWorkItemsCount(String actorId, String publishUser)
+        public Int32 GetTodoWorkItemsCount(String actorId, String publishUser)
         {
             return 0;
         }
@@ -1759,7 +1844,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="pageSize">每页显示的条数</param>
         /// <param name="pageNumber">当前页数</param>
         /// <returns></returns>
-        public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
+        public List<IWorkItem> FindTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
         {
             return null;
         }
@@ -1771,7 +1856,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="actorId">操作员主键</param>
         /// <param name="publishUser">流程定义发布者</param>
         /// <returns></returns>
-        public Int32 getHaveDoneWorkItemsCount(String actorId, String publishUser)
+        public Int32 GetHaveDoneWorkItemsCount(String actorId, String publishUser)
         {
             return 0;
         }
@@ -1785,7 +1870,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="pageSize">每页显示的条数</param>
         /// <param name="pageNumber">当前页数</param>
         /// <returns></returns>
-        public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
+        public List<IWorkItem> FindHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
         {
             return null;
         }
@@ -1797,7 +1882,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="creatorId">操作员主键</param>
         /// <param name="publishUser">流程定义发布者</param>
         /// <returns></returns>
-        public Int32 getProcessInstanceCountByCreatorId(String creatorId, String publishUser)
+        public Int32 GetProcessInstanceCountByCreatorId(String creatorId, String publishUser)
         {
             return 0;
         }
@@ -1811,7 +1896,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="pageSize">每页显示的条数</param>
         /// <param name="pageNumber">当前页数</param>
         /// <returns></returns>
-        public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber)
+        public List<IProcessInstance> FindProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber)
         {
             return null;
         }
@@ -1821,7 +1906,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         /// <param name="publishUser">工作流发布者</param>
         /// <returns></returns>
-        public Int32 getProcessInstanceCountByPublishUser(String publishUser)
+        public Int32 GetProcessInstanceCountByPublishUser(String publishUser)
         {
             return 0;
         }
@@ -1833,30 +1918,11 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// <param name="pageSize">每页显示的条数</param>
         /// <param name="pageNumber">当前页数</param>
         /// <returns></returns>
-        public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber)
+        public List<IProcessInstance> FindProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber)
         {
             return null;
         }
 
 
-        public List<ProcessInstanceVar> findProcessInstanceVariable(string processInstanceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ProcessInstanceVar findProcessInstanceVariable(string processInstanceId, string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void updateProcessInstanceVariable(ProcessInstanceVar var)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void saveProcessInstanceVariable(ProcessInstanceVar var)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
