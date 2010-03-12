@@ -1,19 +1,16 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net", "FireWorkflow.Net\FireWorkflow.Net.csproj", "{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Persistence.OracleDAL", "FireWorkflow.Net.Persistence.OracleDAL\FireWorkflow.Net.Persistence.OracleDAL.csproj", "{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Persistence.OracleDAL", "FireWorkflow.Net.Persistence.OracleDAL\FireWorkflow.Net.Persistence.OracleDAL.csproj", "{36D872DC-8503-4DBD-B580-2C69D851B4F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkFow.Net.Tests", "FireWorkFow.Net.Tests\FireWorkFow.Net.Tests.csproj", "{DB706EFD-57CA-4FCE-8DFD-814412096F2A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{0E853C4E-4D97-41E3-85CE-EC4B66181D86}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
 		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = FireWorkflow.Net.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,14 +21,14 @@ Global
 		{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10D41B1F-AB41-4A4F-A2FA-415BF23869A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D8105F2-7E65-4987-8384-CA8D14BFA8DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB706EFD-57CA-4FCE-8DFD-814412096F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36D872DC-8503-4DBD-B580-2C69D851B4F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36D872DC-8503-4DBD-B580-2C69D851B4F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36D872DC-8503-4DBD-B580-2C69D851B4F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36D872DC-8503-4DBD-B580-2C69D851B4F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E853C4E-4D97-41E3-85CE-EC4B66181D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E853C4E-4D97-41E3-85CE-EC4B66181D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E853C4E-4D97-41E3-85CE-EC4B66181D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E853C4E-4D97-41E3-85CE-EC4B66181D86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
