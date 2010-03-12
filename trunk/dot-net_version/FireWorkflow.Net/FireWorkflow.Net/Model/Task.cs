@@ -59,8 +59,7 @@ namespace FireWorkflow.Net.Model
             this.LoopStrategy = LoopStrategyEnum.REDO;
         }
 
-        public Task(IWFElement parent, String name) 
-            : base(parent, name)
+        public Task(IWFElement parent, String name) : base(parent, name)
         {
             this.TaskType = TaskTypeEnum.FORM;
             this.Priority = 1;
@@ -112,7 +111,7 @@ namespace FireWorkflow.Net.Model
         /// 对于Tool类型和Subflow类型的task会重新执行一遍，和REDO效果一样的。<br/>
         /// 对于Form类型的Task，重新执行一遍，且工作流引擎仍然调用Performer属性的AssignmentHandler分配任务
         /// </summary>
-        NONE,
+        NONE
     }
     #endregion
 }

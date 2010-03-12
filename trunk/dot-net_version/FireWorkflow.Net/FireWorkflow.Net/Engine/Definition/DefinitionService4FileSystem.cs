@@ -35,29 +35,27 @@ namespace FireWorkflow.Net.Engine.Definition
     {
         public RuntimeContext RuntimeContext { get; set; }
         /// <summary>流程名到流程定义的id</summary>
-        protected Dictionary<String, WorkflowDefinition> workflowDefinitionMap = new Dictionary<String, WorkflowDefinition>();// 流程名到流程定义的id
+        protected Dictionary<String, WorkflowDefinition> workflowDefinitionMap = null;// new Dictionary<String, WorkflowDefinition>();// 流程名到流程定义的id
         protected Dictionary<String, String> latestVersionKeyMap = new Dictionary<String, String>();
-
-        public void setDefinitionFiles(List<String> workflowProcessFileNames)// throws IOException, FPDLParserException,EngineException 
+        public List<String> DefinitionFiles { get; set; }
+        public void setDefinitionFiles()// throws IOException, FPDLParserException,EngineException 
         {
-            if (workflowProcessFileNames != null)
+            if (DefinitionFiles != null && workflowDefinitionMap == null)
             {
+                workflowDefinitionMap = new Dictionary<String, WorkflowDefinition>();
                 Dom4JFPDLParser parser = new Dom4JFPDLParser();
-                //            JAXP_FPDL_Parser parser = new JAXP_FPDL_Parser();
-                for (int i = 0; i < workflowProcessFileNames.Count; i++)
+
+                for (int i = 0; i < DefinitionFiles.Count; i++)
                 {
-                    Stream inStream = new FileStream(
-                            workflowProcessFileNames[i].Trim(),FileMode.Open);
+                    Stream inStream = new FileStream(DefinitionFiles[i].Trim(), FileMode.Open);
                     if (inStream == null)
                     {
-                        throw new IOException("没有找到名称为" + workflowProcessFileNames[i] + "的流程定义文件");
+                        throw new IOException("没有找到名称为" + DefinitionFiles[i] + "的流程定义文件");
                     }
-
-
                     WorkflowProcess workflowProcess = parser.parse(inStream);
 
                     WorkflowDefinition workflowDef = new WorkflowDefinition();
-                    workflowDef.Version=1;
+                    workflowDef.Version = 1;
 
                     workflowDef.setWorkflowProcess(workflowProcess);
 
@@ -73,6 +71,7 @@ namespace FireWorkflow.Net.Engine.Definition
         /// <returns></returns>
         public List<WorkflowDefinition> GetAllLatestVersionsOfWorkflowDefinition()
         {
+            setDefinitionFiles();
             return new List<WorkflowDefinition>(workflowDefinitionMap.Values);
         }
 
@@ -80,20 +79,22 @@ namespace FireWorkflow.Net.Engine.Definition
         /// <summary>根据流程Id和版本号查找流程定义</summary>
         public WorkflowDefinition GetWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Int32 version)
         {
+            setDefinitionFiles();
             return this.workflowDefinitionMap[processId + "_V_" + version];
         }
 
         /// <summary>通过流程Id查找其最新版本的流程定义</summary>
         public WorkflowDefinition GetTheLatestVersionOfWorkflowDefinition(String processId)
         {
+            setDefinitionFiles();
             return this.workflowDefinitionMap[this.latestVersionKeyMap[processId]];
         }
 
         #endregion
 
         #region 构造
-        public DefinitionService4FileSystem() { }
-        public DefinitionService4FileSystem(RuntimeContext rc) { this.RuntimeContext = rc; }
+        public DefinitionService4FileSystem() { this.DefinitionFiles = new List<string>(); }
+        public DefinitionService4FileSystem(RuntimeContext rc) { this.RuntimeContext = rc; this.DefinitionFiles = new List<string>(); }
         #endregion
     }
 }

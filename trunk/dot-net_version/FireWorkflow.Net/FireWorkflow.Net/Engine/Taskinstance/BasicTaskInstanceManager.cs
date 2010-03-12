@@ -91,7 +91,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 TaskTypeEnum taskType = task.TaskType;
                 ((TaskInstance)taskInstance).TaskType=taskType;
                 ((TaskInstance)taskInstance).StepNumber=token.StepNumber;
-                //            ((TaskInstance) taskInstance).TokenId=token.Id;
+
                 ((TaskInstance)taskInstance).ProcessInstanceId=processInstance.Id;
                 ((TaskInstance)taskInstance).ProcessId=processInstance.ProcessId;
                 ((TaskInstance)taskInstance).Version=processInstance.Version;
