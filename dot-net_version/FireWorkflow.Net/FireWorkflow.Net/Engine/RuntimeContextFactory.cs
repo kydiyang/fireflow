@@ -41,7 +41,9 @@ namespace FireWorkflow.Net.Engine
                 else throw new Exception("默认FireWorkflow.Net.Persistence.OracleDAL程序集没有引入！");
 
                 //流程定义服务，通过该服务获取流程定义
-                ctx.DefinitionService = new FireWorkflow.Net.Engine.Definition.DefinitionService4FileSystem();
+                DefinitionService4FileSystem ds4fs = new FireWorkflow.Net.Engine.Definition.DefinitionService4FileSystem();
+                ds4fs.DefinitionFiles.Add("/org/fireflow/example/workflowdefinition/demo_workflow.xml");
+                ctx.DefinitionService = ds4fs;
 
                 //内核管理器
                 ctx.KernelManager = new KernelManager();

@@ -51,7 +51,18 @@
   <!-- ***************Persistence End******************* -->
   
   <!-- **************workflow Definitions Begin 流程定义服务，通过该服务获取流程定义*******  -->
-  <object id="DefinitionService" type="FireWorkflow.Net.Engine.Definition.DefinitionService4FileSystem, FireWorkflow.Net"></object>
+  <object id="DefinitionService" type="FireWorkflow.Net.Engine.Definition.DefinitionService4FileSystem, FireWorkflow.Net">
+    <property name="DefinitionFiles">
+      <list>
+        <value>
+           /org/fireflow/example/workflowdefinition/demo_workflow.xml
+        </value>
+        <value>
+          /org/fireflow/example/workflowdefinition/demo_workflow.xml
+        </value>
+      </list>
+    </property>
+  </object>
   <!-- **************workflow Definitions End*******  -->
   
   <!-- **************Kernel Manager Begin内核管理器*************** -->
