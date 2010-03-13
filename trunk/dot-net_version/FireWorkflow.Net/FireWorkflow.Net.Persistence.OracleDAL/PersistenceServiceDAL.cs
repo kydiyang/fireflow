@@ -1466,22 +1466,17 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             else
             {
                 string update = "UPDATE T_FF_DF_WORKFLOWDEF SET " +
-                    "DEFINITION_TYPE=:2, PROCESS_ID=:3, NAME=:4, DISPLAY_NAME=:5, DESCRIPTION=:6, " +
-                    "VERSION=:7, STATE=:8, UPLOAD_USER=:9, UPLOAD_TIME=:10, PUBLISH_USER=:11, " +
-                    "PUBLISH_TIME=:12, PROCESS_CONTENT=:13" +
-                    " WHERE ID=:1";
+                    "PROCESS_ID=:3, NAME=:4, DISPLAY_NAME=:5, DESCRIPTION=:6, " +
+                    "STATE=:8, UPLOAD_USER=:9, UPLOAD_TIME=:10, PROCESS_CONTENT=:13 " +
+                    "WHERE ID=:1";
                 OracleParameter[] updateParms = { 
-    				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.DefinitionType), 
     				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.ProcessId), 
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, workflowDef.Name), 
     				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, workflowDef.DisplayName), 
     				OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 1024, workflowDef.Description), 
-    				OracleHelper.NewOracleParameter(":7", OracleType.Int32, workflowDef.Version), 
     				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(workflowDef.State)), 
     				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 50, workflowDef.UploadUser), 
-    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.UploadTime), 
-    				OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.PublishUser), 
-    				OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.PublishTime), 
+    				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.UploadTime),
     				OracleHelper.NewOracleParameter(":13", OracleType.Clob,workflowDef.ProcessContent),
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDef.Id)
     			};
