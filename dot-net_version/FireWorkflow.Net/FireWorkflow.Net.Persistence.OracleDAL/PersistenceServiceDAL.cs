@@ -1444,6 +1444,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "ID, DEFINITION_TYPE, PROCESS_ID, NAME, DISPLAY_NAME, " +
                     "DESCRIPTION, VERSION, STATE, UPLOAD_USER, UPLOAD_TIME, " +
                     "PUBLISH_USER, PUBLISH_TIME, PROCESS_CONTENT )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13)";
+                
                 OracleParameter[] insertParms = { 
 					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDefId), 
 					OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.DefinitionType), 
@@ -1457,7 +1458,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 					OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.UploadTime), 
 					OracleHelper.NewOracleParameter(":11", OracleType.VarChar, 50, workflowDef.PublishUser), 
 					OracleHelper.NewOracleParameter(":12", OracleType.Timestamp, 11, workflowDef.PublishTime), 
-					OracleHelper.NewOracleParameter(":13", OracleType.Clob, workflowDef.ProcessContent)
+					OracleHelper.NewOracleParameter(":13", OracleType.NVarChar, workflowDef.ProcessContent)
 				};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
                     return false;
@@ -1477,7 +1478,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":8", OracleType.Int16, OracleHelper.OraBit(workflowDef.State)), 
     				OracleHelper.NewOracleParameter(":9", OracleType.VarChar, 50, workflowDef.UploadUser), 
     				OracleHelper.NewOracleParameter(":10", OracleType.Timestamp, 11, workflowDef.UploadTime),
-    				OracleHelper.NewOracleParameter(":13", OracleType.Clob,workflowDef.ProcessContent),
+    				OracleHelper.NewOracleParameter(":13", OracleType.NVarChar,workflowDef.ProcessContent),
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDef.Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
