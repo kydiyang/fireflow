@@ -19,7 +19,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             //this.QueryParameters = null;
             this.ListQueryParameters = null;
         }
-        public QueryInfo(String queryString, IList<OracleParameter> queryParameters)
+        public QueryInfo(String queryString, List<OracleParameter> queryParameters)
         {
             this.QueryString = queryString;
             this.ListQueryParameters = queryParameters;
@@ -42,7 +42,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public String QueryStringAnd { get { return (String.IsNullOrEmpty(QueryString)) ? "" : " AND " + QueryString; } }
 
         /// <summary>查询需要传入的参数集</summary>
-        public IList<OracleParameter> ListQueryParameters { get; set; }
+        public List<OracleParameter> ListQueryParameters { get; set; }
 
         /// <summary>查询需要传入的参数集</summary>
         //public OracleParameter[] QueryParameters { get; set; }

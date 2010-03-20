@@ -1794,7 +1794,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 "VALUE=:2" +
                 " WHERE PROCESSINSTANCE_ID=:1 AND NAME=:3";
             OracleParameter[] updateParms = { 
-				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, var.Value), 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, var.ValueType+"#"+var.Value), 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, var.ProcessInstanceId),
 				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 255, var.Name)
 			};
@@ -1809,7 +1809,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                    "PROCESSINSTANCE_ID, VALUE, NAME )VALUES(:1, :2, :3)";
             OracleParameter[] insertParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, var.ProcessInstanceId), 
-				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, var.Value), 
+				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 255, var.ValueType+"#"+var.Value), 
 				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 255, var.Name)
 			};
             if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
