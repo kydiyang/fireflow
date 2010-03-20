@@ -50,7 +50,9 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.IO;
 using System.Text;
@@ -64,544 +66,457 @@ namespace FireWorkflow.Net.Model.Io
     /// </summary>
     public class Dom4JFPDLSerializer : IFPDLSerializer
     {
-        XmlDocument doc = new XmlDocument();
+        XNamespace xN = FPDL_URI;
+
         public override void serialize(WorkflowProcess workflowProcess, Stream swout)
         {
             if (swout == null) return;
-            XmlDocument document = workflowProcessToDom(workflowProcess);
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.OmitXmlDeclaration = true;
-            settings.NewLineOnAttributes = true;
-            settings.Encoding = Encoding.UTF8;
 
-
-            XmlWriter xw = XmlWriter.Create(swout, settings);
-
-            document.Save(xw);
-            swout.Flush();
+            XDocument inventoryDoc =
+                new XDocument(
+                    new XDeclaration("1.0", "utf-8", "yes"),
+                    workflowProcessToDom(workflowProcess)
+                    );
+            inventoryDoc.Save(XmlWriter.Create(swout));
         }
 
-
-        public XmlAttribute SetAttributeNode(XmlAttribute attr, string value)
+        public XElement workflowProcessToDom(WorkflowProcess workflowProcess)
         {
-            attr.Value = value;
-            return attr;
-        }
+            XNamespace aw = FPDL_URI;
+            XElement root = new XElement(
+                xN + WORKFLOW_PROCESS,
+                new XAttribute(XNamespace.Xmlns + FPDL_NS_PREFIX, FPDL_URI),
+                new XAttribute(ID, workflowProcess.Id),
+                new XAttribute(NAME, workflowProcess.Name),
+                new XAttribute(DISPLAY_NAME, workflowProcess.DisplayName),
+                new XAttribute(RESOURCE_FILE, workflowProcess.ResourceFile),
+                new XAttribute(RESOURCE_MANAGER, workflowProcess.ResourceManager),
+                new XElement(xN + DESCRIPTION, workflowProcess.Description)
+                );
 
-        public XmlElement SetElement(XmlElement xe, string value)
-        {
-            xe.InnerText = value;
-            return xe;
-        }
-
-        public XmlDocument workflowProcessToDom(WorkflowProcess workflowProcess)
-        {
-            XmlElement workflowProcessElement = doc.CreateElement(FPDL_NS_PREFIX, WORKFLOW_PROCESS, FPDL_URI);
-
-            workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), workflowProcess.Id));
-            workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), workflowProcess.Name));
-            workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), workflowProcess.DisplayName));
-            workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(RESOURCE_FILE), workflowProcess.ResourceFile));
-            workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(RESOURCE_MANAGER), workflowProcess.ResourceManager));
-
-            workflowProcessElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), workflowProcess.Description));
 
             if (!String.IsNullOrEmpty(workflowProcess.TaskInstanceCreator))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TASK_INSTANCE_CREATOR), workflowProcess.TaskInstanceCreator));
+                root.Add(new XAttribute(TASK_INSTANCE_CREATOR, workflowProcess.TaskInstanceCreator));
             }
             if (!String.IsNullOrEmpty(workflowProcess.FormTaskInstanceRunner))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(FORM_TASK_INSTANCE_RUNNER), workflowProcess.FormTaskInstanceRunner));
+                root.Add(new XAttribute(FORM_TASK_INSTANCE_RUNNER, workflowProcess.FormTaskInstanceRunner));
             }
             if (!String.IsNullOrEmpty(workflowProcess.ToolTaskInstanceRunner))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TOOL_TASK_INSTANCE_RUNNER), workflowProcess.ToolTaskInstanceRunner));
+                root.Add(new XAttribute(TOOL_TASK_INSTANCE_RUNNER, workflowProcess.ToolTaskInstanceRunner));
             }
             if (!String.IsNullOrEmpty(workflowProcess.SubflowTaskInstanceRunner))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(SUBFLOW_TASK_INSTANCE_RUNNER), workflowProcess.SubflowTaskInstanceRunner));
+                root.Add(new XAttribute(SUBFLOW_TASK_INSTANCE_RUNNER, workflowProcess.SubflowTaskInstanceRunner));
             }
             if (!String.IsNullOrEmpty(workflowProcess.FormTaskInstanceCompletionEvaluator))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(FORM_TASK_INSTANCE_COMPLETION_EVALUATOR), workflowProcess.FormTaskInstanceCompletionEvaluator));
+                root.Add(new XAttribute(FORM_TASK_INSTANCE_COMPLETION_EVALUATOR, workflowProcess.FormTaskInstanceCompletionEvaluator));
             }
             if (!String.IsNullOrEmpty(workflowProcess.ToolTaskInstanceCompletionEvaluator))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TOOL_TASK_INSTANCE_COMPLETION_EVALUATOR), workflowProcess.ToolTaskInstanceCompletionEvaluator));
+                root.Add(new XAttribute(TOOL_TASK_INSTANCE_COMPLETION_EVALUATOR, workflowProcess.ToolTaskInstanceCompletionEvaluator));
             }
             if (!String.IsNullOrEmpty(workflowProcess.SubflowTaskInstanceCompletionEvaluator))
             {
-                workflowProcessElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(SUBFLOW_TASK_INSTANCE_COMPLETION_EVALUATOR), workflowProcess.SubflowTaskInstanceCompletionEvaluator));
+                root.Add(new XAttribute(SUBFLOW_TASK_INSTANCE_COMPLETION_EVALUATOR, workflowProcess.SubflowTaskInstanceCompletionEvaluator));
             }
-            writeDataFields(workflowProcess.DataFields, workflowProcessElement);
-            writeStartNode(workflowProcess.StartNode, workflowProcessElement);
+            root.Add(writeDataFields(workflowProcess.DataFields));
+            root.Add(writeStartNode(workflowProcess.StartNode));
+            root.Add(writeTasks(workflowProcess.Tasks));
+            root.Add(writeActivities(workflowProcess.Activities));
+            root.Add(writeSynchronizers(workflowProcess.Synchronizers));
+            root.Add(writeEndNodes(workflowProcess.EndNodes));
+            root.Add(writeTransitions(workflowProcess.Transitions));
+            root.Add(writeLoops(workflowProcess.Loops));
+            root.Add(writeEventListeners(workflowProcess.EventListeners));
+            root.Add(writeExtendedAttributes(workflowProcess.ExtendedAttributes));
 
-            writeTasks(workflowProcess.Tasks, workflowProcessElement);
-
-            writeActivities(workflowProcess.Activities, workflowProcessElement);
-            writeSynchronizers(workflowProcess.Synchronizers, workflowProcessElement);
-            writeEndNodes(workflowProcess.EndNodes, workflowProcessElement);
-            writeTransitions(workflowProcess.Transitions, workflowProcessElement);
-
-            writeLoops(workflowProcess.Loops, workflowProcessElement);
-
-            writeEventListeners(workflowProcess.EventListeners, workflowProcessElement);
-
-            writeExtendedAttributes(workflowProcess.ExtendedAttributes, workflowProcessElement);
-
-            //        Document document = df.createDocument(workflowProcessElement);
-            //        document.addDocType(FPDL_NS_PREFIX + ":" + WORKFLOW_PROCESS, PUBLIC_ID, SYSTEM_ID);
-            //        return document;
-
-            //doc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            doc.AppendChild(doc.CreateXmlDeclaration("1.0", "UTF-8", ""));
-            //doc.AppendChild(doc.CreateDocumentType(FPDL_NS_PREFIX + ":" + WORKFLOW_PROCESS, PUBLIC_ID, SYSTEM_ID, null));
-            doc.AppendChild(workflowProcessElement);
-            return doc;
+            return root;
         }
 
-        //    public String workflowProcessToXMLString(WorkflowProcess workflowProcess)
-        //            throws IOException, FPDLSerializerException {
-        //        Document dom = workflowProcessToDom(workflowProcess);
-        //        OutputFormat format = new OutputFormat("    ", true);
-        //        format.setEncoding("utf-8");
-        //        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        //        XMLWriter writer = new XMLWriter(out, format);
+        #region 序列化Dictionary＜string, string＞类型数据
 
-        //        writer.write(dom);
-
-        //  }
-
-        protected void writeEventListeners(List<EventListener> eventListeners, XmlElement parentElement)
+        protected XElement writeEventListeners(List<EventListener> eventListeners)
         {
-            if (eventListeners == null || eventListeners.Count <= 0) { return; }
+            if (eventListeners == null || eventListeners.Count <= 0) { return null; }
 
-            XmlElement eventListenersElm = doc.CreateElement(FPDL_NS_PREFIX, EVENT_LISTENERS, FPDL_URI);
+            XElement eventListenersElm = new XElement(xN + EVENT_LISTENERS);
 
             foreach (EventListener listener in eventListeners)
             {
-                XmlElement eventListenerElm = doc.CreateElement(FPDL_NS_PREFIX, EVENT_LISTENER, FPDL_URI);
-                eventListenerElm.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(CLASS_NAME), listener.ClassName));
-                eventListenersElm.AppendChild(eventListenerElm);
+                eventListenersElm.Add(
+                    new XElement(xN + EVENT_LISTENER, new XAttribute(CLASS_NAME, listener.ClassName))
+                        );
             }
-            parentElement.AppendChild(eventListenersElm);
+            return eventListenersElm;
         }
-
-        #region 序列化Dictionary＜string, string＞类型数据
 
         /// <summary>序列化Dictionary＜string, string＞类型数据</summary>
         /// <param name="extendedAttributes"></param>
         /// <param name="parent"></param>
-        protected void writeExtendedAttributes(Dictionary<string, string> extendedAttributes, XmlElement parent)
+        protected XElement writeExtendedAttributes(Dictionary<string, string> extendedAttributes)
         {
-
             if (extendedAttributes == null || extendedAttributes.Count <= 0)
             {
-                return;
+                return null;
             }
 
-            XmlElement extendedAttributesElement = doc.CreateElement(FPDL_NS_PREFIX, EXTENDED_ATTRIBUTES, FPDL_URI);
+            XElement extendedAttributesElement = new XElement(xN + EXTENDED_ATTRIBUTES);
 
             foreach (String key in extendedAttributes.Keys)
             {
-                String value = extendedAttributes[key];
-
-                XmlElement extendedAttributeElement = doc.CreateElement(FPDL_NS_PREFIX, EXTENDED_ATTRIBUTE, FPDL_URI);
-
-                extendedAttributeElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), key));
-                extendedAttributeElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(VALUE), value));
-                extendedAttributesElement.AppendChild(extendedAttributeElement);
+                extendedAttributesElement.Add(new XElement(xN + EXTENDED_ATTRIBUTE,
+                    new XAttribute(NAME, key),
+                    new XAttribute(VALUE, extendedAttributes[key])
+                    ));
             }
-
-            parent.AppendChild(extendedAttributesElement);
-
+            return extendedAttributesElement;
         }
         #endregion
 
         #region DataField
-        protected void writeDataFields(List<DataField> dataFields, XmlElement parent)
+        protected XElement writeDataFields(List<DataField> dataFields)
         {
             if (dataFields == null || dataFields.Count <= 0)
             {
-                return;
+                return null;
             }
-            XmlElement dataFieldsElement = doc.CreateElement(FPDL_NS_PREFIX, DATA_FIELDS, FPDL_URI);
+            XElement dataFieldsElement = new XElement(xN + DATA_FIELDS);
 
             foreach (DataField dataField in dataFields)
             {
-                XmlElement dataFieldElement = dataFieldsElement.OwnerDocument.CreateElement(FPDL_NS_PREFIX, DATA_FIELD, FPDL_URI);
-
-                dataFieldElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), dataField.Id));
-                dataFieldElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), dataField.Name));
-                dataFieldElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), dataField.DisplayName));
-                dataFieldElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DATA_TYPE), dataField.DataType.ToString()));
-
-                dataFieldElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(INITIAL_VALUE), dataField.InitialValue));
-
-                dataFieldElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), dataField.Description));
-
-
-                writeExtendedAttributes(dataField.ExtendedAttributes, dataFieldElement);
-
-                dataFieldsElement.AppendChild(dataFieldElement);
+                dataFieldsElement.Add(
+                    new XElement(xN + DATA_FIELD,
+                        new XAttribute(ID, dataField.Id),
+                        new XAttribute(NAME, dataField.Name),
+                        new XAttribute(DISPLAY_NAME, dataField.DisplayName),
+                        new XAttribute(DATA_TYPE, dataField.DataType.ToString()),
+                        new XAttribute(INITIAL_VALUE, dataField.InitialValue),
+                        new XElement(xN + DESCRIPTION, dataField.Description),
+                        writeExtendedAttributes(dataField.ExtendedAttributes)
+                        ));
             }
-            parent.AppendChild(dataFieldsElement);
+            return dataFieldsElement;
         }
         #endregion
 
         #region StartNode
-        protected void writeStartNode(StartNode startNode, XmlElement parent)
+        protected XElement writeStartNode(StartNode startNode)
         {
-            if (startNode == null) { return; }
-            XmlElement startElement = doc.CreateElement(FPDL_NS_PREFIX, START_NODE, FPDL_URI);
+            if (startNode == null) { return null; }
 
-            startElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), startNode.Id));
-            startElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), startNode.Name));
-            startElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), startNode.DisplayName));
-
-
-            startElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), startNode.Description));
-
-
-            writeExtendedAttributes(startNode.ExtendedAttributes, startElement);
-            parent.AppendChild(startElement);
-
+            XElement dataFieldsElement = new XElement(
+                xN + START_NODE,
+                new XAttribute(ID, startNode.Id),
+                new XAttribute(NAME, startNode.Name),
+                new XAttribute(DISPLAY_NAME, startNode.DisplayName),
+                new XElement(xN + DESCRIPTION, startNode.Description),
+                writeExtendedAttributes(startNode.ExtendedAttributes)
+                );
+            return dataFieldsElement;
         }
         #endregion
 
         #region Tasks
-        protected void writeTasks(List<Task> tasks, XmlElement parent)
+        protected XElement writeTasks(List<Task> tasks)
         {
-            XmlElement tasksElement = doc.CreateElement(FPDL_NS_PREFIX, TASKS, FPDL_URI);
+            XElement tasksElement = new XElement(xN + TASKS);
 
             foreach (Task item in tasks)
             {
-                writeTask(item, tasksElement);
+                tasksElement.Add(writeTask(item));
             }
-            parent.AppendChild(tasksElement);
+            return tasksElement;
         }
 
-        protected void writeTask(Task task, XmlElement parent)
+        protected XElement writeTask(Task task)
         {
-            XmlElement taskElement = doc.CreateElement(FPDL_NS_PREFIX, TASK, FPDL_URI);
-
-            taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), task.Id));
-            taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), task.Name));
-            taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), task.DisplayName));
-            taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TYPE), task.TaskType.ToString()));
+            XElement taskElement = new XElement(
+                xN + TASK,
+                new XAttribute(ID, task.Id),
+                new XAttribute(NAME, task.Name),
+                new XAttribute(DISPLAY_NAME, task.DisplayName),
+                new XAttribute(TYPE, task.TaskType.ToString())//,
+                //new XElement(xN + DESCRIPTION, startNode.Description),
+                );
 
             TaskTypeEnum type = task.TaskType;
             if (task is FormTask)
             {
-                this.writePerformer(((FormTask)task).Performer, taskElement);
+                taskElement.Add(this.writePerformer(((FormTask)task).Performer));
 
-                taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(COMPLETION_STRATEGY), ((FormTask)task).AssignmentStrategy.ToString()));
-                taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DEFAULT_VIEW), ((FormTask)task).DefaultView.ToString()));
+                taskElement.Add(new XAttribute(COMPLETION_STRATEGY, ((FormTask)task).AssignmentStrategy.ToString()));
+                taskElement.Add(new XAttribute(DEFAULT_VIEW, ((FormTask)task).DefaultView.ToString()));
 
-                writeForm(EDIT_FORM, ((FormTask)task).EditForm, taskElement);
-                writeForm(VIEW_FORM, ((FormTask)task).ViewForm, taskElement);
-                writeForm(LIST_FORM, ((FormTask)task).ListForm, taskElement);
+                taskElement.Add(this.writeForm(EDIT_FORM, ((FormTask)task).EditForm));
+                taskElement.Add(this.writeForm(VIEW_FORM, ((FormTask)task).ViewForm));
+                taskElement.Add(this.writeForm(LIST_FORM, ((FormTask)task).ListForm));
             }
             else if (task is ToolTask)
             {
-
-                this.writeApplication(((ToolTask)task).Application, taskElement);
-                //taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(EXECUTION), ((ToolTask)task).Execution.ToString()));
-
+                taskElement.Add(this.writeApplication(((ToolTask)task).Application));
+                //taskElement.Add(new XAttribute(EXECUTION), ((ToolTask)task).Execution.ToString()));
             }
             else if (task is SubflowTask)
             {
-                this.writeSubWorkflowProcess(((SubflowTask)task).SubWorkflowProcess, taskElement);
+                taskElement.Add(this.writeSubWorkflowProcess(((SubflowTask)task).SubWorkflowProcess));
             }
 
-            taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(PRIORITY), task.Priority.ToString()));
+            taskElement.Add(new XAttribute(PRIORITY, task.Priority.ToString()));
 
-            writeDuration(task.Duration, taskElement);
+            taskElement.Add(writeDuration(task.Duration));
 
-            taskElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), task.Description));
-
+            taskElement.Add(new XElement(xN + DESCRIPTION, task.Description));
 
             if (!String.IsNullOrEmpty(task.TaskInstanceCreator))
             {
-                taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TASK_INSTANCE_CREATOR), task.TaskInstanceCreator));
+                taskElement.Add(new XAttribute(TASK_INSTANCE_CREATOR, task.TaskInstanceCreator));
             }
             if (!String.IsNullOrEmpty(task.TaskInstanceRunner))
             {
-                taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TASK_INSTANCE_RUNNER), task.TaskInstanceRunner));
+                taskElement.Add(new XAttribute(TASK_INSTANCE_RUNNER, task.TaskInstanceRunner));
 
             }
             if (!String.IsNullOrEmpty(task.TaskInstanceCompletionEvaluator))
             {
-                taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TASK_INSTANCE_COMPLETION_EVALUATOR), task.TaskInstanceCompletionEvaluator));
+                taskElement.Add(new XAttribute(TASK_INSTANCE_COMPLETION_EVALUATOR, task.TaskInstanceCompletionEvaluator));
 
             }
 
-            taskElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(LOOP_STRATEGY), task.LoopStrategy.ToString()));
+            taskElement.Add(new XAttribute(LOOP_STRATEGY, task.LoopStrategy.ToString()));
 
-            writeEventListeners(task.EventListeners, taskElement);
-            writeExtendedAttributes(task.ExtendedAttributes, taskElement);
+            taskElement.Add(writeEventListeners(task.EventListeners));
+            taskElement.Add(writeExtendedAttributes(task.ExtendedAttributes));
 
-            parent.AppendChild(taskElement);
+            return taskElement;
         }
 
-        protected void writePerformer(Participant participant, XmlElement parent)
+        protected XElement writePerformer(Participant participant)
         {
-            if (participant == null) { return; }
-
-            XmlElement participantElement = doc.CreateElement(FPDL_NS_PREFIX, PERFORMER, FPDL_URI);
-
-            participantElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), participant.Name));
-            participantElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), participant.DisplayName));
-
-            participantElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), participant.Description));
-            participantElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, ASSIGNMENT_HANDLER, FPDL_URI), participant.AssignmentHandler));
-
-            parent.AppendChild(participantElement);
+            if (participant == null) { return null; }
+            XElement participantElement = new XElement(
+                xN + PERFORMER,
+                new XAttribute(NAME, participant.Name),
+                new XAttribute(DISPLAY_NAME, participant.DisplayName),
+                new XElement(xN + DESCRIPTION, participant.Description),
+                new XElement(xN + ASSIGNMENT_HANDLER, participant.AssignmentHandler)
+                );
+            return participantElement;
         }
 
-        protected void writeForm(String formName, Form form, XmlElement parent)
+        protected XElement writeForm(String formName, Form form)
         {
-            if (form == null) { return; }
-            XmlElement editFormElement = doc.CreateElement(FPDL_NS_PREFIX, formName, FPDL_URI);
-
-            editFormElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), form.Name));
-            editFormElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), form.DisplayName));
-
-            editFormElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), form.Description));
-            editFormElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, URI, FPDL_URI), form.Uri));
-
-            parent.AppendChild(editFormElement);
+            if (form == null) { return null; }
+            XElement editFormElement = new XElement(
+                xN + formName,
+                new XAttribute(NAME, form.Name),
+                new XAttribute(DISPLAY_NAME, form.DisplayName),
+                new XElement(xN + DESCRIPTION, form.Description),
+                new XElement(xN + URI, form.Uri)
+                );
+            return editFormElement;
         }
 
-        protected void writeApplication(Application application, XmlElement parent)
+        protected XElement writeApplication(Application application)
         {
-            if (application == null) { return; }
-            XmlElement applicationElement = doc.CreateElement(FPDL_NS_PREFIX, APPLICATION, FPDL_URI);
-
-            applicationElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), application.Name));
-            applicationElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), application.DisplayName));
-
-            applicationElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), application.Description));
-            applicationElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, HANDLER, FPDL_URI), application.Handler));
-
-            parent.AppendChild(applicationElement);
+            if (application == null) { return null; }
+            XElement applicationElement = new XElement(
+                xN + APPLICATION,
+                new XAttribute(NAME, application.Name),
+                new XAttribute(DISPLAY_NAME, application.DisplayName),
+                new XElement(xN + DESCRIPTION, application.Description),
+                new XElement(xN + HANDLER, application.Handler)
+                );
+            return applicationElement;
         }
 
-        protected void writeSubWorkflowProcess(SubWorkflowProcess subWorkflowProcess, XmlElement parent)
+        protected XElement writeSubWorkflowProcess(SubWorkflowProcess subWorkflowProcess)
         {
-            if (subWorkflowProcess == null) { return; }
-            XmlElement subflowElement = doc.CreateElement(FPDL_NS_PREFIX, SUB_WORKFLOW_PROCESS, FPDL_URI);
-
-            subflowElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), subWorkflowProcess.Name));
-            subflowElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), subWorkflowProcess.DisplayName));
-
-            subflowElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), subWorkflowProcess.Description));
-            subflowElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, WORKFLOW_PROCESS_ID, FPDL_URI), subWorkflowProcess.WorkflowProcessId));
-
-            parent.AppendChild(subflowElement);
+            if (subWorkflowProcess == null) { return null; }
+            XElement subflowElement = new XElement(
+                xN + SUB_WORKFLOW_PROCESS,
+                new XAttribute(NAME, subWorkflowProcess.Name),
+                new XAttribute(DISPLAY_NAME, subWorkflowProcess.DisplayName),
+                new XElement(xN + DESCRIPTION, subWorkflowProcess.Description),
+                new XElement(xN + WORKFLOW_PROCESS_ID, subWorkflowProcess.WorkflowProcessId)
+                );
+            return subflowElement;
         }
 
-        protected void writeDuration(Duration duration, XmlElement parent)
+        protected XElement writeDuration(Duration duration)
         {
-            if (duration == null) { return; }
+            if (duration == null) { return null; }
 
-            XmlElement durationElement = doc.CreateElement(FPDL_NS_PREFIX, DURATION, FPDL_URI);
-
-            durationElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(VALUE), duration.Value.ToString()));
-            durationElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(UNIT), duration.Unit.ToString()));
-            durationElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(IS_BUSINESS_TIME), duration.IsBusinessTime.ToString()));
-
-            parent.AppendChild(durationElement);
+            XElement durationElement = new XElement(
+                xN + DURATION,
+                new XAttribute(VALUE, duration.Value.ToString()),
+                new XAttribute(UNIT, duration.Unit.ToString()),
+                new XAttribute(IS_BUSINESS_TIME, duration.IsBusinessTime.ToString())
+                );
+            return durationElement;
         }
         #endregion
 
         #region Activitie
-        protected void writeActivities(List<Activity> activities, XmlElement parent)
+        protected XElement writeActivities(List<Activity> activities)
         {
+            if (activities == null || activities.Count <= 0) { return null; }
 
-            if (activities == null || activities.Count <= 0) { return; }
-
-            XmlElement activitiesElement = doc.CreateElement(FPDL_NS_PREFIX, ACTIVITIES, FPDL_URI);
+            XElement activitiesElement = new XElement(xN + ACTIVITIES);
 
             foreach (Activity item in activities)
             {
 
-                writeActivity(item, activitiesElement);
+                activitiesElement.Add(writeActivity(item));
             }
-            parent.AppendChild(activitiesElement);
-
+            return activitiesElement;
         }
 
-        protected void writeActivity(Activity activity, XmlElement parent)
+        protected XElement writeActivity(Activity activity)
         {
+            if (activity == null) { return null; }
 
-            if (activity == null) { return; }
-
-
-            XmlElement activityElement = doc.CreateElement(FPDL_NS_PREFIX, ACTIVITY, FPDL_URI);
-
-            activityElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), activity.Id));
-            activityElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), activity.Name));
-            activityElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), activity.DisplayName));
-            activityElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(COMPLETION_STRATEGY), activity.CompletionStrategy.ToString()));
-
-            activityElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), activity.Description));
-
-            writeEventListeners(activity.EventListeners, activityElement);
-            writeExtendedAttributes(activity.ExtendedAttributes, activityElement);
-
-            writeTasks(activity.InlineTasks, activityElement);
-            writeTaskRefs(activity.TaskRefs, activityElement);
-
-            parent.AppendChild(activityElement);
+            XElement activityElement = new XElement(
+                xN + ACTIVITY,
+                new XAttribute(ID, activity.Id),
+                new XAttribute(NAME, activity.Name),
+                new XAttribute(DISPLAY_NAME, activity.DisplayName),
+                new XAttribute(COMPLETION_STRATEGY, activity.CompletionStrategy.ToString()),
+                new XElement(xN + DESCRIPTION, activity.Description),
+                writeEventListeners(activity.EventListeners),
+                writeExtendedAttributes(activity.ExtendedAttributes),
+                writeTasks(activity.InlineTasks),
+                writeTaskRefs(activity.TaskRefs)
+                );
+            return activityElement;
         }
 
-        protected void writeTaskRefs(List<TaskRef> taskRefs, XmlElement parent)
+        protected XElement writeTaskRefs(List<TaskRef> taskRefs)
         {
-            if (taskRefs == null || taskRefs.Count <= 0) { return; }
-
-
-            XmlElement taskRefsElement = doc.CreateElement(FPDL_NS_PREFIX, TASKREFS, FPDL_URI);
+            XElement taskRefsElement = new XElement(xN + TASKREFS);
 
             foreach (TaskRef taskRef in taskRefs)
             {
-                XmlElement taskRefElement = doc.CreateElement(FPDL_NS_PREFIX, TASKREF, FPDL_URI);
-
-                taskRefElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(REFERENCE), taskRef.ReferencedTask.Id));
-                taskRefsElement.AppendChild(taskRefElement);
+                taskRefsElement.Add(new XElement(xN + TASKREF, new XAttribute(REFERENCE, taskRef.ReferencedTask.Id)));
             }
-            parent.AppendChild(taskRefsElement);
-
+            return taskRefsElement;
         }
         #endregion
 
         #region Synchronizer
-        protected void writeSynchronizers(List<Synchronizer> synchronizers, XmlElement parent)
+        protected XElement writeSynchronizers(List<Synchronizer> synchronizers)
         {
-
-            if (synchronizers == null || synchronizers.Count <= 0) { return; }
-
-
-            XmlElement synchronizersElement = doc.CreateElement(FPDL_NS_PREFIX, SYNCHRONIZERS, FPDL_URI);
+            if (synchronizers == null || synchronizers.Count <= 0) { return null; }
+            XElement synchronizersElement = new XElement(xN + SYNCHRONIZERS);
 
             foreach (Synchronizer item in synchronizers)
             {
-                writeSynchronizer(item, synchronizersElement);
+                synchronizersElement.Add(writeSynchronizer(item));
             }
-            parent.AppendChild(synchronizersElement);
+            return synchronizersElement;
         }
 
-        protected void writeSynchronizer(Synchronizer synchronizer, XmlElement parent)
+        protected XElement writeSynchronizer(Synchronizer synchronizer)
         {
-            if (synchronizer == null) { return; }
+            if (synchronizer == null) { return null; }
 
-            XmlElement synchronizerElement = doc.CreateElement(FPDL_NS_PREFIX, SYNCHRONIZER, FPDL_URI);
-
-            synchronizerElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), synchronizer.Id));
-            synchronizerElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), synchronizer.Name));
-            synchronizerElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), synchronizer.DisplayName));
-
-            synchronizerElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), synchronizer.Description));
-
-            writeExtendedAttributes(synchronizer.ExtendedAttributes, synchronizerElement);
-            parent.AppendChild(synchronizerElement);
+            XElement synchronizerElement = new XElement(
+                xN + SYNCHRONIZER,
+                new XAttribute(ID, synchronizer.Id),
+                new XAttribute(NAME, synchronizer.Name),
+                new XAttribute(DISPLAY_NAME, synchronizer.DisplayName),
+                new XElement(xN + DESCRIPTION, synchronizer.Description),
+                writeExtendedAttributes(synchronizer.ExtendedAttributes)
+                );
+            return synchronizerElement;
         }
         #endregion
 
         #region EndNode
-        protected void writeEndNodes(List<EndNode> endNodes, XmlElement parent)
+        protected XElement writeEndNodes(List<EndNode> endNodes)
         {
-            if (endNodes == null || endNodes.Count <= 0) { return; }
-
-            XmlElement endNodesElement = doc.CreateElement(FPDL_NS_PREFIX, END_NODES, FPDL_URI);
+            if (endNodes == null || endNodes.Count <= 0) { return null; }
+            XElement endNodesElement = new XElement(xN + END_NODES);
 
             foreach (EndNode item in endNodes)
             {
-                writeEndNode(item, endNodesElement);
+                endNodesElement.Add(writeEndNode(item));
             }
-            parent.AppendChild(endNodesElement);
+            return endNodesElement;
         }
 
-        protected void writeEndNode(EndNode endNode, XmlElement parent)
+        protected XElement writeEndNode(EndNode endNode)
         {
-            if (endNode == null) { return; }
+            if (endNode == null) { return null; }
 
-            XmlElement endNodeElement = doc.CreateElement(FPDL_NS_PREFIX, END_NODE, FPDL_URI);
-
-            endNodeElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), endNode.Id));
-            endNodeElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), endNode.Name));
-            endNodeElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), endNode.DisplayName));
-
-            endNodeElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), endNode.Description));
-
-            writeExtendedAttributes(endNode.ExtendedAttributes, endNodeElement);
-
-            parent.AppendChild(endNodeElement);
+            XElement endNodeElement = new XElement(
+                xN + END_NODE,
+                new XAttribute(ID, endNode.Id),
+                new XAttribute(NAME, endNode.Name),
+                new XAttribute(DISPLAY_NAME, endNode.DisplayName),
+                new XElement(xN + DESCRIPTION, endNode.Description),
+                writeExtendedAttributes(endNode.ExtendedAttributes)
+                );
+            return endNodeElement;
         }
         #endregion
 
         #region Transitions
-        protected void writeTransitions(List<Transition> transitions, XmlElement parent)
+        protected XElement writeTransitions(List<Transition> transitions)
         {
-            if (transitions == null || transitions.Count <= 0) { return; }
+            if (transitions == null || transitions.Count <= 0) { return null; }
 
-            XmlElement transitionsElement = doc.CreateElement(FPDL_NS_PREFIX, TRANSITIONS, FPDL_URI);
+            XElement transitionsElement = new XElement(xN + TRANSITIONS);
 
             foreach (Transition item in transitions)
             {
-                writeTransition(item, transitionsElement);
+                transitionsElement.Add(writeTransition(item));
             }
-            parent.AppendChild(transitionsElement);
+            return transitionsElement;
         }
 
-        protected void writeTransition(Transition transition, XmlElement parent)
+        protected XElement writeTransition(Transition transition)
         {
-            if (transition == null) { return; }
+            if (transition == null) { return null; }
 
-            XmlElement transitionElement = doc.CreateElement(FPDL_NS_PREFIX, TRANSITION, FPDL_URI);
-
-            transitionElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), transition.Id));
-            transitionElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(FROM), transition.FromNode.Id));
-            transitionElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TO), transition.ToNode.Id));
-            transitionElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), transition.Name));
-            transitionElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), transition.DisplayName));
-
-            transitionElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, CONDITION, FPDL_URI), transition.Condition));
-            //transitionElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, DESCRIPTION, FPDL_URI), transition.Description)); ??是否需要
-
-            writeExtendedAttributes(transition.ExtendedAttributes, transitionElement);
-
-            parent.AppendChild(transitionElement);
+            XElement transitionElement = new XElement(
+                xN + TRANSITION,
+                new XAttribute(ID, transition.Id),
+                new XAttribute(FROM, transition.FromNode.Id),
+                new XAttribute(TO, transition.ToNode.Id),
+                new XAttribute(NAME, transition.Name),
+                new XAttribute(DISPLAY_NAME, transition.DisplayName),
+                new XElement(xN + CONDITION, transition.Condition),
+                writeExtendedAttributes(transition.ExtendedAttributes)
+                );
+            return transitionElement;
         }
         #endregion
 
         #region Loops
-        protected void writeLoops(List<Loop> loops, XmlElement parent)
+        protected XElement writeLoops(List<Loop> loops)
         {
-            if (loops == null || loops.Count <= 0) { return; }
-            XmlElement transitionsElement = doc.CreateElement(FPDL_NS_PREFIX, LOOPS, FPDL_URI);
+            if (loops == null || loops.Count <= 0) { return null; }
+            XElement transitionsElement = new XElement(xN + LOOPS);
 
             foreach (Loop loop in loops)
             {
-                XmlElement loopElement = doc.CreateElement(FPDL_NS_PREFIX, LOOP, FPDL_URI);
-
-                loopElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(ID), loop.Id));
-                loopElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(FROM), loop.FromNode.Id));
-                loopElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(TO), loop.ToNode.Id));
-                loopElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(NAME), loop.Name));
-                loopElement.SetAttributeNode(this.SetAttributeNode(doc.CreateAttribute(DISPLAY_NAME), loop.DisplayName));
-
-                loopElement.AppendChild(this.SetElement(doc.CreateElement(FPDL_NS_PREFIX, CONDITION, FPDL_URI), loop.Condition));
-
-                writeExtendedAttributes(loop.ExtendedAttributes, loopElement);
-
-                transitionsElement.AppendChild(loopElement);
-
+                transitionsElement.Add(new XElement(
+                    xN + LOOP,
+                    new XAttribute(ID, loop.Id),
+                    new XAttribute(FROM, loop.FromNode.Id),
+                    new XAttribute(TO, loop.ToNode.Id),
+                    new XAttribute(NAME, loop.Name),
+                    new XAttribute(DISPLAY_NAME, loop.DisplayName),
+                    new XElement(xN + CONDITION, loop.Condition),
+                    writeExtendedAttributes(loop.ExtendedAttributes)
+                    ));
             }
-            parent.AppendChild(transitionsElement);
+            return transitionsElement;
         }
         #endregion
 
