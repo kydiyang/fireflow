@@ -590,7 +590,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             if (queryField == null) return new QueryInfo();
             if (queryField.QueryFieldInfos.Count <= 0 && queryField.QueryFieldInfosOr.Count <= 0) return new QueryInfo();
             //Oracle参数集合
-            IList<OracleParameter> sp = new List<OracleParameter>();
+            List<OracleParameter> sp = new List<OracleParameter>();
             //查询SQL合集
             StringBuilder sb = new StringBuilder();
             //循环变量
