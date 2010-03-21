@@ -165,6 +165,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
             String valueStr = Convert.ToString(dr["value"]); //rs.getString("value");
             Object valueObj = GetProcessInstanceVarObject(valueStr);
+            processInstanceVar.ValueType = valueObj.GetType().Name;
             processInstanceVar.Value = valueObj;
 
             return processInstanceVar;
@@ -195,7 +196,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     		}
     		else if (type=="Int64")
     		{
-    			return long.Parse(strValue);
+                return Int64.Parse(strValue);
     		}
     		else if (type=="Single")
     		{
