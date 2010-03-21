@@ -121,6 +121,7 @@ namespace FireWorkflow.Net.Engine
 
         /// <summary>TaskInstance 管理器，负责TaskInstance的创建、运行、结束。</summary>
         private ITaskInstanceManager _taskInstanceManager = null;
+        /// <summary>TaskInstance 管理器，负责TaskInstance的创建、运行、结束。</summary>
         public ITaskInstanceManager TaskInstanceManager
         {
             get { return _taskInstanceManager; }

@@ -46,7 +46,6 @@ namespace FireWorkflow.Net.Kernel.Impl
         {
             Extension_Point_Names.Add(Extension_Point_NodeInstanceEventListener);
         }
-        private int volume = 0;// 即节点的容量
         private Synchronizer synchronizer = null;
 
 
@@ -60,7 +59,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             synchronizer = s;
             int a = synchronizer.EnteringTransitions.Count;
             int b = synchronizer.LeavingTransitions.Count;
-            volume = a * b;
+            this.Volume = a * b;
 
             //		System.out.println("synchronizer "+synchronizer.Name+"'s volume is "+volume);
         }
@@ -80,14 +79,14 @@ namespace FireWorkflow.Net.Kernel.Impl
             //汇聚检查
             joinPoint = ((ProcessInstance)tk.ProcessInstance).createJoinPoint(this, tk);// JoinPoint由谁生成比较好？
             int value = (int)joinPoint.Value;
-            if (value > volume)//如果value大于同步器容量，那说明出错了
+            if (value > this.Volume)//如果value大于同步器容量，那说明出错了
             {
                 KernelException exception = new KernelException(tk.ProcessInstance,
                         this.Synchronizer,
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
                 throw exception;
             }
-            if (value < volume)
+            if (value < this.Volume)
             {// 如果Value小于容量则继续等待其他弧的汇聚。 (哪些状态为dead的token到此结束，不再向下传递)
                 return null;
             }

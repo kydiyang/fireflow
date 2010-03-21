@@ -64,8 +64,8 @@ namespace FireWorkflow.Net.Engine
                 //日历服务
                 ctx.CalendarService = new FireWorkflow.Net.Engine.Calendar.DefaultCalendarService();
 
-                //bean工厂，fire workflow默认使用spring作为其实现
-                ctx.BeanFactory = new FireWorkflow.Net.Engine.Beanfactory.SpringBeanFactory();
+                //bean工厂，fire workflow默认使用spring作为其实现  lwz 2010-3-21 edit 改为 C# type加载
+                ctx.BeanFactory = new FireWorkflow.Net.Engine.Beanfactory.BeanFactory();
             }
             return ctx;
         }
