@@ -48,6 +48,7 @@ namespace FireWorkflow.Net.Engine.Impl
             }
             set
             {
+                if (String.IsNullOrEmpty(ValueType)) this.ValueType = value.GetType().Name;
                 this.value = value.ToString();
             }
         }

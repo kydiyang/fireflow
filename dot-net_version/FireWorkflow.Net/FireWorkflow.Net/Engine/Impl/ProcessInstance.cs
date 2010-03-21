@@ -84,7 +84,7 @@ namespace FireWorkflow.Net.Engine.Impl
         {
             this.State = ProcessInstanceEnum.INITIALIZED;
             this.Suspended = false;
-            this.ProcessInstanceVariables = new Dictionary<String, Object>();
+            //this.ProcessInstanceVariables = new Dictionary<String, Object>();
         }
 
         /// <summary>生成joinPoint</summary>
@@ -250,7 +250,7 @@ namespace FireWorkflow.Net.Engine.Impl
             procInstVar.VarPrimaryKey=pk;
             procInstVar.Value = value.ToString();
             procInstVar.ValueType=value.GetType().Name;
-
+            
             if (_processInstanceVariables.ContainsKey(name))
             {
                 persistenceService.UpdateProcessInstanceVariable(procInstVar);

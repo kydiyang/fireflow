@@ -31,17 +31,22 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             IProcessInstance proceInst = e.ProcessInstance;
             ITaskInstance taskInst = (ITaskInstance)e.Source;
             IWorkItem wi = e.WorkItem;
-            if (e.EventType == TaskInstanceEventEnum.BEFORE_TASK_INSTANCE_START)
+            switch (e.EventType)
             {
-                beforeTaskInstanceStart(session, proceInst, taskInst);
-            }
-            else if (e.EventType == TaskInstanceEventEnum.AFTER_TASK_INSTANCE_COMPLETE)
-            {
-                afterTaskInstanceCompleted(session, proceInst, taskInst);
-            }
-            else if (e.EventType == TaskInstanceEventEnum.AFTER_WORKITEM_CREATED)
-            {
-                afterWorkItemCreated(session, proceInst, taskInst, wi);
+                case TaskInstanceEventEnum.BEFORE_TASK_INSTANCE_START:
+                    beforeTaskInstanceStart(session, proceInst, taskInst);
+                    break;
+                case TaskInstanceEventEnum.AFTER_WORKITEM_CREATED:
+                    afterWorkItemCreated(session, proceInst, taskInst, wi);
+                    break;
+                case TaskInstanceEventEnum.AFTER_WORKITEM_COMPLETE:
+                    afterWorkItemComplete(session, proceInst, taskInst, wi);
+                    break;
+                case TaskInstanceEventEnum.AFTER_TASK_INSTANCE_COMPLETE:
+                    afterTaskInstanceCompleted(session, proceInst, taskInst);
+                    break;
+                default:
+                    break;
             }
         }
 

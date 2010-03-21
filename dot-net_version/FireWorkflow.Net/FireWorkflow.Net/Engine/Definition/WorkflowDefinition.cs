@@ -69,6 +69,7 @@ namespace FireWorkflow.Net.Engine.Definition
         public void setWorkflowProcess(WorkflowProcess process)// throws  RuntimeException 
         {
             this.workflowProcess = process;
+
             this.ProcessId = workflowProcess.Id;
             this.Name = workflowProcess.Name;
             this.DisplayName = workflowProcess.DisplayName;
@@ -79,7 +80,7 @@ namespace FireWorkflow.Net.Engine.Definition
             try
             {
                 ser.serialize(workflowProcess, so);
-                this.ProcessContent = Encoding.UTF8.GetString(so.ToArray());
+                this.ProcessContent = Encoding.Default.GetString(so.ToArray());
             }
             catch
             {

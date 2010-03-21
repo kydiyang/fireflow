@@ -37,7 +37,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public const String Extension_Point_NodeInstanceEventListener = "NodeInstanceEventListener";
 
         /// <summary>
-        /// volume是同步器的容量
+        /// volume是同步器的容量  即节点的容量
         /// </summary>
         public int Volume { get; set; }
 
@@ -45,7 +45,6 @@ namespace FireWorkflow.Net.Kernel.Impl
         {
             Extension_Point_Names.Add(Extension_Point_NodeInstanceEventListener);
         }
-        private int volume = 0;// 即节点的容量
         // private int tokenValue = 0;
         private StartNode startNode = null;
 
@@ -53,7 +52,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public StartNodeInstance(StartNode startNd)
         {
             this.startNode = startNd;
-            volume = startNode.LeavingTransitions.Count;//  start 节点容量 ==输出弧的数量
+            this.Volume = startNode.LeavingTransitions.Count;//  start 节点容量 ==输出弧的数量
         }
 
         public override String Id
@@ -71,7 +70,7 @@ namespace FireWorkflow.Net.Kernel.Impl
             {
                 return;//
             }
-            if (tk.Value != volume)
+            if (tk.Value != this.Volume)
             {
                 KernelException exception = new KernelException(tk.ProcessInstance,
                         this.startNode,

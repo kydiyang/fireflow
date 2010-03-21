@@ -75,7 +75,7 @@ namespace FireWorkflow.Net.Kernel
         /// <param name="version">流程版本号</param>
         public INetInstance getNetInstance(String processId, Int32 version)
         {
-            INetInstance netInstance = this.netInstanceMap[processId + "_V_" + version];
+            INetInstance netInstance = (this.netInstanceMap.ContainsKey(processId + "_V_" + version)) ? this.netInstanceMap[processId + "_V_" + version] : null;
             if (netInstance == null)
             {
                 //数据流定义在runtimeContext初始化的时候，就被加载了，将流程定义的xml读入到内存中 

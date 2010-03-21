@@ -51,10 +51,10 @@ namespace FireWorkflow.Net.Engine.Impl
             get { return _runtimeContext; }
             set
             {
-                this.RuntimeContext = value;
+                _runtimeContext = value;
                 if (this.TaskInstance != null)
                 {
-                    ((IRuntimeContextAware)TaskInstance).RuntimeContext = this.RuntimeContext;
+                    ((IRuntimeContextAware)TaskInstance).RuntimeContext = _runtimeContext;
                 }
             }
         }
@@ -135,16 +135,46 @@ namespace FireWorkflow.Net.Engine.Impl
             taskInstanceMgr.rejectWorkItem(this, comments);
         }
 
+        /// <summary>
+        /// <para>结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下</para>
+        /// <para>1、工作流引擎首先判断该WorkItem对应的TaskInstance是否可以结束。</para>
+        /// <para>   如果TaskInstance的assignment策略为ANY，或者，assignment策略为ALL且它所有的WorkItem都已经完成</para>
+        /// <para>   则结束当前TaskInstance</para>
+        /// <para>2、判断TaskInstance对应的ActivityInstance是否可以结束。如果ActivityInstance的complete strategy为ANY，</para>
+        /// <para>   或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance</para>
+        /// <para>3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem</para>
+        /// </summary>
         public void complete()
         {
             complete(null, this.Comments);
         }
-
+        /// <summary>
+        /// <para>结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下</para>
+        /// <para>1、工作流引擎首先判断该WorkItem对应的TaskInstance是否可以结束。</para>
+        /// <para>   如果TaskInstance的assignment策略为ANY，或者，assignment策略为ALL且它所有的WorkItem都已经完成</para>
+        /// <para>   则结束当前TaskInstance</para>
+        /// <para>2、判断TaskInstance对应的ActivityInstance是否可以结束。如果ActivityInstance的complete strategy为ANY，</para>
+        /// <para>   或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance</para>
+        /// <para>3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem</para>
+        /// </summary>
+        /// <param name="comments">备注信息</param>
         public void complete(String comments)
         {
             complete(null, comments);
         }
 
+
+        /// <summary>
+        /// <para>结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下</para>
+        /// <para>1、工作流引擎首先判断该WorkItem对应的TaskInstance是否可以结束。</para>
+        /// <para>   如果TaskInstance的assignment策略为ANY，或者，assignment策略为ALL且它所有的WorkItem都已经完成</para>
+        /// <para>   则结束当前TaskInstance</para>
+        /// <para>2、判断TaskInstance对应的ActivityInstance是否可以结束。如果ActivityInstance的complete strategy为ANY，</para>
+        /// <para>   或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance</para>
+        /// <para>3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem</para>
+        /// </summary>
+        /// <param name="dynamicAssignmentHandler">通过动态分配句柄指定下一个环节的操作者。</param>
+        /// <param name="comments">备注信息</param>
         public void complete(DynamicAssignmentHandler dynamicAssignmentHandler, String comments)
         {
             if (this._workflowSession == null)

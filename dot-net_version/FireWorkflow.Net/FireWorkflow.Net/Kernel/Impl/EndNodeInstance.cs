@@ -45,7 +45,6 @@ namespace FireWorkflow.Net.Kernel.Impl
         {
             Extension_Point_Names.Add(Extension_Point_NodeInstanceEventListener);
         }
-        private int volume = 0;// 即节点的容量
         private EndNode endNode = null;
 
         public EndNodeInstance()
@@ -60,7 +59,7 @@ namespace FireWorkflow.Net.Kernel.Impl
         public EndNodeInstance(EndNode endNd)
         {
             this.endNode = endNd;
-            this.volume = this.endNode.EnteringTransitions.Count;
+            this.Volume = this.endNode.EnteringTransitions.Count;
         }
 
         public int Value { get; set; }
@@ -82,14 +81,14 @@ namespace FireWorkflow.Net.Kernel.Impl
 
             //log.debug("The volume of " + this.toString() + " is " + volume);
             //log.debug("The value of " + this.toString() + " is " + value);
-            if (value > volume)
+            if (value > this.Volume)
             {
                 KernelException exception = new KernelException(tk.ProcessInstance,
                         this.Synchronizer,
                         "Error:The token count of the synchronizer-instance can NOT be  greater than  it's volumn  ");
                 throw exception;
             }
-            if (value < volume)
+            if (value < this.Volume)
             {// 如果Value小于容量则继续等待其他弧的汇聚。
                 return null;
             }

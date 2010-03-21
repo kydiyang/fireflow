@@ -435,7 +435,7 @@ namespace FireWorkflow.Net.Engine.Calendar
 
         public DateTime getSysDate()
         {
-            throw new NotImplementedException();
+            return DateTime.Now;
         }
 
         #endregion

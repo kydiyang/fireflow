@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Base\BeanUtils.cs" />
     <Compile Include="Base\Evaluator.cs" />
+    <Compile Include="Engine\Beanfactory\BeanFactory.cs" />
     <Compile Include="Engine\Beanfactory\IBeanFactory.cs" />
     <Compile Include="Engine\Beanfactory\SpringBeanFactory.cs" />
     <Compile Include="Engine\Calendar\DefaultCalendarService.cs" />
