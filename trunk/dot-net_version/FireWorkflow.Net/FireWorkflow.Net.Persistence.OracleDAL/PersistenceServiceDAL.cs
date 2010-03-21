@@ -11,6 +11,7 @@ using FireWorkflow.Net.Engine;
 using FireWorkflow.Net.Engine.Impl;
 using FireWorkflow.Net.Engine.Definition;
 using FireWorkflow.Net.Kernel;
+using FireWorkflow.Net.Kernel.Impl;
 using FireWorkflow.Net.Engine.Persistence;
 
 namespace FireWorkflow.Net.Persistence.OracleDAL
@@ -49,19 +50,19 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
             if (String.IsNullOrEmpty(processInstance.Id))
             {
-                String processInstanceId = Guid.NewGuid().ToString().Replace("-","");
+                ((ProcessInstance)processInstance).Id = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_PROCESSINSTANCE ("+
                     "ID, PROCESS_ID, VERSION, NAME, DISPLAY_NAME, "+
                     "STATE, SUSPENDED, CREATOR_ID, CREATED_TIME, STARTED_TIME, "+
                     "EXPIRED_TIME, END_TIME, PARENT_PROCESSINSTANCE_ID, PARENT_TASKINSTANCE_ID"+
                     ") VALUES(:1,:2,:3,:4,:5, :6,:7,:8,:9,:10, :11,:12,:13,:14)";
     			OracleParameter[] insertParms = { 
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId), 
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstance.Id), 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 100, processInstance.ProcessId), 
     				OracleHelper.NewOracleParameter(":3", OracleType.Int32, processInstance.Version), 
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, processInstance.Name), 
     				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, processInstance.DisplayName), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.Int32, processInstance.State), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.Int32, (int)processInstance.State), 
     				OracleHelper.NewOracleParameter(":7", OracleType.Int16, OracleHelper.OraBit(processInstance.IsSuspended())), 
     				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, processInstance.CreatorId), 
     				OracleHelper.NewOracleParameter(":9", OracleType.DateTime, 11, processInstance.CreatedTime), 
@@ -86,7 +87,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":3", OracleType.Int32, processInstance.Version), 
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, processInstance.Name), 
     				OracleHelper.NewOracleParameter(":5", OracleType.VarChar, 128, processInstance.DisplayName), 
-    				OracleHelper.NewOracleParameter(":6", OracleType.Int32, processInstance.State), 
+    				OracleHelper.NewOracleParameter(":6", OracleType.Int32, (int)processInstance.State), 
     				OracleHelper.NewOracleParameter(":7", OracleType.Int16, OracleHelper.OraBit(processInstance.IsSuspended())), 
     				OracleHelper.NewOracleParameter(":8", OracleType.VarChar, 50, processInstance.CreatorId), 
     				OracleHelper.NewOracleParameter(":9", OracleType.DateTime, 11, processInstance.CreatedTime), 
@@ -110,8 +111,9 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public IProcessInstance FindAliveProcessInstanceById(String id) {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                String select = "SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1 and ( state=" + ProcessInstanceEnum.INITIALIZED
-                    + " or state=" + ProcessInstanceEnum.RUNNING + ")";
+                String select = String.Format("SELECT * FROM T_FF_RT_PROCESSINSTANCE WHERE ID=:1 and  state in ({0},{1})",
+                    (int)ProcessInstanceEnum.INITIALIZED,
+                    (int)ProcessInstanceEnum.RUNNING);
                 OracleDataReader reader = null;
                 try
                 {
@@ -241,7 +243,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public int GetAliveProcessInstanceCountForParentTaskInstance(String taskInstanceId)
         {
             String select = String.Format("select count(*) from t_ff_rt_processinstance where parent_taskinstance_id=:1 and state in({0},{1})",
-                ProcessInstanceEnum.INITIALIZED, ProcessInstanceEnum.RUNNING);
+                (int)ProcessInstanceEnum.INITIALIZED, (int)ProcessInstanceEnum.RUNNING);
             OracleParameter[] selectParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
 		    };
@@ -259,7 +261,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 // 更新流程状态，设置为canceled
                 DateTime now = this.RuntimeContext.CalendarService.getSysDate();
-                String processSql = "update t_ff_rt_processinstance set state=" + ProcessInstanceEnum.CANCELED
+                String processSql = "update t_ff_rt_processinstance set state=" + (int)ProcessInstanceEnum.CANCELED
                         + ",end_time=:1 where id=:2 ";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, processSql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, now),
@@ -273,7 +275,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
 
                 // 更新所有的任务实例状态为canceled
-                String taskSql = " update t_ff_rt_taskinstance set state=" + TaskInstanceStateEnum.CANCELED
+                String taskSql = " update t_ff_rt_taskinstance set state=" + (int)TaskInstanceStateEnum.CANCELED
                         + ",end_time=:1,can_be_withdrawn=0 " + "  where processinstance_id=:2 and (state=0 or state=1)";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, taskSql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, now),
@@ -287,7 +289,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
                 // 更新所有工作项的状态为canceled
                 String workItemSql = " update t_ff_rt_workitem set state="
-                        + WorkItemEnum.CANCELED
+                        + (int)WorkItemEnum.CANCELED
                         + ",end_time=:1  "
                         + " where taskinstance_id in (select a.id  from t_ff_rt_taskinstance a,t_ff_rt_workitem b where a.id=b.taskinstance_id and a.processinstance_id=:2 ) and (state=0 or state=1) ";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
@@ -450,7 +452,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
             if (String.IsNullOrEmpty(taskInstance.Id))
             {
-                string taskInstanceId = Guid.NewGuid().ToString().Replace("-", "");
+                ((TaskInstance)taskInstance).Id = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_TASKINSTANCE (" +
                 "ID, BIZ_TYPE, TASK_ID, ACTIVITY_ID, NAME, " +
                 "DISPLAY_NAME, STATE, SUSPENDED, TASK_TYPE, CREATED_TIME, " +
@@ -458,7 +460,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 "PROCESS_ID, VERSION, TARGET_ACTIVITY_ID, FROM_ACTIVITY_ID, STEP_NUMBER, " +
                 "CAN_BE_WITHDRAWN )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21)";
     			OracleParameter[] insertParms = { 
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId), 
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstance.Id), 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
     				OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskInstance.TaskId), 
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, taskInstance.ActivityId), 
@@ -530,7 +532,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             OracleTransaction transaction = OracleHelper.GetOracleTransaction(connectionString);
             try
             {
-                String sql = "update t_ff_rt_taskinstance set state=" + TaskInstanceStateEnum.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
+                String sql = "update t_ff_rt_taskinstance set state=" + (int)TaskInstanceStateEnum.CANCELED + " ,end_time=:1 where id=:2 and (state=0 or state=1)";
                 int count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, sql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.CalendarService.getSysDate()),
                     OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, taskInstance.Id)
@@ -543,7 +545,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
 
                 // 将与之关联的WorkItem取消掉
-                String workItemSql = " update t_ff_rt_workitem set state=" + WorkItemEnum.CANCELED + ",end_time=:1  "
+                String workItemSql = " update t_ff_rt_workitem set state=" + (int)WorkItemEnum.CANCELED + ",end_time=:1  "
                         + " where taskinstance_id =:2 ";
                 count = OracleHelper.ExecuteNonQuery(transaction, CommandType.Text, workItemSql,
                     OracleHelper.NewOracleParameter(":1", OracleType.Timestamp, 11, this.RuntimeContext.CalendarService.getSysDate()),
@@ -583,8 +585,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public ITaskInstance FindAliveTaskInstanceById(String id) {
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                String select = "select * from t_ff_rt_taskinstance where id=:1 and  (state=" + TaskInstanceStateEnum.INITIALIZED
-                        + " or state=" + TaskInstanceStateEnum.RUNNING + " )";
+                String select = "select * from t_ff_rt_taskinstance where id=:1 and  (state=" + (int)TaskInstanceStateEnum.INITIALIZED
+                        + " or state=" + (int)TaskInstanceStateEnum.RUNNING + " )";
                 OracleDataReader reader = null;
                 try
                 {
@@ -611,8 +613,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public int GetAliveTaskInstanceCountForActivity(String processInstanceId, String activityId)
         {
-            String select = "select count(*) from T_FF_RT_TASKINSTANCE where " + " (state=" + TaskInstanceStateEnum.INITIALIZED
-                + " or state=" + TaskInstanceStateEnum.RUNNING + ")" + " and activity_id=:1 and processinstance_id=:2";
+            String select = "select count(*) from T_FF_RT_TASKINSTANCE where " + " (state=" + (int)TaskInstanceStateEnum.INITIALIZED
+                + " or state=" + (int)TaskInstanceStateEnum.RUNNING + ")" + " and activity_id=:1 and processinstance_id=:2";
             OracleParameter[] selectParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 200, activityId), 
 				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId), 
@@ -626,7 +628,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// “已经结束”是指TaskInstance.state=COMPLETED。
         /// </summary>
         public int GetCompletedTaskInstanceCountForTask(String processInstanceId, String taskId) {
-            String select = "select count(*) from T_FF_RT_TASKINSTANCE where state=" + TaskInstanceStateEnum.COMPLETED
+            String select = "select count(*) from T_FF_RT_TASKINSTANCE where state=" + (int)TaskInstanceStateEnum.COMPLETED
                         + " and task_id=:1 and processinstance_id=:2 ";
             OracleParameter[] selectParms = { 
 				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 300, taskId), 
@@ -783,14 +785,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
             if (String.IsNullOrEmpty(workitem.Id))
             {
-                String workItemId = Guid.NewGuid().ToString().Replace("-", ""); ;
+                ((WorkItem)workitem).Id = Guid.NewGuid().ToString().Replace("-", ""); ;
 
                 string insert = "INSERT INTO T_FF_RT_WORKITEM (" +
                     "ID, STATE, CREATED_TIME, CLAIMED_TIME, END_TIME, " +
                     "ACTOR_ID, COMMENTS, TASKINSTANCE_ID )VALUES(:1, :2, :3, :4, :5, :6, :7, :8)";
                 OracleParameter[] insertParms = { 
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workItemId), 
-    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.State), 
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workitem.Id), 
+    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, (int)workitem.State), 
     				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.CreatedTime), 
     				OracleHelper.NewOracleParameter(":4", OracleType.Timestamp, 11, workitem.ClaimedTime), 
     				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.EndTime), 
@@ -809,7 +811,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     "COMMENTS=:7, TASKINSTANCE_ID=:8" +
                     " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
-    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, workitem.State), 
+    				OracleHelper.NewOracleParameter(":2", OracleType.Int32, (int)workitem.State), 
     				OracleHelper.NewOracleParameter(":3", OracleType.Timestamp, 11, workitem.CreatedTime), 
     				OracleHelper.NewOracleParameter(":4", OracleType.Timestamp, 11, workitem.ClaimedTime), 
     				OracleHelper.NewOracleParameter(":5", OracleType.Timestamp, 11, workitem.EndTime), 
@@ -847,7 +849,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                string select = "select * from t_ff_rt_workitem where taskinstance_id=:1 and state=" + WorkItemEnum.COMPLETED;
+                string select = "select * from t_ff_rt_workitem where taskinstance_id=:1 and state=" + (int)WorkItemEnum.COMPLETED;
                 OracleDataReader reader = null;
                 try
                 {
@@ -913,7 +915,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public bool DeleteWorkItemsInInitializedState(String taskInstanceId)
         {
-            String delete = "delete from t_ff_rt_workitem where taskinstance_id=:1 and  state=" + WorkItemEnum.INITIALIZED;
+            String delete = "delete from t_ff_rt_workitem where taskinstance_id=:1 and  state=" + (int)WorkItemEnum.INITIALIZED;
             OracleParameter[] deleteParms = { 
                  OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstanceId)
 			};
@@ -1024,12 +1026,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 {
                     if (String.IsNullOrEmpty(actorId))
                     {
-                        select = "select * from t_ff_rt_workitem where  state in (" + WorkItemEnum.INITIALIZED + "," + WorkItemEnum.RUNNING + ")  ";
+                        select = "select * from t_ff_rt_workitem where  state in (" + (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING + ")  ";
                         selectParms = null;
                     }
                     else
                     {
-                        select = "select * from t_ff_rt_workitem where state in (" + WorkItemEnum.INITIALIZED + "," + WorkItemEnum.RUNNING +
+                        select = "select * from t_ff_rt_workitem where state in (" + (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING +
                             ") and actor_id=:1  ";
                         selectParms = new OracleParameter[]{ 
                             OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId)
@@ -1043,7 +1045,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         throw new Exception("挡流程（processInstanceId）不为空时，工单操作员（actorId）不能为空！");
                     }
                     select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
-                        WorkItemEnum.INITIALIZED + " ," + WorkItemEnum.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
+                        (int)WorkItemEnum.INITIALIZED + " ," + (int)WorkItemEnum.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
                     selectParms = new OracleParameter[]{ 
                             OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId),
                             OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, processInstanceId)
@@ -1092,8 +1094,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 string select = String.Format(
                     "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
-                    WorkItemEnum.INITIALIZED,
-                    WorkItemEnum.RUNNING,
+                    (int)WorkItemEnum.INITIALIZED,
+                    (int)WorkItemEnum.RUNNING,
                     queryInfo.QueryStringAnd);
 
                 OracleDataReader reader = null;
@@ -1147,8 +1149,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 String select = String.Format(
                     "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
-                    WorkItemEnum.COMPLETED,
-                    WorkItemEnum.CANCELED,
+                    (int)WorkItemEnum.COMPLETED,
+                    (int)WorkItemEnum.CANCELED,
                     queryInfo.QueryStringAnd);
                 OracleDataReader reader = null;
                 try
@@ -1192,8 +1194,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 String select = String.Format(
                     "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
-                    WorkItemEnum.COMPLETED,
-                    WorkItemEnum.CANCELED,
+                    (int)WorkItemEnum.COMPLETED,
+                    (int)WorkItemEnum.CANCELED,
                     queryInfo.QueryStringAnd);
 
                 OracleDataReader reader = null;
@@ -1231,12 +1233,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         {
             if (String.IsNullOrEmpty(token.Id))
             {
-                String tokenId = Guid.NewGuid().ToString().Replace("-", "");
+                ((Token)token).Id = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_RT_TOKEN (" +
                     "ID, ALIVE, VALUE, NODE_ID, PROCESSINSTANCE_ID, " +
                     "STEP_NUMBER, FROM_ACTIVITY_ID )VALUES(:1, :2, :3, :4, :5, :6, :7)";
                 OracleParameter[] insertParms = { 
-    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, tokenId), 
+    				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, token.Id), 
     				OracleHelper.NewOracleParameter(":2", OracleType.Int16, OracleHelper.OraBit(token.IsAlive)), 
     				OracleHelper.NewOracleParameter(":3", OracleType.Int32, token.Value), 
     				OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 200, token.NodeId), 
@@ -1439,14 +1441,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 {
                     workflowDef.Version=1;
                 }
-                String workflowDefId = Guid.NewGuid().ToString().Replace("-", "");
+                workflowDef.Id = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_DF_WORKFLOWDEF (" +
                     "ID, DEFINITION_TYPE, PROCESS_ID, NAME, DISPLAY_NAME, " +
                     "DESCRIPTION, VERSION, STATE, UPLOAD_USER, UPLOAD_TIME, " +
                     "PUBLISH_USER, PUBLISH_TIME, PROCESS_CONTENT )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13)";
                 
                 OracleParameter[] insertParms = { 
-					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDefId), 
+					OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, workflowDef.Id), 
 					OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, workflowDef.DefinitionType), 
 					OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 100, workflowDef.ProcessId), 
 					OracleHelper.NewOracleParameter(":4", OracleType.VarChar, 100, workflowDef.Name), 
@@ -1655,12 +1657,12 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         public bool SaveOrUpdateProcessInstanceTrace(ProcessInstanceTrace processInstanceTrace) {
             if (String.IsNullOrEmpty(processInstanceTrace.Id))
             {
-                String processInstanceTraceId = Guid.NewGuid().ToString().Replace("-", "");
+                processInstanceTrace.Id = Guid.NewGuid().ToString().Replace("-", "");
                 string insert = "INSERT INTO T_FF_HIST_TRACE (" +
                     "ID, PROCESSINSTANCE_ID, STEP_NUMBER, MINOR_NUMBER, TYPE, " +
                     "EDGE_ID, FROM_NODE_ID, TO_NODE_ID )VALUES(:1, :2, :3, :4, :5, :6, :7, :8)";
                 OracleParameter[] insertParms = { 
-				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceTraceId), 
+				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceTrace.Id), 
 				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceTrace.ProcessInstanceId), 
 				OracleHelper.NewOracleParameter(":3", OracleType.Int32, processInstanceTrace.StepNumber), 
 				OracleHelper.NewOracleParameter(":4", OracleType.Int32, processInstanceTrace.MinorNumber), 
