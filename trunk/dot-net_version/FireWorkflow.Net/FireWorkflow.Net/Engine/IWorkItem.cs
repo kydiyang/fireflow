@@ -49,6 +49,14 @@ namespace FireWorkflow.Net.Engine
         /// <summary>返回工作项的状态</summary>
         WorkItemEnum State { get; }
 
+        //lwz 2010-3-3 add begin 方便业务展示
+        /// <summary>返回任务实例TaskInstance.Name</summary>
+        String Name { get; }
+
+        /// <summary>返回任务实例显示名TaskInstance.DisplayName</summary>
+        String DisplayName { get; }
+        //lwz 2010-3-3 add end
+
         /// <summary>获取或设置备注信息</summary>
         String Comments { get; set; }
 
@@ -56,10 +64,10 @@ namespace FireWorkflow.Net.Engine
         DateTime CreatedTime { get; }
 
         /// <summary>返回签收时间</summary>
-        DateTime ClaimedTime { get; }
+        DateTime? ClaimedTime { get; }
 
         /// <summary>返回结束时间</summary>
-        DateTime EndTime { get; }
+        DateTime? EndTime { get; }
 
         /// <summary>返回操作员的Id</summary>
         String ActorId { get; }

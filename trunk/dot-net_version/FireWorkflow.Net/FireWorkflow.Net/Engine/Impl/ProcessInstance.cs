@@ -158,7 +158,7 @@ namespace FireWorkflow.Net.Engine.Impl
                     {
                         resultJoinPoint.Alive=true;
                         String oldFromActivityId = resultJoinPoint.FromActivityId;
-                        if (String.IsNullOrEmpty(oldFromActivityId.Trim()))
+                        if (String.IsNullOrEmpty(oldFromActivityId))
                         {
                             resultJoinPoint.FromActivityId=_token.FromActivityId;
                         }
