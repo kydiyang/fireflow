@@ -1015,7 +1015,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public List<IWorkItem> FindTodoWorkItems(String actorId, String processInstanceId)
         {
-            if (String.IsNullOrEmpty(processInstanceId)) return FindTodoWorkItems(actorId);
+            //if (String.IsNullOrEmpty(processInstanceId)) return FindTodoWorkItems(actorId);
 
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
@@ -1034,7 +1034,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         select = "select * from t_ff_rt_workitem where state in (" + (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING +
                             ") and actor_id=:1  ";
                         selectParms = new OracleParameter[]{ 
-                            OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId)
+                            OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, actorId)
             		    };
                     }
                 }
@@ -1047,8 +1047,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
                         (int)WorkItemEnum.INITIALIZED + " ," + (int)WorkItemEnum.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
                     selectParms = new OracleParameter[]{ 
-                            OracleHelper.NewOracleParameter(":6", OracleType.VarChar, 50, actorId),
-                            OracleHelper.NewOracleParameter(":15", OracleType.VarChar, 50, processInstanceId)
+                            OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, actorId),
+                            OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId)
             		    };
 
                 }
@@ -1510,6 +1510,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         return info;
                     }
                 }
+                catch
+                {
+                    throw;
+                }
                 finally
                 {
                     reader.Close();
@@ -1539,6 +1543,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         WorkflowDefinition info = OracleDataReaderToInfo.GetWorkflowDefinition(reader);
                         return info;
                     }
+                }
+                catch
+                {
+                    throw;
                 }
                 finally
                 {
@@ -1584,6 +1592,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                             infos.Add(info);
                         }
                     }
+                }
+                catch
+                {
+                    throw;
                 }
                 finally
                 {

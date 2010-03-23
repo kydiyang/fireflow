@@ -20,7 +20,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
 
         public void Add(QueryFieldInfo queryFieldInfo)
         {
-            if (String.IsNullOrEmpty(queryFieldInfo.QueryString.Trim())) return;
+            if (String.IsNullOrEmpty(queryFieldInfo.QueryString)) return;
             QueryFieldInfos.Add(queryFieldInfo);
         }
         public void AddOr(QueryFieldInfo queryFieldInfo)
