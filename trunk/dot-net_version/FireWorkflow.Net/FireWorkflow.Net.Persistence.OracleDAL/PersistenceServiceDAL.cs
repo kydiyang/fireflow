@@ -164,6 +164,81 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         }
 
         /// <summary>
+        /// 获得操作员发起的工作流实例总数量
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="creatorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <returns></returns>
+        public Int32 GetProcessInstanceCountByCreatorId(String creatorId, String publishUser)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
+        /// </summary>
+        /// <param name="publishUser">工作流发布者</param>
+        /// <param name="pageSize">每页显示的条数</param>
+        /// <param name="pageNumber">当前页数</param>
+        /// <returns></returns>
+        public List<IProcessInstance> FindProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber)
+        {
+            return FindProcessInstanceListByCreatorId("",publishUser,pageSize,pageNumber);
+        }
+
+        /// <summary>
+        /// 获得操作员发起的工作流实例列表（分页）
+        /// publishUser如果为null，获取全部
+        /// </summary>
+        /// <param name="creatorId">操作员主键</param>
+        /// <param name="publishUser">流程定义发布者</param>
+        /// <param name="pageSize">每页显示的条数</param>
+        /// <param name="pageNumber">当前页数</param>
+        /// <returns></returns>
+        public List<IProcessInstance> FindProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber)
+        {
+            int sum = 0;
+            List<IProcessInstance> _IProcessInstances = new List<IProcessInstance>();
+
+            QueryField queryField = new QueryField();
+            queryField.Add(new QueryFieldInfo("a.creator_id", CSharpType.String, creatorId));
+            queryField.Add(new QueryFieldInfo("b.publish_user", CSharpType.String, publishUser));
+            QueryInfo queryInfo = OracleHelper.GetFormatQuery(queryField);
+
+            OracleConnection conn = new OracleConnection(connectionString);
+            OracleDataReader reader = null;
+            try
+            {
+                reader = OracleHelper.ExecuteReader(conn, pageNumber, pageSize, out sum, 
+                    "T_FF_RT_PROCESSINSTANCE a,t_ff_df_workflowdef b", 
+                    "a.*,b.publish_user", 
+                    "a.process_id=b.process_id and a.version=b.version" + queryInfo.QueryStringAnd, 
+                    "a.created_time desc", 
+                    queryInfo.ListQueryParameters.ToArray());
+                while (reader.Read())
+                {
+                    IProcessInstance _IProcessInstance = OracleDataReaderToInfo.GetProcessInstance(reader);
+                    _IProcessInstances.Add(_IProcessInstance);
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+            }
+            return _IProcessInstances;
+        }
+
+        /// <summary>
         /// 查找并返回同一个业务流程的所有实例
         /// (Engine没有引用到该方法，提供给业务系统使用，20090303)
         /// </summary>
@@ -458,7 +533,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 "DISPLAY_NAME, STATE, SUSPENDED, TASK_TYPE, CREATED_TIME, " +
                 "STARTED_TIME, EXPIRED_TIME, END_TIME, ASSIGNMENT_STRATEGY, PROCESSINSTANCE_ID, " +
                 "PROCESS_ID, VERSION, TARGET_ACTIVITY_ID, FROM_ACTIVITY_ID, STEP_NUMBER, " +
-                "CAN_BE_WITHDRAWN )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21)";
+                "CAN_BE_WITHDRAWN, BIZ_INFO )VALUES(:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21, :22)";
     			OracleParameter[] insertParms = { 
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstance.Id), 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
@@ -480,7 +555,8 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":18", OracleType.VarChar, 100, taskInstance.TargetActivityId), 
     				OracleHelper.NewOracleParameter(":19", OracleType.VarChar, 600, ((TaskInstance) taskInstance).FromActivityId), 
     				OracleHelper.NewOracleParameter(":20", OracleType.Int32, taskInstance.StepNumber), 
-    				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).CanBeWithdrawn))
+    				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).CanBeWithdrawn)),
+    				OracleHelper.NewOracleParameter(":22", OracleType.VarChar, 500, taskInstance.BizInfo)
     			};
     			if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, insert, insertParms) != 1)
     				return false;
@@ -492,7 +568,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 "BIZ_TYPE=:2, TASK_ID=:3, ACTIVITY_ID=:4, NAME=:5, DISPLAY_NAME=:6, " +
                 "STATE=:7, SUSPENDED=:8, TASK_TYPE=:9, CREATED_TIME=:10, STARTED_TIME=:11, " +
                 "EXPIRED_TIME=:12, END_TIME=:13, ASSIGNMENT_STRATEGY=:14, PROCESSINSTANCE_ID=:15, PROCESS_ID=:16, " +
-                "VERSION=:17, TARGET_ACTIVITY_ID=:18, FROM_ACTIVITY_ID=:19, STEP_NUMBER=:20, CAN_BE_WITHDRAWN=:21" +
+                "VERSION=:17, TARGET_ACTIVITY_ID=:18, FROM_ACTIVITY_ID=:19, STEP_NUMBER=:20, CAN_BE_WITHDRAWN=:21, BIZ_INFO=:22" +
                 " WHERE ID=:1";
                 OracleParameter[] updateParms = { 
     				OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 250, taskInstance.GetType().Name), 
@@ -515,6 +591,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
     				OracleHelper.NewOracleParameter(":19", OracleType.VarChar, 600, ((TaskInstance) taskInstance).FromActivityId), 
     				OracleHelper.NewOracleParameter(":20", OracleType.Int32, taskInstance.StepNumber), 
     				OracleHelper.NewOracleParameter(":21", OracleType.Int16, OracleHelper.OraBit(((TaskInstance) taskInstance).CanBeWithdrawn)),
+    				OracleHelper.NewOracleParameter(":22", OracleType.VarChar, 500, taskInstance.BizInfo),
     				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, taskInstance.Id)
     			};
                 if (OracleHelper.ExecuteNonQuery(connectionString, CommandType.Text, update, updateParms) != 1)
@@ -1885,31 +1962,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             return null;
         }
 
-        /// <summary>
-        /// 获得操作员发起的工作流实例总数量
-        /// publishUser如果为null，获取全部
-        /// </summary>
-        /// <param name="creatorId">操作员主键</param>
-        /// <param name="publishUser">流程定义发布者</param>
-        /// <returns></returns>
-        public Int32 GetProcessInstanceCountByCreatorId(String creatorId, String publishUser)
-        {
-            return 0;
-        }
-
-        /// <summary>
-        /// 获得操作员发起的工作流实例列表（分页）
-        /// publishUser如果为null，获取全部
-        /// </summary>
-        /// <param name="creatorId">操作员主键</param>
-        /// <param name="publishUser">流程定义发布者</param>
-        /// <param name="pageSize">每页显示的条数</param>
-        /// <param name="pageNumber">当前页数</param>
-        /// <returns></returns>
-        public List<IProcessInstance> FindProcessInstanceListByCreatorId(String creatorId, String publishUser, int pageSize, int pageNumber)
-        {
-            return null;
-        }
+        
 
         /// <summary>
         /// 获得工作流发布者发起的所有流程定义的工作流实例总数量
@@ -1921,17 +1974,6 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             return 0;
         }
 
-        /// <summary>
-        /// 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
-        /// </summary>
-        /// <param name="publishUser">工作流发布者</param>
-        /// <param name="pageSize">每页显示的条数</param>
-        /// <param name="pageNumber">当前页数</param>
-        /// <returns></returns>
-        public List<IProcessInstance> FindProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber)
-        {
-            return null;
-        }
 
 
     }
