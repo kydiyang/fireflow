@@ -55,6 +55,9 @@ namespace FireWorkflow.Net.Engine
 
         /// <summary>返回任务实例显示名TaskInstance.DisplayName</summary>
         String DisplayName { get; }
+        
+        /// <summary>返回对应的流程实例Id</summary>
+        String ProcessInstanceId { get; }
         //lwz 2010-3-3 add end
 
         /// <summary>获取或设置备注信息</summary>

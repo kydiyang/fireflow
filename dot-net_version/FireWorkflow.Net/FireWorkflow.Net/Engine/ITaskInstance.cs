@@ -58,6 +58,9 @@ namespace FireWorkflow.Net.Engine
         /// <summary>返回任务显示名</summary>
         String DisplayName { get; }
 
+        /// <summary>当前任务实例中的业务信息</summary>
+        String BizInfo { get; set; }
+
         IProcessInstance AliveProcessInstance { get; }
 
         /// <summary>返回对应的流程实例Id</summary>
