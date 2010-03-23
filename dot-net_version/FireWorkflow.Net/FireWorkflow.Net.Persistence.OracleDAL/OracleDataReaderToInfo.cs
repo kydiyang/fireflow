@@ -79,6 +79,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             taskInstance.FromActivityId=Convert.ToString(dr["from_activity_id"]);
             taskInstance.StepNumber=Convert.ToInt32(dr["step_number"]);
             taskInstance.CanBeWithdrawn=Convert.ToInt32(dr["can_be_withdrawn"]) == 1 ? true : false;
+            taskInstance.BizInfo = Convert.ToString(dr["biz_info"]);
 
             return taskInstance;
         }
