@@ -43,7 +43,7 @@ namespace FireWorkflow.Net.Engine.Impl
                     case "DateTime":
                         try { return DateTime.Parse(this.value); }
                         catch { return null; }
-                    default: return value;
+                    default: throw new Exception("Fireflow不支持数据类型" + ValueType); ;
                 }
             }
             set

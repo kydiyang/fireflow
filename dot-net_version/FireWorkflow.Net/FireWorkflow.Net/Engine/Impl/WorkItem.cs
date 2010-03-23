@@ -37,10 +37,14 @@ namespace FireWorkflow.Net.Engine.Impl
         public DateTime CreatedTime { get; set; }
 
         /// <summary>签收时间</summary>
-        public DateTime ClaimedTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime? ClaimedTime { get; set; }
+        /// <summary>结束时间</summary>
+        public DateTime? EndTime { get; set; }
         public String Comments { get; set; }
         public ITaskInstance TaskInstance { get; set; }
+
+        public string Name { get { return TaskInstance.Name; } }//lwz 2010-3-3 add
+        public string DisplayName { get { return TaskInstance.DisplayName; } }//lwz 2010-3-3 add
 
         /// <summary>added by wangmj 20090922 供springjdbc实现类使用</summary>
         public String TaskInstanceId { get; set; }
@@ -82,8 +86,8 @@ namespace FireWorkflow.Net.Engine.Impl
             this.TaskInstance = taskInstance;
         }
 
-        public WorkItem(WorkItemEnum state, DateTime createdTime, DateTime signedTm,
-                DateTime endTime, String comments, TaskInstance taskInstance)
+        public WorkItem(WorkItemEnum state, DateTime createdTime, DateTime? signedTm,
+                DateTime? endTime, String comments, TaskInstance taskInstance)
         {
             this.State = state;
             this.CreatedTime = createdTime;
@@ -319,6 +323,7 @@ namespace FireWorkflow.Net.Engine.Impl
             ITaskInstanceManager taskInstanceManager = this.RuntimeContext.TaskInstanceManager;
             taskInstanceManager.completeWorkItemAndJumpToEx(this, targetActivityId, comments);
         }
+
 
     }
 }
