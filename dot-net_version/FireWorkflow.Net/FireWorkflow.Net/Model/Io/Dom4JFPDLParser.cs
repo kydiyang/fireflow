@@ -51,6 +51,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
@@ -81,7 +82,21 @@ namespace FireWorkflow.Net.Model.Io
                 //document.Load(srin);
                 XmlReaderSettings xrs = new XmlReaderSettings();
                 xrs.ProhibitDtd = false;
-                XElement xele = XElement.Load(System.Xml.XmlReader.Create(srin, xrs));
+                //xrs.ValidationType = ValidationType.DTD;
+                string filedtd = "";
+                HttpContext context = HttpContext.Current;
+                if (context == null)
+                {
+                    filedtd = AppDomain.CurrentDomain.BaseDirectory;
+                }
+                else
+                {
+                    filedtd = context.Server.MapPath("~/");
+                }
+                //if (!string.IsNullOrEmpty(filedtd) && File.Exists(filedtd))
+                //    xrs.Schemas.Add(null, filedtd);
+
+                XElement xele = XElement.Load(System.Xml.XmlReader.Create(srin, xrs, filedtd));
                 WorkflowProcess wp = parse(xele);
                 return wp;
             }

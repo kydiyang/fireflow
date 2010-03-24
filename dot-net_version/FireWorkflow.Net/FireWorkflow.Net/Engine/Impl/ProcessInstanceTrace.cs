@@ -35,20 +35,26 @@ namespace FireWorkflow.Net.Engine.Impl
     [Serializable]
     public class ProcessInstanceTrace
     {
+
         public String Id { get; set; }
 
+        /// <summary>流程实例ID</summary>
+        public String ProcessInstanceId { get; set; }
+
+        /// <summary>步骤</summary>
+        public Int32 StepNumber { get; set; }
+
+        /// <summary>子步骤</summary>
+        public Int32 MinorNumber { get; set; }
+
+        /// <summary>类型</summary>
+        public ProcessInstanceTraceEnum Type { get; set; }
+
+        /// <summary>连接ID</summary>
         public String EdgeId { get; set; }
 
         public String FromNodeId { get; set; }
 
-        public String ProcessInstanceId { get; set; }
-
-        public Int32 StepNumber { get; set; }
-
         public String ToNodeId { get; set; }
-
-        public ProcessInstanceTraceEnum Type { get; set; }
-
-        public Int32 MinorNumber { get; set; }
     }
 }
