@@ -27,21 +27,21 @@ namespace FireWorkflow.Net.Engine.Impl
     {
         public ProcessInstanceVarPk VarPrimaryKey { get; set; }
         public String ValueType { get; set; }
-        private String value;
+        public String StringValue { get; set; }
         public object Value
         {
             get
             {
                 switch (ValueType)
                 {
-                    case "Int32": return Int32.Parse(this.value);
-                    case "Int64": return Int64.Parse(this.value);
-                    case "String": return this.value;
-                    case "Single": return Single.Parse(this.value);
-                    case "Double": return Double.Parse(this.value);
-                    case "Boolean": return Boolean.Parse(this.value);
+                    case "Int32": return Int32.Parse(this.StringValue);
+                    case "Int64": return Int64.Parse(this.StringValue);
+                    case "String": return this.StringValue;
+                    case "Single": return Single.Parse(this.StringValue);
+                    case "Double": return Double.Parse(this.StringValue);
+                    case "Boolean": return Boolean.Parse(this.StringValue);
                     case "DateTime":
-                        try { return DateTime.Parse(this.value); }
+                        try { return DateTime.Parse(this.StringValue); }
                         catch { return null; }
                     default: throw new Exception("Fireflow不支持数据类型" + ValueType); ;
                 }
@@ -49,7 +49,7 @@ namespace FireWorkflow.Net.Engine.Impl
             set
             {
                 if (String.IsNullOrEmpty(ValueType)) this.ValueType = value.GetType().Name;
-                this.value = value.ToString();
+                this.StringValue = value.ToString();
             }
         }
 

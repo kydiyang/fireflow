@@ -48,7 +48,7 @@ namespace FireWorkflow.Net.Engine.Impl
         public String DisplayName { get; set; }
 
         /// <summary>当前任务实例中的业务信息</summary>
-        public String BizInfo { get; set; }
+        public virtual String BizInfo { get; set; }
 
         /// <summary>返回或设置对应的流程实例Id</summary>
         public String ProcessInstanceId { get; set; }
