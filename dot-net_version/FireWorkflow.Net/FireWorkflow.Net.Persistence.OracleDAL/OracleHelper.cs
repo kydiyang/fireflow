@@ -394,7 +394,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 sTemp += " WHERE " + strCondition;
             }
             string stotalRecords = "SELECT COUNT(*) FROM {0}{1}";
-            object obj = ExecuteScalar(conn, CommandType.Text, string.Format(stotalRecords, tblName, sTemp), commandParameters);
+            object obj = ExecuteScalar(conn.ConnectionString, CommandType.Text, string.Format(stotalRecords, tblName, sTemp), commandParameters);
             if (obj != null && obj is decimal)
             {
                 totalRecords = Convert.ToInt32(obj);
@@ -416,6 +416,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             try
             {
                 //Prepare the command to execute
+                conn.Open();
                 OracleCommand cmd = PrepareCommand(conn, CommandType.Text, select, commandParameters);
 
                 //Execute the query, stating that the connection should close when the resulting datareader has been read
