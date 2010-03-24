@@ -188,7 +188,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         }
 
         /// <summary>
-        /// 获得操作员发起的工作流实例列表（分页）
+        /// 获得操作员发起的工作流实例列表(运行中)（分页）
         /// publishUser如果为null，获取全部
         /// </summary>
         /// <param name="creatorId">操作员主键</param>
@@ -212,14 +212,19 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 reader = OracleHelper.ExecuteReader(conn, pageNumber, pageSize, out sum, 
                     "T_FF_RT_PROCESSINSTANCE a,t_ff_df_workflowdef b", 
-                    "a.*,b.publish_user", 
-                    "a.process_id=b.process_id and a.version=b.version" + queryInfo.QueryStringAnd, 
-                    "a.created_time desc", 
-                    queryInfo.ListQueryParameters.ToArray());
-                while (reader.Read())
+                    "a.*,b.publish_user",
+                    String.Format("a.process_id=b.process_id and a.version=b.version and a.state in({0},{1}){2}", 
+                        (int)ProcessInstanceEnum.INITIALIZED, (int)ProcessInstanceEnum.RUNNING, queryInfo.QueryStringAnd), 
+                    "a.created_time desc",
+                    queryInfo.ListQueryParameters == null ? null : queryInfo.ListQueryParameters.ToArray());
+
+                if (reader != null)
                 {
-                    IProcessInstance _IProcessInstance = OracleDataReaderToInfo.GetProcessInstance(reader);
-                    _IProcessInstances.Add(_IProcessInstance);
+                    while (reader.Read())
+                    {
+                        IProcessInstance _IProcessInstance = OracleDataReaderToInfo.GetProcessInstance(reader);
+                        _IProcessInstances.Add(_IProcessInstance);
+                    }
                 }
             }
             catch
@@ -800,7 +805,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             {
                 string select;
                 OracleParameter[] selectParms;
-                if (stepNumber>0)
+                if (stepNumber<0)
                 {
                     select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by created_time";
                     selectParms = new OracleParameter[]{ 
@@ -1048,7 +1053,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                string select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and b.task_id=:1";
+                string select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and b.task_id=:1";
                 OracleDataReader reader = null;
                 try
                 {
@@ -1060,7 +1065,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ITaskInstance iTaskInstance = OracleDataReaderToInfo.GetTaskInstance(reader); //FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
                             ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
@@ -1103,13 +1108,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 {
                     if (String.IsNullOrEmpty(actorId))
                     {
-                        select = "select * from t_ff_rt_workitem where  state in (" + (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING + ")  ";
+                        select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
+                            (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING + ")  ";
                         selectParms = null;
                     }
                     else
                     {
-                        select = "select * from t_ff_rt_workitem where state in (" + (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING +
-                            ") and actor_id=:1  ";
+                        select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" + 
+                            (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING +") and actor_id=:1  ";
                         selectParms = new OracleParameter[]{ 
                             OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, actorId)
             		    };
@@ -1121,7 +1127,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                     {
                         throw new Exception("挡流程（processInstanceId）不为空时，工单操作员（actorId）不能为空！");
                     }
-                    select = "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
+                    select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
                         (int)WorkItemEnum.INITIALIZED + " ," + (int)WorkItemEnum.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
                     selectParms = new OracleParameter[]{ 
                             OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, actorId),
@@ -1138,7 +1144,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ITaskInstance iTaskInstance = OracleDataReaderToInfo.GetTaskInstance(reader); //FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
                             ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
@@ -1170,7 +1176,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 string select = String.Format(
-                    "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
                     (int)WorkItemEnum.INITIALIZED,
                     (int)WorkItemEnum.RUNNING,
                     queryInfo.QueryStringAnd);
@@ -1184,7 +1190,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ITaskInstance iTaskInstance = OracleDataReaderToInfo.GetTaskInstance(reader);//FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
                             ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
@@ -1225,7 +1231,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 String select = String.Format(
-                    "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
                     (int)WorkItemEnum.COMPLETED,
                     (int)WorkItemEnum.CANCELED,
                     queryInfo.QueryStringAnd);
@@ -1238,7 +1244,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ITaskInstance iTaskInstance = OracleDataReaderToInfo.GetTaskInstance(reader); //FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
                             ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
@@ -1270,7 +1276,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 String select = String.Format(
-                    "select a.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
                     (int)WorkItemEnum.COMPLETED,
                     (int)WorkItemEnum.CANCELED,
                     queryInfo.QueryStringAnd);
@@ -1284,7 +1290,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                         while (reader.Read())
                         {
                             IWorkItem info = OracleDataReaderToInfo.GetWorkItem(reader);
-                            ITaskInstance iTaskInstance = FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
+                            ITaskInstance iTaskInstance = OracleDataReaderToInfo.GetTaskInstance(reader); //FindTaskInstanceById(((WorkItem)info).TaskInstanceId);
                             ((WorkItem)info).TaskInstance=iTaskInstance;
                             infos.Add(info);
                         }
