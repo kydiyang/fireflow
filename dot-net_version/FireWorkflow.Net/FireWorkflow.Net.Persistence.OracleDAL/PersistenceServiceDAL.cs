@@ -213,8 +213,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 reader = OracleHelper.ExecuteReader(conn, pageNumber, pageSize, out sum, 
                     "T_FF_RT_PROCESSINSTANCE a,t_ff_df_workflowdef b", 
                     "a.*,b.publish_user",
-                    String.Format("a.process_id=b.process_id and a.version=b.version and a.state in({0},{1}){2}", 
-                        (int)ProcessInstanceEnum.INITIALIZED, (int)ProcessInstanceEnum.RUNNING, queryInfo.QueryStringAnd), 
+                    String.Format("a.process_id=b.process_id and a.version=b.version {0}", queryInfo.QueryStringAnd), 
                     "a.created_time desc",
                     queryInfo.ListQueryParameters == null ? null : queryInfo.ListQueryParameters.ToArray());
 
