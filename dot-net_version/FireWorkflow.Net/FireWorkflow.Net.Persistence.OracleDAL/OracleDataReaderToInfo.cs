@@ -68,8 +68,10 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             taskInstance.TaskType=(TaskTypeEnum)Enum.Parse(typeof(TaskTypeEnum),Convert.ToString(dr["task_type"]));
             if (!(dr["created_time"] is DBNull)) taskInstance.CreatedTime=Convert.ToDateTime(dr["created_time"]);
 
-            if (!(dr["started_time"] is DBNull)) taskInstance.StartedTime=Convert.ToDateTime(dr["started_time"]);
-            if (!(dr["end_time"] is DBNull)) taskInstance.EndTime=Convert.ToDateTime(dr["end_time"]);
+            if (!(dr["started_time"] is DBNull)) taskInstance.StartedTime = Convert.ToDateTime(dr["started_time"]);
+            if (!(dr["end_time"] is DBNull)) taskInstance.EndTime = Convert.ToDateTime(dr["end_time"]);
+            if (!(dr["expired_time"] is DBNull)) taskInstance.ExpiredTime = Convert.ToDateTime(dr["expired_time"]);
+
             taskInstance.AssignmentStrategy=(FormTaskEnum)Enum.Parse(typeof(FormTaskEnum), Convert.ToString((dr["assignment_strategy"])));
             taskInstance.ProcessInstanceId=Convert.ToString(dr["processinstance_id"]);
             taskInstance.ProcessId=Convert.ToString(dr["process_id"]);

@@ -761,14 +761,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 OracleParameter[] selectParms;
                 if (String.IsNullOrEmpty(activityId))
                 {
-                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by created_time";
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by step_number,end_time";
                     selectParms = new OracleParameter[]{ 
         				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId)
         		    };
                 }
                 else
                 {
-                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 and activity_id=:2 order by created_time";
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 and activity_id=:2 order by step_number,end_time";
                     selectParms = new OracleParameter[]{  
         				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId), 
 				        OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 200, activityId)
@@ -807,14 +807,14 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 OracleParameter[] selectParms;
                 if (stepNumber<0)
                 {
-                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by created_time";
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 order by step_number,end_time";
                     selectParms = new OracleParameter[]{ 
         				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId)
         		    };
                 }
                 else
                 {
-                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 and step_number=:2 order by created_time";
+                    select = "select * from t_ff_rt_taskinstance where processinstance_id=:1 and step_number=:2 order by step_number,end_time";
                     selectParms = new OracleParameter[]{  
         				OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId), 
 				        OracleHelper.NewOracleParameter(":2", OracleType.Int32,stepNumber)
@@ -1810,7 +1810,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 try
                 {
                     reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
-                        OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId)
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, processInstanceId)
                         );
                     if (reader != null)
                     {
