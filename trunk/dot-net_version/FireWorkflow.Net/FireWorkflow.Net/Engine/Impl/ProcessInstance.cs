@@ -210,10 +210,10 @@ namespace FireWorkflow.Net.Engine.Impl
 
         public Object getProcessInstanceVariable(String name)
         {
-            IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
             if (_processInstanceVariables == null)
             {
                 //通过数据库查询进行初始化
+                IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
                 List<ProcessInstanceVar> allVars = persistenceService.FindProcessInstanceVariable(this.Id);
                 _processInstanceVariables = new Dictionary<String, Object>();
                 if (allVars != null && allVars.Count != 0)
@@ -254,12 +254,13 @@ namespace FireWorkflow.Net.Engine.Impl
             if (_processInstanceVariables.ContainsKey(name))
             {
                 persistenceService.UpdateProcessInstanceVariable(procInstVar);
+                _processInstanceVariables[name] = value;
             }
             else
             {
                 persistenceService.SaveProcessInstanceVariable(procInstVar);
+                _processInstanceVariables.Add(name, value);
             }
-            _processInstanceVariables.Add(name, value);
         }
 
         public WorkflowProcess WorkflowProcess
