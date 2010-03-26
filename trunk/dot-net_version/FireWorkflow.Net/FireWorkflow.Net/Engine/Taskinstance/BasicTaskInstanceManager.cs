@@ -889,6 +889,10 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             persistenceService.LockTaskInstance(taskInstanceId);
 
             IWorkItem workItem = persistenceService.FindWorkItemById(workItemId);
+            if (workItem is IRuntimeContextAware)
+            {
+                ((IRuntimeContextAware)workItem).RuntimeContext = this.RuntimeContext;
+            }
 
             if (workItem == null) return null;
 
@@ -898,12 +902,13 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess, thisTaskInst.TaskId,
                         "Claim work item failed. The state of the work item is " + workItem.State);
             }
-            if (workItem.TaskInstance.State != TaskInstanceStateEnum.INITIALIZED && workItem.TaskInstance.State != TaskInstanceStateEnum.RUNNING)
-            {
-                TaskInstance thisTaskInst = (TaskInstance)workItem.TaskInstance;
-                throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess, thisTaskInst.TaskId,
-                        "Claim work item failed .The state of the correspond task instance is " + workItem.TaskInstance.State);
-            }
+            //修复提前结束taskInstance，但还有WorkItem任务为完成无法签收操作。 DEL  lwz 2010-03-26
+            //if (workItem.TaskInstance.State != TaskInstanceStateEnum.INITIALIZED && workItem.TaskInstance.State != TaskInstanceStateEnum.RUNNING)
+            //{
+            //    TaskInstance thisTaskInst = (TaskInstance)workItem.TaskInstance;
+            //    throw new EngineException(thisTaskInst.ProcessInstanceId, thisTaskInst.WorkflowProcess, thisTaskInst.TaskId,
+            //            "Claim work item failed .The state of the correspond task instance is " + workItem.TaskInstance.State);
+            //}
 
             if (workItem.TaskInstance.IsSuspended())
             {
