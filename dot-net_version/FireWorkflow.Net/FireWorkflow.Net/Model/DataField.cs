@@ -50,7 +50,7 @@ namespace FireWorkflow.Net.Model
         public DataField(WorkflowProcess workflowProcess, String name, DataTypeEnum dataType)
             : base(workflowProcess, name)
         {
-            this.DataType = DataTypeEnum.STRING;
+            this.DataType = dataType;
         }
         #endregion
     }
