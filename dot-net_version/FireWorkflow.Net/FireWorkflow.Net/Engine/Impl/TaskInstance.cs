@@ -133,7 +133,9 @@ namespace FireWorkflow.Net.Engine.Impl
                     if (this.RuntimeContext != null)
                     {
                         IPersistenceService persistenceService = this.RuntimeContext.PersistenceService;
-                        this.processInsatance = persistenceService.FindAliveProcessInstanceById(this.ProcessInstanceId);
+                        //this.processInsatance = persistenceService.FindAliveProcessInstanceById(this.ProcessInstanceId); //解决流程结束任务未完成无法继续问题。
+                        this.processInsatance = persistenceService.FindProcessInstanceById(this.ProcessInstanceId);//获取存在的流程
+                        
                     }
                 }
                 if (this.processInsatance != null)
