@@ -1057,7 +1057,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
                 try
                 {
                     reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select,
-                        OracleHelper.NewOracleParameter(":3", OracleType.VarChar, 300, taskid)
+                        OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 300, taskid)
                         );
                     if (reader != null)
                     {
@@ -1096,48 +1096,21 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
         /// </summary>
         public List<IWorkItem> FindTodoWorkItems(String actorId, String processInstanceId)
         {
-            //if (String.IsNullOrEmpty(processInstanceId)) return FindTodoWorkItems(actorId);
+            QueryField queryField = new QueryField();
+            queryField.Add(new QueryFieldInfo("actor_id", CSharpType.String, actorId));
+            queryField.Add(new QueryFieldInfo("a.taskinstance_id", CSharpType.String, processInstanceId));
+            QueryInfo queryInfo = OracleHelper.GetFormatQuery(queryField);
 
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                OracleParameter[] selectParms;
-                string select;
-                if (String.IsNullOrEmpty(processInstanceId))
-                {
-                    if (String.IsNullOrEmpty(actorId))
-                    {
-                        select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
-                            (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING + ")  ";
-                        selectParms = null;
-                    }
-                    else
-                    {
-                        select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" + 
-                            (int)WorkItemEnum.INITIALIZED + "," + (int)WorkItemEnum.RUNNING +") and actor_id=:1  ";
-                        selectParms = new OracleParameter[]{ 
-                            OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, actorId)
-            		    };
-                    }
-                }
-                else
-                {
-                    if (String.IsNullOrEmpty(actorId))
-                    {
-                        throw new Exception("挡流程（processInstanceId）不为空时，工单操作员（actorId）不能为空！");
-                    }
-                    select = "select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in (" +
-                        (int)WorkItemEnum.INITIALIZED + " ," + (int)WorkItemEnum.RUNNING + ") and actor_id=:1 and processinstance_id=:2  ";
-                    selectParms = new OracleParameter[]{ 
-                            OracleHelper.NewOracleParameter(":1", OracleType.VarChar, 50, actorId),
-                            OracleHelper.NewOracleParameter(":2", OracleType.VarChar, 50, processInstanceId)
-            		    };
-
-                }
+                string select=string.Format("select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                    (int)WorkItemEnum.INITIALIZED, (int)WorkItemEnum.RUNNING, queryInfo.QueryStringAnd);
+                
                 OracleDataReader reader = null;
                 try
                 {
-                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, selectParms);
+                    reader = OracleHelper.ExecuteReader(connection, CommandType.Text, select, ((List<OracleParameter>)queryInfo.ListQueryParameters).ToArray());
                     if (reader != null)
                     {
                         while (reader.Read())
