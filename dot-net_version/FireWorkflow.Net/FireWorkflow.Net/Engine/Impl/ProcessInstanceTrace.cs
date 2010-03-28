@@ -21,6 +21,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Runtime.Serialization;
+
+
+
 namespace FireWorkflow.Net.Engine.Impl
 {
     public enum ProcessInstanceTraceEnum
@@ -33,28 +37,35 @@ namespace FireWorkflow.Net.Engine.Impl
     }
 
     [Serializable]
+    [DataContract]
     public class ProcessInstanceTrace
     {
-
         public String Id { get; set; }
 
         /// <summary>流程实例ID</summary>
+        //[DataMember]
         public String ProcessInstanceId { get; set; }
 
         /// <summary>步骤</summary>
+        //[DataMember]
         public Int32 StepNumber { get; set; }
 
         /// <summary>子步骤</summary>
+        //[DataMember]
         public Int32 MinorNumber { get; set; }
 
         /// <summary>类型</summary>
+        //[DataMember]
         public ProcessInstanceTraceEnum Type { get; set; }
 
         /// <summary>连接ID</summary>
+        [DataMember]
         public String EdgeId { get; set; }
 
+        [DataMember]
         public String FromNodeId { get; set; }
 
+        [DataMember]
         public String ToNodeId { get; set; }
     }
 }

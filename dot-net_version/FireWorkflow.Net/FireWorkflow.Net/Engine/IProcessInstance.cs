@@ -102,6 +102,8 @@ namespace FireWorkflow.Net.Engine
         /// <summary>return the corresponding workflow process.</summary>
         WorkflowProcess WorkflowProcess { get; }// throws EngineException;
 
+        String WorkflowProcessId { get; }
+
         /// <summary>get the parent process instance's id , null if no parent process instance.</summary>
         String ParentProcessInstanceId { get; }
 
