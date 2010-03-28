@@ -268,9 +268,19 @@ namespace FireWorkflow.Net.Engine.Impl
             get
             {
                 WorkflowDefinition workflowDef = this.RuntimeContext.DefinitionService.GetWorkflowDefinitionByProcessIdAndVersionNumber(this.ProcessId, this.Version);
+                
                 WorkflowProcess workflowProcess = null;
                 workflowProcess = workflowDef.getWorkflowProcess();
                 return workflowProcess;
+            }
+        }
+
+
+        public String WorkflowProcessId
+        {
+            get
+            {
+                return WorkflowProcess.Sn;
             }
         }
 

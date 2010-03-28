@@ -63,6 +63,7 @@ namespace FireWorkflow.Net.Engine.Definition
 
                 }
             }
+            workflowProcess.Sn = this.Id;
             return workflowProcess;
         }
 
