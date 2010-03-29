@@ -29,7 +29,6 @@ namespace FireWorkflow.Net.Engine
                 ctx = new RuntimeContext();
                 ctx.IsEnableTrace = true;
                 //转移条件表达式解析服务
-
                 ctx.ConditionResolver = new FireWorkflow.Net.Engine.Condition.ConditionResolver();
 
                 //实例对象存取服务
