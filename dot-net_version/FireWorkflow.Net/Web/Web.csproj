@@ -8,8 +8,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Web</RootNamespace>
-    <AssemblyName>Web</AssemblyName>
+    <RootNamespace>WebDemo</RootNamespace>
+    <AssemblyName>WebDemo</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -42,9 +42,17 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Web.Extensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -77,6 +85,119 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="DesignerService.svc.cs">
+      <DependentUpon>DesignerService.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Example\GoodsDeliverProcess\Payment.aspx.cs">
+      <DependentUpon>Payment.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\GoodsDeliverProcess\Payment.aspx.designer.cs">
+      <DependentUpon>Payment.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\GoodsDeliverProcess\Persistence\AbstractTradeInfo.cs" />
+    <Compile Include="Example\GoodsDeliverProcess\Persistence\TradeInfo.cs" />
+    <Compile Include="Example\GoodsDeliverProcess\Persistence\TradeInfoDAO.cs" />
+    <Compile Include="Example\GoodsDeliverProcess\PrepareGoods.aspx.cs">
+      <DependentUpon>PrepareGoods.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\GoodsDeliverProcess\PrepareGoods.aspx.designer.cs">
+      <DependentUpon>PrepareGoods.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\GoodsDeliverProcess\WorkflowExtension\GoodsDeliverTaskInstance.cs" />
+    <Compile Include="Example\GoodsDeliverProcess\WorkflowExtension\GoodsDeliverTaskInstanceCreator.cs" />
+    <Compile Include="Example\GoodsDeliverProcess\WorkflowExtension\SMSHandler.cs" />
+    <Compile Include="Example\LoanProcess\ApproveInfo.aspx.cs">
+      <DependentUpon>ApproveInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\LoanProcess\ApproveInfo.aspx.designer.cs">
+      <DependentUpon>ApproveInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\LoanProcess\LendMoneyInfo.aspx.cs">
+      <DependentUpon>LendMoneyInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\LoanProcess\LendMoneyInfo.aspx.designer.cs">
+      <DependentUpon>LendMoneyInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\LoanProcess\Persistence\ApproveInfo.cs" />
+    <Compile Include="Example\LoanProcess\Persistence\ApproveInfoDAO.cs" />
+    <Compile Include="Example\LoanProcess\Persistence\LoanInfo.cs" />
+    <Compile Include="Example\LoanProcess\Persistence\LoanInfoDAO.cs" />
+    <Compile Include="Example\LoanProcess\RejectInfo.aspx.cs">
+      <DependentUpon>RejectInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\LoanProcess\RejectInfo.aspx.designer.cs">
+      <DependentUpon>RejectInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\LoanProcess\RiskEvaluateInfo.aspx.cs">
+      <DependentUpon>RiskEvaluateInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\LoanProcess\RiskEvaluateInfo.aspx.designer.cs">
+      <DependentUpon>RiskEvaluateInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\LoanProcess\SubmitApplicationInfo.aspx.cs">
+      <DependentUpon>SubmitApplicationInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\LoanProcess\SubmitApplicationInfo.aspx.designer.cs">
+      <DependentUpon>SubmitApplicationInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\LoanProcess\WorkflowExtension\ApproveApplicationTaskCompletionEvaluator.cs" />
+    <Compile Include="Example\LoanProcess\WorkflowExtension\ApproveTaskInstanceEventListener.cs" />
+    <Compile Include="Example\LoanProcess\WorkflowExtension\LoanTaskInstance.cs" />
+    <Compile Include="Example\LoanProcess\WorkflowExtension\LoanTaskInstanceCreator.cs" />
+    <Compile Include="Example\WorkflowExtension\AddWorkItemList.aspx.cs">
+      <DependentUpon>AddWorkItemList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\AddWorkItemList.aspx.designer.cs">
+      <DependentUpon>AddWorkItemList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\CurrentUserAssignmentHandler.cs" />
+    <Compile Include="Example\WorkflowExtension\IExampleTaskInstance.cs" />
+    <Compile Include="Example\WorkflowExtension\InstancesDataViewerBean.aspx.cs">
+      <DependentUpon>InstancesDataViewerBean.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\InstancesDataViewerBean.aspx.designer.cs">
+      <DependentUpon>InstancesDataViewerBean.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\MyHaveDoneWorkItem.aspx.cs">
+      <DependentUpon>MyHaveDoneWorkItem.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\MyHaveDoneWorkItem.aspx.designer.cs">
+      <DependentUpon>MyHaveDoneWorkItem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\MyWorkItem.aspx.cs">
+      <DependentUpon>MyWorkItem.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\MyWorkItem.aspx.designer.cs">
+      <DependentUpon>MyWorkItem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Example\WorkflowExtension\ProcessInstanceCreator.cs" />
+    <Compile Include="Example\WorkflowExtension\RoleBasedAssignmentHandler.cs" />
+    <Compile Include="Home.aspx.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Home.aspx.designer.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IDesignerService.cs" />
+    <Compile Include="Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +211,41 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ClientBin\FireWorkflow.Net.Designer.View.xap" />
+    <Content Include="DesignerService.svc" />
+    <Content Include="Example\GoodsDeliverProcess\Payment.aspx" />
+    <Content Include="Example\GoodsDeliverProcess\PrepareGoods.aspx" />
+    <Content Include="Example\LoanProcess\ApproveInfo.aspx" />
+    <Content Include="Example\LoanProcess\LendMoneyInfo.aspx" />
+    <Content Include="Example\LoanProcess\RejectInfo.aspx" />
+    <Content Include="Example\LoanProcess\RiskEvaluateInfo.aspx" />
+    <Content Include="Example\LoanProcess\SubmitApplicationInfo.aspx" />
+    <Content Include="Example\WorkflowExtension\AddWorkItemList.aspx" />
+    <Content Include="Example\WorkflowExtension\InstancesDataViewerBean.aspx" />
+    <Content Include="Example\WorkflowExtension\MyHaveDoneWorkItem.aspx" />
+    <Content Include="Example\WorkflowExtension\MyWorkItem.aspx" />
+    <Content Include="Goods_Deliver_Process.xml" />
+    <Content Include="Home.aspx" />
+    <Content Include="LoanProcess.xml" />
+    <Content Include="Login.aspx" />
+    <Content Include="resources\css\list.css" />
+    <Content Include="resources\css\main.css" />
+    <Content Include="resources\images\grid3-hrow-over.gif" />
+    <Content Include="resources\images\list\group-expand-sprite.gif" />
+    <Content Include="resources\images\list\Process\TheLoanProcess.gif" />
+    <Content Include="resources\images\logo.gif" />
+    <Content Include="resources\images\logo2.gif" />
+    <Content Include="resources\images\row-over.gif" />
+    <Content Include="resources\images\list\sample-over.gif" />
+    <Content Include="resources\images\list\Process\TheGoodsDeliverProcess.gif" />
+    <Content Include="resources\images\TheLoanProcess.gif" />
+    <Content Include="resources\images\toolbar_back24.jpg" />
+    <Content Include="Silverlight.js" />
+    <Content Include="WorkflowProcessView.aspx" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Fireflow_Process_Definition_Language.dtd" />
+    <None Include="schema-export-4-oracle.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

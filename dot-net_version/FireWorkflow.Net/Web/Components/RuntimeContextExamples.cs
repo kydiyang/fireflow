@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using FireWorkflow.Net.Engine;
 
-namespace Web.Components
+namespace WebDemo.Components
 {
     public class RuntimeContextExamples
     {

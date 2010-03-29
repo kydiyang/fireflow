@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebDemo {
+namespace WebDemo.Example.LoanProcess {
     
     
-    public partial class _Default {
+    public partial class RiskEvaluateInfo {
         
         /// <summary>
         /// form1 控件。
@@ -32,138 +32,165 @@ namespace WebDemo {
         protected global::Coolite.Ext.Web.ScriptManager ScriptManager1;
         
         /// <summary>
-        /// ViewPort1 控件。
+        /// HWorkItemId 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.ViewPort ViewPort1;
+        protected global::Coolite.Ext.Web.Hidden HWorkItemId;
         
         /// <summary>
-        /// BorderLayout1 控件。
+        /// Panel1 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.BorderLayout BorderLayout1;
+        protected global::Coolite.Ext.Web.Panel Panel1;
         
         /// <summary>
-        /// ctl141 控件。
+        /// FormLayout1 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.Toolbar ctl141;
+        protected global::Coolite.Ext.Web.FormLayout FormLayout1;
         
         /// <summary>
-        /// btnExit 控件。
+        /// applicantName 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.Button btnExit;
+        protected global::Coolite.Ext.Web.Label applicantName;
         
         /// <summary>
-        /// username 控件。
+        /// applicantId 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.ToolbarTextItem username;
+        protected global::Coolite.Ext.Web.Label applicantId;
         
         /// <summary>
-        /// Pmenu 控件。
+        /// address 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.Panel Pmenu;
+        protected global::Coolite.Ext.Web.Label address;
         
         /// <summary>
-        /// TreePanel1 控件。
+        /// salary 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.TreePanel TreePanel1;
+        protected global::Coolite.Ext.Web.Label salary;
         
         /// <summary>
-        /// Pages 控件。
+        /// loanValue 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.TabPanel Pages;
+        protected global::Coolite.Ext.Web.Label loanValue;
         
         /// <summary>
-        /// Home 控件。
+        /// returnDate 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.Tab Home;
+        protected global::Coolite.Ext.Web.Label returnDate;
         
         /// <summary>
-        /// TabCloseMenu1 控件。
+        /// loanteller 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.TabCloseMenu TabCloseMenu1;
+        protected global::Coolite.Ext.Web.Label loanteller;
         
         /// <summary>
-        /// statusb 控件。
+        /// appInfoInputDate 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.StatusBar statusb;
+        protected global::Coolite.Ext.Web.Label appInfoInputDate;
         
         /// <summary>
-        /// ToolbarFill1 控件。
+        /// salaryIsReal 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.ToolbarFill ToolbarFill1;
+        protected global::Coolite.Ext.Web.ComboBox salaryIsReal;
         
         /// <summary>
-        /// zxsl 控件。
+        /// creditStatus 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.ToolbarTextItem zxsl;
+        protected global::Coolite.Ext.Web.ComboBox creditStatus;
         
         /// <summary>
-        /// ToolbarSeparator1 控件。
+        /// comments 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.ToolbarSeparator ToolbarSeparator1;
+        protected global::Coolite.Ext.Web.TextArea comments;
         
         /// <summary>
-        /// clock 控件。
+        /// riskEvaluator 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::Coolite.Ext.Web.ToolbarTextItem clock;
+        protected global::Coolite.Ext.Web.Label riskEvaluator;
+        
+        /// <summary>
+        /// riskInfoInputDate 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::Coolite.Ext.Web.Label riskInfoInputDate;
+        
+        /// <summary>
+        /// Button1 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::Coolite.Ext.Web.Button Button1;
+        
+        /// <summary>
+        /// Button2 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::Coolite.Ext.Web.Button Button2;
     }
 }

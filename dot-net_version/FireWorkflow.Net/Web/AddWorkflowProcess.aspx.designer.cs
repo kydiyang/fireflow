@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Web {
+namespace WebDemo {
     
     
     public partial class AddWorkflowProcess {
@@ -176,15 +176,6 @@ namespace Web {
         protected global::Coolite.Ext.Web.FormLayout FormLayout1;
         
         /// <summary>
-        /// MultiField1 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.MultiField MultiField1;
-        
-        /// <summary>
         /// BasicField 控件。
         /// </summary>
         /// <remarks>
@@ -192,51 +183,6 @@ namespace Web {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::Coolite.Ext.Web.FileUploadField BasicField;
-        
-        /// <summary>
-        /// SaveButton 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.Button SaveButton;
-        
-        /// <summary>
-        /// processId 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.TextField processId;
-        
-        /// <summary>
-        /// name 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.TextField name;
-        
-        /// <summary>
-        /// displayName 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.TextField displayName;
-        
-        /// <summary>
-        /// description 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.TextField description;
         
         /// <summary>
         /// state 控件。
@@ -248,15 +194,6 @@ namespace Web {
         protected global::Coolite.Ext.Web.ComboBox state;
         
         /// <summary>
-        /// processContent 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::Coolite.Ext.Web.TextArea processContent;
-        
-        /// <summary>
         /// Bppok 控件。
         /// </summary>
         /// <remarks>
@@ -264,5 +201,14 @@ namespace Web {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::Coolite.Ext.Web.Button Bppok;
+        
+        /// <summary>
+        /// WindowView 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::Coolite.Ext.Web.Window WindowView;
     }
 }

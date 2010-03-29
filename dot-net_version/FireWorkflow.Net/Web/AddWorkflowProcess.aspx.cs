@@ -9,9 +9,9 @@ using FireWorkflow.Net.Model;
 using FireWorkflow.Net.Model.Io;
 using FireWorkflow.Net.Engine.Definition;
 using Coolite.Ext.Web;
-using Web.Components;
+using WebDemo.Components;
 
-namespace Web
+namespace WebDemo
 {
     public partial class AddWorkflowProcess : System.Web.UI.Page
     {
@@ -31,71 +31,22 @@ namespace Web
 
         public void ok_Click(object sender, AjaxEventArgs e)
         {
-
             WorkflowDefinition wd = new WorkflowDefinition();
-
-            wd.ProcessId = this.processId.Text;
-            wd.Name = this.name.Text;
-            wd.DisplayName = this.displayName.Text;
-            wd.Description = this.description.Text;
-            wd.State = Boolean.Parse(this.state.SelectedItem.Value);
-            wd.ProcessContent = this.processContent.Text;
-            wd.getWorkflowProcess();
-            wd.UploadTime = DateTime.Now;
-            wd.UploadUser = "admin";
-            wd.PublishTime = wd.UploadTime;
-            wd.PublishUser = "admin";
-
             //如是修改。
             string id = this.HProcessId.Value.ToString().Trim();
-            if (!string.IsNullOrEmpty(id)) wd.Id = id;
-
-            if (RuntimeContextExamples.GetRuntimeContext().PersistenceService.SaveOrUpdateWorkflowDefinition(wd))
+            if (!string.IsNullOrEmpty(id))
             {
-                WorkflowEdit.Hide();
-
-                query_Click(null, null);
-            }
-        }
-
-
-        protected void update_Click(object sender, AjaxEventArgs e)
-        {
-            RowSelectionModel sm = this.mpgList.SelectionModel.Primary as RowSelectionModel;
-            if (sm != null && sm.SelectedRows.Count == 1)
-            {
-                WorkflowDefinition wd=RuntimeContextExamples.GetRuntimeContext().PersistenceService.FindWorkflowDefinitionById(sm.SelectedRows[0].RecordID);
-                if (wd != null)
-                {
-                    this.processId.Text = wd.ProcessId;
-                    this.name.Text = wd.Name;
-                    this.displayName.Text = wd.DisplayName;
-                    this.description.Text = wd.Description;
-                    this.state.SetValue(wd.State.ToString());
-                    this.processContent.Text = wd.ProcessContent;
-                    this.HProcessId.SetValue(wd.Id);
-                    WorkflowEdit.SetTitle("修改流程=" + wd.ProcessId);
-                    WorkflowEdit.Show();
-                }
+                wd = RuntimeContextExamples.GetRuntimeContext().PersistenceService.FindWorkflowDefinitionById(id);
             }
             else
             {
-                Ext.Msg.Show(new MessageBox.Config
-                {
-                    Buttons = MessageBox.Button.OK,
-                    Icon = MessageBox.Icon.INFO,
-                    Title = "Success",
-                    Message = "请先选择修改的流程文件."
-                });
+                wd.PublishTime = DateTime.Now;
+                wd.PublishUser = "admin";
             }
+            wd.UploadTime = DateTime.Now;
+            wd.UploadUser = "admin";
+            wd.State = Boolean.Parse(this.state.SelectedItem.Value);
 
-
-
-        }
-
-
-        protected void UploadClick(object sender, AjaxEventArgs e)
-        {
             if (this.BasicField.HasFile)
             {
                 string filename = this.Server.MapPath("~/WorkFlowTemp/" + BasicField.PostedFile.FileName);
@@ -113,22 +64,11 @@ namespace Web
                 }
                 if (workflowProcess != null)
                 {
-                    WorkflowDefinition wd = new WorkflowDefinition();
-                    wd.setWorkflowProcess(workflowProcess);
-                    this.processId.Text = wd.ProcessId;
-                    this.name.Text = wd.Name;
-                    this.displayName.Text = wd.DisplayName;
-                    this.description.Text = wd.Description;
-                    this.state.SetValue(wd.State.ToString());
-                    this.processContent.Text = wd.ProcessContent;
-
-                    Ext.Msg.Show(new MessageBox.Config
-                    {
-                        Buttons = MessageBox.Button.OK,
-                        Icon = MessageBox.Icon.INFO,
-                        Title = "Success",
-                        Message = "上传成功。"
-                    });
+                    if (string.IsNullOrEmpty(id)) wd.ProcessId = workflowProcess.Id;
+                    wd.Name = workflowProcess.Name;
+                    wd.DisplayName = workflowProcess.DisplayName;
+                    wd.Description = workflowProcess.Description;
+                    wd.ProcessContent = File.ReadAllText(filename);// twd.ProcessContent;
                 }
                 else
                 {
@@ -139,8 +79,60 @@ namespace Web
                         Title = "Success",
                         Message = "错误的流程文件。"
                     });
+                    return;
                 }
+            }
 
+            if (RuntimeContextExamples.GetRuntimeContext().PersistenceService.SaveOrUpdateWorkflowDefinition(wd))
+            {
+                WorkflowEdit.Hide();
+
+                Ext.Msg.Show(new MessageBox.Config
+                {
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.INFO,
+                    Title = "Success",
+                    Message = "保存成功。"
+                });
+
+                query_Click(null, null);
+            }
+            else
+            {
+                Ext.Msg.Show(new MessageBox.Config
+                {
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.INFO,
+                    Title = "Success",
+                    Message = "保存出错。"
+                });
+            }
+        }
+
+
+        protected void update_Click(object sender, AjaxEventArgs e)
+        {
+            RowSelectionModel sm = this.mpgList.SelectionModel.Primary as RowSelectionModel;
+            if (sm != null && sm.SelectedRows.Count == 1)
+            {
+                WorkflowDefinition wd=RuntimeContextExamples.GetRuntimeContext().PersistenceService.FindWorkflowDefinitionById(sm.SelectedRows[0].RecordID);
+                if (wd != null)
+                {
+                    this.state.SetValue(wd.State.ToString());
+                    this.HProcessId.SetValue(wd.Id);
+                    WorkflowEdit.SetTitle("修改流程=" + wd.ProcessId);
+                    WorkflowEdit.Show();
+                }
+            }
+            else
+            {
+                Ext.Msg.Show(new MessageBox.Config
+                {
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.INFO,
+                    Title = "Success",
+                    Message = "请先选择修改的流程文件."
+                });
             }
         }
 
