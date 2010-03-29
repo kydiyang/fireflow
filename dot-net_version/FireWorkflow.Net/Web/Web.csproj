@@ -32,14 +32,11 @@
   <ItemGroup>
     <Reference Include="Coolite.Ext.Web, Version=0.8.2.983, Culture=neutral, PublicKeyToken=f58c952e9aa5b80a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLL\Coolite\Coolite.Ext.Web.dll</HintPath>
+      <HintPath>..\DLL\Coolite.Ext.Web.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data.OracleClient" />
@@ -224,9 +221,7 @@
     <Content Include="Example\WorkflowExtension\InstancesDataViewerBean.aspx" />
     <Content Include="Example\WorkflowExtension\MyHaveDoneWorkItem.aspx" />
     <Content Include="Example\WorkflowExtension\MyWorkItem.aspx" />
-    <Content Include="Goods_Deliver_Process.xml" />
     <Content Include="Home.aspx" />
-    <Content Include="LoanProcess.xml" />
     <Content Include="Login.aspx" />
     <Content Include="resources\css\list.css" />
     <Content Include="resources\css\main.css" />
@@ -245,7 +240,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Fireflow_Process_Definition_Language.dtd" />
-    <None Include="schema-export-4-oracle.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
