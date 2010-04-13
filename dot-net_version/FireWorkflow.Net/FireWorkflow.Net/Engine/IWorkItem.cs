@@ -59,6 +59,12 @@ namespace FireWorkflow.Net.Engine
         /// <summary>返回对应的流程实例Id</summary>
         String ProcessInstanceId { get; }
 
+        /// <summary>返回对应的流程的Id</summary>
+        String ProcessId { get; }
+
+        /// <summary>返回流程的版本</summary>
+        Int32 Version { get; }
+
         /// <summary>当前任务实例中的业务信息</summary>
         String BizInfo { get; }
         //lwz 2010-3-3 add end

@@ -1104,7 +1104,7 @@ namespace FireWorkflow.Net.Persistence.OracleDAL
             List<IWorkItem> infos = new List<IWorkItem>();
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
-                string select=string.Format("select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2}",
+                string select = string.Format("select a.*,b.* from t_ff_rt_workitem a,t_ff_rt_taskinstance b where a.taskinstance_id=b.id and a.state in ({0},{1}){2} ORDER BY A.CREATED_TIME DESC",
                     (int)WorkItemEnum.INITIALIZED, (int)WorkItemEnum.RUNNING, queryInfo.QueryStringAnd);
                 
                 OracleDataReader reader = null;
