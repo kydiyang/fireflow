@@ -224,7 +224,10 @@ namespace FireWorkflow.Net.Engine.Impl
                     }
                 }
             }
-            return _processInstanceVariables[name];
+            if (_processInstanceVariables.ContainsKey(name))
+                return _processInstanceVariables[name];
+            else return null;
+
         }
 
         public void setProcessInstanceVariable(String name, Object value)
