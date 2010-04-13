@@ -47,6 +47,11 @@ namespace FireWorkflow.Net.Engine.Impl
         public string DisplayName { get { return TaskInstance.DisplayName; } }//lwz 2010-3-3 add
         public String ProcessInstanceId { get { return TaskInstance.ProcessInstanceId; } }//lwz 2010-3-3 add
         public String BizInfo { get { return TaskInstance.BizInfo; } }//lwz 2010-3-3 add
+        /// <summary>返回对应的流程的Id</summary>
+        public String ProcessId { get { return TaskInstance.ProcessId; } }
+
+        /// <summary>返回流程的版本</summary>
+        public Int32 Version { get { return TaskInstance.Version; } }
 
         /// <summary>added by wangmj 20090922 供springjdbc实现类使用</summary>
         public String TaskInstanceId { get; set; }
