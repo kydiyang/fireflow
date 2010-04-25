@@ -87,6 +87,21 @@ namespace FireWorkflow.Net.Engine
             }
         }
 
+        /// <summary>任务分配处理服务</summary>
+        private IAssignmentBusinessHandler _assignmentBusinessHandler = null;
+        /// <summary>任务分配处理服务</summary>
+        public IAssignmentBusinessHandler AssignmentBusinessHandler
+        {
+            get { return _assignmentBusinessHandler; }
+            set
+            {
+                this._assignmentBusinessHandler = value;
+                this._assignmentBusinessHandler.RuntimeContext = this;
+            }
+        }
+
+        
+
         /// <summary>内核管理器</summary>
         private KernelManager _kernelManager = null;
         /// <summary>内核管理器</summary>

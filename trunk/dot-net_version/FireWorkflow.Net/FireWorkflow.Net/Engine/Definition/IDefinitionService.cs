@@ -30,10 +30,19 @@ namespace FireWorkflow.Net.Engine.Definition
         /// <summary>返回所有流程的最新版本</summary>
         List<WorkflowDefinition> GetAllLatestVersionsOfWorkflowDefinition();
 
-        /// <summary>根据流程Id和版本号查找流程定义</summary>
+        /// <summary>
+        /// 根据流程Id和版本号查找流程定义
+        /// </summary>
+        /// <param name="processId">流程Id</param>
+        /// <param name="version">版本号</param>
+        /// <returns></returns>
         WorkflowDefinition GetWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Int32 version);
 
-        /// <summary>通过流程Id查找其最新版本的流程定义</summary>
+        /// <summary>
+        /// 通过流程Id查找其最新版本的流程定义
+        /// </summary>
+        /// <param name="processId">流程Id</param>
+        /// <returns></returns>
         WorkflowDefinition GetTheLatestVersionOfWorkflowDefinition(String processId);
     }
 }

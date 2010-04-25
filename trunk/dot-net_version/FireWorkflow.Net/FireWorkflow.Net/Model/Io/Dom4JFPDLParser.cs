@@ -106,14 +106,14 @@ namespace FireWorkflow.Net.Model.Io
             }
         }
 
-        public string GetAttributeValue(XElement xele, string name)
+        private string GetAttributeValue(XElement xele, string name)
         {
             XName xname = XName.Get(name);
             XAttribute xAttribute = xele.Attribute(xname);
             if (xAttribute == null) return String.Empty;
             return xAttribute.Value;
         }
-        public string GetElementValue(XElement xele, string name)
+        private string GetElementValue(XElement xele, string name)
         {
             XName xname = XName.Get(name);
             XElement xElement = xele.Element(xname);
@@ -121,13 +121,13 @@ namespace FireWorkflow.Net.Model.Io
             return xElement.Value;
         }
 
-        protected IEnumerable<XElement> GetXElements(XElement xele, String name)
+        private IEnumerable<XElement> GetXElements(XElement xele, String name)
         {
             var partNos = from item in xele.Descendants("{" + FPDL_URI + "}" + name) select item;
             return partNos;
         }
 
-        protected WorkflowProcess parse(XElement xele)
+        private WorkflowProcess parse(XElement xele)
         {
             WorkflowProcess wp = new WorkflowProcess(GetAttributeValue(xele, NAME));
             wp.Sn = System.Guid.NewGuid().ToString();
@@ -165,7 +165,7 @@ namespace FireWorkflow.Net.Model.Io
         /// </summary>
         /// <param name="extendedAttributes"></param>
         /// <param name="element"></param>
-        protected void loadExtendedAttributes(Dictionary<String, String> extendedAttributes, XElement xElement)
+        private void loadExtendedAttributes(Dictionary<String, String> extendedAttributes, XElement xElement)
         {
             if (xElement == null) { return; }
             extendedAttributes.Clear();
@@ -180,7 +180,7 @@ namespace FireWorkflow.Net.Model.Io
         /// </summary>
         /// <param name="listeners"></param>
         /// <param name="element"></param>
-        protected void loadEventListeners(List<EventListener> listeners, XElement xElement)
+        private void loadEventListeners(List<EventListener> listeners, XElement xElement)
         {
             if (xElement == null) { return; }
             listeners.Clear();
@@ -198,7 +198,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Activities
-        protected void loadActivities(WorkflowProcess wp, XElement xElement)
+        private void loadActivities(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return; }
             wp.Activities = new List<Activity>();
@@ -210,7 +210,7 @@ namespace FireWorkflow.Net.Model.Io
                 if (a != null) wp.Activities.Add(a);
             }
         }
-        protected Activity createActivitie(WorkflowProcess wp, XElement xElement)
+        private Activity createActivitie(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return null; }
 
@@ -230,7 +230,7 @@ namespace FireWorkflow.Net.Model.Io
             return activity;
         }
 
-        protected void loadTaskRefs(WorkflowProcess workflowProcess, IWFElement parent, List<TaskRef> taskRefs, XElement xElement)
+        private void loadTaskRefs(WorkflowProcess workflowProcess, IWFElement parent, List<TaskRef> taskRefs, XElement xElement)
         {
             if (xElement == null) { return; }
             taskRefs.Clear();
@@ -252,7 +252,7 @@ namespace FireWorkflow.Net.Model.Io
 
         #region Tasks
 
-        protected void loadTasks(IWFElement parent, List<Task> tasks, XElement xElement)
+        private void loadTasks(IWFElement parent, List<Task> tasks, XElement xElement)
         {
             if (xElement == null) { return; }
             tasks.Clear();
@@ -264,7 +264,7 @@ namespace FireWorkflow.Net.Model.Io
             }
         }
 
-        protected T GetEnum<T>(String senum)
+        private T GetEnum<T>(String senum)
         {
             if (String.IsNullOrEmpty(senum))
             {
@@ -273,7 +273,7 @@ namespace FireWorkflow.Net.Model.Io
             return (T)Enum.Parse(typeof(T), senum, true);
         }
 
-        protected Task createTask(IWFElement parent, XElement xElement)
+        private Task createTask(IWFElement parent, XElement xElement)
         {
             Task task = null;
             TaskTypeEnum type = (TaskTypeEnum)Enum.Parse(typeof(TaskTypeEnum), GetAttributeValue(xElement, TYPE), true);
@@ -334,11 +334,18 @@ namespace FireWorkflow.Net.Model.Io
 
             return task;
         }
-        protected Participant createPerformer(XElement xElement)
+        private Participant createPerformer(XElement xElement)
         {
             if (xElement == null) { return null; }
             Participant part = new Participant(GetAttributeValue(xElement, NAME));
             part.DisplayName = GetAttributeValue(xElement, DISPLAY_NAME);
+
+            //201004 add lwz 参与者通过业务接口实现默认获取用户
+            String sAssignmentType = GetAttributeValue(xElement, ASSIGNMENT_TYPE);
+            AssignmentTypeEnum assignmentType;
+            if (String.IsNullOrEmpty(sAssignmentType)) { assignmentType = AssignmentTypeEnum.Handler; }
+            else assignmentType = (AssignmentTypeEnum)Enum.Parse(typeof(DataTypeEnum), sAssignmentType, true);
+            part.AssignmentType = assignmentType;
 
             part.Description = GetElementValue(xElement, "{" + FPDL_URI + "}" + DESCRIPTION);
             part.AssignmentHandler = GetElementValue(xElement, "{" + FPDL_URI + "}" + ASSIGNMENT_HANDLER);
@@ -346,7 +353,7 @@ namespace FireWorkflow.Net.Model.Io
             return part;
         }
 
-        protected Form createForm(XElement xElement)
+        private Form createForm(XElement xElement)
         {
             if (xElement == null) { return null; }
             Form form = new Form(GetAttributeValue(xElement, NAME));
@@ -358,7 +365,7 @@ namespace FireWorkflow.Net.Model.Io
             return form;
         }
 
-        protected Application createApplication(XElement xElement)
+        private Application createApplication(XElement xElement)
         {
             if (xElement == null) { return null; }
             Application app = new Application(GetAttributeValue(xElement, APPLICATION));
@@ -370,7 +377,7 @@ namespace FireWorkflow.Net.Model.Io
             return app;
         }
 
-        protected SubWorkflowProcess createSubWorkflowProcess(XElement xElement)
+        private SubWorkflowProcess createSubWorkflowProcess(XElement xElement)
         {
             if (xElement == null)
             {
@@ -386,7 +393,7 @@ namespace FireWorkflow.Net.Model.Io
             return subFlow;
         }
 
-        protected Duration createDuration(XElement xElement)
+        private Duration createDuration(XElement xElement)
         {
             if (xElement == null) { return null; }
 
@@ -413,7 +420,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region DataFields
-        protected void loadDataFields(WorkflowProcess wp, XElement xElement)
+        private void loadDataFields(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return; }
             List<DataField> dataFields = wp.DataFields;
@@ -425,7 +432,7 @@ namespace FireWorkflow.Net.Model.Io
             }
         }
 
-        protected DataField createDataField(WorkflowProcess wp, XElement xElement)
+        private DataField createDataField(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return null; }
             String sdataType = GetAttributeValue(xElement, DATA_TYPE);
@@ -448,7 +455,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region StartNode
-        protected void loadStartNode(WorkflowProcess wp, XElement xElement)
+        private void loadStartNode(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return; }
 
@@ -465,7 +472,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Synchronizers
-        protected void loadSynchronizers(WorkflowProcess wp, XElement xElement)
+        private void loadSynchronizers(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return; }
             List<Synchronizer> synchronizers = wp.Synchronizers;
@@ -476,7 +483,7 @@ namespace FireWorkflow.Net.Model.Io
                 synchronizers.Add(createSynchronizer(wp, node));
             }
         }
-        protected Synchronizer createSynchronizer(WorkflowProcess wp, XElement xElement)
+        private Synchronizer createSynchronizer(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return null; }
 
@@ -492,7 +499,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region EndNodes
-        protected void loadEndNodes(WorkflowProcess wp, XElement xElement)
+        private void loadEndNodes(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return; }
             List<EndNode> endNodes = wp.EndNodes;
@@ -503,7 +510,7 @@ namespace FireWorkflow.Net.Model.Io
                 endNodes.Add(createEndNode(wp, node));
             }
         }
-        protected EndNode createEndNode(WorkflowProcess wp, XElement xElement)
+        private EndNode createEndNode(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return null; }
 
@@ -519,7 +526,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Transitions
-        protected void loadTransitions(WorkflowProcess wp, XElement xElement)
+        private void loadTransitions(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return; }
             List<Transition> transitions = wp.Transitions;
@@ -551,7 +558,7 @@ namespace FireWorkflow.Net.Model.Io
                 }
             }
         }
-        protected Transition createTransition(WorkflowProcess wp, XElement xElement)
+        private Transition createTransition(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return null; }
             String fromNodeId = GetAttributeValue(xElement, FROM);
@@ -573,7 +580,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Loops
-        protected void loadLoops(WorkflowProcess wp, XElement xElement)
+        private void loadLoops(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) return;
 
@@ -593,7 +600,7 @@ namespace FireWorkflow.Net.Model.Io
             }
         }
 
-        protected Loop createLoop(WorkflowProcess wp, XElement xElement)
+        private Loop createLoop(WorkflowProcess wp, XElement xElement)
         {
             if (xElement == null) { return null; }
 

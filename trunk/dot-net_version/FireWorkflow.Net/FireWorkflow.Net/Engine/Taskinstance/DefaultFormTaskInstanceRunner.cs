@@ -111,9 +111,35 @@ namespace FireWorkflow.Net.Engine.Taskinstance
                 {
                     IBeanFactory beanFactory = runtimeContext.BeanFactory;
                     //从spring中获取到对应任务的Performer，创建工单
-                    IAssignmentHandler assignmentHandler = (IAssignmentHandler)beanFactory.GetBean(part.AssignmentHandler);
-                    //modified by wangmj 20090904
-                    ((IAssignmentHandler)assignmentHandler).assign((IAssignable)taskInstance, part.Name);
+                    //201004 add lwz 参与者通过业务接口实现默认获取用户
+                    switch (part.AssignmentType)
+                    {
+                        case AssignmentTypeEnum.Current:
+                            runtimeContext.AssignmentBusinessHandler.assignCurrent(
+                                currentSession, processInstance, (IAssignable)taskInstance);
+                            break;
+                        case AssignmentTypeEnum.Role:
+                            runtimeContext.AssignmentBusinessHandler.assignRole(
+                                currentSession, processInstance, (IAssignable)taskInstance, part.PerformerValue);
+                            break;
+                        case AssignmentTypeEnum.Agency:
+                            runtimeContext.AssignmentBusinessHandler.assignAgency(
+                                currentSession, processInstance, (IAssignable)taskInstance, part.PerformerValue);
+                            break;
+                        case AssignmentTypeEnum.Fixed:
+                            runtimeContext.AssignmentBusinessHandler.assignFixed(
+                                currentSession, processInstance, (IAssignable)taskInstance, part.PerformerValue);
+                            break;
+                        case AssignmentTypeEnum.Superiors:
+                            runtimeContext.AssignmentBusinessHandler.assignSuperiors(
+                                currentSession, processInstance, (IAssignable)taskInstance);
+                            break;
+                        default:
+                            IAssignmentHandler assignmentHandler = (IAssignmentHandler)beanFactory.GetBean(part.AssignmentHandler);
+                            //modified by wangmj 20090904
+                            ((IAssignmentHandler)assignmentHandler).assign((IAssignable)taskInstance, part.PerformerValue);
+                            break;
+                    }
                 }
             }
         }

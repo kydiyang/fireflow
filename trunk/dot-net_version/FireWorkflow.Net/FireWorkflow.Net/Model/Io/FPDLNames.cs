@@ -217,6 +217,7 @@ namespace FireWorkflow.Net.Model.Io
         /// <summary>DataType</summary>
         public const String DATA_TYPE = "DataType";
 
+        public const String ASSIGNMENT_TYPE = "AssignmentType";
 
         /// <summary>namespace</summary>
         public const String NAMESPACE = "namespace";
