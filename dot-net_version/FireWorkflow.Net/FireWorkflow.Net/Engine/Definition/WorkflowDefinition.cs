@@ -81,7 +81,7 @@ namespace FireWorkflow.Net.Engine.Definition
             try
             {
                 ser.serialize(workflowProcess, so);
-                this.ProcessContent = Encoding.Default.GetString(so.ToArray());
+                this.ProcessContent = Encoding.UTF8.GetString(so.ToArray());
             }
             catch
             {
