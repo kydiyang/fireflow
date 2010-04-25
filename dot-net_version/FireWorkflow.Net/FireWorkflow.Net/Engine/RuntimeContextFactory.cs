@@ -22,6 +22,10 @@ namespace FireWorkflow.Net.Engine
     {
         private static RuntimeContext ctx;
 
+        /// <summary>
+        /// Gets the runtime context.
+        /// </summary>
+        /// <returns></returns>
         public static RuntimeContext getRuntimeContext()
         {
             if (ctx == null)

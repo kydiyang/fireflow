@@ -10,10 +10,23 @@ namespace FireWorkflow.Net.Base
     /// </summary>
     public class BeanUtils
     {
+        /// <summary>
+        /// Copies the properties.
+        /// </summary>
+        /// <param name="pobSrc">The pob SRC.</param>
+        /// <param name="pobDest">The pob dest.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void CopyProperties(object pobSrc, object pobDest, OptionTyp penOpt)
         {
             SetProperties(GetProperties(pobSrc), pobDest, penOpt);
         }
+        /// <summary>
+        /// Copies the properties with map.
+        /// </summary>
+        /// <param name="pobSrc">The pob SRC.</param>
+        /// <param name="pobDest">The pob dest.</param>
+        /// <param name="pdiMap">The pdi map.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void CopyPropertiesWithMap(object pobSrc, object pobDest, Dictionary<String, string> pdiMap, OptionTyp penOpt)
         {
             List<String> strSrc = new List<String>();
@@ -25,6 +38,14 @@ namespace FireWorkflow.Net.Base
             }
             CopyPropertiesWithMap(pobSrc, pobDest, strSrc.ToArray(), strDest.ToArray(), penOpt);
         }
+        /// <summary>
+        /// Copies the properties with map.
+        /// </summary>
+        /// <param name="pobSrc">The pob SRC.</param>
+        /// <param name="pobDest">The pob dest.</param>
+        /// <param name="pstSrcPropertyNames">The PST SRC property names.</param>
+        /// <param name="pstDestPropertyNames">The PST dest property names.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void CopyPropertiesWithMap(object pobSrc, object pobDest, string[] pstSrcPropertyNames, string[] pstDestPropertyNames, OptionTyp penOpt)
         {
             if (null == pobSrc || null == pobDest)
@@ -36,18 +57,37 @@ namespace FireWorkflow.Net.Base
                 CopyProperty(pobSrc, pobDest, pstSrcPropertyNames[i], pstDestPropertyNames[i], penOpt);
             }
         }
+        /// <summary>
+        /// Genernations the object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pobSrc">The pob SRC.</param>
+        /// <param name="penOpt">The pen opt.</param>
+        /// <returns></returns>
         public static T GenernationObject<T>(object pobSrc, OptionTyp penOpt)
         {
             T lobDest = Activator.CreateInstance<T>();
             CopyProperties(pobSrc, lobDest, penOpt);
             return lobDest;
         }
+        /// <summary>
+        /// Genernations the object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pdiProperties">The pdi properties.</param>
+        /// <param name="penOpt">The pen opt.</param>
+        /// <returns></returns>
         public static T GenernationObject<T>(Dictionary<String, object> pdiProperties, OptionTyp penOpt)
         {
             T lobDest = Activator.CreateInstance<T>();
             SetProperties(pdiProperties, lobDest, penOpt);
             return lobDest;
         }
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <param name="pobObj">The pob obj.</param>
+        /// <returns></returns>
         public static Dictionary<String, object> GetProperties(object pobObj)
         {
             Dictionary<String, object> list = new Dictionary<String, object>();
@@ -64,6 +104,12 @@ namespace FireWorkflow.Net.Base
             }
             return list;
         }
+        /// <summary>
+        /// Sets the properties.
+        /// </summary>
+        /// <param name="pdiProperties">The pdi properties.</param>
+        /// <param name="pobObj">The pob obj.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void SetProperties(Dictionary<String, object> pdiProperties, object pobObj, OptionTyp penOpt)
         {
             foreach (KeyValuePair<String, object> pair in pdiProperties)
@@ -75,14 +121,36 @@ namespace FireWorkflow.Net.Base
                 catch (MapPropertyException) { }
             }
         }
+        /// <summary>
+        /// Copies the property.
+        /// </summary>
+        /// <param name="pobSrc">The pob SRC.</param>
+        /// <param name="pobDest">The pob dest.</param>
+        /// <param name="pstPropertyName">Name of the PST property.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void CopyProperty(object pobSrc, object pobDest, string pstPropertyName, OptionTyp penOpt)
         {
             CopyProperty(pobSrc, pobDest, pstPropertyName, pstPropertyName, penOpt);
         }
+        /// <summary>
+        /// Copies the property.
+        /// </summary>
+        /// <param name="pobSrc">The pob SRC.</param>
+        /// <param name="pobDest">The pob dest.</param>
+        /// <param name="pstSrcPropertyName">Name of the PST SRC property.</param>
+        /// <param name="pstDestPropertyName">Name of the PST dest property.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void CopyProperty(object pobSrc, object pobDest, string pstSrcPropertyName, string pstDestPropertyName, OptionTyp penOpt)
         {
             SetProperty(pobDest, pstDestPropertyName, GetProperty(pobSrc, pstSrcPropertyName, penOpt), penOpt);
         }
+        /// <summary>
+        /// Sets the property.
+        /// </summary>
+        /// <param name="pobObj">The pob obj.</param>
+        /// <param name="pstPropertyName">Name of the PST property.</param>
+        /// <param name="pobValue">The pob value.</param>
+        /// <param name="penOpt">The pen opt.</param>
         public static void SetProperty(object pobObj, string pstPropertyName, object pobValue, OptionTyp penOpt)
         {
             if (null == pobObj || string.IsNullOrEmpty(pstPropertyName))
@@ -144,6 +212,13 @@ namespace FireWorkflow.Net.Base
             }
             objInfo.SetValue(pobObj, descVal, null);
         }
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="pobObj">The pob obj.</param>
+        /// <param name="pstPropertyName">Name of the PST property.</param>
+        /// <param name="penOpt">The pen opt.</param>
+        /// <returns></returns>
         public static object GetProperty(object pobObj, string pstPropertyName, OptionTyp penOpt)
         {
             if (null == pobObj || string.IsNullOrEmpty(pstPropertyName))
@@ -175,22 +250,51 @@ namespace FireWorkflow.Net.Base
             return val;
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
     [Flags]
     public enum OptionTyp
     {
+        /// <summary>
+        /// 
+        /// </summary>
         None = 0,
+        /// <summary>
+        /// 
+        /// </summary>
         IsIgnoreCase = 0x0001,
 
+        /// <summary>
+        /// 
+        /// </summary>
         IsConvert = 0x0002,
 
+        /// <summary>
+        /// 
+        /// </summary>
         IsThrowConvertException = 0x0004
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public class MapPropertyException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapPropertyException"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public MapPropertyException(string message) : base(message) { }
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConvertException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConvertException"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public ConvertException(string message) : base(message) { }
     }
 

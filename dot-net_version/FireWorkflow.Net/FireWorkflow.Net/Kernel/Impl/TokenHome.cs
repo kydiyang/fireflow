@@ -5,11 +5,9 @@ using System.Text;
 
 namespace FireWorkflow.Net.Kernel.Impl
 {
-    /**
- * Home object for domain model class Token.
- * @see org.fireflow.kenel.impl.Token
- * @author Hibernate Tools
- */
+    /// <summary>
+    /// Home object for domain model class Token
+    /// </summary>
     public class TokenHome
     {
 

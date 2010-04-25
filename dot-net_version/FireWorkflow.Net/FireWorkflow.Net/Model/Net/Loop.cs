@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -16,7 +16,7 @@
  * @author 非也,nychen2000@163.com
  * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
  */
-/**
+/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 

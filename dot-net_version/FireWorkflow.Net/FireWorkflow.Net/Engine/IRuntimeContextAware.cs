@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 

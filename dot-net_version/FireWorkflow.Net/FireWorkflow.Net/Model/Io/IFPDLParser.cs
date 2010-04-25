@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * 
  * @author chennieyun
  * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02

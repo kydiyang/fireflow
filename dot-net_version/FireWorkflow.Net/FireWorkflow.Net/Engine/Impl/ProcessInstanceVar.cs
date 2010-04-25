@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,11 +23,29 @@ using System.Text;
 
 namespace FireWorkflow.Net.Engine.Impl
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ProcessInstanceVar
     {
+        /// <summary>
+        /// Gets or sets the var primary key.
+        /// </summary>
+        /// <value>The var primary key.</value>
         public ProcessInstanceVarPk VarPrimaryKey { get; set; }
+        /// <summary>
+        /// 获取或设置变量类型
+        /// </summary>
         public String ValueType { get; set; }
+
+        /// <summary>
+        /// 获取或设置String形式变量值
+        /// </summary>
         public String StringValue { get; set; }
+
+        /// <summary>
+        /// 获取或设置变量值
+        /// </summary>
         public object Value
         {
             get

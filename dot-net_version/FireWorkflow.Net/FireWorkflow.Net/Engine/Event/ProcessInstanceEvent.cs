@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,6 +23,9 @@ using System.Text;
 
 namespace FireWorkflow.Net.Engine.Event
 {
+    /// <summary>
+    /// 事件类型
+    /// </summary>
     public enum ProcessInstanceEventEnum
     {
         /// <summary>在即将启动流程实例的时候触发的事件</summary>

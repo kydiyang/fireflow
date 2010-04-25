@@ -20,7 +20,7 @@ namespace FireWorkflow.Net.Engine.Calendar
         public const String day_format = "day_format";
         //    public const String business_time_format = "business_time_format";
 
-        /// <summary>一天的工作时段，例如8:30-12:00 & 13:30-17:30 表示早上8点半到中午12点和下午1点半到5点半</summary>
+        /// <summary>一天的工作时段，例如8:30-12:00 、 13:30-17:30 表示早上8点半到中午12点和下午1点半到5点半</summary>
         public const String business_time = "business_time";
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace FireWorkflow.Net.Engine.Calendar
             //businessCalendarProperties.setProperty(hours_of_business_day, "7.5"); //每天工作时间
         }
 
-        /**
+        /*
          * 
          * @param fromDate 
          * @param duration 
@@ -205,7 +205,7 @@ namespace FireWorkflow.Net.Engine.Calendar
 
             return theDate;
         }
-        //    /**
+        //    /*
         //     * 获得当天的(剩余)工时，以毫秒为单位
         //     * @param date
         //     * @return
@@ -249,7 +249,7 @@ namespace FireWorkflow.Net.Engine.Calendar
         //        return totalTime;
         //    }
 
-        //    /**
+        //    /*
         //     * 检查时间点是否在给定的区间内
         //     * @param timeStr
         //     * @param timeSpan
@@ -328,7 +328,7 @@ namespace FireWorkflow.Net.Engine.Calendar
         //    //    return businessTime;
         //    //}
 
-        //    ///**
+        //    ///*
         //    // * 获得时间段的工作时间，以毫秒表示
         //    // * @param timeSpan 例如:8:30-12:00
         //    // * @return
@@ -391,7 +391,7 @@ namespace FireWorkflow.Net.Engine.Calendar
         //        return true;
         //    }
 
-        //    /**
+        //    /*
         //     * 返回日历属性
         //     * @return
         //     */
@@ -399,7 +399,7 @@ namespace FireWorkflow.Net.Engine.Calendar
         //        return businessCalendarProperties;
         //    }
 
-        //    /**
+        //    /*
         //     * 设置日历属性。该设置不是一个替换操作，而是一个覆盖操作，代码如下
         //     * this.businessCalendarProperties.putAll(props);
         //     * 即方法参数中提供的属性被合并到缺省定义中。如果参数中提供的属性和缺省属性同名，则缺省属性被覆盖，否则缺省属性被保留。
