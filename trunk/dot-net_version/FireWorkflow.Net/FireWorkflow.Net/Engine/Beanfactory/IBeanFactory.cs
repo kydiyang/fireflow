@@ -38,5 +38,14 @@ namespace FireWorkflow.Net.Engine.Beanfactory
         /// <param name="beanName">bean name具体含义是什么由IBeanFactory的实现类来决定</param>
         /// <returns></returns>
         Object GetBean(String beanName);
+
+        
+        /// <summary>
+        /// 根据bean的名字返回bean的实例
+        /// </summary>
+        /// <param name="beanName">bean name具体含义是什么由IBeanFactory的实现类来决定</param>
+        /// <param name="args">与要调用构造函数的参数数量、顺序和类型匹配的参数数组。如果 args 为空数组或 nullNothingnullptrnull 引用（在 Visual Basic 中为 Nothing），则调用不带任何参数的构造函数（默认构造函数）。</param>
+        /// <returns></returns>
+        Object GetBean(string beanName, params Object[] args);
     }
 }
