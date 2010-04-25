@@ -49,15 +49,15 @@ namespace WebDemo
 
             if (this.BasicField.HasFile)
             {
-                string filename = this.Server.MapPath("~/WorkFlowTemp/" + BasicField.PostedFile.FileName);
-                BasicField.PostedFile.SaveAs(filename);
+                //string filename = this.Server.MapPath("~/WorkFlowTemp/" + BasicField.PostedFile.FileName);
+                //BasicField.PostedFile.SaveAs(filename);
 
                 WorkflowProcess workflowProcess;
-                using (Stream inStream = new FileStream(filename, FileMode.Open))
+                using (Stream inStream = BasicField.PostedFile.InputStream)//new FileStream(filename, FileMode.Open))
                 {
                     if (inStream == null)
                     {
-                        throw new IOException("没有找到名称为" + filename + "的流程定义文件");
+                        throw new IOException("没有上传流程定义文件!");
                     }
                     Dom4JFPDLParser parser = new Dom4JFPDLParser();
                     workflowProcess = parser.parse(inStream);
@@ -68,7 +68,8 @@ namespace WebDemo
                     wd.Name = workflowProcess.Name;
                     wd.DisplayName = workflowProcess.DisplayName;
                     wd.Description = workflowProcess.Description;
-                    wd.ProcessContent = File.ReadAllText(filename);// twd.ProcessContent;
+                    wd.setWorkflowProcess(workflowProcess);
+                    //wd.ProcessContent = File.ReadAllText(filename);// twd.ProcessContent;
                 }
                 else
                 {
