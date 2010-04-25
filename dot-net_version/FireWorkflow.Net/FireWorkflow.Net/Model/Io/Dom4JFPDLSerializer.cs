@@ -68,6 +68,11 @@ namespace FireWorkflow.Net.Model.Io
     {
         XNamespace xN = FPDL_URI;
 
+        /// <summary>
+        /// 将WorkflowProcess对象序列化到一个输出流。
+        /// </summary>
+        /// <param name="workflowProcess">工作流定义</param>
+        /// <param name="swout">输出流</param>
         public override void serialize(WorkflowProcess workflowProcess, Stream swout)
         {
             if (swout == null) return;
@@ -86,7 +91,7 @@ namespace FireWorkflow.Net.Model.Io
             swout.Position = 0;
         }
 
-        public XElement workflowProcessToDom(WorkflowProcess workflowProcess)
+        private XElement workflowProcessToDom(WorkflowProcess workflowProcess)
         {
             XNamespace aw = FPDL_URI;
             XElement root = new XElement(
@@ -146,7 +151,7 @@ namespace FireWorkflow.Net.Model.Io
 
         #region 序列化Dictionary＜string, string＞类型数据
 
-        protected XElement writeEventListeners(List<EventListener> eventListeners)
+        private XElement writeEventListeners(List<EventListener> eventListeners)
         {
             if (eventListeners == null || eventListeners.Count <= 0) { return null; }
 
@@ -164,7 +169,7 @@ namespace FireWorkflow.Net.Model.Io
         /// <summary>序列化Dictionary＜string, string＞类型数据</summary>
         /// <param name="extendedAttributes"></param>
         /// <param name="parent"></param>
-        protected XElement writeExtendedAttributes(Dictionary<string, string> extendedAttributes)
+        private XElement writeExtendedAttributes(Dictionary<string, string> extendedAttributes)
         {
             if (extendedAttributes == null || extendedAttributes.Count <= 0)
             {
@@ -185,7 +190,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region DataField
-        protected XElement writeDataFields(List<DataField> dataFields)
+        private XElement writeDataFields(List<DataField> dataFields)
         {
             if (dataFields == null || dataFields.Count <= 0)
             {
@@ -211,7 +216,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region StartNode
-        protected XElement writeStartNode(StartNode startNode)
+        private XElement writeStartNode(StartNode startNode)
         {
             if (startNode == null) { return null; }
 
@@ -228,7 +233,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Tasks
-        protected XElement writeTasks(List<Task> tasks)
+        private XElement writeTasks(List<Task> tasks)
         {
             XElement tasksElement = new XElement(xN + TASKS);
 
@@ -239,7 +244,7 @@ namespace FireWorkflow.Net.Model.Io
             return tasksElement;
         }
 
-        protected XElement writeTask(Task task)
+        private XElement writeTask(Task task)
         {
             XElement taskElement = new XElement(
                 xN + TASK,
@@ -301,20 +306,21 @@ namespace FireWorkflow.Net.Model.Io
             return taskElement;
         }
 
-        protected XElement writePerformer(Participant participant)
+        private XElement writePerformer(Participant participant)
         {
             if (participant == null) { return null; }
             XElement participantElement = new XElement(
                 xN + PERFORMER,
                 new XAttribute(NAME, participant.Name),
                 new XAttribute(DISPLAY_NAME, participant.DisplayName),
+                new XAttribute(ASSIGNMENT_TYPE, participant.AssignmentType.ToString()), //201004 add lwz 参与者通过业务接口实现默认获取用户
                 new XElement(xN + DESCRIPTION, participant.Description),
                 new XElement(xN + ASSIGNMENT_HANDLER, participant.AssignmentHandler)
                 );
             return participantElement;
         }
 
-        protected XElement writeForm(String formName, Form form)
+        private XElement writeForm(String formName, Form form)
         {
             if (form == null) { return null; }
             XElement editFormElement = new XElement(
@@ -327,7 +333,7 @@ namespace FireWorkflow.Net.Model.Io
             return editFormElement;
         }
 
-        protected XElement writeApplication(Application application)
+        private XElement writeApplication(Application application)
         {
             if (application == null) { return null; }
             XElement applicationElement = new XElement(
@@ -340,7 +346,7 @@ namespace FireWorkflow.Net.Model.Io
             return applicationElement;
         }
 
-        protected XElement writeSubWorkflowProcess(SubWorkflowProcess subWorkflowProcess)
+        private XElement writeSubWorkflowProcess(SubWorkflowProcess subWorkflowProcess)
         {
             if (subWorkflowProcess == null) { return null; }
             XElement subflowElement = new XElement(
@@ -353,7 +359,7 @@ namespace FireWorkflow.Net.Model.Io
             return subflowElement;
         }
 
-        protected XElement writeDuration(Duration duration)
+        private XElement writeDuration(Duration duration)
         {
             if (duration == null) { return null; }
 
@@ -368,7 +374,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Activitie
-        protected XElement writeActivities(List<Activity> activities)
+        private XElement writeActivities(List<Activity> activities)
         {
             if (activities == null || activities.Count <= 0) { return null; }
 
@@ -382,7 +388,7 @@ namespace FireWorkflow.Net.Model.Io
             return activitiesElement;
         }
 
-        protected XElement writeActivity(Activity activity)
+        private XElement writeActivity(Activity activity)
         {
             if (activity == null) { return null; }
 
@@ -401,7 +407,7 @@ namespace FireWorkflow.Net.Model.Io
             return activityElement;
         }
 
-        protected XElement writeTaskRefs(List<TaskRef> taskRefs)
+        private XElement writeTaskRefs(List<TaskRef> taskRefs)
         {
             XElement taskRefsElement = new XElement(xN + TASKREFS);
 
@@ -414,7 +420,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Synchronizer
-        protected XElement writeSynchronizers(List<Synchronizer> synchronizers)
+        private XElement writeSynchronizers(List<Synchronizer> synchronizers)
         {
             if (synchronizers == null || synchronizers.Count <= 0) { return null; }
             XElement synchronizersElement = new XElement(xN + SYNCHRONIZERS);
@@ -426,7 +432,7 @@ namespace FireWorkflow.Net.Model.Io
             return synchronizersElement;
         }
 
-        protected XElement writeSynchronizer(Synchronizer synchronizer)
+        private XElement writeSynchronizer(Synchronizer synchronizer)
         {
             if (synchronizer == null) { return null; }
 
@@ -443,7 +449,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region EndNode
-        protected XElement writeEndNodes(List<EndNode> endNodes)
+        private XElement writeEndNodes(List<EndNode> endNodes)
         {
             if (endNodes == null || endNodes.Count <= 0) { return null; }
             XElement endNodesElement = new XElement(xN + END_NODES);
@@ -455,7 +461,7 @@ namespace FireWorkflow.Net.Model.Io
             return endNodesElement;
         }
 
-        protected XElement writeEndNode(EndNode endNode)
+        private XElement writeEndNode(EndNode endNode)
         {
             if (endNode == null) { return null; }
 
@@ -472,7 +478,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Transitions
-        protected XElement writeTransitions(List<Transition> transitions)
+        private XElement writeTransitions(List<Transition> transitions)
         {
             if (transitions == null || transitions.Count <= 0) { return null; }
 
@@ -485,7 +491,7 @@ namespace FireWorkflow.Net.Model.Io
             return transitionsElement;
         }
 
-        protected XElement writeTransition(Transition transition)
+        private XElement writeTransition(Transition transition)
         {
             if (transition == null) { return null; }
 
@@ -504,7 +510,7 @@ namespace FireWorkflow.Net.Model.Io
         #endregion
 
         #region Loops
-        protected XElement writeLoops(List<Loop> loops)
+        private XElement writeLoops(List<Loop> loops)
         {
             if (loops == null || loops.Count <= 0) { return null; }
             XElement transitionsElement = new XElement(xN + LOOPS);

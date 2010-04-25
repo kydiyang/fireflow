@@ -44,6 +44,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\FireWorkflow.Net.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -134,6 +135,7 @@
     <Compile Include="Engine\Taskinstance\DynamicAssignmentHandler.cs" />
     <Compile Include="Engine\Taskinstance\IApplicationHandler.cs" />
     <Compile Include="Engine\Taskinstance\IAssignable.cs" />
+    <Compile Include="Engine\Taskinstance\IAssignmentBusinessHandler.cs" />
     <Compile Include="Engine\Taskinstance\IAssignmentHandler.cs" />
     <Compile Include="Engine\Taskinstance\ITaskInstanceCompletionEvaluator.cs" />
     <Compile Include="Engine\Taskinstance\ITaskInstanceCreator.cs" />
