@@ -77,7 +77,13 @@ namespace FireWorkflow.Net.Model.Io
                     new XDeclaration("1.0", "utf-8", "yes"),
                     workflowProcessToDom(workflowProcess)
                     );
-            inventoryDoc.Save(XmlWriter.Create(swout));
+            XmlWriter writer = XmlWriter.Create(swout);
+            if (writer != null)
+            {
+                inventoryDoc.Save(writer);
+                writer.Close();
+            }
+            swout.Position = 0;
         }
 
         public XElement workflowProcessToDom(WorkflowProcess workflowProcess)
