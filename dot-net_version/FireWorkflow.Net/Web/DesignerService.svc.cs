@@ -20,6 +20,21 @@ namespace WebDemo
             else return "";
         }
 
+        public String GetWorkflowProcessXmlProcessIdOrVersion(String processID, int version)
+        {
+            if (version <= 0)
+            {
+                WorkflowDefinition wd = RuntimeContextFactory.getRuntimeContext().PersistenceService.FindTheLatestVersionOfWorkflowDefinitionByProcessId(processID);
+                if (wd != null) return wd.ProcessContent;
+            }
+            else
+            {
+                WorkflowDefinition wd = RuntimeContextFactory.getRuntimeContext().PersistenceService.FindWorkflowDefinitionByProcessIdAndVersionNumber(processID, version);
+                if (wd != null) return wd.ProcessContent;
+            }
+            return "";
+        }
+
         public List<ProcessInstanceTrace> GetProcessInstanceTraceXml(String processInstanceId)
         {
             List<ProcessInstanceTrace> pit = RuntimeContextFactory.getRuntimeContext().PersistenceService.FindProcessInstanceTraces(processInstanceId);

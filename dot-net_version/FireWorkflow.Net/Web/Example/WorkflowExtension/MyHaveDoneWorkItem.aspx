@@ -22,6 +22,9 @@
                     <ext:RecordField Name="CreatedTime" Type="Date" />
                     <ext:RecordField Name="ClaimedTime" Type="Date" />
                     <ext:RecordField Name="EndTime" Type="Date" />
+                    <ext:RecordField Name="ProcessInstanceId" />
+                    <ext:RecordField Name="ProcessId" />
+                    <ext:RecordField Name="Version" />
                 </Fields>
             </ext:JsonReader>
         </Reader>
@@ -66,6 +69,11 @@
                                         <ext:Column Width="110px" Sortable="true" DataIndex="EndTime" Header="完成时间">
                                             <Renderer Fn="Ext.util.Format.dateRenderer('y-m-d h:i:s')" />
                                         </ext:Column>
+                                        <ext:CommandColumn Width="55">
+                                            <Commands>
+                                                <ext:GridCommand Icon="Zoom" CommandName="View" Text="查看" />
+                                            </Commands>
+                                        </ext:CommandColumn>
                                     </Columns>
                                 </ColumnModel>
                                 <SelectionModel>
@@ -74,6 +82,12 @@
                                 </SelectionModel>
                                 <SaveMask ShowMask="true" />
                                 <LoadMask ShowMask="true" />
+                                <Listeners>
+                                    <Command Handler="WindowView.autoLoad.url = '../../WorkflowProcessView.aspx?ProcessId=' + record.data.ProcessId +
+                                                            '&Version=' + record.data.Version + '&ProcessInstanceId=' + record.data.ProcessInstanceId;
+                                                        WindowView.reload(true);
+                                                        WindowView.show();" />
+                                </Listeners>
                             </ext:GridPanel>
                         </ext:FitLayout>
                     </Body>
