@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,6 +23,9 @@ using FireWorkflow.Net.Engine;
 
 namespace FireWorkflow.Net.Kernel
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TokenFrom
     {
         /// <summary>前驱activityid的分隔符为</summary>

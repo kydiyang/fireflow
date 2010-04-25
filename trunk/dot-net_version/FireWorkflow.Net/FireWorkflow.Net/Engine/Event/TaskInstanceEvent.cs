@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,8 +23,14 @@ using System.Text;
 
 namespace FireWorkflow.Net.Engine.Event
 {
+    /// <summary>
+    /// 事件类型
+    /// </summary>
     public enum TaskInstanceEventEnum
     {
+        /// <summary>
+        /// 
+        /// </summary>
         NULL=-1,
         /// <summary>在任务实例即将启动时触发的事件</summary>
         BEFORE_TASK_INSTANCE_START = 2,

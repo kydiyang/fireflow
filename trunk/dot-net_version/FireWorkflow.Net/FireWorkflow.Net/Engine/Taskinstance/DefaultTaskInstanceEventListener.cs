@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,8 +23,15 @@ using FireWorkflow.Net.Engine.Event;
 
 namespace FireWorkflow.Net.Engine.Taskinstance
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DefaultTaskInstanceEventListener : ITaskInstanceEventListener
     {
+        /// <summary>
+        /// 响应任务实例的事件。通过e.getEventType区分事件的类型。
+        /// </summary>
+        /// <param name="e">任务实例的事件。</param>
         public void onTaskInstanceEventFired(TaskInstanceEvent e)// throws EngineException 
         {
             IWorkflowSession session = e.WorkflowSession;

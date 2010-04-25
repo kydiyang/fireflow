@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2010 无忧
  * All rights reserved. 
  * 

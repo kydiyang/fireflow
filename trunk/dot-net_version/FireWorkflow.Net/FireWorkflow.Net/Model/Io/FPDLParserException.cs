@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * 
  * @author chennieyun
  * @Revision to .NET 无忧 lwz0721@gmail.com 2010-02
@@ -11,42 +11,43 @@ using System.Text;
 
 namespace FireWorkflow.Net.Model.Io
 {
+    /// <summary>
+    ///  FPDLParser错误
+    /// </summary>
     public class FPDLParserException : Exception
     {
-        /** Construct a new FPDLParserException. */
-
+        /// <summary>
+        /// Construct a new FPDLParserException.
+        /// </summary>
         public FPDLParserException()
             :base()
         {
         }
 
-        /** Construct a new FPDLParserException with the specified message.
-
-            @param message The error message
-        */
-
+        /// <summary>
+        /// Construct a new FPDLParserException with the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public FPDLParserException(String message)
             :base(message)
         {
         }
 
-        /** Construct a new FPDLParserException with the specified nested error.
-
-            @param t The nested error
-        */
-
+        /// <summary>
+        /// Construct a new FPDLParserException with the specified nested error. <see cref="FPDLParserException"/> class.
+        /// </summary>
+        /// <param name="t">The nested error.</param>
         public FPDLParserException(Exception t)
             :base(t.Message,t)
         {
         }
 
-        /** Construct a new FPDLParserException with the specified error message
-            and nested exception.
-
-            @param message The error message
-            @param t The nested error
-        */
-
+        /// <summary>
+        /// Construct a new FPDLParserException with the specified error message
+        /// and nested exception.
+        /// </summary>
+        /// <param name="message">The error message.</param>
+        /// <param name="t">The nested error</param>
         public FPDLParserException(String message, Exception t)
             : base(message, t)
         {

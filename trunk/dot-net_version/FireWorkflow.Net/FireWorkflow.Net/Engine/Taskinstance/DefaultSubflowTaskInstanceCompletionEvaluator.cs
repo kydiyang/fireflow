@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,9 +23,20 @@ using System.Text;
 
 namespace FireWorkflow.Net.Engine.Taskinstance
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DefaultSubflowTaskInstanceCompletionEvaluator : ITaskInstanceCompletionEvaluator
     {
 
+        /// <summary>
+        /// 判断任务实例是否可以终止
+        /// </summary>
+        /// <param name="currentSession"></param>
+        /// <param name="runtimeContext"></param>
+        /// <param name="processInstance"></param>
+        /// <param name="taskInstance"></param>
+        /// <returns>true表示可以终止，false不能终止</returns>
         public Boolean taskInstanceCanBeCompleted(IWorkflowSession currentSession, RuntimeContext runtimeContext,
                 IProcessInstance processInstance, ITaskInstance taskInstance)//throws EngineException ,KernelException
         {

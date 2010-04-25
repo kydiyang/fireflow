@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Copyright 2003-2008 非也
  * All rights reserved. 
  * 
@@ -23,6 +23,9 @@ using FireWorkflow.Net.Engine.Taskinstance;
 
 namespace FireWorkflow.Net.Engine
 {
+    /// <summary>
+    /// 工作项的状态
+    /// </summary>
     public enum WorkItemEnum
     {
         /// <summary>初始化状态</summary>
