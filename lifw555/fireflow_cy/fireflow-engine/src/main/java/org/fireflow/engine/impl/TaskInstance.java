@@ -70,7 +70,8 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     private Integer stepNumber = null;
 
     private Boolean canBeWithdrawn = true;
-
+    private String schoolID = null;
+    
     protected transient RuntimeContext rtCtx = null;
     protected transient IWorkflowSession workflowSession = null;
     private transient IProcessInstance processInsatance = null;
@@ -385,7 +386,17 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
         this.fromActivityId = fromActivityId;
     }
 
-    /* (non-Javadoc)
+    public String getSchoolID()
+	{
+		return schoolID;
+	}
+
+	public void setSchoolID(String schoolID)
+	{
+		this.schoolID = schoolID;
+	}
+
+	/* (non-Javadoc)
      * @see org.fireflow.engine.ITaskInstance#suspend()
      */
     public void suspend() throws EngineException {

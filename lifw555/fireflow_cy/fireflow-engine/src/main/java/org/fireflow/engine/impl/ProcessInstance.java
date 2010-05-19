@@ -63,7 +63,8 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     private Date expiredTime = null;
     private String parentProcessInstanceId = null;
     private String parentTaskInstanceId = null;
-
+    private String schoolID = null;
+    
     //null表示尚未初始化
     private Map<String, Object> processInstanceVariables = null;//new HashMap<String, Object>();
     
@@ -492,7 +493,15 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         this.suspended = isSuspended;
     }
 
-    public void suspend() throws EngineException {
+    public String getSchoolID() {
+		return schoolID;
+	}
+
+	public void setSchoolID(String schoolID) {
+		this.schoolID = schoolID;
+	}
+
+	public void suspend() throws EngineException {
         if (this.state == IProcessInstance.COMPLETED || this.state == IProcessInstance.CANCELED) {
             throw new EngineException(this, this.getWorkflowProcess(), "The process instance can not be suspended,the state of this process instance is " + this.state);
         }

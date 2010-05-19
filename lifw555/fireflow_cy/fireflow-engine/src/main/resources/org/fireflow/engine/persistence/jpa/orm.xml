@@ -155,6 +155,9 @@
 			<basic name="canBeWithdrawn">
 				<column name="CAN_BE_WITHDRAWN" nullable="false" />
 			</basic>
+			<basic name="schoolID">
+				<column name="SchoolID" length="36" nullable="false" />
+			</basic>
 		</attributes>
 
 	</entity>
@@ -267,6 +270,9 @@
 			</basic>
 			<basic name="parentTaskInstanceId">
 				<column name="PARENT_TASKINSTANCE_ID" length="50" />
+			</basic>
+			<basic name="schoolID">
+				<column name="SchoolID" length="36" nullable="false" />
 			</basic>
 			<transient name="processInstanceVariables" />
 		</attributes>

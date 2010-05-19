@@ -598,5 +598,91 @@ public interface IPersistenceService extends IRuntimeContextAware{
 	 * @throws RuntimeException
 	 */
 	public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser,int pageSize,int pageNumber) throws RuntimeException;
-	
+	   
+	/**
+     * 查找并返回同一个业务流程的所有实例
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param processId The id of the process definition.
+     * @return A list of processInstance
+     */
+    public List<IProcessInstance> findProcessInstancesByProcessId(String schoolID,String processId);
+    
+
+    /**
+     * 查找并返回同一个指定版本业务流程的所有实例
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param processId The id of the process definition.
+     * @return A list of processInstance
+     */
+    public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String schoolID,String processId,Integer version);
+    /**
+     * 查找操作员在某个流程某个任务上的待办工单。
+     * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+     * 待办工单是指状态等于INITIALIZED或STARTED工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    public List<IWorkItem> findTodoWorkItems(String actorId,String schoolID,String processId,String taskId);
+    /**
+     * 查找操作员在某个流程某个任务上的已办工单。
+     * actorId，processId，taskId都可以为空（null或者""）,为空的条件将被忽略
+     * 已办工单是指状态等于COMPLETED或CANCELED的工单<br/>
+     * (Engine没有引用到该方法，提供给业务系统使用，20090303)
+     * @param actorId
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    public List<IWorkItem> findHaveDoneWorkItems(String actorId,String schoolID,String processId,String taskId);
+    /**
+     * Find workflow definition by workflow process id and version<br>
+     * 根据ProcessId和版本号返回流程定义
+     * @param processId
+     * @param version
+     * @return
+     */
+    public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String schoolID,String processId,int version);
+    
+    /**
+     * Find the latest version of the workflow definition.<br>
+     * 根据processId返回最新版本的有效流程定义
+     * @param processId the workflow process id 
+     * @return
+     */
+    public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String schoolID,String processId);
+            
+    /**
+     * Find all the workflow definitions for the workflow process id.<br>
+     * 根据ProcessId 返回所有版本的流程定义
+     * @param processId
+     * @return
+     */
+    public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String schoolID,String processId);
+
+    /**
+     * Find all of the latest version of workflow definitions.<br>
+     * 返回系统中所有的最新版本的有效流程定义
+     * @return
+     */
+    public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition(String schoolID);
+    
+    /**
+     * Find the latest version number <br>
+     * 返回最新的有效版本号 （只是针对已经发布的版本）
+     * @param processId
+     * @return the version number ,null if there is no workflow definition stored in the DB.
+     */
+    public Integer findTheLatestVersionNumber(String schoolID,String processId);
+    
+    /**
+     * 返回最新版本号(忽略是否发布)
+     * @param processId
+     * @return
+     */
+    public Integer findTheLatestVersionNumberIgnoreState(String schoolID,String processId);
+    
+    
 }
