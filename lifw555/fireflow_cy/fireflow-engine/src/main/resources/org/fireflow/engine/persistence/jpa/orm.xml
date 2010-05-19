@@ -44,6 +44,9 @@
 			<basic name="publishTime">
 				<column name="PUBLISH_TIME" />
 			</basic>
+			<basic name="schoolID">
+				<column name="SchoolID" length="36" nullable="false" />
+			</basic>
 		</attributes>
 	</entity>
 	<entity class="org.fireflow.engine.definition.WorkflowDefinition"
