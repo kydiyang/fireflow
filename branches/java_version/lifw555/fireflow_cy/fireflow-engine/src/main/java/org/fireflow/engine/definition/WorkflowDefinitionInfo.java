@@ -23,6 +23,7 @@ public class WorkflowDefinitionInfo {
     protected String publishUser;//发布人
     protected Date publishTime;//发布时间
     protected String definitionType = FPDL_PROCESS;//定义文件的语言类型，fpdl,xpdl,bepl...
+    protected String schoolID;
     
     public String getDisplayName() {
         return displayName;
@@ -119,5 +120,13 @@ public class WorkflowDefinitionInfo {
 		this.definitionType = definitionType;
 	}
 
-    
+	public String getSchoolID()
+	{
+		return schoolID;
+	}
+
+	public void setSchoolID(String schoolID)
+	{
+		this.schoolID = schoolID;
+	}
 }
