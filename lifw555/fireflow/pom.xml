@@ -382,19 +382,4 @@
 			<url>http://fireflow.googlecode.com/svn/mvnrepo</url>
 		</repository>
 	</repositories>
-	<distributionManagement>
-		<repository>
-			<id>server</id>
-			<name>deployment
-				server(release)</name>
-			<url>http://www.wish80.com/n/content/repositories/thirdparty </url>
-		</repository>
-		<snapshotRepository>
-			<id>server</id>
-			<name>deployment
-				server(snapshot)</name>
-			<url>http://www.wish80.com/n/content/repositories/thirdparty-snapshot
-			</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
