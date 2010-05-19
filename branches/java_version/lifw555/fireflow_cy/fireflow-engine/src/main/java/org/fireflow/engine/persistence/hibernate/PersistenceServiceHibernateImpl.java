@@ -1064,4 +1064,63 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 		return null;
 	}
 
+	public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition(
+			String schoolID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<IWorkItem> findHaveDoneWorkItems(String actorId,
+			String schoolID, String processId, String taskId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<IProcessInstance> findProcessInstancesByProcessId(
+			String schoolID, String processId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(
+			String schoolID, String processId, Integer version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Integer findTheLatestVersionNumber(String schoolID, String processId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Integer findTheLatestVersionNumberIgnoreState(String schoolID,
+			String processId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(
+			String schoolID, String processId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<IWorkItem> findTodoWorkItems(String actorId, String schoolID,
+			String processId, String taskId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(
+			String schoolID, String processId, int version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(
+			String schoolID, String processId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
