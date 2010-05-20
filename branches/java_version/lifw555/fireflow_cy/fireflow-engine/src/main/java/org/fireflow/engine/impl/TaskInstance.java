@@ -259,7 +259,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
     	if (rtCtx==null)System.out.println("====Inside taskInstance rtCtx is null");
     	IDefinitionService definitionService = rtCtx.getDefinitionService();
     	if (definitionService==null)System.out.println("====Inside taskInstance definitionService is null");
-        WorkflowDefinition workflowDef = definitionService.getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+        WorkflowDefinition workflowDef = definitionService.getWorkflowDefinitionByProcessIdAndVersionNumber(this.getSchoolID(),this.getProcessId(), this.getVersion());
         if (workflowDef == null) {
             return null;
         }
@@ -272,7 +272,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
      * @see org.fireflow.engine.ITaskInstance#getActivity()
      */
     public Activity getActivity() throws EngineException {
-        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getSchoolID(),this.getProcessId(), this.getVersion());
         if (workflowDef == null) {
             return null;
         }
@@ -283,7 +283,7 @@ public class TaskInstance implements ITaskInstance, IAssignable, IRuntimeContext
      * @see org.fireflow.engine.ITaskInstance#getWorkflowProcess()
      */
     public WorkflowProcess getWorkflowProcess() throws EngineException {
-        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getSchoolID(),this.getProcessId(), this.getVersion());
         if (workflowDef == null) {
             return null;
         }

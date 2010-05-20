@@ -79,7 +79,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId The id of the process definition.
      * @return A list of processInstance
      */
-    public List<IProcessInstance> findProcessInstancesByProcessId(String processId);
+    //public List<IProcessInstance> findProcessInstancesByProcessId(String processId);
     
 
     /**
@@ -88,7 +88,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId The id of the process definition.
      * @return A list of processInstance
      */
-    public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId,Integer version);
+   // public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId,Integer version);
 
     /**
      * 计算活动的子流程实例的数量
@@ -453,7 +453,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param version
      * @return
      */
-    public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String processId,int version);
+   // public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(String processId,int version);
     
     /**
      * Find the latest version of the workflow definition.<br>
@@ -461,7 +461,7 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId the workflow process id 
      * @return
      */
-    public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId);
+    //public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId);
             
     /**
      * Find all the workflow definitions for the workflow process id.<br>
@@ -469,14 +469,14 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId
      * @return
      */
-    public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String processId);
+    //public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(String processId);
 
     /**
      * Find all of the latest version of workflow definitions.<br>
      * 返回系统中所有的最新版本的有效流程定义
      * @return
      */
-    public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition();
+    //public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition();
     
     /**
      * Find the latest version number <br>
@@ -484,14 +484,14 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * @param processId
      * @return the version number ,null if there is no workflow definition stored in the DB.
      */
-    public Integer findTheLatestVersionNumber(String processId);
+   // public Integer findTheLatestVersionNumber(String processId);
     
     /**
      * 返回最新版本号(忽略是否发布)
      * @param processId
      * @return
      */
-    public Integer findTheLatestVersionNumberIgnoreState(String processId);
+   // public Integer findTheLatestVersionNumberIgnoreState(String processId);
     
     
 
@@ -684,5 +684,24 @@ public interface IPersistenceService extends IRuntimeContextAware{
      */
     public Integer findTheLatestVersionNumberIgnoreState(String schoolID,String processId);
     
-    
+	/**
+	 * 获得工作流发布者发起的所有流程定义的工作流实例总数量
+	 * @param publishUser 工作流发布者
+	 * @return
+	 * @author lifw555@gmail.com
+	 * @throws RuntimeException
+	 */
+	public Integer getProcessInstanceCountByPublishUser(String schoolID,String publishUser) throws RuntimeException;
+	
+	/**
+	 * 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
+	 * @param publishUser 工作流发布者
+	 * @param pageSize 每页显示的条数
+	 * @param pageNumber 当前页数
+	 * @return
+	 * @author lifw555@gmail.com
+	 * @throws RuntimeException
+	 */
+	public List<IProcessInstance> findProcessInstanceListByPublishUser(String schoolID,String publishUser,int pageSize,int pageNumber) throws RuntimeException;
+	
 }

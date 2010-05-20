@@ -76,11 +76,11 @@ public class KernelManager implements IRuntimeContextAware {
      * @return
      * @throws KernelException
      */
-    public INetInstance getNetInstance(String processId, Integer version) throws KernelException {
+    public INetInstance getNetInstance(String schoolID,String processId, Integer version) throws KernelException {
         INetInstance netInstance = this.netInstanceMap.get(processId + "_V_" + version);
         if (netInstance == null) {
         	//数据流定义在runtimeContext初始化的时候，就被加载了，将流程定义的xml读入到内存中
-            WorkflowDefinition def = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(processId, version);
+            WorkflowDefinition def = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(schoolID,processId, version);
             netInstance = this.createNetInstance(def);
         }
         return netInstance;

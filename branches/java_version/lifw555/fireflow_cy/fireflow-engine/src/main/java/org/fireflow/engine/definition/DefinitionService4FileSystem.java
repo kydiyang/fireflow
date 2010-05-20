@@ -64,9 +64,9 @@ public class DefinitionService4FileSystem implements IDefinitionService {
 
                 workflowDef.setWorkflowProcess(workflowProcess);
 
-                String latestVersionKey = workflowProcess.getId() + "_V_" + workflowDef.getVersion();
+                String latestVersionKey = workflowDef.getSchoolID()+"_S_"+workflowProcess.getId() + "_V_" + workflowDef.getVersion();
                 workflowDefinitionMap.put(latestVersionKey, workflowDef);
-                latestVersionKeyMap.put(workflowProcess.getId(), latestVersionKey);
+                latestVersionKeyMap.put(workflowDef.getSchoolID()+"_S_"+workflowProcess.getId(), latestVersionKey);
 
             }
         }
@@ -76,22 +76,22 @@ public class DefinitionService4FileSystem implements IDefinitionService {
     /* (non-Javadoc)
      * @see org.fireflow.engine.definition.IDefinitionService#getAllLatestVersionsOfWorkflowDefinition()
      */
-    public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition() {
+    public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition(String schoolID) {
         return new ArrayList<WorkflowDefinition>(workflowDefinitionMap.values());
     }
 
     /* (non-Javadoc)
      * @see org.fireflow.engine.definition.IDefinitionService#getWorkflowDefinitionByProcessIdAndVersionNumber(java.lang.String, java.lang.Integer)
      */
-    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String processId, Integer version) {
-        return this.workflowDefinitionMap.get(processId + "_V_" + version);
+    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String schoolID,String processId, Integer version) {
+        return this.workflowDefinitionMap.get(schoolID+"_S_"+processId + "_V_" + version);
     }
 
     /* (non-Javadoc)
      * @see org.fireflow.engine.definition.IDefinitionService#getTheLatestVersionOfWorkflowDefinition(java.lang.String)
      */
-    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId) {
-        return this.workflowDefinitionMap.get(this.latestVersionKeyMap.get(processId));
+    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String schoolID,String processId) {
+        return this.workflowDefinitionMap.get(this.latestVersionKeyMap.get(schoolID+processId));
     }
 
     public void setRuntimeContext(RuntimeContext ctx) {

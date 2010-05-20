@@ -58,7 +58,7 @@ public class DefaultSubflowTaskInstanceRunner implements ITaskInstanceRunner {
         Task task = taskInstance.getTask();
         SubWorkflowProcess Subflow = ((SubflowTask) task).getSubWorkflowProcess();
 
-        WorkflowDefinition subWorkflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(Subflow.getWorkflowProcessId());
+        WorkflowDefinition subWorkflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(taskInstance.getSchoolID(), Subflow.getWorkflowProcessId());
         if (subWorkflowDef == null) {
             WorkflowProcess parentWorkflowProcess = taskInstance.getWorkflowProcess();
             throw new EngineException(taskInstance.getProcessInstanceId(), parentWorkflowProcess,
@@ -82,7 +82,7 @@ public class DefaultSubflowTaskInstanceRunner implements ITaskInstanceRunner {
         persistenceService.saveOrUpdateTaskInstance(taskInstance);
 
 
-        IProcessInstance subProcessInstance = currentSession.createProcessInstance(subWorkflowProcess.getName(),taskInstance);
+        IProcessInstance subProcessInstance = currentSession.createProcessInstance(taskInstance.getSchoolID(),subWorkflowProcess.getName(),taskInstance);
 
         //初始化流程变量,从父实例获得初始值
         Map<String ,Object> processVars = ((TaskInstance) taskInstance).getAliveProcessInstance().getProcessInstanceVariables();

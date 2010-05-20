@@ -147,6 +147,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 					.getProcessId());
 			((TaskInstance) taskInstance).setVersion(processInstance
 					.getVersion());
+			((TaskInstance) taskInstance).setSchoolID(processInstance.getSchoolID());
 			((TaskInstance) taskInstance).setActivityId(activity.getId());
 			if (Task.FORM.equals(taskType)) {
 				((TaskInstance) taskInstance)
@@ -528,7 +529,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				taskInstance.getProcessId(), taskInstance.getVersion());
+				taskInstance.getSchoolID(),taskInstance.getProcessId(), taskInstance.getVersion());
 		Object obj = netInstance.getWFElementInstance(taskInstance
 				.getActivityId());
 		if (obj == null) {
@@ -597,7 +598,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				workflowProcess.getId(), taskInstance.getVersion());
+				taskInstance.getSchoolID(),workflowProcess.getId(), taskInstance.getVersion());
 		IActivityInstance targetActivityInstance = (IActivityInstance) netInstance
 				.getWFElementInstance(targetActivityId);
 
@@ -756,7 +757,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				workflowProcess.getId(), thisTaskInst.getVersion());
+				thisTaskInst.getSchoolID(),workflowProcess.getId(), thisTaskInst.getVersion());
 		IActivityInstance targetActivityInstance = null;
 		if (targetActivityId!=null){
 			targetActivityInstance = (IActivityInstance) netInstance
@@ -1130,7 +1131,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				workflowProcess.getId(),
+				workItem.getTaskInstance().getSchoolID(),workflowProcess.getId(),
 				workItem.getTaskInstance().getVersion());
 		if (netInstance == null) {
 			throw new EngineException(thisTaskInst.getProcessInstanceId(),
@@ -1268,7 +1269,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		//所有检查结束，开始执行跳转操作
 		
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				workflowProcess.getId(),
+				workItem.getTaskInstance().getSchoolID(),workflowProcess.getId(),
 				workItem.getTaskInstance().getVersion());
 		if (netInstance == null) {
 			throw new EngineException(thisTaskInst.getProcessInstanceId(),
@@ -1500,7 +1501,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 		// 恢复所有的FromTaskInstance
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				workflowProcess.getId(),
+				workItem.getTaskInstance().getSchoolID(),workflowProcess.getId(),
 				workItem.getTaskInstance().getVersion());
 		if (netInstance == null) {
 			throw new EngineException(thisTaskInstance.getProcessInstanceId(),
@@ -1673,7 +1674,7 @@ public class BasicTaskInstanceManager implements ITaskInstanceManager {
 		}
 
 		INetInstance netInstance = rtCtx.getKernelManager().getNetInstance(
-				thisTaskInstance.getProcessId(),
+				workItem.getTaskInstance().getSchoolID(),thisTaskInstance.getProcessId(),
 				workItem.getTaskInstance().getVersion());
 		if (netInstance == null) {
 			throw new EngineException(thisTaskInstance.getProcessInstanceId(),

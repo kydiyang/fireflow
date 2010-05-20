@@ -70,7 +70,7 @@ public interface IWorkflowSession {
 	 * @throws org.fireflow.engine.EngineException
 	 * @throws org.fireflow.kenel.KenelException
 	 */
-	public IProcessInstance createProcessInstance(String workflowProcessName,
+	public IProcessInstance createProcessInstance(String schoolID,String workflowProcessName,
 			ITaskInstance parentTaskInstance) throws EngineException,
 			KernelException;
 
@@ -84,7 +84,7 @@ public interface IWorkflowSession {
 	 *            创建者Id
 	 * @return 新创建的流程实例
 	 */
-	public IProcessInstance createProcessInstance(String workflowProcessName,
+	public IProcessInstance createProcessInstance(String schoolID,String workflowProcessName,
 			String creatorId) throws EngineException, KernelException;
 
 	
@@ -140,7 +140,7 @@ public interface IWorkflowSession {
      * @param processId The id of the process definition.
      * @return A list of processInstance
      */	
-	public List<IProcessInstance> findProcessInstancesByProcessId(String processId);
+	public List<IProcessInstance> findProcessInstancesByProcessId(String schoolID,String processId);
 	
 	
 	
@@ -150,7 +150,7 @@ public interface IWorkflowSession {
      * @param version 流程版本号
      * @return A list of processInstance
      */	
-    public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String processId,Integer version);
+    public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(String schoolID,String processId,Integer version);
 	
 	/**
 	 * 通过workitem的id查找到该workitem
