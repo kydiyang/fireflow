@@ -31,7 +31,7 @@ public interface IDefinitionService extends IRuntimeContextAware {
      * 返回所有流程的最新版本
      * @return 
      */
-    public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition();
+    public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition(String schoolID);
     
     /**
      * 根据流程Id和版本号查找流程定义
@@ -39,12 +39,12 @@ public interface IDefinitionService extends IRuntimeContextAware {
      * @param version
      * @return
      */
-    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String processId ,Integer version);
+    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String schoolID,String processId ,Integer version);
     
     /**
      * 通过流程Id查找其最新版本的流程定义
      * @param processId
      * @return
      */
-    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId);
+    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String schoolID,String processId);
 }

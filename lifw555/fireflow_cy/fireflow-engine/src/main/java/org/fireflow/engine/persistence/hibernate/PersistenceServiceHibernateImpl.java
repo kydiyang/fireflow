@@ -1123,4 +1123,17 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 		return null;
 	}
 
+	public List<IProcessInstance> findProcessInstanceListByPublishUser(String schoolID, String publishUser,
+			int pageSize, int pageNumber) throws RuntimeException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Integer getProcessInstanceCountByPublishUser(String schoolID, String publishUser) throws RuntimeException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

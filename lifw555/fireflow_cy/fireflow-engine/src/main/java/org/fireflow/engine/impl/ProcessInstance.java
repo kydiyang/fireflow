@@ -259,7 +259,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
                     this.getProcessId(), "The state of the process instance is " + this.getState() + ",can not run it ");
         }
 
-        INetInstance netInstance = (INetInstance) rtCtx.getKernelManager().getNetInstance(this.getProcessId(), this.getVersion());
+        INetInstance netInstance = (INetInstance) rtCtx.getKernelManager().getNetInstance(this.getSchoolID(),this.getProcessId(), this.getVersion());
         if (netInstance == null) {
             throw new EngineException(this.getId(),
                     this.getWorkflowProcess(),
@@ -341,7 +341,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     }
 
     public WorkflowProcess getWorkflowProcess() throws EngineException {
-        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getProcessId(), this.getVersion());
+        WorkflowDefinition workflowDef = rtCtx.getDefinitionService().getWorkflowDefinitionByProcessIdAndVersionNumber(this.getSchoolID(),this.getProcessId(), this.getVersion());
         WorkflowProcess workflowProcess = null;
 
         workflowProcess = workflowDef.getWorkflowProcess();

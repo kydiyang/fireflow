@@ -76,10 +76,10 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.IWorkflowSession#createProcessInstance(java.lang.String, org.fireflow.engine.ITaskInstance)
 	 */
-	public IProcessInstance createProcessInstance(String workflowProcessName,
+	public IProcessInstance createProcessInstance(String schoolID,String workflowProcessName,
 			ITaskInstance parentTaskInstance) throws EngineException,
 			KernelException {
-		return _createProcessInstance(workflowProcessName, parentTaskInstance
+		return _createProcessInstance(schoolID,workflowProcessName, parentTaskInstance
 				.getId(), parentTaskInstance.getProcessInstanceId(),
 				parentTaskInstance.getId());
 	}
@@ -93,13 +93,13 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	 * @throws EngineException
 	 * @throws KernelException
 	 */
-	protected IProcessInstance _createProcessInstance(String workflowProcessId,
+	protected IProcessInstance _createProcessInstance(String schoolID,String workflowProcessId,
 			final String creatorId, final String parentProcessInstanceId,
 			final String parentTaskInstanceId) throws EngineException,
 			KernelException {
 		final String wfprocessId = workflowProcessId;
 		
-		final WorkflowDefinition workflowDef = runtimeContext.getDefinitionService().getTheLatestVersionOfWorkflowDefinition(wfprocessId);
+		final WorkflowDefinition workflowDef = runtimeContext.getPersistenceService().findTheLatestVersionOfWorkflowDefinitionByProcessId(schoolID,wfprocessId);
 		final WorkflowProcess wfProcess = workflowDef.getWorkflowProcess();
 
 		if (wfProcess == null) {
@@ -118,6 +118,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 				processInstance.setCreatorId(creatorId);
 				processInstance.setProcessId(wfProcess.getId());
 				processInstance.setVersion(workflowDef.getVersion());
+				processInstance.setSchoolID(workflowDef.getSchoolID());
 				processInstance.setDisplayName(wfProcess.getDisplayName());
 				processInstance.setName(wfProcess.getName());
 				processInstance.setState(IProcessInstance.INITIALIZED);
@@ -230,9 +231,9 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.IWorkflowSession#createProcessInstance(java.lang.String, java.lang.String)
 	 */
-	public IProcessInstance createProcessInstance(String workflowProcessId,
+	public IProcessInstance createProcessInstance(String schoolID,String workflowProcessId,
 			final String creatorId) throws EngineException, KernelException {
-		return _createProcessInstance(workflowProcessId, creatorId, null, null);
+		return _createProcessInstance(schoolID,workflowProcessId, creatorId, null, null);
 	}
 
 	/* (non-Javadoc)
@@ -573,7 +574,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	 * @see org.fireflow.engine.IWorkflowSession#findProcessInstancesByProcessId(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<IProcessInstance> findProcessInstancesByProcessId(
+	public List<IProcessInstance> findProcessInstancesByProcessId(final String schoolID,
 			final String processId) {
 		try {
 			return (List<IProcessInstance>) this
@@ -585,7 +586,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 									.getPersistenceService();
 
 							return persistenceService
-									.findProcessInstancesByProcessId(processId);
+									.findProcessInstancesByProcessId(schoolID,processId);
 						}
 					});
 		} catch (EngineException ex) {
@@ -602,7 +603,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(
-			final String processId, final Integer version) {
+			final String schoolID,final String processId, final Integer version) {
 		try {
 			return (List<IProcessInstance>) this
 					.execute(new IWorkflowSessionCallback() {
@@ -614,7 +615,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 
 							return persistenceService
 									.findProcessInstancesByProcessIdAndVersion(
-											processId, version);
+											schoolID,processId, version);
 						}
 					});
 		} catch (EngineException ex) {

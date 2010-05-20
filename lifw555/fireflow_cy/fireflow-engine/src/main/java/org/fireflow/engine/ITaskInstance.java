@@ -266,4 +266,5 @@ public interface ITaskInstance {
 	 */
 	public void abortEx(String targetActivityId,DynamicAssignmentHandler dynamicAssignmentHandler) throws EngineException,KernelException;
 
+	 public String getSchoolID();
 }

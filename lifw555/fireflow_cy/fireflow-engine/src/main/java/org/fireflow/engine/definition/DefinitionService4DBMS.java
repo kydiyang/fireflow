@@ -32,23 +32,23 @@ public class DefinitionService4DBMS implements IDefinitionService {
     /* (non-Javadoc)
      * @see org.fireflow.engine.definition.IDefinitionService#getAllLatestVersionsOfWorkflowDefinition()
      */
-    public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition() {
-        return rtCtx.getPersistenceService().findAllTheLatestVersionsOfWorkflowDefinition();
+    public List<WorkflowDefinition> getAllLatestVersionsOfWorkflowDefinition(String schoolID) {
+        return rtCtx.getPersistenceService().findAllTheLatestVersionsOfWorkflowDefinition(schoolID);
         
     }
 
     /* (non-Javadoc)
      * @see org.fireflow.engine.definition.IDefinitionService#getWorkflowDefinitionByProcessIdAndVersionNumber(java.lang.String, java.lang.Integer)
      */
-    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String id, Integer version) {
-        return rtCtx.getPersistenceService().findWorkflowDefinitionByProcessIdAndVersionNumber(id, version);
+    public WorkflowDefinition getWorkflowDefinitionByProcessIdAndVersionNumber(String schoolID,String id, Integer version) {
+        return rtCtx.getPersistenceService().findWorkflowDefinitionByProcessIdAndVersionNumber(schoolID,id, version);
     }
 
     /* (non-Javadoc)
      * @see org.fireflow.engine.definition.IDefinitionService#getTheLatestVersionOfWorkflowDefinition(java.lang.String)
      */
-    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String processId) {
-        return rtCtx.getPersistenceService().findTheLatestVersionOfWorkflowDefinitionByProcessId(processId);
+    public WorkflowDefinition getTheLatestVersionOfWorkflowDefinition(String schoolID,String processId) {
+        return rtCtx.getPersistenceService().findTheLatestVersionOfWorkflowDefinitionByProcessId(schoolID,processId);
     }
 
     public void setRuntimeContext(RuntimeContext ctx) {

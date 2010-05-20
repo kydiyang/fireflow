@@ -379,24 +379,24 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		return query.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<IProcessInstance> findProcessInstancesByProcessId(final String processId)
-	{
-		Query query = em.createQuery("select p from ProcessInstance p where processId=?1 order by createdTime asc");
-		query.setParameter(1, processId);
-		return query.getResultList();
-	}
+//	@SuppressWarnings("unchecked")
+//	public List<IProcessInstance> findProcessInstancesByProcessId(final String processId)
+//	{
+//		Query query = em.createQuery("select p from ProcessInstance p where processId=?1 order by createdTime asc");
+//		query.setParameter(1, processId);
+//		return query.getResultList();
+//	}
 
-	@SuppressWarnings("unchecked")
-	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(final String processId,
-			final Integer version)
-	{
-		Query query = em
-				.createQuery("select p from ProcessInstance p where processId=?1 and version=?2 order by createdTime asc");
-		query.setParameter(1, processId);
-		query.setParameter(2, version);
-		return query.getResultList();
-	}
+//	@SuppressWarnings("unchecked")
+//	public List<IProcessInstance> findProcessInstancesByProcessIdAndVersion(final String processId,
+//			final Integer version)
+//	{
+//		Query query = em
+//				.createQuery("select p from ProcessInstance p where processId=?1 and version=?2 order by createdTime asc");
+//		query.setParameter(1, processId);
+//		query.setParameter(2, version);
+//		return query.getResultList();
+//	}
 
 	public IProcessInstance findProcessInstanceById(String id)
 	{
@@ -427,7 +427,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		if (workflowDef.getId() == null || workflowDef.getId().equals(""))
 		{
 			workflowDef.setId(java.util.UUID.randomUUID().toString().replaceAll("-", ""));
-			Integer latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.getProcessId());
+			Integer latestVersion = findTheLatestVersionNumberIgnoreState(workflowDef.getSchoolID(),workflowDef.getProcessId());
 			if (latestVersion != null)
 			{
 				workflowDef.setVersion(new Integer(latestVersion.intValue() + 1));
@@ -441,84 +441,84 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		this.em.merge(workflowDef);
 	}
 
-	public Integer findTheLatestVersionNumber(final String processId)
-	{
-		// 取得当前最大的发布状态为有效的version值
-		Query q = em
-				.createQuery("select max(m.version) from WorkflowDefinition m where m.processId=:processId and m.state=:state");
-		q.setParameter("processId", processId);
-		q.setParameter("state", Boolean.TRUE);
-		Object obj = q.getSingleResult();
-		if (obj != null)
-		{
-			Integer latestVersion = (Integer) obj;
-			return latestVersion;
-		}
-		else
-		{
-			return null;
-		}
-	}
+//	public Integer findTheLatestVersionNumber(final String processId)
+//	{
+//		// 取得当前最大的发布状态为有效的version值
+//		Query q = em
+//				.createQuery("select max(m.version) from WorkflowDefinition m where m.processId=:processId and m.state=:state");
+//		q.setParameter("processId", processId);
+//		q.setParameter("state", Boolean.TRUE);
+//		Object obj = q.getSingleResult();
+//		if (obj != null)
+//		{
+//			Integer latestVersion = (Integer) obj;
+//			return latestVersion;
+//		}
+//		else
+//		{
+//			return null;
+//		}
+//	}
 
-	public Integer findTheLatestVersionNumberIgnoreState(final String processId)
-	{
-		Query q = em.createQuery("select max(m.version) from WorkflowDefinition m where m.processId=:processId ");
-		q.setParameter("processId", processId);
-		Object obj = q.getSingleResult();
-		if (obj != null)
-		{
-			Integer latestVersion = (Integer) obj;
-			return latestVersion;
-		}
-		else
-		{
-			return null;
-		}
-	}
+//	public Integer findTheLatestVersionNumberIgnoreState(final String processId)
+//	{
+//		Query q = em.createQuery("select max(m.version) from WorkflowDefinition m where m.processId=:processId ");
+//		q.setParameter("processId", processId);
+//		Object obj = q.getSingleResult();
+//		if (obj != null)
+//		{
+//			Integer latestVersion = (Integer) obj;
+//			return latestVersion;
+//		}
+//		else
+//		{
+//			return null;
+//		}
+//	}
 
 	public WorkflowDefinition findWorkflowDefinitionById(String id)
 	{
 		return this.em.find(WorkflowDefinition.class, id);
 	}
 
-	public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(final String processId,
-			final int version)
-	{
-		Query query = em.createQuery("select wfd from WorkflowDefinition wfd where processId=?1 and version=?2");
-		query.setParameter(1, processId);
-		query.setParameter(2, version);
-		return (WorkflowDefinition) query.getSingleResult();
-	}
+//	public WorkflowDefinition findWorkflowDefinitionByProcessIdAndVersionNumber(final String processId,
+//			final int version)
+//	{
+//		Query query = em.createQuery("select wfd from WorkflowDefinition wfd where processId=?1 and version=?2");
+//		query.setParameter(1, processId);
+//		query.setParameter(2, version);
+//		return (WorkflowDefinition) query.getSingleResult();
+//	}
+//
+//	public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId)
+//	{
+//		Integer latestVersion = this.findTheLatestVersionNumber(processId);
+//		return this.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, latestVersion);
+//	}
 
-	public WorkflowDefinition findTheLatestVersionOfWorkflowDefinitionByProcessId(String processId)
-	{
-		Integer latestVersion = this.findTheLatestVersionNumber(processId);
-		return this.findWorkflowDefinitionByProcessIdAndVersionNumber(processId, latestVersion);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(final String processId)
-	{
-		Query query = em.createQuery("select w from WorkflowDefinition w where processId=?1");
-		query.setParameter(1, processId);
-		return query.getResultList();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition()
-	{
-		String hql = "select distinct model.processId from WorkflowDefinition model ";
-		Query query = em.createQuery(hql);
-		List processIdList = query.getResultList();
-		List _result = new Vector<WorkflowDefinition>();
-		for (int i = 0; i < processIdList.size(); i++)
-		{
-			WorkflowDefinition wfDef = findTheLatestVersionOfWorkflowDefinitionByProcessId((String) processIdList
-					.get(i));
-			_result.add(wfDef);
-		}
-		return _result;
-	}
+//	@SuppressWarnings("unchecked")
+//	public List<WorkflowDefinition> findWorkflowDefinitionsByProcessId(final String processId)
+//	{
+//		Query query = em.createQuery("select w from WorkflowDefinition w where processId=?1");
+//		query.setParameter(1, processId);
+//		return query.getResultList();
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition()
+//	{
+//		String hql = "select distinct model.processId from WorkflowDefinition model ";
+//		Query query = em.createQuery(hql);
+//		List processIdList = query.getResultList();
+//		List _result = new Vector<WorkflowDefinition>();
+//		for (int i = 0; i < processIdList.size(); i++)
+//		{
+//			WorkflowDefinition wfDef = findTheLatestVersionOfWorkflowDefinitionByProcessId((String) processIdList
+//					.get(i));
+//			_result.add(wfDef);
+//		}
+//		return _result;
+//	}
 
 	public List<IWorkItem> findTodoWorkItems(final String actorId)
 	{
@@ -1187,13 +1187,14 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	@SuppressWarnings("unchecked")
 	public List<WorkflowDefinition> findAllTheLatestVersionsOfWorkflowDefinition(String schoolID) 
 	{
-		String hql = "select distinct model.processId,model.schoolID from WorkflowDefinition model ";
+		String hql = "select distinct model.processId from WorkflowDefinition model where model.schoolID = ?1";
 		Query query = em.createQuery(hql);
-		List<Object[]> processIdList = query.getResultList();
+		query.setParameter(1, schoolID);
+		List processIdList = query.getResultList();
 		List<WorkflowDefinition> _result = new Vector<WorkflowDefinition>();
 		for (int i = 0; i < processIdList.size(); i++)
 		{
-			WorkflowDefinition wfDef = findTheLatestVersionOfWorkflowDefinitionByProcessId((String) (processIdList.get(i)[0]),(String) (processIdList.get(i)[1]));
+			WorkflowDefinition wfDef = findTheLatestVersionOfWorkflowDefinitionByProcessId(schoolID,(String) processIdList.get(i));
 			_result.add(wfDef);
 		}
 		return _result;
@@ -1354,7 +1355,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		Query query = em.createQuery("select wfd from WorkflowDefinition wfd where processId=?1 and version=?2 and schoolID = ?3");
 		query.setParameter(1, processId);
 		query.setParameter(2, version);
-		query.setParameter(2, schoolID);
+		query.setParameter(3, schoolID);
 		return (WorkflowDefinition) query.getSingleResult();
 	}
 
@@ -1363,6 +1364,98 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	{
 		Query query = em.createQuery("select w from WorkflowDefinition w where processId=?1 and schoolID=?2");
 		query.setParameter(1, processId);
+		query.setParameter(2, schoolID);
+		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<IProcessInstance> findProcessInstanceListByPublishUser(String schoolID,String publishUser, int pageSize, int pageNumber)
+			throws RuntimeException
+	{
+		if (publishUser == null || pageNumber < 1 || pageSize < 1 || schoolID == null)
+		{
+			throw new RuntimeException("publishUser is null or pageNumber < 1 or pageSize < 1 or schoolID is null");
+		}
+		
+		List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(schoolID,publishUser);
+
+		String hsql = "select pi from ProcessInstance pi";
+		if(workflowDefinitions.size() > 0)
+		{
+			hsql +=" where ";
+		}
+		else
+		{
+			return new ArrayList<IProcessInstance>();
+		}
+		WorkflowDefinition workflowDefinition = null;
+		for(int i=0;i<workflowDefinitions.size();i++)
+		{
+			workflowDefinition = workflowDefinitions.get(i);
+			if(i == 0)
+			{
+				hsql += "(pi.processId='"+workflowDefinition.getProcessId()+"' and pi.version="+workflowDefinition.getVersion()+" and pi.schoolID='"+schoolID+"')";
+			}
+			else
+			{
+				hsql += " or (pi.processId='"+workflowDefinition.getProcessId()+"' and pi.version="+workflowDefinition.getVersion()+" and pi.schoolID='"+schoolID+"')";
+			}
+		}
+		hsql += " order by pi.createdTime desc";
+		
+		Query query = em.createQuery(hsql);
+		int index = (pageNumber - 1)*pageSize;
+		return query.setMaxResults(pageSize).setFirstResult(index).getResultList();
+	}
+
+	public Integer getProcessInstanceCountByPublishUser(String schoolID,String publishUser) throws RuntimeException
+	{
+		if (publishUser == null||schoolID == null)
+		{
+			throw new RuntimeException("publishUser is null or schoolID is null");
+		}
+		List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(schoolID,publishUser);
+
+		String hsql = "select count(pi) from ProcessInstance pi";
+		if(workflowDefinitions.size() > 0)
+		{
+			hsql +=" where ";
+		}
+		else
+		{
+			return 0;
+		}
+		WorkflowDefinition workflowDefinition = null;
+		for(int i=0;i<workflowDefinitions.size();i++)
+		{
+			workflowDefinition = workflowDefinitions.get(i);
+			if(i == 0)
+			{
+				hsql += "(pi.processId='"+workflowDefinition.getProcessId()+"' and pi.version="+workflowDefinition.getVersion()+" and pi.schoolID='"+schoolID+"')";
+			}
+			else
+			{
+				hsql += " or (pi.processId='"+workflowDefinition.getProcessId()+"' and pi.version="+workflowDefinition.getVersion()+" and pi.schoolID='"+schoolID+"')";
+			}
+		}
+		
+		Query query = em.createQuery(hsql);
+		Object result = query.getSingleResult();
+		if (result instanceof Integer)
+		{
+			return (Integer) result;
+		}
+		else
+		{
+			return new Integer(((Long) result).intValue());
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<WorkflowDefinition> findWorkflowDefinitionListByPublishUser(String schoolID,String publishUser)
+	{
+		Query query = em.createQuery("select wi from WorkflowDefinition wi where wi.publishUser=?1 and wi.schoolID=?2");
+		query.setParameter(1, publishUser);
 		query.setParameter(2, schoolID);
 		return query.getResultList();
 	}

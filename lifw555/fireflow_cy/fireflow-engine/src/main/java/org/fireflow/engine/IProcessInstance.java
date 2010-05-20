@@ -195,4 +195,6 @@ public interface IProcessInstance {
      * @throws org.fireflow.engine.EngineException
      */
     public void restore() throws EngineException;
+    
+    public String getSchoolID();
 }
