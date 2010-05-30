@@ -43,7 +43,7 @@ public class Activity extends Node {
     /**
      * 输入转移
      */
-    private Transition enteringTransition;//输入弧
+    private Transition enteringTransition;//输入弧 TODO 可以有多个输入弧2010-01-17
     
     /**
      * 输出转移
