@@ -126,6 +126,12 @@ public interface IProcessInstance {
      * @return
      */
     public Date getExpiredTime();
+    
+    /**
+     * 获取流水号
+     * @return
+     */
+    public String getRunningNumber();
 
     /**
      * wangmj 获取流程实例变量的值.<br>

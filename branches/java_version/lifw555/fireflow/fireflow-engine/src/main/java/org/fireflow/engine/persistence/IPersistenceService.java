@@ -512,91 +512,107 @@ public interface IPersistenceService extends IRuntimeContextAware{
      * publishUser如果为null，获取全部
      * @param actorId 操作员主键 
      * @param publishUser 流程定义发布者
+     * @param processId 流程定义ID,如果为null标识全部。
      * @return
      * @author lifw555@gmail.com
+     * @modify sunjh20100707
      * @throws RuntimeException
      */
-    public Integer getTodoWorkItemsCount(String actorId,String publishUser) throws RuntimeException;
+    public Integer getTodoWorkItemsCount(String actorId,String publishUser,String processId) throws RuntimeException;
 
     /**
      * 获得操作员所要操作工单列表（分页）
      * publishUser如果为null，获取全部
      * @param actorId 操作员主键
      * @param publishUser 流程定义发布者
+     * @param processId 流程定义ID,如果为null标识全部。
      * @param pageSize 每页显示的条数
      * @param pageNumber 当前页数
      * @return
      * @author lifw555@gmail.com
+     * @modify sunjh20100707
      * @throws RuntimeException
      */
-	public List<IWorkItem> findTodoWorkItems(String actorId,String publishUser,int pageSize,int pageNumber) throws RuntimeException;
+	public List<IWorkItem> findTodoWorkItems(String actorId,String publishUser,String processId,int pageSize,int pageNumber) throws RuntimeException;
 
 	/**
 	 * 获得操作员完成的工单总数量
 	 * publishUser如果为null，获取全部
 	 * @param actorId 操作员主键 
 	 * @param publishUser 流程定义发布者
+     * @param processId 流程定义ID,如果为null标识全部。
 	 * @return
 	 * @author lifw555@gmail.com
+     * @modify sunjh20100707
 	 * @throws RuntimeException
 	 */
-	public Integer getHaveDoneWorkItemsCount(String actorId,String publishUser) throws RuntimeException;
+	public Integer getHaveDoneWorkItemsCount(String actorId,String publishUser,String processId) throws RuntimeException;
 
 	/**
 	 * 获得操作员完成的工单列表（分页）
 	 * publishUser如果为null，获取全部
 	 * @param actorId 操作员主键
 	 * @param publishUser 流程定义发布者
+     * @param processId 流程定义ID,如果为null标识全部。
 	 * @param pageSize 每页显示的条数
 	 * @param pageNumber 当前页数
 	 * @return
 	 * @author lifw555@gmail.com
+     * @modify sunjh20100707
 	 * @throws RuntimeException
 	 */
-	public List<IWorkItem> findHaveDoneWorkItems(String actorId,String publishUser,int pageSize,int pageNumber) throws RuntimeException;
+	public List<IWorkItem> findHaveDoneWorkItems(String actorId,String publishUser,String processId,int pageSize,int pageNumber) throws RuntimeException;
 	
 	/**
 	 * 获得操作员发起的工作流实例总数量
 	 * publishUser如果为null，获取全部
 	 * @param actorId 操作员主键
 	 * @param publishUser 流程定义发布者
+     * @param processId 流程定义ID,如果为null标识全部。
 	 * @return
 	 * @author lifw555@gmail.com
+     * @modify sunjh20100707
 	 * @throws RuntimeException
 	 */
-	public Integer getProcessInstanceCountByCreatorId(String creatorId,String publishUser) throws RuntimeException;
+	public Integer getProcessInstanceCountByCreatorId(String creatorId,String publishUser,String processId) throws RuntimeException;
 	
 	/**
 	 * 获得操作员发起的工作流实例列表（分页）
 	 * publishUser如果为null，获取全部
 	 * @param creatorId 操作员主键
 	 * @param publishUser 流程定义发布者
+     * @param processId 流程定义ID,如果为null标识全部。
 	 * @param pageSize 每页显示的条数
 	 * @param pageNumber 当前页数
 	 * @return
 	 * @author lifw555@gmail.com
+     * @modify sunjh20100707
 	 * @throws RuntimeException
 	 */
-	public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId,String publishUser,int pageSize,int pageNumber) throws RuntimeException; 
+	public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId,String publishUser,String processId,int pageSize,int pageNumber) throws RuntimeException; 
 
 	/**
 	 * 获得工作流发布者发起的所有流程定义的工作流实例总数量
 	 * @param publishUser 工作流发布者
+     * @param processId 流程定义ID,如果为null标识全部。
 	 * @return
 	 * @author lifw555@gmail.com
+     * @modify sunjh20100707
 	 * @throws RuntimeException
 	 */
-	public Integer getProcessInstanceCountByPublishUser(String publishUser) throws RuntimeException;
+	public Integer getProcessInstanceCountByPublishUser(String publishUser,String processId) throws RuntimeException;
 	
 	/**
 	 * 获得工作流发布者发起的所有流程定义的工作流实例列表（分页）
 	 * @param publishUser 工作流发布者
+     * @param processId 流程定义ID,如果为null标识全部。
 	 * @param pageSize 每页显示的条数
 	 * @param pageNumber 当前页数
 	 * @return
 	 * @author lifw555@gmail.com
+     * @modify sunjh20100707
 	 * @throws RuntimeException
 	 */
-	public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser,int pageSize,int pageNumber) throws RuntimeException;
+	public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser,String processId,int pageSize,int pageNumber) throws RuntimeException;
 	
 }

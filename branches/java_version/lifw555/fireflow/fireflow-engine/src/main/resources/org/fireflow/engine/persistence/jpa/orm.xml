@@ -265,6 +265,9 @@
 			<basic name="parentTaskInstanceId">
 				<column name="PARENT_TASKINSTANCE_ID" length="50" />
 			</basic>
+			<basic name="runningNumber">
+				<column name="RUNNINGNUMBER" length="20" nullable="false" />
+			</basic>
 			<transient name="processInstanceVariables" />
 		</attributes>
 	</entity>

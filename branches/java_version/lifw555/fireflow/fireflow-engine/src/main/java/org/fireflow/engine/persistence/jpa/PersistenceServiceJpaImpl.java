@@ -794,7 +794,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<IWorkItem> findHaveDoneWorkItems(String actorId,String publishUser, int pageSize, int pageNumber) throws RuntimeException
+	public List<IWorkItem> findHaveDoneWorkItems(String actorId,String publishUser,String processId, int pageSize, int pageNumber) throws RuntimeException
 	{
 		if (actorId == null || pageNumber < 1 || pageSize < 1)
 		{
@@ -805,7 +805,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		
 		if(publishUser != null)
 		{
-			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 			
 			if(workflowDefinitions.size() > 0)
 			{
@@ -843,7 +843,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<IWorkItem> findTodoWorkItems(String actorId,String publishUser, int pageSize, int pageNumber) throws RuntimeException
+	public List<IWorkItem> findTodoWorkItems(String actorId,String publishUser,String processId, int pageSize, int pageNumber) throws RuntimeException
 	{
 		if (actorId == null || pageNumber < 1 || pageSize < 1)
 		{
@@ -854,7 +854,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		
 		if(publishUser != null)
 		{
-			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 			
 			if(workflowDefinitions.size() > 0)
 			{
@@ -890,7 +890,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		return query.setFirstResult(index).setMaxResults(pageSize).getResultList();
 	}
 
-	public Integer getHaveDoneWorkItemsCount(String actorId,String publishUser) throws RuntimeException
+	public Integer getHaveDoneWorkItemsCount(String actorId,String publishUser,String processId) throws RuntimeException
 	{
 		if (actorId == null)
 		{
@@ -901,7 +901,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		
 		if(publishUser != null)
 		{
-			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 			
 			if(workflowDefinitions.size() > 0)
 			{
@@ -942,7 +942,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		}
 	}
 
-	public Integer getTodoWorkItemsCount(String actorId,String publishUser) throws RuntimeException
+	public Integer getTodoWorkItemsCount(String actorId,String publishUser,String processId) throws RuntimeException
 	{
 		if (actorId == null)
 		{
@@ -953,7 +953,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		
 		if(publishUser != null)
 		{
-			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 			
 			if(workflowDefinitions.size() > 0)
 			{
@@ -995,7 +995,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId,String publishUser, int pageSize, int pageNumber)
+	public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId,String publishUser,String processId, int pageSize, int pageNumber)
 			throws RuntimeException
 	{
 		if (creatorId == null || pageNumber < 1 || pageSize < 1)
@@ -1007,7 +1007,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		
 		if(publishUser != null)
 		{
-			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 			
 			if(workflowDefinitions.size() > 0)
 			{
@@ -1041,7 +1041,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		return query.setMaxResults(pageSize).setFirstResult(index).getResultList();
 	}
 
-	public Integer getProcessInstanceCountByCreatorId(String creatorId,String publishUser) throws RuntimeException
+	public Integer getProcessInstanceCountByCreatorId(String creatorId,String publishUser,String processId) throws RuntimeException
 	{
 		if (creatorId == null)
 		{
@@ -1052,7 +1052,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		
 		if(publishUser != null)
 		{
-			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+			List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 			
 			if(workflowDefinitions.size() > 0)
 			{
@@ -1094,7 +1094,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser, int pageSize, int pageNumber)
+	public List<IProcessInstance> findProcessInstanceListByPublishUser(String publishUser,String processId, int pageSize, int pageNumber)
 			throws RuntimeException
 	{
 		if (publishUser == null || pageNumber < 1 || pageSize < 1)
@@ -1102,7 +1102,7 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 			throw new RuntimeException("publishUser is null or pageNumber < 1 or pageSize < 1");
 		}
 		
-		List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+		List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 
 		String hsql = "select pi from ProcessInstance pi";
 		if(workflowDefinitions.size() > 0)
@@ -1133,13 +1133,13 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 		return query.setMaxResults(pageSize).setFirstResult(index).getResultList();
 	}
 
-	public Integer getProcessInstanceCountByPublishUser(String publishUser) throws RuntimeException
+	public Integer getProcessInstanceCountByPublishUser(String publishUser,String processId) throws RuntimeException
 	{
 		if (publishUser == null)
 		{
 			throw new RuntimeException("publishUser is null");
 		}
-		List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser);
+		List<WorkflowDefinition> workflowDefinitions = this.findWorkflowDefinitionListByPublishUser(publishUser,processId);
 
 		String hsql = "select count(pi) from ProcessInstance pi";
 		if(workflowDefinitions.size() > 0)
@@ -1177,10 +1177,20 @@ public class PersistenceServiceJpaImpl implements IPersistenceService
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<WorkflowDefinition> findWorkflowDefinitionListByPublishUser(String publishUser)
+	public List<WorkflowDefinition> findWorkflowDefinitionListByPublishUser(String publishUser,String processId)
 	{
-		Query query = em.createQuery("select wi from WorkflowDefinition wi where wi.publishUser=?1");
+		String hsql = "select wi from WorkflowDefinition wi where wi.publishUser=?1";
+		boolean flag = (processId!=null);
+		if(flag)
+		{
+			hsql += " and wi.processId = ?2";
+		}
+		Query query = em.createQuery(hsql);
 		query.setParameter(1, publishUser);
+		if(flag)
+		{
+			query.setParameter(2, processId);
+		}
 		return query.getResultList();
 	}
 }
