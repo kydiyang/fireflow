@@ -197,4 +197,6 @@ public interface IProcessInstance {
     public void restore() throws EngineException;
     
     public String getSchoolID();
+    
+	public String getRunningNumber();
 }

@@ -127,6 +127,7 @@ public class WorkflowSession implements IWorkflowSession, IRuntimeContextAware {
 				processInstance
 						.setParentProcessInstanceId(parentProcessInstanceId);
 				processInstance.setParentTaskInstanceId(parentTaskInstanceId);
+				processInstance.setRunningNumber(System.currentTimeMillis()+"");
 				
 				ctx.getPersistenceService().saveOrUpdateProcessInstance(
 						processInstance);

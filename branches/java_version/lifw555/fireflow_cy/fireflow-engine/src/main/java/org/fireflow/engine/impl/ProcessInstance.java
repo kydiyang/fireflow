@@ -64,6 +64,7 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
     private String parentProcessInstanceId = null;
     private String parentTaskInstanceId = null;
     private String schoolID = null;
+    private String runningNumber = null;//流水号
     
     //null表示尚未初始化
     private Map<String, Object> processInstanceVariables = null;//new HashMap<String, Object>();
@@ -524,4 +525,14 @@ public class ProcessInstance implements IProcessInstance, IRuntimeContextAware, 
         persistenceService.restoreProcessInstance(this);
 
     }
+
+	public String getRunningNumber()
+	{
+		return runningNumber;
+	}
+
+	public void setRunningNumber(String runningNumber)
+	{
+		this.runningNumber = runningNumber;
+	}
 }

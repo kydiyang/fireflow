@@ -1012,14 +1012,14 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
     	this.getHibernateTemplate().save(var);
     }
 
-	public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
+	public List<IWorkItem> findHaveDoneWorkItems(String actorId, String publishUser,String processId, int pageSize, int pageNumber)
 			throws RuntimeException
 	{
 		// TODO 还没实现
 		return null;
 	}
 
-	public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser,
+	public List<IProcessInstance> findProcessInstanceListByCreatorId(String creatorId, String publishUser,String processId,
 			int pageSize, int pageNumber) throws RuntimeException
 	{
 		// TODO 还没实现
@@ -1033,20 +1033,20 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 		return null;
 	}
 
-	public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser, int pageSize, int pageNumber)
+	public List<IWorkItem> findTodoWorkItems(String actorId, String publishUser,String processId, int pageSize, int pageNumber)
 			throws RuntimeException
 	{
 		// TODO 还没实现
 		return null;
 	}
 
-	public Integer getHaveDoneWorkItemsCount(String actorId, String publishUser) throws RuntimeException
+	public Integer getHaveDoneWorkItemsCount(String actorId, String publishUser,String processId) throws RuntimeException
 	{
 		// TODO 还没实现
 		return null;
 	}
 
-	public Integer getProcessInstanceCountByCreatorId(String creatorId, String publishUser) throws RuntimeException
+	public Integer getProcessInstanceCountByCreatorId(String creatorId, String publishUser,String processId) throws RuntimeException
 	{
 		// TODO 还没实现
 		return null;
@@ -1058,7 +1058,7 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 		return null;
 	}
 
-	public Integer getTodoWorkItemsCount(String actorId, String publishUser) throws RuntimeException
+	public Integer getTodoWorkItemsCount(String actorId, String publishUser,String processId) throws RuntimeException
 	{
 		// TODO 还没实现
 		return null;
@@ -1123,14 +1123,14 @@ public class PersistenceServiceHibernateImpl extends HibernateDaoSupport impleme
 		return null;
 	}
 
-	public List<IProcessInstance> findProcessInstanceListByPublishUser(String schoolID, String publishUser,
+	public List<IProcessInstance> findProcessInstanceListByPublishUser(String schoolID, String publishUser,String processId,
 			int pageSize, int pageNumber) throws RuntimeException
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Integer getProcessInstanceCountByPublishUser(String schoolID, String publishUser) throws RuntimeException
+	public Integer getProcessInstanceCountByPublishUser(String schoolID, String publishUser,String processId) throws RuntimeException
 	{
 		// TODO Auto-generated method stub
 		return null;

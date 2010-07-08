@@ -274,6 +274,9 @@
 			<basic name="schoolID">
 				<column name="SchoolID" length="36" nullable="false" />
 			</basic>
+			<basic name="runningNumber">
+				<column name="RUNNINGNUMBER" length="20" nullable="false" />
+			</basic>
 			<transient name="processInstanceVariables" />
 		</attributes>
 	</entity>
