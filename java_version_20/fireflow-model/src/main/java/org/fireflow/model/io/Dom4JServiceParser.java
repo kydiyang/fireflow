@@ -152,18 +152,9 @@ public class Dom4JServiceParser implements ModelElementNames {
 				List<Element> propGroupElems = Util4Parser.children(propGroupsElem, PROP_GROUP);
 				if (propGroupElems!=null){
 					for (Element propGroupElm : propGroupElems){
-						ServicePropGroup servicePropGroup = null;
-						
-						String servicePropGroupName = propGroupElm.attributeValue(NAME);						
-						servicePropGroup = service.getServicePropGroup(servicePropGroupName);
-						if (servicePropGroup==null){
-							servicePropGroup = new ServicePropGroupImpl();
-							servicePropGroup.setName(servicePropGroupName);
-							servicePropGroup.setDisplayName(propGroupElm.attributeValue(DISPLAY_NAME));
-							
-							service.getServicePropGroups().add(servicePropGroup);
-						}
-
+						ServicePropGroup servicePropGroup = new ServicePropGroupImpl();
+						servicePropGroup.setName(propGroupElm.attributeValue(NAME));
+						servicePropGroup.setDisplayName(propGroupElm.attributeValue(DISPLAY_NAME));
 						
 						List<Element> propElems = Util4Parser.children(propGroupElm, PROP);
 						if (propElems!=null){
@@ -177,6 +168,7 @@ public class Dom4JServiceParser implements ModelElementNames {
 								servicePropGroup.getServiceProps().add(prop);
 							}
 						}
+						service.getServicePropGroups().add(servicePropGroup);
 						
 					}//for (Element propGroupElm : propGroupElems)
 				}
