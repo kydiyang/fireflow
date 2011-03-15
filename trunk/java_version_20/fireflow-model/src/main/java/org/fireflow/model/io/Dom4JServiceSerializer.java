@@ -72,16 +72,17 @@ public class Dom4JServiceSerializer implements ModelElementNames {
 		if (services == null || services.size() == 0) {
 			return;
 		}
-		QName qname = df.createQName(SERVICES, SERVICE_NS_PREFIX, SERVICE_NS_URI);
+//		QName qname = df.createQName(SERVICES, SERVICE_NS_PREFIX, SERVICE_NS_URI);
 		// 这里把tasksElement修改为servicesTask有利于强化fireFlow面向服务的概念，但是这里的parent应当
 		// 就是services元素了，怎么又通过qname又给parent添加了个services子元素？ --westerly
 		// Element tasksElement = Util4Serializer.addElement(parent, qname);
-		Element servicesElement = Util4Serializer.addElement(parent, qname);
+//		Element servicesElement = Util4Serializer.addElement(parent, qname);
 		Iterator<Service> iter = services.iterator();
 
 		while (iter.hasNext()) {
 			// writeService((Service) iter.next(), tasksElement);
-			writeService((Service) iter.next(), servicesElement);
+//			writeService((Service) iter.next(), servicesElement);
+			writeService((Service) iter.next(), parent);
 		}
 	}
 
