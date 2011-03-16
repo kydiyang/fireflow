@@ -102,7 +102,7 @@ public class ActivityInstancePerformerResolver implements ResourceResolver {
 				props.put(User.ID, processInstance.getCreatorId());
 				props.put(User.NAME, processInstance.getCreatorName());
 				props.put(User.DEPT_ID, processInstance.getCreatorDeptId());
-				props.put(User.DEPT_NAME, processInstance.getCreatorName());
+				props.put(User.DEPT_NAME, processInstance.getCreatorDeptName());
 				u.setProperties(props);
 				users.add(u);
 			}
