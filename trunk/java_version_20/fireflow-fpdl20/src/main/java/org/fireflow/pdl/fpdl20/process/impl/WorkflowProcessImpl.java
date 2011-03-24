@@ -418,13 +418,34 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		return true;
 	}
 
+	//在计算可到达节点和可进入节点时，默认节点本身不会形成环路，即节点不能同时是一条连线的输入又是这一条连线的输出
+	
 	/**
-	 * 获取可以到达的节点
+	 * 获取可以到达的节点,相比较于fireflow1.0，2.0中activity和activty之间可以直接有连线，那么应当重写该方法
 	 * 
 	 * @param nodeId
 	 * @return
 	 */
 	public List<NodeImpl> getReachableNodes(String nodeId) {
+		List<NodeImpl> reachableNodes = new ArrayList<NodeImpl>();
+		NodeImpl location = (NodeImpl)findWFElementById(nodeId);
+		//先把自身添加到可到达节点列表
+		reachableNodes.add(location);
+		List<Transition> outLines = location.getLeavingTransitions();
+		for(Transition outLine:outLines){
+			Node nextNode = outLine.getToNode();
+			if(!reachableNodes.contains(nextNode)){
+				reachableNodes.add((NodeImpl)nextNode);
+				for(Transition nextNodeOutLine:nextNode.getLeavingTransitions()){
+					//防止连线形成环
+					if(!reachableNodes.contains(nextNodeOutLine.getToNode())){
+						getReachableNodes(nextNodeOutLine.getToNode().getId());
+					}
+				}
+			}
+		}
+		return reachableNodes;
+		//-----------------------------------------------------------------
 		/*
 		 * List<NodeImpl> reachableNodesList = new ArrayList<NodeImpl>();
 		 * NodeImpl node = (NodeImpl) this.findWFElementById(nodeId); if (node
@@ -453,7 +474,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		 * break; } } if (!alreadyInTheList) { tmp.add(nodeTmp); } }
 		 * reachableNodesList = tmp; return reachableNodesList;
 		 */
-		return null;
+//		return null;
 	}
 
 	/**
@@ -463,6 +484,25 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	 * @return
 	 */
 	public List<NodeImpl> getEnterableNodes(String nodeId) {
+		List<NodeImpl> enterableNodes = new ArrayList<NodeImpl>();
+		NodeImpl location = (NodeImpl)findWFElementById(nodeId);
+		//先把自身加入到可进入节点列表
+		enterableNodes.add(location);
+		List<Transition> inLines = location.getEnteringTransitions();
+		for(Transition inLine:inLines){
+			Node preNode = inLine.getFromNode();
+			if(!enterableNodes.contains(preNode)){
+				enterableNodes.add((NodeImpl)preNode);
+				for(Transition preNodeInLine:preNode.getEnteringTransitions()){
+					//防止连线形成环
+					if(!enterableNodes.contains(preNodeInLine.getFromNode())){
+						getEndNode(preNodeInLine.getFromNode().getId());
+					}
+				}
+			}
+		}
+		return enterableNodes;
+		//-----------------------------------------------------
 		/*
 		 * List<NodeImpl> enterableNodesList = new ArrayList<NodeImpl>();
 		 * NodeImpl node = (NodeImpl) this.findWFElementById(nodeId); if (node
@@ -493,7 +533,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		 * break; } } if (!alreadyInTheList) { tmp.add(nodeTmp); } }
 		 * enterableNodesList = tmp; return enterableNodesList;
 		 */
-		return null;
+//		return null;
 	}
 
 
