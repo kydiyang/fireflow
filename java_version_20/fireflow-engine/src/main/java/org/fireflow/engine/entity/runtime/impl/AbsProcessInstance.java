@@ -42,6 +42,8 @@ public abstract class AbsProcessInstance implements ProcessInstance {
     
     protected String name = null;
     protected String displayName = null;
+    protected String bizCategory = null;
+    
     protected ProcessInstanceState state = null;
     protected Boolean suspended = Boolean.FALSE;
     
@@ -54,6 +56,7 @@ public abstract class AbsProcessInstance implements ProcessInstance {
     protected Date startedTime = null;
     protected Date endTime = null;
     protected Date expiredTime = null;
+    
     protected String parentProcessInstanceId = null;
     protected String parentActivityInstanceId = null;
     
@@ -277,6 +280,14 @@ public abstract class AbsProcessInstance implements ProcessInstance {
 	}
 
 
+
+	public String getBizCategory() {
+		return bizCategory;
+	}
+
+	public void setBizCategory(String bizCategory) {
+		this.bizCategory = bizCategory;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ProcessInstance#isSuspended()

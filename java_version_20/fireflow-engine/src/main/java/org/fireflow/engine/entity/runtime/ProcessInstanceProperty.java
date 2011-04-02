@@ -30,23 +30,35 @@ import org.fireflow.engine.entity.EntityProperty;
 public enum ProcessInstanceProperty implements EntityProperty {
 	ID("id"),
 	BIZ_ID("bizId"),
+	
+	PROCESS_ID("processId"),
+	VERSION("version"),
+	PROCESS_TYPE("processsType"),
+	
 	NAME("name"),
 	DISPLAY_NAME("displayName"),
+	BIZ_CATEGORY("bizCategory"),
+	
 	STATE("state"),
+	IS_SUSPENDED("isSuspended"),
+	
 	CREATOR_ID("creatorId"),
 	CREATOR_NAME("creatorName"),
 	CREATOR_ORG_ID("creatorOrgId"),
 	CREATOR_ORG_NAME("creatorOrgName"),
+	
 	CREATED_TIME("createdTime"),
 	STARTED_TIME("startedTime"),
 	END_TIME("endTime"),
 	EXPIRED_TIME("expiredTime"),
-	IS_SUSPENDED("isSuspended"),
-	PROCESS_ID("processId"),
-	VERSION("version"),
-	PROCESS_TYPE("processsType"),
+
+
 	PARENT_PROCESS_INSTANCE_ID("parentProcessInstanceId"),
 	PARENT_ACTIVITY_INSTANCE_ID("parentActivityInstanceId"),
+	PARENT_SCOPE_ID("parentScopeId"),
+	
+	TOKEN_ID("tokenId"),
+	
 	NOTE("note")
 	
 	;

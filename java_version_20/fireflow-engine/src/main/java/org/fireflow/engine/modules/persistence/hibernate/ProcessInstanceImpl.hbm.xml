@@ -36,6 +36,11 @@
 				<comment>流程显示名称</comment>
 			</column>
 		</property>
+		<property name="bizCategory" type="java.lang.String">
+			<column length="200" name="BIZ_CATEGORY">
+				<comment>业务类别名称</comment>
+			</column>
+		</property>		
 		<property name="state" type="org.fireflow.engine.modules.persistence.hibernate.ProcessInstanceStateType">
 			<column length="2" name="STATE" not-null="true">
 				<comment>流程实例状态</comment>

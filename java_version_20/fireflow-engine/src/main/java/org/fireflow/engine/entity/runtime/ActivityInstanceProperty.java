@@ -30,26 +30,38 @@ import org.fireflow.engine.entity.EntityProperty;
  */
 public enum ActivityInstanceProperty implements EntityProperty{
 	ID("id"),
-	BIZ_ID("bizId"),
-	SUB_BIZ_ID("subBizId"),
 	NAME("name"),
 	DISPLAY_NAME("displayName"),
+	NODE_ID("nodeId"),
+	
+	PROCESS_ID("processId"),
+	VERSION("version"),
+	PROCESS_TYPE("processType"),
+	PROCESS_NAME("processName"),
+	PROCESS_DISPLAY_NAME("processDisplayName"),
+	BIZ_CATEGORY("bizCategory"),
+	
+	SERVICE_ID("serviceId"),
+	SERVICE_TYPE("serviceType"),
+	
+	BIZ_ID("bizId"),
+	SUB_BIZ_ID("subBizId"),
+
+
 	STATE("state"),
 	CREATED_TIME("createdTime"),
 	STARTED_TIME("startedTime"),
 	END_TIME("endTime"),
 	EXPIRED_TIME("expiredTime"),
 	IS_SUSPENDED("isSuspended"),
+	
 	STEP_NUMBER("stepNumber"),
 	PROCESS_INSTANCE_ID("processInstanceId"),
-	PROCESS_ID("processId"),
-	VERSION("version"),
-	PROCESS_TYPE("processType"),
-	ACTIVITY_ID("nodeId"),
-	SERVICE_ID("serviceId"),
-	SERVICE_TYPE("serviceType"),
+	PARENT_SCOPE_ID("parentScopeId"),
+	TOKEN_ID("tokenId"),
+	
 	TARGET_ACTIVITY_ID("targetActivityId"),
-	ASSIGNMENT_STRATEGY("assignmentStrategy"),
+	ASSIGNMENT_STRATEGY("assignmentStrategy"),	
 	NOTE("note")
 	
 	;

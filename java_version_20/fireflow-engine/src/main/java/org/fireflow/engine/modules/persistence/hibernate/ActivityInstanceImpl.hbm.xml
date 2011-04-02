@@ -24,13 +24,18 @@
 			</column>
 		</property>
 		<property name="processName" type="java.lang.String" update="false">
-			<column length="100" name="PROCESS_NAME" >
-				<comment>流程类型</comment>
+			<column length="128" name="PROCESS_NAME" >
+				<comment>流程名称</comment>
 			</column>
 		</property>	
 		<property name="processDisplayName" type="java.lang.String" update="false">
-			<column length="100" name="PROCESS_DISPLAY_NAME" >
-				<comment>流程类型</comment>
+			<column length="128" name="PROCESS_DISPLAY_NAME" >
+				<comment>流程显示名称</comment>
+			</column>
+		</property>			
+		<property name="bizCategory" type="java.lang.String">
+			<column length="200" name="BIZ_CATEGORY">
+				<comment>业务类别名称</comment>
 			</column>
 		</property>				
 		<property name="processId" type="java.lang.String" update="false">

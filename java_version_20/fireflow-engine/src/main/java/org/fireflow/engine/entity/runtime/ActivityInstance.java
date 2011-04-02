@@ -147,6 +147,12 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 	public String getProcessName();
 	
 	public String getProcessDisplayName();
+	
+	/**
+	 * 增加业务类别字段，便于查询。2011-04-02
+	 * @return
+	 */
+	public String getBizCategory();
 	/**
 	 * 对应的流程节点的Id
 	 * 
