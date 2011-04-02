@@ -69,6 +69,8 @@ public class ActivityInstanceManagerFpdl20Impl extends
 		
 		actInst.setProcessName(processInstance.getName());
 		actInst.setProcessDisplayName(processInstance.getDisplayName());
+		actInst.setBizCategory(processInstance.getBizCategory());
+		
 		actInst.setProcessId(processInstance.getProcessId());
 		actInst.setVersion(processInstance.getVersion());
 		actInst.setProcessType(processInstance.getProcessType());
