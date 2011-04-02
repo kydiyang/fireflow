@@ -66,6 +66,7 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 		processInstance.setName(descriptor.getName());
 		String displayName = descriptor.getDisplayName();
 		processInstance.setDisplayName((displayName==null||displayName.trim().equals(""))?descriptor.getName():displayName);
+		processInstance.setBizCategory(fpdl20Process.getBizCategory());
 		processInstance.setState(ProcessInstanceState.INITIALIZED);
 
 		Date now = calendarService.getSysDate();
