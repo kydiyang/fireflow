@@ -56,6 +56,12 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
      * @return
      */
     public String getDisplayName();
+    
+    /**
+     * 增加一个bizcategory字段，以方便查询
+     * @return
+     */
+    public String getBizCategory();
 
     /**
      * 流程定义的id

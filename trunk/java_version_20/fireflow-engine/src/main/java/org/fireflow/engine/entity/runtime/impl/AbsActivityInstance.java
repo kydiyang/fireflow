@@ -42,13 +42,16 @@ public abstract class AbsActivityInstance implements ActivityInstance {
     private String name = null;
     private String displayName = null;
     private String nodeId = null;
+    
     private String processId = null;
     private Integer version = null;
     private String processType = null;   
     private String processName = null;
     private String processDisplayName = null;
+    private String bizCategory = null;
     private String serviceId = null;
     private String serviceType = null;
+    
     private String bizId = null;
     private String subBizId = null;
 
@@ -418,6 +421,14 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	 */
 	public void setCanBeWithdrawn(Boolean canBeWithdrawn) {
 		this.canBeWithdrawn = canBeWithdrawn;
+	}
+
+	public String getBizCategory() {
+		return bizCategory;
+	}
+
+	public void setBizCategory(String bizCategory) {
+		this.bizCategory = bizCategory;
 	}
 	
 	
