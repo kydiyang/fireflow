@@ -314,7 +314,7 @@ public class MultiCompensationCodesTest extends FireWorkflowJunitEnviroment {
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -343,7 +343,7 @@ public class MultiCompensationCodesTest extends FireWorkflowJunitEnviroment {
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity2"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity2"));
 		
 		ActivityInstance actInst2 = q4ActInst.unique();
 		Assert.assertEquals(ActivityInstanceState.COMPENSATED, actInst2.getState());
@@ -353,7 +353,7 @@ public class MultiCompensationCodesTest extends FireWorkflowJunitEnviroment {
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity3"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity3"));
 		
 		ActivityInstance actInst3 = q4ActInst.unique();
 		Assert.assertEquals(ActivityInstanceState.COMPENSATED, actInst3.getState());
