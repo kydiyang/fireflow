@@ -273,7 +273,7 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -299,7 +299,7 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".timerStart"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".timerStart"));
 		ActivityInstance timerStartActInst = q4ActInst.unique();
 		Assert.assertNotNull(timerStartActInst);
 		Assert.assertEquals(ActivityInstanceState.CANCELLED, timerStartActInst.getState());//边上的时间节点由主ActivityInstance来终结
@@ -307,7 +307,7 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".timerHandler"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".timerHandler"));
 		ActivityInstance timerHandlerActInst = q4ActInst.unique();
 		Assert.assertNotNull(timerHandlerActInst);
 		Assert.assertEquals(ActivityInstanceState.COMPLETED, timerHandlerActInst.getState());

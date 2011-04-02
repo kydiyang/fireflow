@@ -252,7 +252,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 		q4ActInst.add(
 				Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).add(
-				Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID,
+				Restrictions.eq(ActivityInstanceProperty.NODE_ID,
 						processName + ".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);

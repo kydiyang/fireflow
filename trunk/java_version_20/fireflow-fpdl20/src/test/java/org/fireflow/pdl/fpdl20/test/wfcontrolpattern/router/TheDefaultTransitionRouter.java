@@ -228,7 +228,7 @@ public class TheDefaultTransitionRouter extends FireWorkflowJunitEnviroment {
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -253,7 +253,7 @@ public class TheDefaultTransitionRouter extends FireWorkflowJunitEnviroment {
 		//Activity2的实例应该为空
 		q4ActInst.reset();
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-		.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity2"));
+		.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity2"));
 		actInstList = q4ActInst.list();
 		Assert.assertTrue(actInstList==null || actInstList.size()==0);
 		

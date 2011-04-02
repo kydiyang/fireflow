@@ -294,7 +294,7 @@ public class CompensationTestWithCancellation extends FireWorkflowJunitEnviromen
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -319,7 +319,7 @@ public class CompensationTestWithCancellation extends FireWorkflowJunitEnviromen
 		
 		q4ActInst.reset();
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-		.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity2"));
+		.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity2"));
 		ActivityInstance actInst2 = q4ActInst.unique();
 		Assert.assertEquals(ActivityInstanceState.CANCELLED, actInst2.getState());
 		
