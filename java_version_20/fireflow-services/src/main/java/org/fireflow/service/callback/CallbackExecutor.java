@@ -126,7 +126,7 @@ public class CallbackExecutor extends AbsServiceExecutor implements ServiceExecu
 			
 			WorkflowQuery<ActivityInstance> query = session.createWorkflowQuery(ActivityInstance.class,processType);
 			List<ActivityInstance> candidates = query.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_ID, processId))
-				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, activityId))
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, activityId))
 				.add(Restrictions.eq(ActivityInstanceProperty.STATE, ActivityInstanceState.RUNNING))
 				.list();
 			
