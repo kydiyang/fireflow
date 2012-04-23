@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-	<bean id="fpdlLanguage" 
+	<bean id="fpdlLanguage"
 		class="org.fireflow.engine.context.ProcessDefinitionLanguageExtension">
 		<property name="processType">
 			<value>FPDL20</value>
@@ -10,27 +10,52 @@
 		<property name="description">
 			<value>Fire Workflow Process Definition Language 2.0</value>
 		</property>
-		<!-- 扩展的引擎模块 		-->
+		<!-- 扩展的引擎模块 -->
 		<property name="engineModules">
 			<map>
 				<entry key="org.fireflow.engine.modules.process.ProcessUtil">
 					<bean class="org.fireflow.pdl.fpdl20.enginemodules.ProcessUtilFpdl20Impl"></bean>
 				</entry>
-				<entry key="org.fireflow.engine.modules.instancemanager.ProcessInstanceManager">
-					<bean class="org.fireflow.pdl.fpdl20.enginemodules.ProcessInstanceManagerFpdl20Impl"/>
+				<entry
+					key="org.fireflow.engine.modules.instancemanager.ProcessInstanceManager">
+					<bean
+						class="org.fireflow.pdl.fpdl20.enginemodules.instancemanager.ProcessInstanceManagerFpdl20Impl" />
 				</entry>
-				<entry key="org.fireflow.engine.modules.instancemanager.ActivityInstanceManager">
-					<bean class="org.fireflow.pdl.fpdl20.enginemodules.ActivityInstanceManagerFpdl20Impl"/>
-				</entry>				
-				
+				<entry
+					key="org.fireflow.engine.modules.instancemanager.ActivityInstanceManager">
+					<bean
+						class="org.fireflow.pdl.fpdl20.enginemodules.instancemanager.ActivityInstanceManagerFpdl20Impl" />
+				</entry>
+
 				<entry key="org.fireflow.pvm.translate.Process2PObjectTranslator">
-					<bean class="org.fireflow.pdl.fpdl20.enginemodules.Process2PObjectTranslatorFpdl20Impl"/>
+					<bean
+						class="org.fireflow.pdl.fpdl20.enginemodules.Process2PObjectTranslatorFpdl20Impl" />
 				</entry>
 				<!-- 工作项管理器 -->
-				<entry key="org.fireflow.engine.modules.instancemanager.WorkItemManager">
-					<bean class="org.fireflow.pdl.fpdl20.enginemodules.WorkItemManagerFpdl20Impl"/>
+				<entry key="org.fireflow.engine.modules.workitem.WorkItemManager">
+					<bean
+						class="org.fireflow.pdl.fpdl20.enginemodules.workitem.WorkItemManagerFpdl20Impl" />
+				</entry>
+
+				<!-- Webservice管理器 -->
+				<entry key="org.fireflow.engine.modules.callback.CallbackManager">
+					<bean
+						class="org.fireflow.pdl.fpdl20.enginemodules.callback.CallbackManagerFpdl20Impl">
+						<property name="transactionTemplate">
+							<ref bean="springTransactionTemplate" />
+						</property>
+					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
+
+	<bean id="activityInstanceEventBroadcaster"
+		class="org.fireflow.pdl.fpdl20.enginemodules.event.ActivityInstanceEventbroadcaster"></bean>
+
+	<bean id="processInstanceEventBroadcaster"
+		class="org.fireflow.pdl.fpdl20.enginemodules.event.ProcessInstanceEventBroadcaster"></bean>
+
+	<bean id="workItemEventBroadcaster"
+		class="org.fireflow.pdl.fpdl20.enginemodules.event.WorkItemEventBroadcaster"></bean>
 </beans>

@@ -19,7 +19,6 @@ package org.fireflow.pdl.fpdl20.test.wfcontrolpattern.compensation;
 import java.util.List;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -30,12 +29,15 @@ import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.ModelElement;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.impl.ThrowCompensationDecoratorImpl;
+import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
@@ -54,6 +56,7 @@ import org.springframework.transaction.support.TransactionCallback;
  */
 public class TheSimplestCompensationTest extends FireWorkflowJunitEnviroment{
 	protected static final String processName = "TheSimplestCompensationTest";
+	protected static final String processDisplayName = "最简单的补偿流程";
 	protected static final String bizId = "ThisIsAJunitTest";
 
 	@Test
@@ -95,35 +98,37 @@ public class TheSimplestCompensationTest extends FireWorkflowJunitEnviroment{
 	 * Start-->Activity1-->End(throw compensation)
 	 */
 	public WorkflowProcess createWorkflowProcess(){
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processName);
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
-		ActivityImpl activity = new ActivityImpl(process,"Activity1");
+		Subflow subflow = process.getMainflow();
 		
-		EndNodeImpl endNode = new EndNodeImpl(process,"End");
-		ThrowCompensationDecoratorImpl compensationDecorator = new ThrowCompensationDecoratorImpl();
+		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
+		ActivityImpl activity = new ActivityImpl(subflow,"Activity1");
+		
+		EndNodeImpl endNode = new EndNodeImpl(subflow,"End");
+		ThrowCompensationFeatureImpl compensationDecorator = new ThrowCompensationFeatureImpl();
 		compensationDecorator.addCompensationCode(FpdlConstants.DEFAULT_COMPENSATION_CODE);
-		endNode.setDecorator(compensationDecorator);
+		endNode.setFeature(compensationDecorator);
 		
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getActivities().add(activity);
-		process.getEndNodes().add(endNode);
+		subflow.setEntry(startNode);
+		subflow.getStartNodes().add(startNode);
+		subflow.getActivities().add(activity);
+		subflow.getEndNodes().add(endNode);
 		
-		TransitionImpl transition1 = new TransitionImpl(process,"start2activity");
+		TransitionImpl transition1 = new TransitionImpl(subflow,"start2activity");
 		transition1.setFromNode(startNode);
 		transition1.setToNode(activity);
 		startNode.getLeavingTransitions().add(transition1);
 		activity.getEnteringTransitions().add(transition1);
 		
-		TransitionImpl transition2 = new TransitionImpl(process,"activity2end");
+		TransitionImpl transition2 = new TransitionImpl(subflow,"activity2end");
 		transition2.setFromNode(activity);
 		transition2.setToNode(endNode);
 		activity.getLeavingTransitions().add(transition2);
 		endNode.getEnteringTransitions().add(transition2);
 		
-		process.getTransitions().add(transition1);
-		process.getTransitions().add(transition2);
+		subflow.getTransitions().add(transition1);
+		subflow.getTransitions().add(transition2);
 		
 		return process;
 	}
@@ -140,8 +145,8 @@ public class TheSimplestCompensationTest extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(processName, procInst.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
-		Assert.assertEquals(processName, procInst.getName());//name 为空的情况下默认等于processId,
-		Assert.assertEquals(processName, procInst.getDisplayName());//displayName为空的情况下默认等于name
+		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
+		Assert.assertEquals(processDisplayName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
 		Assert.assertEquals(ProcessInstanceState.COMPENSATED, procInst.getState());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(),procInst.getCreatorId());
@@ -166,7 +171,7 @@ public class TheSimplestCompensationTest extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(6, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName,procInstToken.getElementId() );
+		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -197,7 +202,7 @@ public class TheSimplestCompensationTest extends FireWorkflowJunitEnviroment{
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -218,8 +223,8 @@ public class TheSimplestCompensationTest extends FireWorkflowJunitEnviroment{
 		
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
-		Assert.assertEquals(procInst.getName(), activityInstance.getProcessName());
-		Assert.assertEquals(procInst.getDisplayName(), activityInstance.getProcessDisplayName());
+		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
 		
 	}
 }

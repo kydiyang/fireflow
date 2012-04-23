@@ -7,9 +7,12 @@
 	<import resource="modules/FireflowContext-Persistence.xml"/>
 	<import resource="modules/FireflowContext-CalendarAndSchedule.xml"/>
 	<import resource="modules/FireflowContext-BeanFactory.xml"/>
-	<import resource="modules/FireflowContext-Service.xml"/>
 	<import resource="modules/FireflowContext-LoadStrategy.xml"/>
-				
+	<import resource="modules/FireflowContext-OUSystemConnector.xml"/>
+	<import resource="modules/FireflowContext-EventBroadcaster.xml"/>
+	<import resource="modules/FireflowContext-Environment.xml"/>
+	                         
+	
 	<import resource="pdlextensions/FireflowContext-fpdl20-extension.xml"/>
 	
 	<bean id="runtimeContext" class="org.fireflow.engine.context.RuntimeContext"
@@ -48,11 +51,23 @@
 					<ref bean="scheduler"/>
 				</entry>	
 				
-				<!-- 服务注册表 -->
-				<entry key="org.fireflow.engine.service.ServiceRegistry">
-					<ref bean="serviceRegistry"/>
+				
+				<!-- 组织机构链接器 -->
+				<!-- 
+				<entry key="org.fireflow.engine.modules.ousystem.OUSystemConnector">
+					<ref bean="ouSystemConnector"/>
 				</entry>
-								
+				 -->		
+				 
+				<!-- 流程事件广播 -->		
+				<entry key="org.fireflow.engine.modules.event.EventBroadcasterManager">
+					<ref bean="eventBroadcasterManager"/>
+				</entry>			
+				
+				<!-- 运行环境相关设置 -->
+				<entry key="org.fireflow.engine.modules.env.Environment">
+					<ref bean="environment"/>
+				</entry>	
 			</map>
 		</property>
 		

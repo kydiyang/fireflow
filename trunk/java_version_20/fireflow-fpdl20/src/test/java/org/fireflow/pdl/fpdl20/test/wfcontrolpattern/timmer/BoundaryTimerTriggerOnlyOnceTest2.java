@@ -18,8 +18,9 @@ package org.fireflow.pdl.fpdl20.test.wfcontrolpattern.timmer;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -29,21 +30,27 @@ import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
+import org.fireflow.engine.entity.runtime.ScheduleJob;
+import org.fireflow.engine.entity.runtime.ScheduleJobProperty;
+import org.fireflow.engine.entity.runtime.WorkItem;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
+import org.fireflow.engine.invocation.TimerOperationName;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.schedule.Scheduler;
-import org.fireflow.engine.service.TimerOperationName;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.model.data.impl.ExpressionImpl;
+import org.fireflow.model.data.impl.PropertyImpl;
 import org.fireflow.model.misc.Duration;
-import org.fireflow.model.servicedef.impl.OperationImpl;
-import org.fireflow.model.servicedef.impl.ServiceImpl;
+import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.impl.TimerStartDecoratorImpl;
+import org.fireflow.pdl.fpdl20.process.features.startnode.impl.TimerStartFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
@@ -52,14 +59,16 @@ import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenProperty;
 import org.fireflow.pvm.kernel.TokenState;
+import org.fireflow.service.human.HumanService;
+import org.firesoa.common.schema.NameSpaces;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 /**
- * 边定时器，仅触发一次；触发后所依附的ActivityInstance结束。
- * 定时器的触发时间是一个绝对时间。
+ * 边定时器，仅触发一次；触发后所依附的ActivityInstance立即Aborted，则应该检测到定时器尚未被触发，且终结于Aborted状态。
+ * 定时器的触发时间是一个相对于ActivityInstance.startTime的相对时间。
  * 
  * @author 非也
  * @version 2.0
@@ -104,6 +113,25 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 			
 		});
 		
+		
+		//立即结束ActivityInstance
+		transactionTemplate.execute(new TransactionCallback(){
+			public Object doInTransaction(TransactionStatus arg0) {
+				WorkflowQuery<ActivityInstance> actInstQuery = session.createWorkflowQuery(ActivityInstance.class);
+				actInstQuery.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID,processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+				ActivityInstance actInst = actInstQuery.unique();
+				try {
+					actInst.abort(session);
+				} catch (InvalidOperationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
+			}
+			
+		});
+		
+		
 		//等待调度器结束
 		Scheduler scheduler = runtimeContext.getEngineModule(Scheduler.class, FpdlConstants.PROCESS_TYPE);
 		boolean hasJobInSchedule = scheduler.hasJobInSchedule(runtimeContext);
@@ -129,85 +157,100 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 	 */
 	public WorkflowProcess createWorkflowProcess(){
 		//1、构造主干流程
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processName);
-		process.setDuration(new Duration(5,Duration.MINUTE));
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processName);
 		
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
-		ActivityImpl activity1 = new ActivityImpl(process,"Activity1");
+
+		Subflow mainFlow = process.getMainflow();
+		
+		PropertyImpl property = new PropertyImpl(mainFlow, "applicant");// 流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),
+				"java.lang.String"));
+		property.setInitialValueAsString("张三");
+		mainFlow.getProperties().add(property);
+
+		property = new PropertyImpl(process, "days");// 流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),
+				"java.lang.Integer"));
+		property.setInitialValueAsString("2");
+		mainFlow.getProperties().add(property);
+		
+		mainFlow.setDuration(new Duration(5,Duration.MINUTE));
+		
+		StartNodeImpl startNode = new StartNodeImpl(mainFlow,"Start");
+		ActivityImpl activity1 = new ActivityImpl(mainFlow,"Activity1");
 		activity1.setDuration(new Duration(6,Duration.DAY));
-		EndNodeImpl endNode = new EndNodeImpl(process,"End");
+		EndNodeImpl endNode = new EndNodeImpl(mainFlow,"End");
 		
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getActivities().add(activity1);
-		process.getEndNodes().add(endNode);
+		mainFlow.setEntry(startNode);
+		mainFlow.getStartNodes().add(startNode);
+		mainFlow.getActivities().add(activity1);
+		mainFlow.getEndNodes().add(endNode);
 		
-		TransitionImpl transition1 = new TransitionImpl(process,"start2activity");
+		TransitionImpl transition1 = new TransitionImpl(mainFlow,"start2activity");
 		transition1.setFromNode(startNode);
 		transition1.setToNode(activity1);
 		startNode.getLeavingTransitions().add(transition1);
 		activity1.getEnteringTransitions().add(transition1);
 		
-		TransitionImpl transition2 = new TransitionImpl(process,"activity2end");
+		TransitionImpl transition2 = new TransitionImpl(mainFlow,"activity2end");
 		transition2.setFromNode(activity1);
 		transition2.setToNode(endNode);
 		activity1.getLeavingTransitions().add(transition2);
 		endNode.getEnteringTransitions().add(transition2);
 		
-		process.getTransitions().add(transition1);
-		process.getTransitions().add(transition2);
+		mainFlow.getTransitions().add(transition1);
+		mainFlow.getTransitions().add(transition2);
 		
 		//2、构造Human service	
-		String opName = "xyz/Application.jsp";
-		OperationImpl operation = new OperationImpl();
-		operation.setOperationName(opName);
-		
-		ServiceImpl humanService = new ServiceImpl();
-		process.getLocalServices().add(humanService);
-		humanService.setServiceType("Human");
-		humanService.setName("Application");
+		HumanService humanService = new HumanService();
+		humanService.setName("Apply");
 		humanService.setDisplayName("申请");
-		humanService.setOperation(operation);
-		
-		//将service绑定到activity1
+		humanService.setFormUrl("abc/zyx.jsp");
+		ExpressionImpl descExpression = new ExpressionImpl();
+		descExpression.setLanguage("JEXL");
+		descExpression
+				.setBody("'请假申请[申请人:'+processVars.applicant+',请假天数:'+processVars.days+']'");
+		humanService.setWorkItemSubject(descExpression);
+
+		process.addService(humanService);
+
+		// 将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());
-		serviceBinding.setOperation(humanService.getOperation(opName));
-		serviceBinding.setOperationName(opName);		
 
 		activity1.setServiceBinding(serviceBinding);
 		
 		//3、构造一个定时器节点和相应的handler
-		StartNodeImpl timerStartImpl = new StartNodeImpl(process,"timerStart");
-		TimerStartDecoratorImpl timerStartDecorator = new TimerStartDecoratorImpl();
+		StartNodeImpl timerStartImpl = new StartNodeImpl(mainFlow,"timerStart");
+		TimerStartFeatureImpl timerStartDecorator = new TimerStartFeatureImpl();
 		timerStartDecorator.setCancelAttachedToActivity(true);
 		timerStartDecorator.setTimerOperationName(TimerOperationName.TRIGGERED_ONLY_ONCE);
 		
 		ExpressionImpl expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
-		expression.setDataType("java.util.Date");
-		expression.setBody("dateTimeUtil.dateAfter(currentActivityInstance.startedTime,1,'mi')");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.util.Date"));
+		expression.setBody("DateUtil:dateAfter(currentActivityInstance.startedTime,5,'mi')");
 		
 		timerStartDecorator.setStartTimeExpression(expression);
 		timerStartDecorator.setAttachedToActivity(activity1);
 		
-		timerStartImpl.setDecorator(timerStartDecorator);
+		timerStartImpl.setFeature(timerStartDecorator);
 		
 		activity1.getAttachedStartNodes().add(timerStartImpl);
 		
-		ActivityImpl timerHandler = new ActivityImpl(process,"timerHandler");
+		ActivityImpl timerHandler = new ActivityImpl(mainFlow,"timerHandler");
 		
-		TransitionImpl t_timerStart_timerHandler = new TransitionImpl(process ,"t_timerStart_timerHandler");
+		TransitionImpl t_timerStart_timerHandler = new TransitionImpl(mainFlow ,"t_timerStart_timerHandler");
 		
 		t_timerStart_timerHandler.setFromNode(timerStartImpl);
 		t_timerStart_timerHandler.setToNode(timerHandler);
 		timerStartImpl.getLeavingTransitions().add(t_timerStart_timerHandler);
 		timerHandler.getEnteringTransitions().add(t_timerStart_timerHandler);
 		
-		process.getStartNodes().add(timerStartImpl);
-		process.getActivities().add(timerHandler);
-		process.getTransitions().add(t_timerStart_timerHandler);
+		mainFlow.getStartNodes().add(timerStartImpl);
+		mainFlow.getActivities().add(timerHandler);
+		mainFlow.getTransitions().add(t_timerStart_timerHandler);
 		
 		
 		return process;
@@ -225,8 +268,8 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		Assert.assertEquals(processName, procInst.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
-		Assert.assertEquals(processName, procInst.getName());//name 为空的情况下默认等于processId,
-		Assert.assertEquals(processName, procInst.getDisplayName());//displayName为空的情况下默认等于name
+		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
+		Assert.assertEquals(processName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
 		Assert.assertEquals(ProcessInstanceState.COMPLETED, procInst.getState());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(),procInst.getCreatorId());
@@ -247,10 +290,10 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		
 		List<Token> tokenList = q4Token.list();
 		Assert.assertNotNull(tokenList);
-		Assert.assertEquals(7, tokenList.size());
+		Assert.assertEquals(5, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName,procInstToken.getElementId() );
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -273,7 +316,7 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -290,26 +333,31 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 		Assert.assertEquals(activity1Token.getElementId(), activityInstance.getNodeId());
 		Assert.assertEquals(activity1Token.getElementInstanceId(), activityInstance.getId());
 		Assert.assertNotNull(activityInstance.getScopeId());
-		Assert.assertEquals(ActivityInstanceState.CANCELLED, activityInstance.getState());
+		Assert.assertEquals(ActivityInstanceState.ABORTED, activityInstance.getState());
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
-		Assert.assertEquals(procInst.getName(), activityInstance.getProcessName());
-		Assert.assertEquals(procInst.getDisplayName(), activityInstance.getProcessDisplayName());
+		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
 		
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".timerStart"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".timerStart"));
 		ActivityInstance timerStartActInst = q4ActInst.unique();
 		Assert.assertNotNull(timerStartActInst);
-		Assert.assertEquals(ActivityInstanceState.CANCELLED, timerStartActInst.getState());//边上的时间节点由主ActivityInstance来终结
+		Assert.assertEquals(ActivityInstanceState.ABORTED, timerStartActInst.getState());//边上的时间节点由主ActivityInstance来终结
 		
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".timerHandler"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".timerHandler"));
 		ActivityInstance timerHandlerActInst = q4ActInst.unique();
-		Assert.assertNotNull(timerHandlerActInst);
-		Assert.assertEquals(ActivityInstanceState.COMPLETED, timerHandlerActInst.getState());
+		Assert.assertNull(timerHandlerActInst);//未被触发，所以查询不到
+		
+		
+		WorkflowQuery<ScheduleJob> scheduleJobQuery = session.createWorkflowQuery(ScheduleJob.class);
+		scheduleJobQuery.add(Restrictions.eq(ScheduleJobProperty.ACTIVITY_INSTANCE_$_ID, timerStartActInst.getId()));
+		ScheduleJob scheduleJob = scheduleJobQuery.unique();
+		Assert.assertEquals(Integer.valueOf(0), scheduleJob.getTriggeredTimes());//未被触发
 	}
 }

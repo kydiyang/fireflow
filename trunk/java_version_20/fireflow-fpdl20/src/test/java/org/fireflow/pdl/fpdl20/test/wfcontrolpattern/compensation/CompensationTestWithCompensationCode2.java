@@ -19,24 +19,27 @@ package org.fireflow.pdl.fpdl20.test.wfcontrolpattern.compensation;
 import java.util.List;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
 import org.fireflow.engine.WorkflowStatement;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
+import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.ModelElement;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.impl.ThrowCompensationDecoratorImpl;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.impl.CatchCompensationDecoratorImpl;
+import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowCompensationFeatureImpl;
+import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
@@ -59,6 +62,7 @@ import org.springframework.transaction.support.TransactionCallback;
 public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnviroment {
 
 	protected static final String processName = "CompensationTestWithCompensationCode2";
+	protected static final String processDisplayName = "补偿逻辑测试流程，Activity2和Activity3的补偿逻辑将被执行";
 	protected static final String bizId = "ThisIsAJunitTest";
 
 	@Test
@@ -102,29 +106,31 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 	 *            |-->HandleCompensation1_1               |-->HandlerCompensation2_1            |-->HandlerCompensation3_1-->HandlerCompensation3_2
 	 */
 	public WorkflowProcess createWorkflowProcess(){
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processName);
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
+		
+		Subflow subflow = process.getMainflow();
 		
 		//*****************************************/
 		//*************** 开始节点          *************/
 		//****************************************/
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
+		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		
 		//*****************************************/
 		//*********** Activity1及其异常分支 ********/
 		//****************************************/
-		ActivityImpl activity1 = new ActivityImpl(process,"Activity1");
+		ActivityImpl activity1 = new ActivityImpl(subflow,"Activity1");
 		
 		//异常捕获节点1
-		StartNodeImpl catchCompensationNode1 = new StartNodeImpl(process,"CatchCompensation1");
-		CatchCompensationDecoratorImpl catchCompensationDecorator = new CatchCompensationDecoratorImpl();
+		StartNodeImpl catchCompensationNode1 = new StartNodeImpl(subflow,"CatchCompensation1");
+		CatchCompensationFeatureImpl catchCompensationDecorator = new CatchCompensationFeatureImpl();
 		catchCompensationDecorator.setAttachedToActivity(activity1);
 		catchCompensationDecorator.setCompensationCode("ForActivity1");
-		catchCompensationNode1.setDecorator(catchCompensationDecorator);
+		catchCompensationNode1.setFeature(catchCompensationDecorator);
 		activity1.getAttachedStartNodes().add(catchCompensationNode1);
 		
-		ActivityImpl handleCompensationNode1_1 = new ActivityImpl(process,"HandleCompensation1_1");
+		ActivityImpl handleCompensationNode1_1 = new ActivityImpl(subflow,"HandleCompensation1_1");
 		
-		TransitionImpl transition1_1 = new TransitionImpl(process,"catchCompensation1_HandleCompensation1_1");
+		TransitionImpl transition1_1 = new TransitionImpl(subflow,"catchCompensation1_HandleCompensation1_1");
 		transition1_1.setFromNode(catchCompensationNode1);
 		transition1_1.setToNode(handleCompensationNode1_1);
 		catchCompensationNode1.getLeavingTransitions().add(transition1_1);
@@ -134,19 +140,19 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		//*****************************************/
 		//*********** Activity2及其异常分支 ********/
 		//****************************************/
-		ActivityImpl activity2 = new ActivityImpl(process,"Activity2");
+		ActivityImpl activity2 = new ActivityImpl(subflow,"Activity2");
 		
 		//异常捕获节点1
-		StartNodeImpl catchCompensationNode2 = new StartNodeImpl(process,"CatchCompensation2");
-		catchCompensationDecorator = new CatchCompensationDecoratorImpl();
+		StartNodeImpl catchCompensationNode2 = new StartNodeImpl(subflow,"CatchCompensation2");
+		catchCompensationDecorator = new CatchCompensationFeatureImpl();
 		catchCompensationDecorator.setAttachedToActivity(activity2);
 		catchCompensationDecorator.setCompensationCode("ForActivity2AndActivity3");
-		catchCompensationNode2.setDecorator(catchCompensationDecorator);
+		catchCompensationNode2.setFeature(catchCompensationDecorator);
 		activity2.getAttachedStartNodes().add(catchCompensationNode2);
 		
-		ActivityImpl handleCompensationNode2_1 = new ActivityImpl(process,"HandleCompensation2_1");
+		ActivityImpl handleCompensationNode2_1 = new ActivityImpl(subflow,"HandleCompensation2_1");
 		
-		TransitionImpl transition2_1 = new TransitionImpl(process,"catchCompensation2_HandleCompensation2_1");
+		TransitionImpl transition2_1 = new TransitionImpl(subflow,"catchCompensation2_HandleCompensation2_1");
 		transition2_1.setFromNode(catchCompensationNode2);
 		transition2_1.setToNode(handleCompensationNode2_1);
 		catchCompensationNode2.getLeavingTransitions().add(transition2_1);
@@ -155,27 +161,27 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		//*****************************************/
 		//*********** Activity3及其异常分支 ********/
 		//****************************************/
-		ActivityImpl activity3 = new ActivityImpl(process,"Activity3");
+		ActivityImpl activity3 = new ActivityImpl(subflow,"Activity3");
 		
 		//异常捕获节点1
-		StartNodeImpl catchCompensationNode3 = new StartNodeImpl(process,"CatchCompensation3");
-		catchCompensationDecorator = new CatchCompensationDecoratorImpl();
+		StartNodeImpl catchCompensationNode3 = new StartNodeImpl(subflow,"CatchCompensation3");
+		catchCompensationDecorator = new CatchCompensationFeatureImpl();
 		catchCompensationDecorator.setAttachedToActivity(activity3);
 		catchCompensationDecorator.setCompensationCode("ForActivity2AndActivity3");
-		catchCompensationNode3.setDecorator(catchCompensationDecorator);
+		catchCompensationNode3.setFeature(catchCompensationDecorator);
 		activity3.getAttachedStartNodes().add(catchCompensationNode3);
 		
-		ActivityImpl handleCompensationNode3_1 = new ActivityImpl(process,"HandleCompensation3_1");
+		ActivityImpl handleCompensationNode3_1 = new ActivityImpl(subflow,"HandleCompensation3_1");
 		
-		TransitionImpl transition3_1 = new TransitionImpl(process,"catchCompensation3_HandleCompensation3_1");
+		TransitionImpl transition3_1 = new TransitionImpl(subflow,"catchCompensation3_HandleCompensation3_1");
 		transition3_1.setFromNode(catchCompensationNode3);
 		transition3_1.setToNode(handleCompensationNode3_1);
 		catchCompensationNode3.getLeavingTransitions().add(transition3_1);
 		handleCompensationNode3_1.getEnteringTransitions().add(transition3_1);	
 		
-		ActivityImpl handleCompensationNode3_2 = new ActivityImpl(process,"HandleCompensation3_2");
+		ActivityImpl handleCompensationNode3_2 = new ActivityImpl(subflow,"HandleCompensation3_2");
 		
-		TransitionImpl transition3_2 = new TransitionImpl(process,"catchCompensation3_1_HandleCompensation3_2");
+		TransitionImpl transition3_2 = new TransitionImpl(subflow,"catchCompensation3_1_HandleCompensation3_2");
 		transition3_2.setFromNode(handleCompensationNode3_1);
 		transition3_2.setToNode(handleCompensationNode3_2);
 		handleCompensationNode3_1.getLeavingTransitions().add(transition3_2);
@@ -184,64 +190,64 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		//*******************************************/
 		//*********** 带有异常装饰器的结束节点 ********/
 		//*******************************************/
-		EndNodeImpl endNode = new EndNodeImpl(process,"End");
-		ThrowCompensationDecoratorImpl compensationDecorator = new ThrowCompensationDecoratorImpl();
+		EndNodeImpl endNode = new EndNodeImpl(subflow,"End");
+		ThrowCompensationFeatureImpl compensationDecorator = new ThrowCompensationFeatureImpl();
 		compensationDecorator.addCompensationCode("ForActivity2AndActivity3");//只有CompensationCode=‘TheCompensationActivity’的catch compensation decorator才会被激发。
-		endNode.setDecorator(compensationDecorator);
+		endNode.setFeature(compensationDecorator);
 		
 		//****************************************************/
 		//****链接 activity1,activity2,activity3 **************/
 		//****************************************************/
-		TransitionImpl transition_start_activity1 = new TransitionImpl(process,"start_activity1");
+		TransitionImpl transition_start_activity1 = new TransitionImpl(subflow,"start_activity1");
 		transition_start_activity1.setFromNode(startNode);
 		transition_start_activity1.setToNode(activity1);
 		startNode.getLeavingTransitions().add(transition_start_activity1);
 		activity1.getEnteringTransitions().add(transition_start_activity1);
 		
-		TransitionImpl transition_activity1_activity2 = new TransitionImpl(process,"activity1_activity2");
+		TransitionImpl transition_activity1_activity2 = new TransitionImpl(subflow,"activity1_activity2");
 		transition_activity1_activity2.setFromNode(activity1);
 		transition_activity1_activity2.setToNode(activity2);
 		activity1.getLeavingTransitions().add(transition_activity1_activity2);
 		activity2.getEnteringTransitions().add(transition_activity1_activity2);
 		
-		TransitionImpl transition_activity2_activity3 = new TransitionImpl(process,"activity2_activity3");
+		TransitionImpl transition_activity2_activity3 = new TransitionImpl(subflow,"activity2_activity3");
 		transition_activity2_activity3.setFromNode(activity2);
 		transition_activity2_activity3.setToNode(activity3);
 		activity2.getLeavingTransitions().add(transition_activity2_activity3);
 		activity3.getEnteringTransitions().add(transition_activity2_activity3);
 		
-		TransitionImpl transition_activiyt3_end = new TransitionImpl(process,"activity3_end");
+		TransitionImpl transition_activiyt3_end = new TransitionImpl(subflow,"activity3_end");
 		transition_activiyt3_end.setFromNode(activity3);
 		transition_activiyt3_end.setToNode(endNode);
 		activity3.getLeavingTransitions().add(transition_activiyt3_end);
 		endNode.getEnteringTransitions().add(transition_activiyt3_end);
 		
 		//组装到process中
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getStartNodes().add(catchCompensationNode1);
-		process.getStartNodes().add(catchCompensationNode2);
-		process.getStartNodes().add(catchCompensationNode3);
+		subflow.setEntry(startNode);
+		subflow.getStartNodes().add(startNode);
+		subflow.getStartNodes().add(catchCompensationNode1);
+		subflow.getStartNodes().add(catchCompensationNode2);
+		subflow.getStartNodes().add(catchCompensationNode3);
 		
-		process.getActivities().add(activity1);
-		process.getActivities().add(activity2);
-		process.getActivities().add(activity3);
-		process.getActivities().add(handleCompensationNode1_1);
-		process.getActivities().add(handleCompensationNode2_1);
-		process.getActivities().add(handleCompensationNode3_1);
-		process.getActivities().add(handleCompensationNode3_2);
-		process.getEndNodes().add(endNode);
+		subflow.getActivities().add(activity1);
+		subflow.getActivities().add(activity2);
+		subflow.getActivities().add(activity3);
+		subflow.getActivities().add(handleCompensationNode1_1);
+		subflow.getActivities().add(handleCompensationNode2_1);
+		subflow.getActivities().add(handleCompensationNode3_1);
+		subflow.getActivities().add(handleCompensationNode3_2);
+		subflow.getEndNodes().add(endNode);
 		
 		
-		process.getTransitions().add(transition1_1);
-		process.getTransitions().add(transition2_1);
-		process.getTransitions().add(transition3_1);
-		process.getTransitions().add(transition3_2);
+		subflow.getTransitions().add(transition1_1);
+		subflow.getTransitions().add(transition2_1);
+		subflow.getTransitions().add(transition3_1);
+		subflow.getTransitions().add(transition3_2);
 
-		process.getTransitions().add(transition_start_activity1);
-		process.getTransitions().add(transition_activity1_activity2);
-		process.getTransitions().add(transition_activity2_activity3);
-		process.getTransitions().add(transition_activiyt3_end);
+		subflow.getTransitions().add(transition_start_activity1);
+		subflow.getTransitions().add(transition_activity1_activity2);
+		subflow.getTransitions().add(transition_activity2_activity3);
+		subflow.getTransitions().add(transition_activiyt3_end);
 		
 		return process;
 	}
@@ -258,8 +264,8 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		Assert.assertEquals(processName, procInst.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
-		Assert.assertEquals(processName, procInst.getName());//name 为空的情况下默认等于processId,
-		Assert.assertEquals(processName, procInst.getDisplayName());//displayName为空的情况下默认等于name
+		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
+		Assert.assertEquals(processDisplayName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
 		Assert.assertEquals(ProcessInstanceState.COMPENSATED, procInst.getState());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(),procInst.getCreatorId());
@@ -284,7 +290,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		Assert.assertEquals(18, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName,procInstToken.getElementId() );
+		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -312,7 +318,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -333,8 +339,29 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
-		Assert.assertEquals(procInst.getName(), activityInstance.getProcessName());
-		Assert.assertEquals(procInst.getDisplayName(), activityInstance.getProcessDisplayName());
+		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
 		
+		Assert.assertEquals(ActivityInstanceState.COMPLETED, activityInstance.getState());
+		
+		//Activity2,Activity3应该是被补偿状态
+		q4ActInst.reset();
+		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity2"));
+		actInstList = q4ActInst.list();
+		Assert.assertNotNull(actInstList);
+		Assert.assertEquals(1, actInstList.size());
+		activityInstance = actInstList.get(0);
+		Assert.assertEquals(ActivityInstanceState.COMPENSATED, activityInstance.getState());
+		
+		q4ActInst.reset();
+		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity3"));
+		actInstList = q4ActInst.list();
+		Assert.assertNotNull(actInstList);
+		Assert.assertEquals(1, actInstList.size());
+		activityInstance = actInstList.get(0);
+		Assert.assertEquals(ActivityInstanceState.COMPENSATED, activityInstance.getState());
+
 	}	
 }

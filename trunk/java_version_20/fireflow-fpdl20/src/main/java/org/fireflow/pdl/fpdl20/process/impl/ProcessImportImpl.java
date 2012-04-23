@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.fireflow.model.AbstractModelElement;
 import org.fireflow.model.ModelElement;
-import org.fireflow.pdl.fpdl20.process.ProcessImport;
+import org.fireflow.pdl.fpdl20.process.Import;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 /**
@@ -32,7 +32,7 @@ import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
  * @author 非也
  * @version 2.0
  */
-public class ProcessImportImpl<T  extends ModelElement> extends AbstractModelElement implements ProcessImport<T> {
+public class ProcessImportImpl<T  extends ModelElement> extends AbstractModelElement implements Import<T> {
 	private String importType;
 	private String location;
 	private List<T> contents = new ArrayList<T>();

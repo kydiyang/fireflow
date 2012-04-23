@@ -22,13 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.fireflow.model.AbstractModelElement;
-import org.fireflow.model.process.lifecycle.InstanceCreatorDef;
-import org.fireflow.model.process.lifecycle.InstanceExecutorDef;
-import org.fireflow.model.process.lifecycle.InstanceTerminatorDef;
 import org.fireflow.pdl.fpdl20.process.Node;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.Transition;
-import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.Decorator;
+import org.fireflow.pdl.fpdl20.process.features.Feature;
 
 /**
  * 流程图的节点。
@@ -47,7 +44,7 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
      */
     protected List<Transition> leavingTransitions = new ArrayList<Transition>();//输出弧
     
-    protected Decorator decorator = null;
+    protected Feature decorator = null;
     
     protected Map<String,String> extendAttributes = new HashMap<String,String>();
 	
@@ -55,8 +52,8 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
     public NodeImpl() {
     }
 
-    public NodeImpl(WorkflowProcess workflowProcess, String name) {
-        super(workflowProcess, name);
+    public NodeImpl(Subflow subflow, String name) {
+        super(subflow, name);
     }
 
 	public List<Transition> getEnteringTransitions() {
@@ -68,11 +65,11 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
 		return leavingTransitions;
 	}
 
-	public Decorator getDecorator() {
+	public Feature getFeature() {
 		return decorator;
 	}
 
-	public void setDecorator(Decorator dec) {
+	public void setFeature(Feature dec) {
 		this.decorator = dec;
 	}
 

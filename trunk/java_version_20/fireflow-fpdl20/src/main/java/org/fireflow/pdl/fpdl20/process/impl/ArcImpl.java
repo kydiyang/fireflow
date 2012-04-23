@@ -13,7 +13,7 @@ import org.fireflow.model.process.lifecycle.InstanceExecutorDef;
 import org.fireflow.model.process.lifecycle.InstanceTerminatorDef;
 import org.fireflow.pdl.fpdl20.process.Arc;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 
 /**
  * 工作流网的边。
@@ -47,8 +47,8 @@ public class ArcImpl extends AbstractModelElement implements Arc{
         
     }
 
-    public ArcImpl(WorkflowProcess workflowProcess, String name) {
-        super(workflowProcess, name);
+    public ArcImpl(Subflow subflow, String name) {
+        super(subflow, name);
     }
 
 

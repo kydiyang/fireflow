@@ -16,15 +16,23 @@
  */
 package org.fireflow.pdl.fpdl20.behavior;
 
+import java.util.List;
+
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
+import org.fireflow.engine.modules.beanfactory.BeanFactory;
+import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
+import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.EndNode;
-import org.fireflow.pdl.fpdl20.process.decorator.Decorator;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.NormalEndDecorator;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.ThrowTerminationDecorator;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.ThrowCompensationDecorator;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.ThrowFaultDecorator;
+import org.fireflow.pdl.fpdl20.process.Node;
+import org.fireflow.pdl.fpdl20.process.Synchronizer;
+import org.fireflow.pdl.fpdl20.process.features.Feature;
+import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFreature;
+import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowCompensationFeature;
+import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowFaultFeature;
+import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowTerminationFeature;
 import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.pdllogic.ContinueDirection;
@@ -36,7 +44,19 @@ import org.fireflow.pvm.pdllogic.ContinueDirection;
  * @version 2.0
  */
 public class EndNodeBehavior extends AbsSynchronizerBehavior {
-
+	public Boolean canBeFired(WorkflowSession session, Token token,
+			Synchronizer synchronizer){
+		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		
+		String className = DynamicJoinEvaluator.class.getName();
+		JoinEvaluator joinEvaluator = this.joinEvaluatorRegistry.get(className);
+		if (joinEvaluator==null){
+			joinEvaluator = (JoinEvaluator)beanFactory.createBean(className);
+			joinEvaluatorRegistry.put(className, joinEvaluator);
+		}
+		return joinEvaluator.canBeFired(session, token, synchronizer);
+	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.pdllogic.WorkflowBehavior#continueOn(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, java.lang.Object)
 	 */
@@ -45,21 +65,21 @@ public class EndNodeBehavior extends AbsSynchronizerBehavior {
 			Object workflowElement) {
 		
 		EndNode endNode = (EndNode)workflowElement;
-		Decorator decorator = endNode.getDecorator();
+		Feature decorator = endNode.getFeature();
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
 		
-		if (decorator!=null && decorator instanceof ThrowTerminationDecorator){
+		if (decorator!=null && decorator instanceof ThrowTerminationFeature){
 			Token token4ProcessInstance = kernelManager.getParentToken(token);
 			kernelManager.fireTerminationEvent(session, token4ProcessInstance,token);
-		}else if (decorator!=null && decorator instanceof ThrowFaultDecorator){
-			ThrowFaultDecorator throwExceptionDecorator = (ThrowFaultDecorator)decorator;
+		}else if (decorator!=null && decorator instanceof ThrowFaultFeature){
+			ThrowFaultFeature throwExceptionDecorator = (ThrowFaultFeature)decorator;
 			Token token4ProcessInstance = kernelManager.getParentToken(token);
 			kernelManager.fireFaultEvent(session, token4ProcessInstance,token, throwExceptionDecorator.getErrorCode());
 			
-		}else if (decorator!=null && decorator instanceof ThrowCompensationDecorator){
-			ThrowCompensationDecorator throwCompensationDecorator = (ThrowCompensationDecorator)decorator;
+		}else if (decorator!=null && decorator instanceof ThrowCompensationFeature){
+			ThrowCompensationFeature throwCompensationDecorator = (ThrowCompensationFeature)decorator;
 			Token token4ProcessInstance = kernelManager.getParentToken(token);
 			kernelManager.fireCompensationEvent(session, token4ProcessInstance,token,throwCompensationDecorator.getCompensationCodes());
 		}
@@ -67,4 +87,8 @@ public class EndNodeBehavior extends AbsSynchronizerBehavior {
 		return ContinueDirection.closeMe();
 	}
 
+	protected List<String> determineNextTransitions(
+			WorkflowSession session, Token token4Node, Node node){
+		return null;
+	}
 }

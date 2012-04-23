@@ -3,7 +3,7 @@ package org.fireflow.pdl.fpdl20.process;
 import java.util.List;
 
 import org.fireflow.model.process.WorkflowElement;
-import org.fireflow.pdl.fpdl20.process.decorator.Decorator;
+import org.fireflow.pdl.fpdl20.process.features.Feature;
 /**
  * 流程图中的节点
  * @author 非也
@@ -18,10 +18,10 @@ public interface Node extends WorkflowElement{
 
 
 	/**
-	 * 获得装饰器，装饰器会影响节点的外观和行为
+	 * 获得Feature，Feature会影响节点的在设计器中的外观和运行时行为
 	 * @return
 	 */
-	public Decorator getDecorator();
+	public Feature getFeature();
 	
-	public void setDecorator(Decorator dec);
+	public void setFeature(Feature dec);
 }

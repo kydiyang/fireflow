@@ -19,9 +19,10 @@ package org.fireflow.pdl.fpdl20.io;
 import java.io.IOException;
 import java.util.List;
 
-import org.fireflow.model.io.ParserException;
-import org.fireflow.model.resourcedef.Resource;
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.io.DeserializerException;
+import org.fireflow.model.resourcedef.ResourceDef;
+import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * 负责load “import” 标签的具体内容
@@ -30,6 +31,6 @@ import org.fireflow.model.servicedef.Service;
  * @version 2.0
  */
 public interface ImportLoader {
-	public List<Service> loadServices(String serviceLocation)throws ParserException,IOException;
-	public List<Resource> loadResources(String resourceLocation)throws ParserException,IOException;
+	public List<ServiceDef> loadServices(String serviceLocation)throws InvalidModelException,DeserializerException,IOException;
+	public List<ResourceDef> loadResources(String resourceLocation)throws DeserializerException,IOException;
 }

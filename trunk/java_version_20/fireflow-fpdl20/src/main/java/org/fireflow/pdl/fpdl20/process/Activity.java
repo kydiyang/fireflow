@@ -76,7 +76,12 @@ public interface Activity extends Node{
 	 */
 	public List<Property> getProperties();
 	
-
+	/**
+	 * 根据输入的流程变量的名称返回流程变量
+	 * @param name 流程变量名称
+	 * @return 流程变量（即Property对象）
+	 */
+	public Property getProperty(String name);
 	
 	/**
 	 * 本活动所引用的服务

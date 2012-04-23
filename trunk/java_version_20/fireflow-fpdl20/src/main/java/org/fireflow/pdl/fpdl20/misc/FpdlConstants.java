@@ -22,5 +22,5 @@ package org.fireflow.pdl.fpdl20.misc;
  */
 public class FpdlConstants {
 	public static final String PROCESS_TYPE = "FPDL20";
-	public static final String DEFAULT_COMPENSATION_CODE = "org.fireflow.constants.COMPENSATE_ALL";
+	public static final String DEFAULT_COMPENSATION_CODE = "org.fireflow.constants.DEFAULT_COMPENSATION_CODE";
 }

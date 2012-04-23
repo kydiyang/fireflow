@@ -16,35 +16,53 @@
  */
 package org.fireflow.pdl.fpdl20.test.wfcontrolpattern.fault;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import org.fireflow.FireWorkflowJunitEnviroment;
+import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
 import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
+import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
+import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.entity.runtime.ProcessInstanceState;
+import org.fireflow.engine.entity.runtime.WorkItem;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
+import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
+import org.fireflow.engine.modules.script.ScriptContextVariableNames;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.binding.impl.InputAssignmentImpl;
-import org.fireflow.model.binding.impl.OutputAssignmentImpl;
+import org.fireflow.model.ModelElement;
+import org.fireflow.model.binding.impl.AssignmentImpl;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.model.data.impl.ExpressionImpl;
-import org.fireflow.model.data.impl.InputImpl;
-import org.fireflow.model.data.impl.OutputImpl;
 import org.fireflow.model.data.impl.PropertyImpl;
-import org.fireflow.model.servicedef.ServicePropGroup;
-import org.fireflow.model.servicedef.impl.IOSpecificationImpl;
-import org.fireflow.model.servicedef.impl.OperationImpl;
-import org.fireflow.model.servicedef.impl.ServiceImpl;
-import org.fireflow.model.servicedef.impl.ServicePropImpl;
+import org.fireflow.model.servicedef.OperationDef;
+import org.fireflow.model.servicedef.impl.JavaInterfaceDef;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.impl.CatchFaultDecoratorImpl;
+import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchFaultFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.TransitionImpl;
 import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
+import org.fireflow.pvm.kernel.OperationContextName;
+import org.fireflow.pvm.kernel.Token;
+import org.fireflow.pvm.kernel.TokenProperty;
+import org.fireflow.pvm.kernel.TokenState;
+import org.fireflow.service.java.JavaService;
+import org.firesoa.common.schema.NameSpaces;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -56,7 +74,9 @@ import org.springframework.transaction.support.TransactionCallback;
  * @version 2.0
  */
 public class HandleActivityFaultTest extends FireWorkflowJunitEnviroment {
-	protected static final String processId = "HandleActivityFaultTest";
+	protected static final String processName = "HandleActivityFaultTest";
+	protected static final String processDisplayName = "异常捕获测试流程，调用Service发生异常";
+	
 
 	@Test
 	public void testStartProcess(){
@@ -100,151 +120,243 @@ public class HandleActivityFaultTest extends FireWorkflowJunitEnviroment {
 	 */
 	public WorkflowProcess createWorkflowProcess(){
 		//构造流程
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processId);
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		PropertyImpl property = new PropertyImpl(process,"x");//流程变量x
-		property.setDataType("java.lang.Integer");
+		Subflow subflow = process.getMainflow();
+		
+		PropertyImpl property = new PropertyImpl(subflow,"x");//流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("1");
-		process.getProperties().add(property);
+		subflow.getProperties().add(property);
 		
 		property = new PropertyImpl(process,"y");//流程变量x
-		property.setDataType("java.lang.Integer");
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("5");
-		process.getProperties().add(property);
+		subflow.getProperties().add(property);
 		
 		property = new PropertyImpl(process,"z");//流程变量x
-		property.setDataType("java.lang.Integer");
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("0");
-		process.getProperties().add(property);
+		subflow.getProperties().add(property);
 		
 		property = new PropertyImpl(process,"m");//流程变量m
-		property.setDataType("java.lang.Integer");
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("0");
-		process.getProperties().add(property);		
+		subflow.getProperties().add(property);		
 		
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
-		ActivityImpl activity1 = new ActivityImpl(process,"Activity1");
-		EndNodeImpl endNode = new EndNodeImpl(process,"End");
+		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
+		ActivityImpl activity1 = new ActivityImpl(subflow,"Activity1");
+		EndNodeImpl endNode = new EndNodeImpl(subflow,"End");
 		
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getActivities().add(activity1);
-		process.getEndNodes().add(endNode);
+		subflow.setEntry(startNode);
+		subflow.getStartNodes().add(startNode);
+		subflow.getActivities().add(activity1);
+		subflow.getEndNodes().add(endNode);
 		
-		TransitionImpl transition1 = new TransitionImpl(process,"start_activity1");
+		TransitionImpl transition1 = new TransitionImpl(subflow,"start_activity1");
 		transition1.setFromNode(startNode);
 		transition1.setToNode(activity1);
 		startNode.getLeavingTransitions().add(transition1);
 		activity1.getEnteringTransitions().add(transition1);
 		
 		
-		TransitionImpl transition2 = new TransitionImpl(process,"activity1_end");
+		TransitionImpl transition2 = new TransitionImpl(subflow,"activity1_end");
 		transition2.setFromNode(activity1);
 		transition2.setToNode(endNode);
 		activity1.getLeavingTransitions().add(transition2);
 		endNode.getEnteringTransitions().add(transition2);
 		
-		process.getTransitions().add(transition1);
-		process.getTransitions().add(transition2);
+		subflow.getTransitions().add(transition1);
+		subflow.getTransitions().add(transition2);
 		
 		
 		//构造错误处理子流程
-		StartNodeImpl catchFaultStart = new StartNodeImpl(process,"catchFaultStart");
-		CatchFaultDecoratorImpl decorator = new CatchFaultDecoratorImpl();
+		StartNodeImpl catchFaultStart = new StartNodeImpl(subflow,"catchFaultStart");
+		CatchFaultFeatureImpl decorator = new CatchFaultFeatureImpl();
 		decorator.setAttachedToActivity(activity1);
-		catchFaultStart.setDecorator(decorator);
+		catchFaultStart.setFeature(decorator);
 		
 		activity1.getAttachedStartNodes().add(catchFaultStart);
 		
-		ActivityImpl handleFaultAct = new ActivityImpl(process,"handleFaultAct");
+		ActivityImpl handleFaultAct = new ActivityImpl(subflow,"handleFaultAct");
 		
-		TransitionImpl t_catchFault_handleFault = new TransitionImpl(process,"t_catchFault_handleFault");
+		TransitionImpl t_catchFault_handleFault = new TransitionImpl(subflow,"t_catchFault_handleFault");
 		t_catchFault_handleFault.setFromNode(catchFaultStart);
 		t_catchFault_handleFault.setToNode(handleFaultAct);
 		catchFaultStart.getLeavingTransitions().add(t_catchFault_handleFault);
 		handleFaultAct.getEnteringTransitions().add(t_catchFault_handleFault);
 		
-		process.getStartNodes().add(catchFaultStart);
-		process.getActivities().add(handleFaultAct);
-		process.getTransitions().add(t_catchFault_handleFault);
+		subflow.getStartNodes().add(catchFaultStart);
+		subflow.getActivities().add(handleFaultAct);
+		subflow.getTransitions().add(t_catchFault_handleFault);
 		
 		
 		//构造java service	
-		ServiceImpl javaService = new ServiceImpl();
-		process.getLocalServices().add(javaService);
-		javaService.setServiceType("Java");
-		javaService.setName("MathOperationBean");
-		javaService.setDisplayName("数学运算操作");
-		
-		//service的加法操作
-		String opName = "add";
-		IOSpecificationImpl ioSpec = new IOSpecificationImpl();
-		InputImpl input = new InputImpl();
-		input.setName("a");
-		input.setDataType("int");
-		ioSpec.addInput(input);
-		
-		input = new InputImpl();
-		input.setName("b");
-		input.setDataType("int");
-		ioSpec.addInput(input);
-		
-		OutputImpl output = new OutputImpl();
-		output.setName("out");
-		output.setDataType("int");
-		ioSpec.addOutput(output);
-		
-		
-		OperationImpl operation = new OperationImpl();
-		operation.setOperationName(opName);
-		operation.setIOSpecification(ioSpec);
-		
-		javaService.setOperation(operation);
+		JavaService javaService = new JavaService();
+		process.addService(javaService);
+		javaService.setName("JavaService4TestFaultHandler");
+		javaService.setDisplayName("一个错误的Java service，用于测试FaultHandler");
+		//设置一个不存在的类，用于产生调用错误
+		javaService.setJavaClassName("org.fireflow.pdl.fpdl20.test.service.javaexecutor.MathOperationBean_WrongClass");
+		JavaInterfaceDef _interface = new JavaInterfaceDef();
+		_interface.setInterfaceClassName("org.fireflow.pdl.fpdl20.test.service.javaexecutor.IMathOperationBean");
+		javaService.setInterface(_interface);
 	
 		
-		ServicePropGroup servicePropGroup = javaService.getServicePropGroup(ServicePropGroup.COMMON_PROPERTIES_GROUP);
-		ServicePropImpl serviceProp = new ServicePropImpl();
-		serviceProp.setName("JavaClassName");
-		serviceProp.setDisplayName("java类名");
-		//设置一个错误的java类名
-		serviceProp.setValue("org.fireflow.pdl.fpdl20.test.service.javaexecutor.MathOperationBean_ERROR");
-		servicePropGroup.getServiceProps().add(serviceProp);
-		
 		//将service绑定到activity1
+		OperationDef operation = _interface.getOperation("add");
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(javaService);
 		serviceBinding.setServiceId(javaService.getId());
-		serviceBinding.setOperation(javaService.getOperation(opName));
-		serviceBinding.setOperationName(opName);
+		serviceBinding.setOperation(operation);
+		serviceBinding.setOperationName("add");
+		
+		//arg0
+		AssignmentImpl inputAssignment = new AssignmentImpl();
+		serviceBinding.getInputAssignments().add(inputAssignment);
 		
 		ExpressionImpl expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
-		expression.setBody("processVars.x");
-		InputAssignmentImpl inputAssignment = new InputAssignmentImpl();
+		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+".x");		
 		inputAssignment.setFrom(expression);
-		inputAssignment.setTo("inputs.a");
 		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(0).getName());		
+		inputAssignment.setTo(expression);
+		
+		
+		//arg1
+		inputAssignment = new AssignmentImpl();
 		serviceBinding.getInputAssignments().add(inputAssignment);
 		
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
-		expression.setBody("processVars.y");
-		inputAssignment = new InputAssignmentImpl();
+		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+".y");		
 		inputAssignment.setFrom(expression);
-		inputAssignment.setTo("inputs.b");
-		
-		serviceBinding.getInputAssignments().add(inputAssignment);
 		
 		expression = new ExpressionImpl();
-		expression.setLanguage("JEXL");
-		expression.setBody("outputs.out");
-		OutputAssignmentImpl outputAssignment = new OutputAssignmentImpl();
-		outputAssignment.setFrom(expression);
-		outputAssignment.setTo("processVars.z");
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(1).getName());
+		inputAssignment.setTo(expression);		
+		
+		//output 赋值
+		AssignmentImpl outputAssignment = new AssignmentImpl();
 		serviceBinding.getOutputAssignments().add(outputAssignment);
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("JEXL");
+		expression.setBody(ScriptContextVariableNames.OUTPUTS+"."+operation.getOutputs().get(0).getName());		
+		outputAssignment.setFrom(expression);
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/z");	
+		outputAssignment.setTo(expression);
+		
 
 		activity1.setServiceBinding(serviceBinding);
 
 		return process;
 	}
+	
+	public void assertResult(WorkflowSession session){
+		super.assertResult(session);
+		
+		//验证ProcessInstance信息
+		WorkflowQuery<ProcessInstance> q4ProcInst = session.createWorkflowQuery(ProcessInstance.class, FpdlConstants.PROCESS_TYPE);
+		ProcessInstance procInst = q4ProcInst.get(processInstanceId);
+		Assert.assertNotNull(procInst);
+		
+		Assert.assertEquals(null,procInst.getBizId());
+		Assert.assertEquals(processName, procInst.getProcessId());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
+		Assert.assertEquals(new Integer(1), procInst.getVersion());
+		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
+		Assert.assertEquals(processDisplayName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
+		Assert.assertEquals(ProcessInstanceState.COMPLETED, procInst.getState());
+		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
+		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(),procInst.getCreatorId());
+		Assert.assertEquals(FireWorkflowSystem.getInstance().getName(), procInst.getCreatorName());
+		Assert.assertEquals(FireWorkflowSystem.getInstance().getDeptId(), procInst.getCreatorDeptId());
+		Assert.assertEquals(FireWorkflowSystem.getInstance().getDeptName(),procInst.getCreatorDeptName());
+		Assert.assertNotNull(procInst.getCreatedTime());
+		Assert.assertNotNull(procInst.getEndTime());
+		Assert.assertNull(procInst.getExpiredTime());
+		Assert.assertNull(procInst.getParentActivityInstanceId());
+		Assert.assertNull(procInst.getParentProcessInstanceId());
+		Assert.assertNull(procInst.getParentScopeId());
+		Assert.assertNull(procInst.getNote());
+		
+		//验证Token信息
+		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class, FpdlConstants.PROCESS_TYPE);
+		q4Token.add(Restrictions.eq(TokenProperty.PROCESS_INSTANCE_ID, processInstanceId))
+				.addOrder(Order.asc(TokenProperty.STEP_NUMBER));
+		
+		List<Token> tokenList = q4Token.list();
+		Assert.assertNotNull(tokenList);
+		Assert.assertEquals(7, tokenList.size());
+		
+		Token procInstToken = tokenList.get(0);
+		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
+		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
+		Assert.assertEquals(processName,procInstToken.getProcessId());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
+		Assert.assertEquals(new Integer(1), procInstToken.getVersion());
+		Assert.assertEquals(TokenState.COMPLETED, procInstToken.getState());
+		Assert.assertNull(procInstToken.getParentTokenId());
+		Assert.assertTrue(procInstToken.isBusinessPermitted());
+		Assert.assertEquals(procInst.getTokenId(), procInstToken.getId());
+		
+		Token startNodeToken = tokenList.get(1);
+		Assert.assertEquals(processName, startNodeToken.getProcessId());
+		Assert.assertEquals(new Integer(1), startNodeToken.getVersion());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, startNodeToken.getProcessType());
+		Assert.assertEquals(procInstToken.getId(), startNodeToken.getParentTokenId());
+		Assert.assertTrue(startNodeToken.isBusinessPermitted());
+		
+
+		//第4、5、6号Token的OperationContext是FAULT
+		Token catchFaultToken = tokenList.get(4);
+		Assert.assertEquals(OperationContextName.FAULT, catchFaultToken.getOperationContextName());
+		Token transitionToken = tokenList.get(5);
+		Assert.assertEquals(OperationContextName.FAULT, transitionToken.getOperationContextName());
+		Token handleFaultToken = tokenList.get(6);
+		Assert.assertEquals(OperationContextName.FAULT, handleFaultToken.getOperationContextName());
+		
+		//检验fromToken的有效性
+		for (Token t:tokenList){
+			if (t!=procInstToken){
+				Assert.assertNotNull(t.getFromToken());
+			}
+		}
+		
+		//验证ActivityInstance信息
+		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
+		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+		List<ActivityInstance> actInstList = q4ActInst.list();
+		Assert.assertNotNull(actInstList);
+		Assert.assertEquals(1, actInstList.size());
+		ActivityInstance activityInstance = actInstList.get(0);
+		Assert.assertEquals(null, activityInstance.getBizId());
+		Assert.assertEquals("Activity1", activityInstance.getName());
+		Assert.assertEquals("Activity1", activityInstance.getDisplayName());
+		Assert.assertEquals(processInstanceId, activityInstance.getParentScopeId());
+		Assert.assertNotNull(activityInstance.getCreatedTime());
+		Assert.assertNotNull(activityInstance.getStartedTime());
+		Assert.assertNotNull(activityInstance.getEndTime());
+		Assert.assertNull(activityInstance.getExpiredTime());
+		Assert.assertNotNull( activityInstance.getTokenId());
+		Assert.assertNotNull(activityInstance.getScopeId());
+		Assert.assertEquals(ActivityInstanceState.FAULTED, activityInstance.getState());
+		
+		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
+		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
+		
+
+		
+	}	
 }
