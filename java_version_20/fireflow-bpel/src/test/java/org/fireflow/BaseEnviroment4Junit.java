@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -24,6 +23,7 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.schedule.Scheduler;
+import org.fireflow.engine.query.Order;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenProperty;
 import org.junit.AfterClass;
@@ -204,9 +204,9 @@ public class BaseEnviroment4Junit {
 			System.out.print("\t\t");
 			System.out.print(procInst.getState().getDisplayName());
 			System.out.print("\t\t");
-			System.out.print(procInst.getName());
+			System.out.print(procInst.getProcessName());
 			System.out.print("\t\t");
-			System.out.print(procInst.getDisplayName());
+			System.out.print(procInst.getProcessDisplayName());
 
 			System.out.println("\n");
 		}
@@ -281,7 +281,7 @@ public class BaseEnviroment4Junit {
 			System.out.print("\t\t");
 			System.out.print(var.getDataType());
 			System.out.print("\t\t");
-			System.out.print(var.getValueAsString());
+			System.out.print(var.getPayload());
 			System.out.println("\n");
 		}
 

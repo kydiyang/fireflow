@@ -59,7 +59,6 @@ public class WhileTest extends BaseEnviroment4Junit {
 															.addChild(new XYZActivity("While.Seq1.XYZActivity"))
 														)
 										));
-		
 				
 				//启动流程
 				try {

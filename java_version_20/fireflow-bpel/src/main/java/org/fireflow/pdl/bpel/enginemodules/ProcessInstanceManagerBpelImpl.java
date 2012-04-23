@@ -25,7 +25,7 @@ import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
-import org.fireflow.engine.modules.instancemanager.event.EventType;
+import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManager;
 import org.fireflow.engine.modules.ousystem.User;
 
@@ -51,9 +51,14 @@ public class ProcessInstanceManagerBpelImpl extends AbsProcessInstanceManager {
 		processInstance.setProcessId(descriptor.getProcessId());
 		processInstance.setVersion(descriptor.getVersion());
 		processInstance.setProcessType(descriptor.getProcessType());
+		
+		processInstance.setSubflowId(descriptor.getProcessId());
+		processInstance.setSubflowName(descriptor.getName());
+		processInstance.setSubflowDisplayName(descriptor.getDisplayName());
+		
 		processInstance.setBizId(bizId);
-		processInstance.setName(descriptor.getName());
-		processInstance.setDisplayName(descriptor.getDisplayName());
+		processInstance.setProcessName(descriptor.getName());
+		processInstance.setProcessDisplayName(descriptor.getDisplayName());
 		processInstance.setState(ProcessInstanceState.INITIALIZED);
 
 		processInstance.setCreatedTime(calendarService.getSysDate());
@@ -77,7 +82,7 @@ public class ProcessInstanceManagerBpelImpl extends AbsProcessInstanceManager {
 	 */
 	public void fireProcessInstanceEvent(WorkflowSession session,
 			ProcessInstance processInstance, Object workflowElement,
-			EventType eventType) {
+			ProcessInstanceEventTrigger eventType) {
 		// TODO Auto-generated method stub
 		
 	}

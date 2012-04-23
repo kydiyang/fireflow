@@ -27,7 +27,7 @@ import javax.script.SimpleScriptContext;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.misc.Utils;
+import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.data.Expression;
 import org.fireflow.model.data.impl.ExpressionImpl;
 import org.fireflow.pdl.bpel.BpelActivity;
@@ -88,29 +88,18 @@ public class While extends StructureActivity  {
 			
 //			ConditionResolver resolver = ctx.getEngineModule(ConditionResolver.class,BpelConstants.PROCESS_TYPE);
 //			boolean b = resolver.resolveBooleanExpression(session, exp, fireflowVariableContext);
-			Map<String,Object> fireflowVariableContext = Utils.fulfillScriptContext(session, 
-					session.getCurrentProcessInstance(),
-					session.getCurrentActivityInstance());
-			ScriptContext scriptContext = new SimpleScriptContext();
-	        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-	        engineScope.putAll(fireflowVariableContext);
-	        
+			Map<String, Object> fireflowVariableContext = ScriptEngineHelper
+					.fulfillScriptContext(session, ctx,
+							session.getCurrentProcessInstance(),
+							session.getCurrentActivityInstance());
+
 			boolean b = false;
+			Object obj;
 
-			ScriptEngine scriptEngine = ctx.getScriptEngine(exp
-					.getLanguage());
-			if (scriptEngine != null) {
-				Object obj;
-				try {
-					obj = scriptEngine.eval(exp.getBody(), scriptContext);
-					if (obj instanceof Boolean) {
-						b = ((Boolean) obj).booleanValue();
-					}
-				} catch (ScriptException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+			obj = ScriptEngineHelper.evaluateExpression(ctx, exp,
+					fireflowVariableContext);
+			if (obj instanceof Boolean) {
+				b = ((Boolean) obj).booleanValue();
 			}
 			if (b){
 				this.executeChildActivity(session, token, child.getChildBpelActivity());
@@ -160,32 +149,22 @@ public class While extends StructureActivity  {
 //			Map<String,Object> fireflowVariableContext = new HashMap<String,Object>();
 //			fireflowVariableContext.putAll(varValues);
 //			fireflowVariableContext.putAll("<系统常量>");
-			Map<String,Object> fireflowVariableContext = Utils.fulfillScriptContext(session, 
+			Map<String,Object> fireflowVariableContext = ScriptEngineHelper.fulfillScriptContext(session, ctx,
 					session.getCurrentProcessInstance(),
 					session.getCurrentActivityInstance());
-			ScriptContext scriptContext = new SimpleScriptContext();
-	        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-	        engineScope.putAll(fireflowVariableContext);
 	        
 //			ConditionResolver resolver = ctx.getEngineModule(ConditionResolver.class,BpelConstants.PROCESS_TYPE);
 //			boolean b = resolver.resolveBooleanExpression(session, exp, fireflowVariableContext);
 			boolean b = false;
 
-			ScriptEngine scriptEngine = ctx.getScriptEngine(exp
-					.getLanguage());
-			if (scriptEngine != null) {
-				Object obj;
-				try {
-					obj = scriptEngine.eval(exp.getBody(), scriptContext);
-					if (obj instanceof Boolean) {
-						b = ((Boolean) obj).booleanValue();
-					}
-				} catch (ScriptException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			Object obj;
 
+			obj = ScriptEngineHelper.evaluateExpression(ctx, exp,
+					fireflowVariableContext);
+			if (obj instanceof Boolean) {
+				b = ((Boolean) obj).booleanValue();
 			}
+
 			if (b){
 				return ContinueDirection.runAgain();
 			}else{

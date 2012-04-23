@@ -22,6 +22,7 @@ import java.util.List;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
@@ -115,6 +116,14 @@ public class Process2PObjectTranslatorBpelImpl implements
 	 */
 	public void setRuntimeContext(RuntimeContext ctx) {
 		this.runtimeContext = ctx;
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.context.EngineModule#init(org.fireflow.engine.context.RuntimeContext)
+	 */
+	public void init(RuntimeContext runtimeContext) throws EngineException {
+		// TODO Auto-generated method stub
 		
 	}
 
