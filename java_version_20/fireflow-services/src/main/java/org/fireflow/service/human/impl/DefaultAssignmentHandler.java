@@ -17,46 +17,21 @@
 package org.fireflow.service.human.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-
+import org.apache.commons.lang.StringUtils;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.entity.config.ReassignConfig;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.entity.runtime.WorkItem;
-import org.fireflow.engine.entity.runtime.WorkItemProperty;
-import org.fireflow.engine.entity.runtime.WorkItemState;
-import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.misc.ScriptContextVariableNames;
-import org.fireflow.engine.misc.Utils;
+import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
-import org.fireflow.engine.modules.instancemanager.WorkItemManager;
-import org.fireflow.engine.modules.ousystem.OUSystemAdapter;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.modules.persistence.PersistenceService;
-import org.fireflow.engine.modules.persistence.ReassignConfigPersister;
 import org.fireflow.engine.resource.ResourceResolver;
-import org.fireflow.engine.service.AssignmentHandler;
-import org.fireflow.model.binding.AssignmentStrategy;
-import org.fireflow.model.binding.ParameterAssignment;
 import org.fireflow.model.binding.ResourceBinding;
-import org.fireflow.model.binding.ResourceRef;
-import org.fireflow.model.binding.ServiceBinding;
-import org.fireflow.model.data.Expression;
-import org.fireflow.model.data.Input;
-import org.fireflow.model.resourcedef.ResolverDef;
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.resourcedef.ResourceDef;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 
 /**
  * 
@@ -64,229 +39,160 @@ import org.fireflow.model.resourcedef.Resource;
  * @author 非也
  * @version 2.0
  */
-public class DefaultAssignmentHandler implements AssignmentHandler {
+public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
+		AssignmentHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 772130701903585306L;
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.service.human.AssignmentHandler#assign(org.fireflow.engine.WorkflowSession, org.fireflow.engine.service.human.WorkItemManager, org.fireflow.engine.entity.runtime.ActivityInstance, org.fireflow.model.binding.ServiceBinding, org.fireflow.model.binding.ResourceBinding)
-	 */
-	public List<WorkItem> assign(WorkflowSession session,
-			ActivityInstance activityInstance,
-			ServiceBinding serviceBinding, ResourceBinding resourceBinding)
-			throws EngineException {
-		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-
-		WorkItemManager workItemManager = ctx.getEngineModule(WorkItemManager.class, activityInstance.getProcessType());
-
-		ProcessInstance currentProcessInstance = session.getCurrentProcessInstance();
-		
-		List<ResourceRef> potentialOwnerDefs = null;
-		if (resourceBinding!=null){
-			potentialOwnerDefs = resourceBinding.getPotentialOwners();
-		}
-		List<User> potentialOwners =  resolveResources(session, currentProcessInstance,
-				activityInstance, potentialOwnerDefs);	
-		
-		List<WorkItem> result = new ArrayList<WorkItem>();
-		
-		if (potentialOwners==null || potentialOwners.size()==0){
-			//通知业务领导进行处理
-			List<ResourceRef> administratorDefs = null;
-			if (resourceBinding!=null){
-				administratorDefs = resourceBinding.getAdministrators();
-			}
-			List<User> administrators = resolveResources(session, currentProcessInstance,
-					activityInstance, administratorDefs);	
-			if (administrators==null || administrators.size()==0){
-				//TODO 赋值给Fireflow内置用户，并记录警告信息
-				WorkItem wi = workItemManager.createWorkItem(session, currentProcessInstance, activityInstance, FireWorkflowSystem.getInstance(), null);
-				result.add(wi);
-			}else{
-				Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
-				values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, AssignmentStrategy.ASSIGN_TO_ANY);
-				
-				for (User user : administrators) {
-					//这种情况下，ASSIGNMENT_STRATEGY固定为WorkItem.ASSIGNMENT_ANY
-					WorkItem wi = workItemManager.createWorkItem(session,
-							currentProcessInstance, activityInstance, user, values);
-
-					result.add(wi);
-					
-					List<User> agents = findReassignTo(ctx, activityInstance
-							.getProcessId(), activityInstance.getProcessType(),
-							activityInstance.getNodeId(), user.getId());
-					if (agents != null && agents.size() != 0) {
-
-						List<WorkItem> agentWorkItems = workItemManager
-								.reassignWorkItemTo(session, wi, agents,
-										WorkItem.REASSIGN_AFTER_ME,
-										AssignmentStrategy.ASSIGN_TO_ANY);
-						
-						result.addAll(agentWorkItems);
-					}
-
-				}
-			}
-		}else{
-			Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
-			values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, resourceBinding.getAssignmentStrategy());
-			for (User user : potentialOwners) {
-				
-				WorkItem wi = workItemManager.createWorkItem(session,
-						currentProcessInstance, activityInstance, user, values);
-				result.add(wi);
-				
-				List<User> agents = findReassignTo(ctx, activityInstance
-						.getProcessId(), activityInstance.getProcessType(),
-						activityInstance.getNodeId(), user.getId());
-				if (agents != null && agents.size() != 0) {
-
-					List<WorkItem> agentWorkItems = workItemManager
-							.reassignWorkItemTo(session, wi, agents,
-									WorkItem.REASSIGN_AFTER_ME,
-									AssignmentStrategy.ASSIGN_TO_ANY);
-					
-					result.addAll(agentWorkItems);
-				}				
-			}			
-		}
-		
-		List<ResourceRef> readerDefs = null;
-		if (resourceBinding!=null){
-			readerDefs = resourceBinding.getReaders();
-		}
-		List<User> readers = resolveResources(session, currentProcessInstance,
-				activityInstance, readerDefs);
-		if (readers != null && readers.size() > 0) {
-			Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
-			values.put(WorkItemProperty.STATE, WorkItemState.READONLY);
-			for (User user : readers) {
-				WorkItem wi = workItemManager.createWorkItem(session,
-						currentProcessInstance, activityInstance, user, values);
-
-				result.add(wi);
-			}
-		}
-		return result;
-	}
 	/**
-	 * 解析参数
+	 * 解析参数 TODO 解析参数有必要吗？会不会把事情搞复杂，可以直接从processInstance中获取，用不着配置
+	 * 
 	 * @param parameterAssignment
 	 * @return
 	 */
-	protected Map<String,Object> resolveParameters(WorkflowSession session,ProcessInstance processInstance,ActivityInstance activityInstance,Resource resource,List<ParameterAssignment> parameterAssignments){
-		Map<String,Object> results = new HashMap<String,Object>();
-		
-		//首先初始化results 
-		List<Input> parameters = resource.getResolver().getParameters();
-		if (parameters!=null){
-			for (Input parameter : parameters){
-				String strValue = parameter.getDefaultValueAsString();
-				if (strValue!=null && !strValue.trim().equals("")){
-					Object value = Utils.string2Object(strValue, parameter.getDataType(), null);
-					results.put(parameter.getName(), value);
-				}else{
-					results.put(parameter.getName(), null);
-				}
-			}
-		}
-		
-		if (parameterAssignments==null || parameterAssignments.size()==0){
-			return results;
-		}
-		
-		Map<String,Object> fireVarCtx = Utils.fulfillScriptContext(session, processInstance, activityInstance);
-		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl) session;
-		RuntimeContext ctx = localSession.getRuntimeContext();
+	// protected Map<String, Object> resolveParameters(WorkflowSession session,
+	// ProcessInstance processInstance, ActivityInstance activityInstance,
+	// ResourceDef resource, List<Assignment> parameterAssignments)
+	// throws ScriptException {
+	// Map<String, Object> results = new HashMap<String, Object>();
+	//
+	// // 首先初始化results
+	// List<Input> parameters = resource.getResolverParameters();
+	// if (parameters != null) {
+	// for (Input parameter : parameters) {
+	// String strValue = parameter.getDefaultValueAsString();
+	// if (strValue != null && !strValue.trim().equals("")) {
+	// Object value;
+	// try {
+	// value =
+	// JavaDataTypeConverter.dataTypeConvert(parameter.getDataType(),strValue,
+	// null);
+	// } catch (ClassCastException e) {
+	// throw new ScriptException(e);
+	// } catch (ClassNotFoundException e) {
+	// throw new ScriptException(e);
+	// }
+	// results.put(parameter.getName(), value);
+	// } else {
+	// results.put(parameter.getName(), null);
+	// }
+	// }
+	// }
+	//
+	// if (parameterAssignments == null || parameterAssignments.size() == 0) {
+	// return results;
+	// }
+	//
+	// Map<String, Object> tmpResult = null;
+	// Map<String, Object> contextVars =
+	// ScriptEngineHelper.fulfillScriptContext(session,
+	// runtimeContext, processInstance, activityInstance);
+	// tmpResult = ScriptEngineHelper.resolveInputParameters(
+	// runtimeContext, parameterAssignments, contextVars);
+	//
+	// results.putAll(tmpResult);
+	//
+	// return results;
+	// }
 
-		for (ParameterAssignment input : parameterAssignments) {
-			Expression expression = input.getFrom();
-
-			ScriptEngine scriptEngine = ctx.getScriptEngine(expression
-					.getLanguage());
-			ScriptContext scriptContext = new SimpleScriptContext();
-			Bindings engineScope = scriptContext
-					.getBindings(ScriptContext.ENGINE_SCOPE);
-			engineScope.putAll(fireVarCtx);
-
-			Object obj = null;
-
-			try {
-				obj = scriptEngine.eval(expression.getBody(), scriptContext);
-			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			String inputName = input.getTo();
-			
-			int index = inputName.indexOf(ScriptContextVariableNames.INPUTS);
-			if (index==0){
-				inputName = inputName.substring(index+ScriptContextVariableNames.INPUTS.length()+1);
-			}
-
-			
-			results.put(inputName, obj);
-
-		}
-
-		
-		return results;
-	}
-	
 	protected List<User> resolveResources(WorkflowSession session,
 			ProcessInstance processInstance, ActivityInstance activityInstance,
-			List<ResourceRef> resourceRefs) {
+			List<ResourceDef> resourceRefs) {
 		if (resourceRefs == null || resourceRefs.size() == 0) {
 			return null;
 		}
-		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
-				.getRuntimeContext();
-		BeanFactory beanFactory = ctx.getEngineModule(BeanFactory.class,
-				activityInstance.getProcessType());
+		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		BeanFactory beanFactory = runtimeContext.getEngineModule(
+				BeanFactory.class, activityInstance.getProcessType());
 
 		List<User> users = new ArrayList<User>();
 
-		for (ResourceRef resourceRef : resourceRefs) {
-			Resource resource = resourceRef.getResource();
+		for (ResourceDef resource : resourceRefs) {
 			if (resource == null) {
 				// TODO 记录警告日志，
-				break;
+				continue;
 			}
-			ResolverDef resolver = resource.getResolver();
-			ResourceResolver resourceResolver = (ResourceResolver) beanFactory
-					.getBean(resolver.getBeanName());
-			List<ParameterAssignment> parameterAssignments = resourceRef
-					.getParameterAssignments();
-			Map<String, Object> parameterValues = this.resolveParameters(
-					session, processInstance, activityInstance, resource,
-					parameterAssignments);
 
-			List<User> _users = resourceResolver.resolve(session,resource,
-					parameterValues);
-			users.addAll(_users);
+			// try {
+			ResourceResolver resourceResolver = null;
+			String resolverBeanName = resource.getResolverBeanName();
+			String resolverClassName = resource.getResolverClassName();
+			// 首先应用resolver bean name
+			if (!StringUtils.isEmpty(resolverBeanName)) {
+				resourceResolver = (ResourceResolver) beanFactory
+						.getBean(resolverBeanName);
+			}
+			else if (!StringUtils.isEmpty(resolverClassName)){
+				// 然后应用resolver class name
+				resourceResolver = (ResourceResolver) beanFactory
+				.createBean(resolverClassName);
+			}
+			
+			// 最后 ，通过resource type取得resolver
+			if (resourceResolver == null) {
+				resourceResolver = ResourceResolver
+						.getResourceResolverForType(resource.getResourceType());
+			}
+
+			if (resourceResolver != null) {
+				List<User> _users = resourceResolver.resolve(session,
+						processInstance, activityInstance, resource);
+				users.addAll(_users);
+			}
 		}
 		return users;
 	}
-	
-	protected List<User> findReassignTo(RuntimeContext rtCtx,String processId,String processType,String activityId,String userId){
-		PersistenceService persistenceService = rtCtx.getEngineModule(PersistenceService.class, processType);
-		ReassignConfigPersister persister = persistenceService.getReassignConfigPersister();
-		
-		List<ReassignConfig> configs = persister.findReassignConfig(processId, processType, activityId,userId);
-		
-		if (configs==null || configs.size()==0) return null;
-		
-		List<User> agents = new ArrayList<User>();
-		OUSystemAdapter ousystem = rtCtx.getEngineModule(OUSystemAdapter.class, processType);
-		for (ReassignConfig config : configs){
-			User u = ousystem.findUserById(config.getAgentId());
-			agents.add(u);
+
+	@Override
+	public List<User> getPotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
+			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
+		List<ResourceDef> potentialOwnersResourceRef = resourceBinding
+				.getPotentialOwners();
+		if (potentialOwnersResourceRef != null
+				&& potentialOwnersResourceRef.size() > 0) {
+			return this.resolveResources(session, processInstance,
+					activityInstance, potentialOwnersResourceRef);
+		} else {
+			return null;
 		}
-		return agents;
 	}
+
+	@Override
+	public List<User> getReaders(WorkflowSession session, ResourceBinding resourceBinding,
+			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
+		List<ResourceDef> potentialOwnersResourceRef = resourceBinding
+				.getReaders();
+		if (potentialOwnersResourceRef != null
+				&& potentialOwnersResourceRef.size() > 0) {
+			return this.resolveResources(session, processInstance,
+					activityInstance, potentialOwnersResourceRef);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public List<User> getAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
+			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
+		List<ResourceDef> potentialOwnersResourceRef = resourceBinding
+				.getAdministrators();
+		if (potentialOwnersResourceRef != null
+				&& potentialOwnersResourceRef.size() > 0) {
+			return this.resolveResources(session, processInstance,
+					activityInstance, potentialOwnersResourceRef);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public WorkItemAssignmentStrategy getAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
+			Object theActivity) {
+
+		return resourceBinding.getAssignmentStrategy();
+	}
+
 }

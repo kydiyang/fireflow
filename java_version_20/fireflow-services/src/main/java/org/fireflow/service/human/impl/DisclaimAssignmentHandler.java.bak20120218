@@ -29,14 +29,15 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.modules.instancemanager.WorkItemManager;
+import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.service.AssignmentHandler;
-import org.fireflow.model.binding.AssignmentStrategy;
+import org.fireflow.engine.modules.workitem.WorkItemManager;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ResourceRef;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+import org.fireflow.service.human.HumanService;
 
 /**
  * 用于退签收时进行工作项分配。
@@ -58,36 +59,35 @@ public class DisclaimAssignmentHandler extends DefaultAssignmentHandler implemen
 	public List<WorkItem> assign(WorkflowSession session, ActivityInstance activityInstance,
 			ServiceBinding serviceBinding, ResourceBinding resourceBinding)
 			throws EngineException {
-		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		WorkItemManager workItemManager = ctx.getEngineModule(WorkItemManager.class, activityInstance.getProcessType());
 		
-		ProcessInstance currentProcessInstance = session.getCurrentProcessInstance();
+		WorkItemManager workItemManager = runtimeContext.getEngineModule(WorkItemManager.class, activityInstance.getProcessType());
 		
-		List<ResourceRef> potentialOwnerDefs = resourceBinding.getPotentialOwners();
-		List<User> potentialOwners =  resolveResources(session, currentProcessInstance,
-				activityInstance, potentialOwnerDefs);	
+		Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
+		HumanService service = (HumanService)serviceBinding.getService();
+		values.put(WorkItemProperty.FORM_RUL, service.getFormUrl());
+		
+		List<User> potentialOwners =  this.getPotentialOwners();	
 		
 		List<WorkItem> result = new ArrayList<WorkItem>();
 		
 		if (potentialOwners==null || potentialOwners.size()==0){
 			//通知业务领导进行处理
-			List<ResourceRef> administratorDefs = resourceBinding.getAdministrators();
-			List<User> administrators = resolveResources(session, currentProcessInstance,
-					activityInstance, administratorDefs);	
+			
+			List<User> administrators = this.getAdministrators();
+			
 			if (administrators==null || administrators.size()==0){
 				//赋值给Fireflow内置用户，并记录警告信息
-				WorkItem wi = workItemManager.createWorkItem(session, currentProcessInstance, activityInstance, FireWorkflowSystem.getInstance(), null);
+				WorkItem wi = workItemManager.createWorkItem(session, processInstance, activityInstance, FireWorkflowSystem.getInstance(), null);
 				result.add(wi);
-			}else{
-				Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
-				values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, AssignmentStrategy.ASSIGN_TO_ANY);
+			}else{				
+				values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, WorkItemAssignmentStrategy.ASSIGN_TO_ANY);
 
 				for (User user : administrators) {
 					WorkItem wi = workItemManager.createWorkItem(session,
-							currentProcessInstance, activityInstance, user, values);
+							processInstance, activityInstance, user, values);
 					result.add(wi);
 					
-					List<User> agents = findReassignTo(ctx, activityInstance
+					List<User> agents = findReassignTo(runtimeContext, activityInstance
 							.getProcessId(), activityInstance.getProcessType(),
 							activityInstance.getNodeId(), user.getId());
 					if (agents != null && agents.size() != 0) {
@@ -95,22 +95,22 @@ public class DisclaimAssignmentHandler extends DefaultAssignmentHandler implemen
 						List<WorkItem> agentWorkItems = workItemManager
 								.reassignWorkItemTo(session, wi, agents,
 										WorkItem.REASSIGN_AFTER_ME,
-										AssignmentStrategy.ASSIGN_TO_ANY);
+										WorkItemAssignmentStrategy.ASSIGN_TO_ANY);
 						
 						result.addAll(agentWorkItems);
 					}						
 				}
 			}
 		}else{
-			Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
-			values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, resourceBinding.getAssignmentStrategy());
+			
+			values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, this.getAssignmentStrategy());
 			for (User user : potentialOwners) {
 				WorkItem wi = workItemManager.createWorkItem(session,
-						currentProcessInstance, activityInstance, user, values);
+						processInstance, activityInstance, user, values);
 
 				result.add(wi);
 				
-				List<User> agents = findReassignTo(ctx, activityInstance
+				List<User> agents = findReassignTo(runtimeContext, activityInstance
 						.getProcessId(), activityInstance.getProcessType(),
 						activityInstance.getNodeId(), user.getId());
 				if (agents != null && agents.size() != 0) {
@@ -118,7 +118,7 @@ public class DisclaimAssignmentHandler extends DefaultAssignmentHandler implemen
 					List<WorkItem> agentWorkItems = workItemManager
 							.reassignWorkItemTo(session, wi, agents,
 									WorkItem.REASSIGN_AFTER_ME,
-									AssignmentStrategy.ASSIGN_TO_ANY);
+									WorkItemAssignmentStrategy.ASSIGN_TO_ANY);
 					
 					result.addAll(agentWorkItems);
 				}					
