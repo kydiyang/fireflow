@@ -14,18 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.model.binding.impl;
+package org.fireflow.model.servicedef;
 
-import org.fireflow.model.binding.OutputAssignment;
-import org.fireflow.model.data.Expression;
+import java.util.List;
+
+import org.fireflow.model.data.Input;
+import org.fireflow.model.data.Output;
+
+
 
 /**
- * 
- * 
  * @author 非也
  * @version 2.0
- * @deprecated
  */
-public class OutputAssignmentImpl extends AssignmentImpl implements OutputAssignment {
+public interface OperationDef{
+	public String getOperationName();
 
+	public List<Input> getInputs();
+
+	public List<Output> getOutputs();
 }

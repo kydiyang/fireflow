@@ -17,6 +17,9 @@
 package org.fireflow.model;
 
 import java.io.Serializable;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 流程元素抽象类
@@ -27,10 +30,13 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
 
 	private static final long serialVersionUID = -320956235993400548L;
 
+	private static String regex = "^[a-zA-Z_]+[a-zA-Z0-9_]*";
+	private static Pattern p = Pattern.compile(regex);
+	
 	/**
 	 * 元素序列号，请不要在业务代码里面使用该属性的信息。因为这个属性的值是变化的。
 	 */
-    private String sn = null;
+    private String sn = UUID.randomUUID().toString();
     
     /**
      * 父元素
@@ -38,12 +44,12 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
     private ModelElement parentElement;
     
     /**
-     * 名称
+     * 名称，必须符合java变量命名规范，即字母开头，中间可以是字母、数字、下划线，中间不可以有空格。
      */
     private String name;
     
     /**
-     * 显示名称
+     * 显示名称，可以是中文
      */
     private String displayName;
     
@@ -74,16 +80,23 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
      * @param parentElement 父流程元素
      * @param name 本流程元素的名称
      */
-    public AbstractModelElement(ModelElement parentElement, String name) {
-        this.parentElement = parentElement;
-        setName(name);
-    }
+	public AbstractModelElement(ModelElement parentElement, String name) {
+		this.parentElement = parentElement;
+		setName(name);
+		this.setDisplayName(name);//缺省情况下displayName等于name
+	}
+	
+	public AbstractModelElement(ModelElement parentElement, String name,String displayName) {
+		this.parentElement = parentElement;
+		setName(name);
+		this.setDisplayName(displayName);//缺省情况下displayName等于name
+	}
 
     public String getId() {
         if (parentElement == null) {
             return this.getName();
         } else {
-            return parentElement.getId() + "." + this.getName();
+            return parentElement.getId() + ID_SEPARATOR + this.getName();
         }
 
     }
@@ -96,6 +109,11 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
         if (name == null) {
             throw new IllegalArgumentException("name cannot be null");
         }
+        
+		Matcher m = p.matcher(name);
+		if (!m.matches()) {
+			throw new IllegalArgumentException("Invalid name.");
+		}
 
         this.name = name;
     }
@@ -153,7 +171,4 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
         return sn;
     }
 
-    public void setSn(String s){
-        sn = s;
-    }
 }

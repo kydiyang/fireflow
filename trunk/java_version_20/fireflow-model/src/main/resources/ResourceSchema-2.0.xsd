@@ -38,35 +38,28 @@
     <element name="resolver" type="r:resolverType"></element>
 
     <complexType name="resolverType">
-    	<sequence>
-    		<element ref="r:parameters" minOccurs="0" maxOccurs="1"></element>
-    	</sequence>
+        <annotation>
+        	<documentation>
+        		流程系统获取资源解析器（ResourceResolver 实例）的方案如下：
+        		首先，如果bean-name不为空，则通过bean-name从ioc容器获得该ResourceResolver bean；
+        		否则，如果class-name不为空，则实例化该class作为ResourceResolver 实例；
+        		最后，如果上述属性都为空，则通过resourcedef的resource type获得ResourceResolver 实例。
+        	</documentation>
+    	</annotation>
     	<attribute name="bean-name" type="string" use="required">
     		<annotation>
     			<documentation>
-    				资源解析器的bean
-    				name，如果以“#”开头，则表示是一个IOC容器中的bean，例如：#MyRoleResolver表示名称为“MyRoleResolver”的bean；否则该字段的值表示bean的class
-    				name。
+    				资源解析器的bean	name。
+    			</documentation>
+    		</annotation>
+    	</attribute>
+    	<attribute name="class-name" type="string">
+    	    <annotation>
+    			<documentation>
+    				资源解析器的class name。
     			</documentation>
     		</annotation>
     	</attribute>
     </complexType>
 
-    <element name="parameters" type="r:parametersType"></element>
-
-    <element name="parameter" type="r:parameterType"></element>
-
-    <complexType name="parametersType">
-    	<sequence>
-    		<element ref="r:parameter" minOccurs="0" maxOccurs="unbounded"></element>
-    	</sequence>
-    </complexType>
-    
-    <complexType name="parameterType">
-    	<attribute name="name" type="Name"></attribute>
-    	<attribute name="display-name" type="string"></attribute>
-    	<attribute name="data-type" type="string"></attribute>
-    	<attribute name="default-value" type="string"></attribute>
-    	<attribute name="data-pattern" type="string"></attribute>
-    </complexType>
 </schema>

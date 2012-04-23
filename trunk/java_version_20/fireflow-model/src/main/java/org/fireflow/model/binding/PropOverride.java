@@ -21,6 +21,7 @@ package org.fireflow.model.binding;
  * 
  * @author 非也
  * @version 2.0
+ * @deprecated
  */
 public interface PropOverride {
 	public String getPropGroupName();

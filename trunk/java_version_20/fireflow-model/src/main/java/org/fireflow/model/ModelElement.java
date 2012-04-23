@@ -31,6 +31,7 @@ import java.util.Map;
  * 
  */
 public interface ModelElement {
+	public static final String ID_SEPARATOR = ".";
     /**
      * 返回元素的序列号，
      * 业务系统无须关心该序列号。
@@ -38,7 +39,6 @@ public interface ModelElement {
      */
     public String getSn();
 
-    public void setSn(String s);
 
     /**
      * 返回工作流元素的Id

@@ -16,6 +16,8 @@
  */
 package org.fireflow.model.data.impl;
 
+import javax.xml.namespace.QName;
+
 import org.fireflow.model.data.DataElement;
 
 /**
@@ -30,12 +32,12 @@ public abstract class AbsDataElement implements DataElement {
     /**
      * 数据类型，数据类型必须是一个合法的java类名，如 java.lang.String，java.lang.Integer等。
      */
-    private String dataType;
+    private QName dataType;
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.data.DataElement#getDataType()
 	 */
-	public String getDataType() {
+	public QName getDataType() {
 		return dataType;
 	}
 
@@ -56,7 +58,7 @@ public abstract class AbsDataElement implements DataElement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.data.DataElement#setDataType(java.lang.String)
 	 */
-	public void setDataType(String dataType) {
+	public void setDataType(QName dataType) {
 		this.dataType = dataType;
 
 	}

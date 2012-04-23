@@ -1,6 +1,6 @@
 package org.fireflow.model.data;
 
-import org.fireflow.model.ModelElement;
+import javax.xml.namespace.QName;
 
 /**
  * 数据元素
@@ -16,10 +16,12 @@ public interface DataElement {
 	public void setDisplayName(String displayName);
 	
 	/**
-	 * 数据类型，数据类型必须是一个合法的java类名，如 java.lang.String，java.lang.Integer等
+	 * 数据类型，数据类型必须是一个QName；<br/>
+	 * 对于Java类型，写作java:javax.lang.Integer；
+	 * XSD数据类型可以写作如, xsd:string; 
 	 * @return
 	 */
-    public String getDataType();
+    public QName getDataType();
     
-    public void setDataType(String dataType);
+    public void setDataType(QName dataType);
 }

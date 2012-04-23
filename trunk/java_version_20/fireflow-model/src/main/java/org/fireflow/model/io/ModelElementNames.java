@@ -16,7 +16,6 @@
  */
 package org.fireflow.model.io;
 
-import org.dom4j.Namespace;
 
 /**
  * 
@@ -78,11 +77,26 @@ public interface ModelElementNames {
     String DEFAULT_VALUE = "default-value";
     
     String BEAN_NAME = "bean-name";
+    String CLASS_NAME = "class-name";
+    
+    String EXTENDED_ATTRIBUTES = "extended-attributes";
+    String EXTENDED_ATTRIBUTE = "extended-attribute";
+    
+    String TARGET_NAMESPACE = "target-namespace";
+    
+    String NAMESPACE_PREFIX_URI_MAP = "namespace_prefix_uri_map";
+    
+    String ENTRY = "entry";
     //******************************************//
     //*********** Service 相关  *****************//
     //*****************************************//
     String SERVICES = "services";
     String SERVICE = "service";
+    String INTERFACE_COMMON = "interface.common";
+    String PARSER_CLASS_NAME = "parser-class";
+    String INVOKER_BEAN_NAME = "invoker-bean";
+    String INVOKER_CLASS_NAME = "invoker-class";
+    
     String EXECUTOR_NAME = "executor-name";
     
     String SERVICE_TYPE = "service-type";
@@ -103,11 +117,11 @@ public interface ModelElementNames {
     
     String OUTPUT = "output";
 
-    String PROP_GROUPS = "prop-groups";
-    
-    String PROP_GROUP = "prop-group";
-    
-    String PROP = "prop";
+//    String PROP_GROUPS = "prop-groups";
+//    
+//    String PROP_GROUP = "prop-group";
+//    
+//    String PROP = "prop";
 
     //******************************************//
     //*********** Resource 相关  *****************//
@@ -125,6 +139,6 @@ public interface ModelElementNames {
     
     String DATA_TYPE = "data-type";
     
-    Namespace SERVICE_NS = new Namespace(SERVICE_NS_PREFIX, SERVICE_NS_URI);
-    Namespace RESOURCE_NS = new Namespace(RESOURCE_NS_PREFIX, RESOURCE_NS_URI);
+//    Namespace SERVICE_NS = new Namespace(SERVICE_NS_PREFIX, SERVICE_NS_URI);
+//    Namespace RESOURCE_NS = new Namespace(RESOURCE_NS_PREFIX, RESOURCE_NS_URI);
 }

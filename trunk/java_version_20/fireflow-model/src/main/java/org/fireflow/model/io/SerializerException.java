@@ -2,10 +2,9 @@
 
 package org.fireflow.model.io;
 
-import org.fireflow.model.InvalidModelException;
 
 @SuppressWarnings("serial")
-public class SerializerException extends InvalidModelException{
+public class SerializerException extends Exception{
 
     /** 
      * Construct a new FPDLSerializerException. 

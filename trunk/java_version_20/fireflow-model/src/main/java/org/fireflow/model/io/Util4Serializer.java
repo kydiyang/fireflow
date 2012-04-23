@@ -24,10 +24,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.dom4j.CDATA;
-import org.dom4j.Element;
-import org.dom4j.QName;
+import javax.xml.namespace.QName;
+
+import org.apache.commons.lang.StringUtils;
 import org.fireflow.model.misc.Duration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 /** 
@@ -58,11 +60,26 @@ public class Util4Serializer{
      * @return The child element
      */
     public static Element addElement(Element parent, String name){
-        return parent.addElement(new QName(name, parent.getNamespace()));
+    	Document doc = parent.getOwnerDocument();
+    	String qualifiedName = name;
+    	if (!StringUtils.isEmpty(parent.getPrefix())){
+    		qualifiedName = parent.getPrefix()+":"+name;
+    	}
+    	Element child = doc.createElementNS(parent.getNamespaceURI(), qualifiedName);
+        parent.appendChild(child);
+        return child;
     }
 
-    public static Element addElement(Element parent,QName name){
-    	return parent.addElement(name);
+    public static Element addElement(Element parent,QName qname){
+    	Document doc = parent.getOwnerDocument();
+    	
+    	String qualifiedName = qname.getLocalPart();
+    	if (!StringUtils.isEmpty(qname.getPrefix())){
+    		qualifiedName = qname.getPrefix()+":"+qname.getLocalPart();
+    	}
+    	Element child = doc.createElementNS(parent.getNamespaceURI(), qualifiedName);
+        parent.appendChild(child);
+    	return child;
     }
     
     /** 
@@ -96,6 +113,7 @@ public class Util4Serializer{
      */
     public static Element addElement(Element parent, String name, Date value,
     Date defaultValue){
+    	Document doc = parent.getOwnerDocument();
         Element child = null;
 
         if(value == null){
@@ -104,7 +122,7 @@ public class Util4Serializer{
 
         if(value != null){
             child = addElement(parent, name);
-            child.addText(STANDARD_DF.format(value));
+            child.appendChild(doc.createTextNode(STANDARD_DF.format(value)));
         }
 
         return child;
@@ -132,16 +150,16 @@ public class Util4Serializer{
      * @param value
      * @return
      */
-    public static Element addElement(Element parent,String name,CDATA value){
-
-      Element child = null;
-
-      child = addElement(parent, name);
-      child.add(value);
-
-      return child;
-
-    }
+//    public static Element addElement(Element parent,String name,CDATA value){
+//
+//      Element child = null;
+//
+//      child = addElement(parent, name);
+//      child.add(value);
+//
+//      return child;
+//
+//    }
 
     /** 
      * Add a child element with the specific name and the given value to
@@ -159,6 +177,7 @@ public class Util4Serializer{
      */
     public static Element addElement(Element parent, String name, String value,
     String defaultValue){
+    	Document doc = parent.getOwnerDocument();
         Element child = null;
 
         if(value == null){
@@ -167,7 +186,7 @@ public class Util4Serializer{
 
         if(value != null){
             child = addElement(parent, name);
-            child.addText(value);
+            child.appendChild(doc.createTextNode(value));
         }
 
         return child;
@@ -204,6 +223,7 @@ public class Util4Serializer{
      */
     public static Element addElement(Element parent, String name, URL value,
     URL defaultValue){
+    	Document doc = parent.getOwnerDocument();
         Element child = null;
 
         if(value == null){
@@ -212,7 +232,7 @@ public class Util4Serializer{
 
         if(value != null){
             child = addElement(parent, name);
-            child.addText(value.toString());
+            child.appendChild(doc.createTextNode(value.toString()));
         }
 
         return child;
@@ -250,14 +270,14 @@ public class Util4Serializer{
     public static Element addElement(Element parent, String name, Duration value,
     Duration defaultValue){
         Element child = null;
-
+        Document doc = parent.getOwnerDocument();
         if(value == null){
             value = defaultValue;
         }
 
         if(value != null){
             child = addElement(parent, name);
-            child.addText(value.toString());
+            child.appendChild(doc.createTextNode(value.toString()));
         }
 
         return child;
@@ -268,9 +288,9 @@ public class Util4Serializer{
      * @param name
      * @return
      */
-    public static Element child(Element element, String name) {
-        return element.element(new QName(name, element.getNamespace()));
-    }
+//    public static Element child(Element element, String name) {
+//        return element.element(new QName(name, element.getNamespace()));
+//    }
 
     /** 
      * Return the child elements with the given name.  The elements must be in
@@ -279,10 +299,10 @@ public class Util4Serializer{
      * @param name The child element name
      * @return The child elements
      */
-    @SuppressWarnings("unchecked")
-	public static List children(Element element, String name) {
-        return element.elements(new QName(name, element.getNamespace()));
-    }
+//    @SuppressWarnings("unchecked")
+//	public static List children(Element element, String name) {
+//        return element.elements(new QName(name, element.getNamespace()));
+//    }
 
     // Conversion
 
@@ -294,46 +314,46 @@ public class Util4Serializer{
      * @param name The child element name
      * @return The child element value
      */
-    public static String elementAsString(Element element, String name) {
-        String s = element.elementTextTrim(
-            new QName(name, element.getNamespace()));
-        return (s == null || s.length() == 0) ? null : s;
-    }
+//    public static String elementAsString(Element element, String name) {
+//        String s = element.elementTextTrim(
+//            new QName(name, element.getNamespace()));
+//        return (s == null || s.length() == 0) ? null : s;
+//    }
 
     /**
      * 
      * @param element
      * @param name
      * @return
-     * @throws ParserException
+     * @throws DeserializerException
      */
-    public static Date elementAsDate(Element element, String name) throws
-        ParserException {
-        String text = elementAsString(element, name);
-        if (text == null) {
-            return null;
-        }
-
-        try {
-            return DateUtilities.getInstance().parse(text);
-            //return STANDARD_DF.parse(text);
-        } catch (ParseException e) {
-            throw new ParserException("Error parsing date: " + text, e);
-        }
-    }
-
-    /**
-     * 
-     * @param element
-     * @param name
-     * @return
-     */
-    public static int elementAsInteger(Element element, String name) {
-        String text = elementAsString(element, name);
-        if (text == null) {
-            return 0;
-        }
-
-        return Integer.parseInt(text);
-    }
+//    public static Date elementAsDate(Element element, String name) throws
+//        DeserializerException {
+//        String text = elementAsString(element, name);
+//        if (text == null) {
+//            return null;
+//        }
+//
+//        try {
+//            return DateUtilities.getInstance().parse(text);
+//            //return STANDARD_DF.parse(text);
+//        } catch (ParseException e) {
+//            throw new DeserializerException("Error parsing date: " + text, e);
+//        }
+//    }
+//
+//    /**
+//     * 
+//     * @param element
+//     * @param name
+//     * @return
+//     */
+//    public static int elementAsInteger(Element element, String name) {
+//        String text = elementAsString(element, name);
+//        if (text == null) {
+//            return 0;
+//        }
+//
+//        return Integer.parseInt(text);
+//    }
 }
