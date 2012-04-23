@@ -35,6 +35,7 @@ import org.fireflow.pdl.fpdl20.diagram.Diagram;
  * 
  */
 public interface WorkflowProcess extends ModelElement{
+	
 	public static final String MAIN_FLOW_NAME="main_flow";
 	
 	/**
