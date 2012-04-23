@@ -30,7 +30,14 @@ public interface Scope {
 	public String getParentScopeId();
 	public Object getVariableValue(WorkflowSession session,String name);
 	public void setVariableValue(WorkflowSession session ,String name ,Object value)throws InvalidOperationException;
+	public void setVariableValue(WorkflowSession session ,String name,Object value,Map<String,String> headers)throws InvalidOperationException;
 	public Map<String,Object> getVariableValues(WorkflowSession session);
+	
+	/**
+	 * 获得对应的流程元素的Id
+	 * @return
+	 */
+	public String getProcessElementId();
 	public String getProcessId();
 	public Integer getVersion();
 	public String getProcessType();

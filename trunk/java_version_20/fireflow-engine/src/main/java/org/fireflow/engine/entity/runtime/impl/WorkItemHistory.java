@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.entity.runtime.impl;
 
+import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
@@ -32,14 +33,14 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#claim()
 	 */
-	public WorkItem claim() throws InvalidOperationException {
+	public WorkItem claim(WorkflowSession session) throws InvalidOperationException {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#complete()
 	 */
-	public void complete() throws EngineException, KernelException {
+	public void complete(WorkflowSession session) throws EngineException, KernelException {
 		// TODO Auto-generated method stub
 
 	}
@@ -47,7 +48,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#complete(java.lang.String)
 	 */
-	public void complete(String comments) throws EngineException,
+	public void complete(WorkflowSession session,String comments) throws EngineException,
 			KernelException {
 		// TODO Auto-generated method stub
 
@@ -56,7 +57,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#disclaim(java.lang.String)
 	 */
-	public void disclaim(String commentDetail) throws InvalidOperationException {
+	public void disclaim(WorkflowSession session,String commentDetail) throws InvalidOperationException {
 		// TODO Auto-generated method stub
 
 	}
@@ -64,7 +65,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#jumpTo(java.lang.String)
 	 */
-	public void jumpTo(String targetActivityId) throws EngineException,
+	public void jumpTo(WorkflowSession session,String targetActivityId) throws EngineException,
 			KernelException {
 		// TODO Auto-generated method stub
 
@@ -73,7 +74,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#jumpTo(java.lang.String, java.lang.String)
 	 */
-	public void jumpTo(String targetActivityId, String comments)
+	public void jumpTo(WorkflowSession session,String targetActivityId, String comments)
 			throws EngineException, KernelException {
 		// TODO Auto-generated method stub
 
@@ -82,7 +83,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#reassignTo(java.lang.String)
 	 */
-	public WorkItem reassignTo(String actorId) throws EngineException {
+	public WorkItem reassignTo(WorkflowSession session,String actorId) throws EngineException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -90,7 +91,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#reassignTo(java.lang.String, java.lang.String)
 	 */
-	public WorkItem reassignTo(String actorId, String comments)
+	public WorkItem reassignTo(WorkflowSession session,String actorId, String comments)
 			throws EngineException {
 		// TODO Auto-generated method stub
 		return null;
@@ -99,7 +100,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#reject()
 	 */
-	public void reject() throws EngineException, KernelException {
+	public void reject(WorkflowSession session) throws EngineException, KernelException {
 		// TODO Auto-generated method stub
 
 	}
@@ -107,7 +108,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#reject(java.lang.String)
 	 */
-	public void reject(String comments) throws EngineException, KernelException {
+	public void reject(WorkflowSession session,String comments) throws EngineException, KernelException {
 		// TODO Auto-generated method stub
 
 	}
@@ -115,7 +116,7 @@ public class WorkItemHistory extends AbsWorkItem implements WorkItem {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#withdraw()
 	 */
-	public WorkItem withdraw() throws EngineException, KernelException {
+	public WorkItem withdraw(WorkflowSession session) throws EngineException, KernelException {
 		// TODO Auto-generated method stub
 		return null;
 	}

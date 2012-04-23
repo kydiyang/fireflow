@@ -30,10 +30,10 @@ import org.fireflow.engine.entity.EntityProperty;
 public enum WorkItemProperty implements EntityProperty {
 	ID("id"),
 	STATE("state"),
-	USER_ID("userId"),
-	USER_NAME("userName"),
-	USER_DEPT_ID("userDeptId"),
-	USER_DEPT_NAME("userDeptName"),
+	OWNER_ID("ownerId"),
+	OWNER_NAME("ownerName"),
+	OWNER_DEPT_ID("ownerDeptId"),
+	OWNER_DEPT_NAME("ownerDeptName"),
 	CREATED_TIME("claimedTime"),
 	CLAIMED_TIME("startedTime"),
 	END_TIME("endTime"),
@@ -47,8 +47,11 @@ public enum WorkItemProperty implements EntityProperty {
 	PARENT_WORKITEM_ID("parentWorkItemId"),
 	REASSIGN_TYPE("reassignType"),
 	ASSIGNMENT_STRATEGY("assignmentStrategy"),
+	FORM_RUL("formURL"),
 	
-	ACTIVITY_INSTANCE_$_ID("activityInstance"), 
+	BIZ_ID("bizId"),
+	
+	ACTIVITY_INSTANCE_$_ID("activityInstance.id"), 
 	ACTIVITY_INSTANCE_$_PROCESSINSTANCE_ID(	"activityInstance.processInstanceId"),
 	ACTIVITY_INSTANCE_$_BIZ_ID(	"activityInstance.bizId"), 
 	ACTIVITY_INSTANCE_$_ACTIVITY_ID("activityInstance.nodeId"),

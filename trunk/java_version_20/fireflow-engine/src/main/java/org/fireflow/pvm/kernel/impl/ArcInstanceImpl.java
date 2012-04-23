@@ -186,15 +186,16 @@ public class ArcInstanceImpl extends AbstractPObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 * （2012-02-03，该动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	 * @see
 	 * org.fireflow.pvm.kernel.ProcessObject#handleCancellation(org.fireflow
 	 * .engine.WorkflowSession, org.fireflow.pvm.kernel.Token)
 	 */
+	/*
 	public void handleCancellation(WorkflowSession session, Token existToken, Token sourceToken) {
 		// TODO Auto-generated method stub
 
-	}
+	}*/
 
 	/*
 	 * (non-Javadoc)

@@ -19,6 +19,7 @@ package org.fireflow.engine.modules.persistence.hibernate;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.entity.runtime.impl.WorkItemHistory;
@@ -57,10 +58,17 @@ public class WorkItemPersisterHibernateImpl extends AbsPersisterHibernateImpl im
         this.getHibernateTemplate().execute(new HibernateCallback() {
 
             public Object doInHibernate(Session arg0) throws HibernateException, SQLException {
-                String hql = "delete from org.fireflow.engine.entity.runtime.impl.WorkItemImpl  where activityInstance.id=:activityInstanceId and parentWorkItemId=:parentWorkItemId and state=:state";
+                String hql = null;
+                if (!StringUtils.isEmpty(parentWorkItemId)){
+                	hql = "delete from org.fireflow.engine.entity.runtime.impl.WorkItemImpl  where activityInstance.id=:activityInstanceId and parentWorkItemId=:parentWorkItemId and state=:state";
+                }else{
+                	hql = "delete from org.fireflow.engine.entity.runtime.impl.WorkItemImpl  where activityInstance.id=:activityInstanceId and state=:state";
+                }
                 Query query = arg0.createQuery(hql);
                 query.setString("activityInstanceId", activityInstanceId);
-                query.setString("parentWorkItemId",parentWorkItemId);
+                if (!StringUtils.isEmpty(parentWorkItemId)){
+                	query.setString("parentWorkItemId",parentWorkItemId);
+                }                
                 query.setParameter("state", WorkItemState.INITIALIZED);
                 return query.executeUpdate();
             }

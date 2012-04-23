@@ -17,6 +17,7 @@
 package org.fireflow.engine.entity.runtime.impl;
 
 import org.fireflow.engine.WorkflowSession;
+import org.fireflow.engine.WorkflowStatement;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.pvm.kernel.KernelException;
@@ -33,7 +34,8 @@ public class ActivityInstanceImpl extends AbsActivityInstance implements java.io
 	 * @see org.fireflow.engine.entity.runtime.ActivityInstance#abort(org.fireflow.engine.WorkflowSession)
 	 */
 	public void abort(WorkflowSession session) throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		WorkflowStatement stmt = session.createWorkflowStatement();
+		stmt.abortActivityInstance(this.getId(),"");
 		
 	}
 
@@ -42,7 +44,8 @@ public class ActivityInstanceImpl extends AbsActivityInstance implements java.io
 	 */
 	public void restore(WorkflowSession session)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		WorkflowStatement stmt = session.createWorkflowStatement();
+		stmt.restoreActivityInstance(this.getId(),"");
 		
 	}
 
@@ -51,7 +54,7 @@ public class ActivityInstanceImpl extends AbsActivityInstance implements java.io
 	 */
 	public void skipOver(WorkflowSession session) throws EngineException,
 			KernelException {
-		// TODO Auto-generated method stub
+		//TODO 待补充
 		
 	}
 
@@ -80,7 +83,8 @@ public class ActivityInstanceImpl extends AbsActivityInstance implements java.io
 	 */
 	public void suspend(WorkflowSession session)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		WorkflowStatement stmt = session.createWorkflowStatement();
+		stmt.suspendActivityInstance(this.getId(),"");
 		
 	}
 

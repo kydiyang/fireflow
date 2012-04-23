@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ServiceRepository;
-import org.fireflow.model.io.ParserException;
+import org.fireflow.model.io.DeserializerException;
 
 /**
  * 
@@ -36,7 +36,7 @@ public interface ServicePersister extends Persister {
 	 * @param servicesFileName
 	 * @return
 	 */
-	public ServiceRepository findServiceRepositoryByFileName(String serviceFileName)throws ParserException;;
+	public ServiceRepository findServiceRepositoryByFileName(String serviceFileName)throws DeserializerException;;
 	
 	/**
 	 * 将一个服务定义文件保存到存储库中

@@ -49,13 +49,17 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
      * 流程实例的name（与流程定义的name相同）
      * @return
      */
-    public String getName();
+    public String getProcessName();
 
     /**
      * 流程实例的DisplayName（与流程定义的DisplayName相同）
      * @return
      */
-    public String getDisplayName();
+    public String getProcessDisplayName();
+    
+    public String getSubflowName();
+    
+    public String getSubflowDisplayName();
     
     /**
      * 增加一个bizcategory字段，以方便查询
@@ -82,6 +86,12 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
      * @return
      */
     public Integer getVersion();
+    
+    /**
+     * 获得当前实例对应的subflow，对于没有subflow的模型，该值等于processId。
+     * @return
+     */
+    public String getSubflowId();
 
     /**
      * 流程实例创建者ID
@@ -162,6 +172,12 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
     public String getProcessType();
     
     public String getTokenId();
+    
+    /**
+     * 最后一次更新本记录的时间，存储的是java.util.Date.getTime()值
+     * @return
+     */
+    public long getLastUpdateTime();
     
     /////////////////////////////////////////////////////////////////
     ///////////////////    业务操作    ////////////////////////////////

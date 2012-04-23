@@ -46,7 +46,7 @@ public enum ScheduleJobProperty implements EntityProperty {
 	CREATE_NEW_PROCESS_INSTANCE("createNewProcessInstance"),
 	NOTE("note"),
 	
-	ACTIVITY_INSTANCE_$_ID("activityInstance"), 
+	ACTIVITY_INSTANCE_$_ID("activityInstance.id"), 
 	ACTIVITY_INSTANCE_$_PROCESSINSTANCE_ID(	"activityInstance.processInstanceId"),
 	ACTIVITY_INSTANCE_$_BIZ_ID(	"activityInstance.bizId"), 
 	ACTIVITY_INSTANCE_$_ACTIVITY_ID("activityInstance.activityId"),

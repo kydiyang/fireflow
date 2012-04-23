@@ -72,14 +72,16 @@ public interface PObject {
 	
 	/**
 	 * 取消操作的句柄
+	 * （2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	 * @return
 	 */
+	/*
 	public PObject getCancellationHandler();
-	
 	public void setCancellationHandler(PObject pobject);
+	*/
 	
 	/**
-	 * 是否接受取消操作，只有接受取消操作的PObject，系统才会调用他的handleCancellation()方法。
+	 * 是否接受取消操作，只有接受取消操作的PObject，系统才会调用他的handleCancellation()、handleTermination()方法。
 	 * @return true表示可以接受取消操作。
 	 */
 	public boolean isCancellable();
@@ -107,7 +109,7 @@ public interface PObject {
 	public void takeToken(WorkflowSession session,Token thisToken, Token sourceToken);
 	
 	/**
-	 * 将token继续向前推动，token的状态必须是TokenState.RUNNING
+	 * 将token继续向前推动，token的状态必须小于TokenState.DELIMITER
 	 * @param session
 	 * @param sourceToken 触发existToken进行
 	 * @param listenerToken 执行forward动作的token
@@ -134,11 +136,17 @@ public interface PObject {
 
 	/**
 	 * 处理取消操作,Token的状态必须是TokenState.RUNNING或者TokenState.FAULTING
+	 * 
+	 * （2012-02-03，该动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	 * @param session
 	 * @param existToken
 	 * @param sourceToken TODO
+	 * 
 	 */
+	/*
 	public void handleCancellation(WorkflowSession session ,Token existToken, Token sourceToken);
+	*/
+	
 	
 	/**
 	 * 处理中止操作,

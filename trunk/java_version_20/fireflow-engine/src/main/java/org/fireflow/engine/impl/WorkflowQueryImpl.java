@@ -19,12 +19,12 @@ package org.fireflow.engine.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fireflow.engine.Criterion;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowStatement;
 import org.fireflow.engine.entity.WorkflowEntity;
+import org.fireflow.engine.query.Criterion;
+import org.fireflow.engine.query.Order;
 
 /**
  * 

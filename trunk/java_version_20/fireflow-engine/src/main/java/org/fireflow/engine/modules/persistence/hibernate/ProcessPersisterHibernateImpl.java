@@ -298,6 +298,7 @@ public class ProcessPersisterHibernateImpl extends
 		
 
 		//8.latestEditTime
+		//TODO 是否有DB系统自动生成？
 		Date d = (Date)descriptorKeyValues.get(ProcessDescriptorProperty.LATEST_EDIT_TIME);
 		if (d==null){
 			processRepository.setLatestEditTime(new Date());

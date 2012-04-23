@@ -31,16 +31,19 @@ public interface WorkflowBehavior {
 	public ContinueDirection continueOn(WorkflowSession session,Token token, Object workflowElement);
 	
 	/**
-	 * 中止
+	 * 中止, TODO 用abort还是terminate呢？
 	 * @param session
 	 * @param token
 	 * @param workflowElement
+	 * 2012-02-03 废除该方法，该方法容易引起混乱
 	 */
-	public void abort(WorkflowSession session,Token token, Object workflowElement);
+//	public void abort(WorkflowSession session,Token token, Object workflowElement);
 
 	public CompensationHandler getCompensationHandler(String compensationCode);
 	
+	/* （2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	public CancellationHandler getCancellationHandler();
+	*/
 	
 	public FaultHandler getFaultHandler(String errorCode);
 	

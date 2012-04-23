@@ -34,4 +34,11 @@ public interface BeanFactory extends EngineModule{
      * @return
      */
     public Object getBean(String beanName);
+    
+    /**
+     * 根据class名实例化一个对象
+     * @param javaClassName
+     * @return
+     */
+    public Object createBean(String javaClassName);
 }

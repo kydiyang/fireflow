@@ -18,7 +18,7 @@ package org.fireflow.engine.entity.repository;
 
 import java.util.List;
 
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * @author 非也
@@ -32,7 +32,7 @@ public interface ServiceRepository  {
 	
 //	public List<ServiceDescriptor> getServiceDescriptors();
 	
-	public List<Service> getServices();
+	public List<ServiceDef> getServices();
 	
-	public Service getService(String serviceId);
+	public ServiceDef getService(String serviceId);
 }

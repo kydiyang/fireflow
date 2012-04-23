@@ -18,6 +18,7 @@ package org.fireflow.engine.modules.schedule.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.modules.schedule.Scheduler;
@@ -27,7 +28,7 @@ import org.fireflow.engine.modules.schedule.Scheduler;
  * @author 非也
  * @version 2.0
  */
-public abstract class AbsScheduler implements RuntimeContextAware,Scheduler{
+public abstract class AbsScheduler  extends AbsEngineModule implements RuntimeContextAware,Scheduler{
 	private static Log log = LogFactory.getLog(AbsScheduler.class);
 
 

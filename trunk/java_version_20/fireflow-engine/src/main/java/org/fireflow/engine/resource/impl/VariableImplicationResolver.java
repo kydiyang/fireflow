@@ -18,18 +18,18 @@ package org.fireflow.engine.resource.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.modules.ousystem.OUSystemAdapter;
+import org.fireflow.engine.modules.ousystem.OUSystemConnector;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.resource.ResourceResolver;
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.resourcedef.ResourceDef;
 
 /**
  * 
@@ -37,15 +37,15 @@ import org.fireflow.model.resourcedef.Resource;
  * @author 非也
  * @version 2.0
  */
-public class VariableImplicationResolver implements ResourceResolver {
+public class VariableImplicationResolver extends ResourceResolver {
 	private static Log log = LogFactory.getLog(VariableImplicationResolver.class);
 
 	public static final String VARIABLE_NAME = "variableName";
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.resource.ResourceResolver#resolve(org.fireflow.engine.WorkflowSession, org.fireflow.model.resourcedef.Resource, java.util.Map)
 	 */
-	public List<User> resolve(WorkflowSession session, Resource resource,
-			Map<String, Object> parameterValues) {
+	public List<User> resolve(WorkflowSession session, ProcessInstance currentProcessInstance,
+			ActivityInstance currentActivityInstance, ResourceDef resource) {
 		List<User> users = new ArrayList<User>();
 		
 		ProcessInstance processInstance = session.getCurrentProcessInstance();
@@ -54,7 +54,8 @@ public class VariableImplicationResolver implements ResourceResolver {
 			return users;
 		}
 		
-		String variableName = parameterValues==null?null:(String)parameterValues.get(VARIABLE_NAME);
+		String variableName = resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_VARIABLE_NAME);
+		
 		if (variableName==null || variableName.trim().equals("")){
 			log.error("The parameter value of 'variableName' is null,can NOT retrieve the actors");
 			return users;
@@ -72,7 +73,7 @@ public class VariableImplicationResolver implements ResourceResolver {
 		}
 		String userId = (String)value;
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		OUSystemAdapter ouSystemAdapter = rtCtx.getEngineModule(OUSystemAdapter.class, processInstance.getProcessType());
+		OUSystemConnector ouSystemAdapter = rtCtx.getEngineModule(OUSystemConnector.class, processInstance.getProcessType());
 		
 		User u = ouSystemAdapter.findUserById(userId);
 		users.add(u);

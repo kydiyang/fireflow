@@ -35,10 +35,10 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
+import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.engine.service.AssignmentHandler;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.binding.AssignmentStrategy;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.fireflow.pvm.kernel.KernelException;
 
 /**
@@ -235,6 +235,7 @@ public interface WorkflowStatement {
      * 
      */
 	public WorkItem claimWorkItem(String workItemId) throws InvalidOperationException ;
+
 	
 	public List<WorkItem> disclaimWorkItem(String workItemId) throws InvalidOperationException ;
 	/**
@@ -314,7 +315,7 @@ public interface WorkflowStatement {
      * @param actorId 接受任务的操作员Id
      * @return 新创建的工作项
      */    
-    public List<WorkItem> reassignWorkItemTo(String workItemId,List<User> users,String reassignType,AssignmentStrategy assignmentStrategy) throws InvalidOperationException;
+    public List<WorkItem> reassignWorkItemTo(String workItemId,List<User> users,String reassignType,WorkItemAssignmentStrategy assignmentStrategy) throws InvalidOperationException;
 //    
 //    /**
 //     * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -338,9 +339,10 @@ public interface WorkflowStatement {
 	/**
 	 * 将流程定义发布到系统中
 	 * @param process 流程定义对象
+	 * @param publishState 发布状态，true表示发布，false表示未发布。
 	 * @param processDescriptorKeyValue 元数据信息，如流程类别、packagename等等，该HashMap的key是ProcessDescriptorProperty
 	 */
-	public ProcessRepository uploadProcess(Object process,Map<ProcessDescriptorProperty,Object> processDescriptorKeyValue) throws InvalidModelException;
+	public ProcessRepository uploadProcess(Object process,boolean publishState, Map<ProcessDescriptorProperty,Object> processDescriptorKeyValue) throws InvalidModelException;
 	
 	public ServiceRepository uploadServices(InputStream inStream,Map<ServiceDescriptorProperty,Object> serviceDescriptorKeyValue)throws InvalidModelException;
 	
@@ -348,9 +350,23 @@ public interface WorkflowStatement {
 	/*****************************************************************/
 	/***************   流程变量相关的api ******************************/
 	/*****************************************************************/
+	
+	/**
+	 * TODO XML数据用什么对象表达呢？
+	 */
 	public Object getVariableValue(Scope scope,String name);
-	public void setVariableValue(Scope scope,String name,Object value);
+	/**
+	 * TODO Xml数据用什么对象表达呢~~~
+	 * @param scope
+	 * @param name
+	 * @param value
+	 * @throws InvalidOperationException
+	 */
+	public void setVariableValue(Scope scope,String name,Object value)throws InvalidOperationException;
+	public void setVariableValue(Scope scope,String name,Object value,Map<String,String> headers)throws InvalidOperationException;
 	public Map<String ,Object> getVariableValues(Scope scope);
+	
+	//TODO 增加一个saveOrUpdateVariable(Variable var)吗？
 	
 	/*****************************************************************/
 	/***************   查询相关的api ******************************/

@@ -37,11 +37,15 @@ public enum ActivityInstanceProperty implements EntityProperty{
 	PROCESS_ID("processId"),
 	VERSION("version"),
 	PROCESS_TYPE("processType"),
+	SUBFLOW_ID("subflowId"),
 	PROCESS_NAME("processName"),
 	PROCESS_DISPLAY_NAME("processDisplayName"),
+	SUBFLOW_NAME("subflowName"),
+	SUBFLOW_DISPLAY_NAME("subflowDisplayName"),
 	BIZ_CATEGORY("bizCategory"),
 	
 	SERVICE_ID("serviceId"),
+	SERVICE_VERSION("serviceVersion"),
 	SERVICE_TYPE("serviceType"),
 	
 	BIZ_ID("bizId"),
@@ -61,7 +65,7 @@ public enum ActivityInstanceProperty implements EntityProperty{
 	TOKEN_ID("tokenId"),
 	
 	TARGET_ACTIVITY_ID("targetActivityId"),
-	ASSIGNMENT_STRATEGY("assignmentStrategy"),	
+//	ASSIGNMENT_STRATEGY("assignmentStrategy"),	
 	NOTE("note")
 	
 	;

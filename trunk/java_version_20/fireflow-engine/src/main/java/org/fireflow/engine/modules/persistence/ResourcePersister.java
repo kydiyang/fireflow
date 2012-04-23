@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ResourceRepository;
-import org.fireflow.model.io.ParserException;
+import org.fireflow.model.io.DeserializerException;
 
 /**
  * 
@@ -45,6 +45,6 @@ public interface ResourcePersister extends Persister{
 	 * @param resourceFileName
 	 * @return
 	 */
-	public ResourceRepository findResourceRepositoryByFileName(String resourceFileName)throws ParserException;
+	public ResourceRepository findResourceRepositoryByFileName(String resourceFileName)throws DeserializerException;
 
 }

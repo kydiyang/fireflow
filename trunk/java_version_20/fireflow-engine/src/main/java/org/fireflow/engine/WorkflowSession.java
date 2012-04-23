@@ -23,17 +23,11 @@ import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
+import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.engine.service.AssignmentHandler;
 
 /**
  * WorkflowSession是所有工作流操作的入口，相当于Jdbc的connection对象。
- * 通过WorkflowSession可以创建IProcessInstance，查询ITaskInstance,IWorkItem等等。
- * 该类采用了Template设计模式
- * ，所有的方法最终都是调用IWorkflowSession.execute(IWorkflowSessionCallback callback)实现的。
- * 这样做的好处是，有很多公共的功能都可以放在execute中，不需要每个方法重写一遍。<br>
- * 缺省的WorkflowSession提供的方法不多，您可以利用IWorkflowSession.execute(
- * IWorkflowSessionCallback callback)实现更多的流程操作。
  * 
  * @author 非也,nychen2000@163.com
  * 
@@ -41,11 +35,9 @@ import org.fireflow.engine.service.AssignmentHandler;
 public interface WorkflowSession {
 	public static final String CURRENT_PROCESS_INSTANCE = "CURRENT_PROCESS_INSTANCE";
 	public static final String CURRENT_ACTIVITY_INSTANCE = "CURRENT_ACTIVITY_INSTANCE";
-	public static final String LATEST_CREATED_WORKITEMS = "LATEST_CREATED_WORKITEMS";
-	public static final String CURRENT_SCOPE = "CURRENT_SCOPE";
+//	public static final String LATEST_CREATED_WORKITEMS = "LATEST_CREATED_WORKITEMS";
 	
-	
-	
+
 	/**
 	 * 返回当前连接BPM子系统的用户
 	 * @return
@@ -86,7 +78,7 @@ public interface WorkflowSession {
 	/**
 	 * 返回当前session中的所有的attributes属性
 	 */
-	public Map<String,Object> getAttributes();
+	public Map<String,Object> getAllAttributes();
 	
 	/**
 	 * 获得当前的流程实例

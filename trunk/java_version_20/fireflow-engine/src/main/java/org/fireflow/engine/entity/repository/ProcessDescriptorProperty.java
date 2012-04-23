@@ -32,6 +32,9 @@ public enum ProcessDescriptorProperty 	implements EntityProperty{
 		DESCRIPTION("description"),
 		FILE_NAME("fileName"),
 
+		IS_TIMER_START("isTimerStart"),
+		HAS_CALLBACK_SERVICE("hasCallbackService"),
+		
 		PROCESS_ID("processId"),
 		VERSION("version"),
 		PROCESS_TYPE("processType"),

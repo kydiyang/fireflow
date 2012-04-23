@@ -50,7 +50,7 @@ public enum TokenState {
 	/**
 	 * 取消处理中
 	 */
-	CANCELLING(6),
+	ABORTING(6),
 	
 	/**
 	 * 补偿操作中
@@ -75,17 +75,12 @@ public enum TokenState {
 	/**
 	 * 被取消
 	 */
-	CANCELLED(16),
+	ABORTED(16),
 	/**
 	 * 被补偿
 	 */
-	COMPENSATED(17),
+	COMPENSATED(17);
 	
-	
-	/**
-	 * 被中止
-	 */
-	ABORTED(19);
 	
 	
 	

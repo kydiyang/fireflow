@@ -24,6 +24,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.engine.WorkflowSession;
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.entity.repository.ProcessKey;
@@ -49,7 +50,7 @@ import org.fireflow.pvm.translate.Process2PObjectTranslator;
  * @author 非也
  * @version 2.0
  */
-public class KernelManagerImpl implements KernelManager, RuntimeContextAware {
+public class KernelManagerImpl  extends AbsEngineModule implements KernelManager, RuntimeContextAware {
 	private static Log log = LogFactory.getLog(KernelManagerImpl.class);
 	protected RuntimeContext runtimeContext = null;
 	protected ThreadLocal<Vector<BookMark>> bookMarkQueue = new ThreadLocal<Vector<BookMark>>() {
@@ -95,7 +96,13 @@ public class KernelManagerImpl implements KernelManager, RuntimeContextAware {
 	}
 	
 	public void fireChildPObject(WorkflowSession session,PObjectKey childPObjectKey,Token parentToken){
+		this.loadProcess(childPObjectKey);
 		Token childToken = new TokenImpl(parentToken);
+		
+		childToken.setProcessId(childPObjectKey.getProcessId());
+		childToken.setProcessType(childPObjectKey.getProcessType());
+		childToken.setVersion(childPObjectKey.getVersion());
+		
 		childToken.setElementId(childPObjectKey.getWorkflowElementId());
 		childToken.setParentTokenId(parentToken.getId());
 		
@@ -183,9 +190,12 @@ public class KernelManagerImpl implements KernelManager, RuntimeContextAware {
 				case FORWARD_TOKEN:					
 					po.forwardToken(session, token, sourceToken);
 					break;
+				//（2012-02-05，该动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
+				/*
 				case HANDLE_CANCELLATION:
 					po.handleCancellation(session, token, sourceToken);
 					break;
+				*/
 				case HANDLE_COMPENSATION:
 					String compensationCode = (String)bookMark.getExtraArg(BookMark.COMPENSATION_CODE);
 					po.handleCompensation(session, token, sourceToken, compensationCode);
@@ -322,17 +332,20 @@ public class KernelManagerImpl implements KernelManager, RuntimeContextAware {
 	 */
 	public String viewTheBookMarkQueue(){
 		Vector<BookMark> queue = bookMarkQueue.get();
-		StringBuffer buf = new StringBuffer("The bookmark queue is :");
+		StringBuffer buf = new StringBuffer("The bookmark queue is :\n======================\n");
 		int index = 0;
 		for(BookMark bookMark:queue){
 			
 			buf.append(bookMark.getToken().getElementId())
-				.append("[").append(bookMark.getExecutionEntrance().name()).append("]");
+				.append("[").append(bookMark.getToken().getState().name()).append("]")
+				.append("-->")
+				.append(bookMark.getExecutionEntrance().name());
 			index++;
 			if (index<queue.size()){
-				buf.append("-->");				
+				buf.append("\n");				
 			}
 		}
+		buf.append("\n======================");
 		return buf.toString();
 	}
 }

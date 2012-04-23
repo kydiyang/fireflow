@@ -16,16 +16,15 @@
  */
 package org.fireflow.engine.modules.instancemanager;
 
-import java.util.Map;
-
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.modules.instancemanager.event.EventType;
+import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.model.InvalidModelException;
 
 /**
@@ -46,18 +45,27 @@ public interface ProcessInstanceManager extends EngineModule{
 	 * @throws WorkflowProcessNotFoundException
 	 * @throws InvalidOperationException
 	 */
-	public ProcessInstance startProcess(WorkflowSession session,String workflowProcessId, int version,String processType,
-			String bizId, Map<String, Object> variables)
-			throws InvalidModelException,
-			WorkflowProcessNotFoundException, InvalidOperationException;	
+//	public ProcessInstance startProcess(WorkflowSession session,String workflowProcessId, int version,String processType,
+//			String bizId, Map<String, Object> variables)
+//			throws InvalidModelException,
+//			WorkflowProcessNotFoundException, InvalidOperationException;	
 
 	public ProcessInstance createProcessInstance(WorkflowSession session,
 			Object workflowProcess, String bizId, ProcessDescriptor descriptor,
 			ActivityInstance parentActivityInstance);
-
-	public void fireProcessInstanceEvent(WorkflowSession session,ProcessInstance processInstance,Object workflowElement,EventType eventType);
 	
-	public ProcessInstance abortProcessInstance(WorkflowSession session,ProcessInstance processInstance);
+	/**
+	 * 响应SubflowBehavior的onTokenStateChanged();
+	 * @param session
+	 * @param processInstance
+	 * @param newState
+	 */
+	public void changeProcessInstanceSate(WorkflowSession session,ProcessInstance processInstance,ProcessInstanceState newState,Object workflowElement);
+
+	public void fireProcessInstanceEvent(WorkflowSession session,ProcessInstance processInstance,Object workflowElement,ProcessInstanceEventTrigger eventType);
+	
+	//2012-02-14 被changeProcessInstanceState代替。
+//	public ProcessInstance abortProcessInstance(WorkflowSession session,ProcessInstance processInstance);
 	public ProcessInstance suspendProcessInstance(WorkflowSession session,ProcessInstance processInstance);
 	public ProcessInstance restoreProcessInstance(WorkflowSession session,ProcessInstance processInstance);
 }

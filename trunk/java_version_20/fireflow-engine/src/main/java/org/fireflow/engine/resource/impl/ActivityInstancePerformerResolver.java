@@ -18,7 +18,6 @@ package org.fireflow.engine.resource.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -30,14 +29,14 @@ import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.modules.ousystem.OUSystemAdapter;
+import org.fireflow.engine.modules.ousystem.OUSystemConnector;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.UserImpl;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.WorkItemPersister;
 import org.fireflow.engine.resource.ResourceResolver;
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.resourcedef.ResourceDef;
 
 /**
  * 
@@ -45,15 +44,15 @@ import org.fireflow.model.resourcedef.Resource;
  * @author 非也
  * @version 2.0
  */
-public class ActivityInstancePerformerResolver implements ResourceResolver {
+public class ActivityInstancePerformerResolver extends ResourceResolver {
 	private static Log log = LogFactory.getLog(ActivityInstancePerformerResolver.class);
 	public static final String REFERENCED_ACTIVITY_ID = "referencedActivityId";
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.resource.ResourceResolver#resolve(org.fireflow.engine.WorkflowSession, org.fireflow.model.resourcedef.Resource, java.util.Map)
 	 */
-	public List<User> resolve(WorkflowSession session, Resource resource,
-			Map<String, Object> parameterValues) {
+	public List<User> resolve(WorkflowSession session, ProcessInstance currentProcessInstance,
+			ActivityInstance currentActivityInstance, ResourceDef resource) {
 		List<User> users = new ArrayList<User>();
 		
 		ProcessInstance processInstance = session.getCurrentProcessInstance();
@@ -62,7 +61,7 @@ public class ActivityInstancePerformerResolver implements ResourceResolver {
 			return users;
 		}
 		
-		String referencedActivityId = parameterValues==null?null:(String)parameterValues.get(REFERENCED_ACTIVITY_ID);
+		String referencedActivityId = resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_ACTIVITY_ID);
 		
 		if (referencedActivityId==null || referencedActivityId.trim().equals("")){
 			log.error("The parameter value of 'referencedActivityId' is null,can NOT retrieve the actors");
@@ -92,7 +91,7 @@ public class ActivityInstancePerformerResolver implements ResourceResolver {
 			log.warn("Can NOT find work items for [activityId='"+referencedActivityId+"' , processInstanceId='"+processInstance.getId()+"']");
 			return users;
 		}
-		OUSystemAdapter ouSystemAdapter = rtCtx.getEngineModule(OUSystemAdapter.class, processInstance.getProcessType());
+		OUSystemConnector ouSystemAdapter = rtCtx.getEngineModule(OUSystemConnector.class, processInstance.getProcessType());
 		
 		for (WorkItem wi : workItemList){
 			if (wi.getState().equals(WorkItemState.COMPLETED)){

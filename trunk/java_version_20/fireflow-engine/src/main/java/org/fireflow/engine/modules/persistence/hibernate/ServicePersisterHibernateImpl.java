@@ -34,9 +34,10 @@ import org.fireflow.engine.entity.repository.impl.ServiceRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.ServicePersister;
-import org.fireflow.model.io.Dom4JServiceParser;
-import org.fireflow.model.io.ParserException;
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.io.DeserializerException;
+import org.fireflow.model.io.service.ServiceParser;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -74,16 +75,18 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 			try {
 				ByteArrayInputStream byteIn = new ByteArrayInputStream(result.getServiceContent().getBytes("UTF-8"));
 				
-				Dom4JServiceParser parser = new Dom4JServiceParser();
-				List<Service> services = parser.parse(byteIn);
+				
+				List<ServiceDef> services = ServiceParser.deserialize(byteIn);
 				
 				((ServiceRepositoryImpl)result).setServices(services);
 			} catch (UnsupportedEncodingException e) {
 				log.error(e);
-			}catch(ParserException e){
+			}catch(DeserializerException e){
 				log.error(e);
 			}
 			catch(IOException e){
+				log.error(e);
+			} catch (InvalidModelException e) {
 				log.error(e);
 			}
 		}
@@ -127,9 +130,9 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 		});
 		
 		
-		List<Service> services = repository.getServices();
+		List<ServiceDef> services = repository.getServices();
 		if (services!=null){
-			for (Service svc : services){
+			for (ServiceDef svc : services){
 				ServiceDescriptorImpl desc = new ServiceDescriptorImpl();
 				desc.setServiceId(svc.getId());
 				desc.setBizCategory(svc.getBizCategory());
@@ -157,20 +160,21 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 			repository = new ServiceRepositoryImpl();
 		}
 		
-		Dom4JServiceParser parser = new Dom4JServiceParser();
 		try {
 			byte[] bytes = Utils.getBytes(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
-			List<Service> services = parser.parse(bytesIn);
+			List<ServiceDef> services = ServiceParser.deserialize(bytesIn);
 			
 			
 			repository.setServiceContent(new String(bytes,"UTF-8"));
 			repository.setFileName(serviceFileName);
 			repository.setServices(services);
 			return repository;
-		} catch (ParserException e) {
+		} catch (DeserializerException e) {
 			log.error(e);
 		} catch (IOException e) {
+			log.error(e);
+		} catch (InvalidModelException e) {
 			log.error(e);
 		}
 		return null;

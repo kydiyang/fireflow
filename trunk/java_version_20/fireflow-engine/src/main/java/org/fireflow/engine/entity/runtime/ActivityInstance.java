@@ -144,9 +144,29 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 
 	public String getProcessType();
 	
+    /**
+     * 获得当前实例对应的subflow，对于没有subflow的模型，该值等于processId。
+     * @return
+     */
+    public String getSubflowId();
+	
+    
+    /**
+     * processName
+     * @return
+     */
 	public String getProcessName();
 	
+	/**
+	 * processDisplayName
+	 * @return
+	 */
 	public String getProcessDisplayName();
+	
+	
+	public String getSubflowName();
+	
+	public String getSubflowDisplayName();
 	
 	/**
 	 * 增加业务类别字段，便于查询。2011-04-02
@@ -167,10 +187,12 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 	 */
 	public String getServiceId();
 	
+	public String getServiceVersion();
+	
 	/**
 	 * 返回服务类型，取值为org.fireflow.model.Task.FORM,org.fireflow.model.Task.TOOL,
 	 * org.fireflow.model.Task.SUBFLOW或者org.fireflow.model.Task.DUMMY
-	 * 
+	 * @deprecated
 	 * @return
 	 */
 	public String getServiceType();
@@ -190,6 +212,8 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 	
 	public String getTokenId();
 	
+    public long getLastUpdateTime();
+    
 	/////////////////////////////////////////////////////////////////
 	/////////          获得关联的其他对象           /////////////////////////
 	////////////////////////////////////////////////////////////////

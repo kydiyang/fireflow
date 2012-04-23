@@ -21,6 +21,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.io.DocumentResult;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.runtime.Scope;
@@ -29,13 +39,12 @@ import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.VariableHistory;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
 import org.fireflow.engine.modules.persistence.VariablePersister;
+import org.firesoa.common.schema.NameSpaces;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * 
@@ -45,7 +54,7 @@ import com.thoughtworks.xstream.XStream;
  */
 public class VariablePersisterHibernateImpl extends AbsPersisterHibernateImpl
 		implements VariablePersister {
-
+	Log log = LogFactory.getLog(VariablePersisterHibernateImpl.class);
 
 	public Class getEntityClass4Runtime(Class interfaceClz){
 		return VariableImpl.class;
@@ -54,31 +63,8 @@ public class VariablePersisterHibernateImpl extends AbsPersisterHibernateImpl
 	public Class getEntityClass4History(Class interfaceClz){
 		return VariableHistory.class;
 	}
-	@Override
-	public <T extends WorkflowEntity> java.util.List<T> list(final WorkflowQuery<T> q) {
-		List<T> vars = super.list(q);
-		if (vars!=null && vars.size()>0){
-			for (T v:vars){
-				if (v!=null){
-					((AbsVariable)v).setValue(this.deserializeString2Object(((AbsVariable)v).getValueAsString()));
-				}
-			}
-		}
-		return vars;
-	}
-	@Override
-	public <T extends WorkflowEntity> T find(Class<T> entityClz, String entityId) {
-		AbsVariable var = (AbsVariable)super.find(entityClz, entityId);
-		var.setValue(this.deserializeString2Object(var.getValueAsString()));
-		return (T)var;
-	}
-	
-	@Override
-	public void saveOrUpdate(Object entity) {
-		AbsVariable v = ((AbsVariable)entity);
-		v.setValueAsString(this.serializeObject2String(v.getValue()));
-		super.saveOrUpdate(v);
-	}
+
+
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.persistence.VariablePersister#findVariable(java.lang.String, java.lang.String)
@@ -96,9 +82,6 @@ public class VariablePersisterHibernateImpl extends AbsPersisterHibernateImpl
 			
 		});
 		Variable v = (Variable)result;
-		if (v!=null){
-			((AbsVariable)v).setValue(this.deserializeString2Object(v.getValueAsString()));
-		}
 		return v;
 	}
 
@@ -117,74 +100,8 @@ public class VariablePersisterHibernateImpl extends AbsPersisterHibernateImpl
 			
 		});
 		List<Variable> vars = (java.util.List<Variable>)result;
-		if (vars!=null && vars.size()>0){
-			for(Variable v : vars){
-				if (v!=null){
-					((AbsVariable)v).setValue(this.deserializeString2Object(v.getValueAsString()));
-				}
-			}
-		}
 		return vars;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.persistence.VariablePersister#findVariableValues(java.lang.String, java.lang.String)
-	 */
-	public Map<String, Object> findVariableValues(String scopeId) {
-		List<Variable> vars = this.findVariables(scopeId);
-		Map<String,Object> varValues = new HashMap<String,Object>();
-		if (vars!=null && vars.size()>0){
-			for (Variable var : vars){
-				varValues.put(var.getName(), var.getValue());
-			}
-		}
-		return varValues;
-	}
 
-	public Object findVariableValue(String scopeId,String name){
-		Variable v = this.findVariable(scopeId, name);
-		if (v==null)return null;
-		return v.getValue();
-	}
-	public Variable setVariable(Scope scope,String name,Object value){
-		Variable v = this.findVariable(scope.getScopeId(), name);
-		if (v!=null){
-			((AbsVariable)v).setValue(value);
-			//TODO 是否检验类型一致性？
-			if (value!=null){
-				((AbsVariable)v).setDataType(value.getClass().getName());
-			}
-			this.saveOrUpdate(v);
-			return v;
-		}else{
-			v = new VariableImpl();
-			((AbsVariable)v).setScopeId(scope.getScopeId());
-			((AbsVariable)v).setName(name);
-			((AbsVariable)v).setValue(value);
-			if (value!=null){
-				((AbsVariable)v).setDataType(value.getClass().getName());
-			}
-			((AbsVariable)v).setProcessId(scope.getProcessId());
-			((AbsVariable)v).setVersion(scope.getVersion());
-			((AbsVariable)v).setProcessType(scope.getProcessType());
-			
-			this.saveOrUpdate(v);
-			return v;
-		}
-
-	}
-	
-
-	public Object deserializeString2Object(String strValue) {
-		XStream xstream = new XStream();
-		Object obj = xstream.fromXML(strValue);
-		return obj;
-	}
-
-
-	public String serializeObject2String(Object object) {
-		XStream xstream = new XStream();
-		String s = xstream.toXML(object);
-		return s;
-	}
 }

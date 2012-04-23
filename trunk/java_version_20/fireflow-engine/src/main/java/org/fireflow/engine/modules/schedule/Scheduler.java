@@ -19,7 +19,7 @@ package org.fireflow.engine.modules.schedule;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ScheduleJob;
-import org.fireflow.engine.service.ServiceExecutor;
+import org.fireflow.engine.invocation.ServiceInvoker;
 
 
 /**

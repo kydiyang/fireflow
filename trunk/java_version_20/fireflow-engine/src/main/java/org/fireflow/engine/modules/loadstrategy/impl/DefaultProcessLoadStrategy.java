@@ -17,6 +17,7 @@
 package org.fireflow.engine.modules.loadstrategy.impl;
 
 import org.fireflow.engine.WorkflowSession;
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
@@ -31,7 +32,7 @@ import org.fireflow.model.InvalidModelException;
  * @author 非也
  * @version 2.0
  */
-public class DefaultProcessLoadStrategy implements ProcessLoadStrategy {
+public class DefaultProcessLoadStrategy  extends AbsEngineModule implements ProcessLoadStrategy {
 	private RuntimeContext rtCtx = null;
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.loadstrategy.ProcessLoadStrategy#loadProcess(org.fireflow.engine.WorkflowSession, java.lang.String)

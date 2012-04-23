@@ -102,8 +102,10 @@ public class NetInstanceImpl extends AbstractPObject implements
 
 
 	/* (non-Javadoc)
+	 * （2012-02-03，该动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	 * @see org.fireflow.pvm.kernel.NetInstance#handleCancellation(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token)
 	 */
+	/*
 	public void handleCancellation(WorkflowSession session, Token existToken, Token sourceToken) {
 		if (!existToken.getState().equals(TokenState.RUNNING) || !existToken.getState().equals(TokenState.FAULTING)){
 			throw new KernelException(
@@ -185,9 +187,8 @@ public class NetInstanceImpl extends AbstractPObject implements
 			WorkflowBehavior behavior = this.getWorkflowBehavior();
 			behavior.onTokenStateChanged(session, existToken, this.getWorkflowElement());
 		}
-
-		
 	}
+	*/
 
 
 	/* (non-Javadoc)
@@ -206,7 +207,7 @@ public class NetInstanceImpl extends AbstractPObject implements
 		
 		boolean compensationDone = true;//补偿操作是否已经完成
 		
-		//1、首先对正在运行的正常（operationContextName=NORMAL)的子token执行cancel操作
+		//1、首先对正在运行的正常（operationContextName=NORMAL)的子token执行Abort操作
 		List<Token> children = kernelManager.getChildren(listenerToken);
 		for (Token token:children){
 			if ((token.getState().equals(TokenState.INITIALIZED) 
@@ -218,7 +219,7 @@ public class NetInstanceImpl extends AbstractPObject implements
 					bookMark.setToken(token);
 					bookMark.setExtraArg(BookMark.SOURCE_TOKEN, sourceToken);
 					bookMark
-							.setExecutionEntrance(ExecutionEntrance.HANDLE_CANCELLATION);
+							.setExecutionEntrance(ExecutionEntrance.HANDLE_TERMINATION);
 					kernelManager.addBookMark(bookMark);
 					
 					compensationDone = false;
@@ -259,13 +260,15 @@ public class NetInstanceImpl extends AbstractPObject implements
 				//2011-1-16，如果牵涉到补偿，流程场景不应该有循环，所以该处处理方案问题不大。
 				children = kernelManager.getChildren4Compensation(listenerToken);
 				if (children != null) {
-					compensationDone = _handleCompensation(kernelManager,listenerToken,children,compensationCode,sourceToken);
-
+					boolean compensationDone2 = _handleCompensation(kernelManager,listenerToken,children,compensationCode,sourceToken);
+					compensationDone = compensationDone && compensationDone2;
 				}
 			}
 		}
 		
 		//3、进入补偿状态
+		//2012-2-3，对于netinstance而言，应该不关心compensationDone的值，直接设置为COMPENSATING，而不需要设置为COMPENSATED
+		/**********
 		if (compensationDone){
 			listenerToken.setState(TokenState.COMPENSATED);
 			kernelManager.saveOrUpdateToken(listenerToken);
@@ -296,7 +299,12 @@ public class NetInstanceImpl extends AbstractPObject implements
 			behavior.onTokenStateChanged(session, listenerToken, this.getWorkflowElement());
 			
 		}
-
+		********/
+		
+		listenerToken.setState(TokenState.COMPENSATING);
+		kernelManager.saveOrUpdateToken(listenerToken);
+		WorkflowBehavior behavior = this.getWorkflowBehavior();
+		behavior.onTokenStateChanged(session, listenerToken, this.getWorkflowElement());
 	}
 	
 

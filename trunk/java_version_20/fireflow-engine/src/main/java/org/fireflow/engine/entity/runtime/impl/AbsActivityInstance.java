@@ -46,10 +46,14 @@ public abstract class AbsActivityInstance implements ActivityInstance {
     private String processId = null;
     private Integer version = null;
     private String processType = null;   
+    private String subflowId = null;
     private String processName = null;
     private String processDisplayName = null;
+    private String subflowName = null;
+    private String subflowDisplayName = null;
     private String bizCategory = null;
     private String serviceId = null;
+    private String serviceVersion = null;
     private String serviceType = null;
     
     private String bizId = null;
@@ -76,7 +80,7 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 
     private String note = null;
     
-
+    private long lastUpdateTime = 0;
 
 
 //	/* (non-Javadoc)
@@ -195,6 +199,14 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		this.note = note;
 	}
 
+	public long getLastUpdateTime(){
+		return this.lastUpdateTime;
+	}
+	
+	public void setLastUpdateTime(long time){
+		this.lastUpdateTime = time;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ActivityInstance#getProcessId()
 	 */
@@ -205,6 +217,14 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	
 	public void setProcessId(String processId){
 		this.processId = processId;
+	}
+	
+	public String getSubflowId(){
+		return this.subflowId;
+	}
+	
+	public void setSubflowId(String subflowId){
+		this.subflowId = subflowId;
 	}
 
 	/* (non-Javadoc)
@@ -246,6 +266,16 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	public void setServiceId(String serviceId){
 		this.serviceId = serviceId;
 	}
+	
+	
+	public String getServiceVersion() {
+		return serviceVersion;
+	}
+
+	public void setServiceVersion(String serviceVersion) {
+		this.serviceVersion = serviceVersion;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ActivityInstance#getServiceType()
 	 */
@@ -352,6 +382,11 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	public String getScopeId(){
 		return this.id;
 	}
+	
+	public String getProcessElementId(){
+		return this.nodeId;
+	}
+	
 	public String getParentScopeId(){
 		return this.parentScopeId;
 	}
@@ -368,6 +403,11 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		WorkflowStatement stmt = session.createWorkflowStatement(this.getProcessType());
 		stmt.setVariableValue(this, name,value);
 	}
+	public void setVariableValue(WorkflowSession session ,String name ,Object value,Map<String,String> headers)throws InvalidOperationException{
+		WorkflowStatement stmt = session.createWorkflowStatement(this.getProcessType());
+		stmt.setVariableValue(this, name,value,headers);
+	}
+	
 	public Map<String,Object> getVariableValues(WorkflowSession session){
 		WorkflowStatement stmt = session.createWorkflowStatement(this.getProcessType());
 		return stmt.getVariableValues(this);
@@ -407,6 +447,22 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	 */
 	public void setProcessDisplayName(String processDisplayName) {
 		this.processDisplayName = processDisplayName;
+	}
+	
+	public String getSubflowName(){
+		return this.subflowName;
+	}
+	
+	public void setSubflowName(String subflowName){
+		this.subflowName = subflowName;
+	}
+	
+	public String getSubflowDisplayName(){
+		return this.subflowDisplayName;
+	}
+	
+	public void setSubflowDisplayName(String subflowDisplayName){
+		this.subflowDisplayName = subflowDisplayName;
 	}
 
 	/**

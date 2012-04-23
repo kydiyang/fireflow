@@ -21,7 +21,7 @@ import java.util.Date;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
-import org.fireflow.model.binding.AssignmentStrategy;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 
 /**
  * 
@@ -34,8 +34,36 @@ public abstract class AbsWorkItem implements WorkItem{
 
 	protected WorkItemState state = WorkItemState.INITIALIZED;
 	
+	/**
+	 * 等于activityInstance.displayName
+	 */
+	protected String workItemName = null;
+	/**
+	 * 工作项摘要
+	 */
+	protected String subject = null;//
 	
+	/**
+	 * 产生该工作项的业务系统名称
+	 */
+	protected String originalSystemName = null;
+	
+	/**
+	 * 流程创建者的姓名。TODO 上一步操作者需要展示出来吗？
+	 */
+	protected String procInstCreatorName = null;
+	
+	protected String bizId = null;
+	
+	/**
+	 * 创建时间
+	 */
 	protected Date createdTime;
+	
+	/**
+	 * 到期时间，等于ActivityInstance.expiredTime
+	 */
+	protected Date expiredTime;
     /**
      * 签收时间
      */
@@ -57,12 +85,29 @@ public abstract class AbsWorkItem implements WorkItem{
 	protected String commentSummary;
 	protected String commentDetail;
 	
+	/**
+	 * 表单Url
+	 */
+	protected String formUrl;
+	protected String mobileFormUrl;
+
+	/**
+	 * 流程引擎地址
+	 */
+	protected String workflowEngineLocation;//用于远程操作
+	
+	/**
+	 * work item 类型，LOCAL表示本地WorkItem，REMOTE表示远程workitem，NOT_FF表示非FF workitem；，如果为远程workitem则需要应用到workflowEngineLocation
+	 */
+	protected String workItemType = WORKITEM_TYPE_LOCAL;//是否为远程workitem
+	
 	protected String parentWorkItemId = WorkItem.NO_PARENT_WORKITEM;
 	protected String reassignType;
 	
 	protected ActivityInstance activityInstance;
-    private AssignmentStrategy assignmentStrategy = AssignmentStrategy.ASSIGN_TO_ANY;
-	/**
+    private WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
+	
+    /**
 	 * @return the id
 	 */
 	public String getId() {
@@ -329,6 +374,21 @@ public abstract class AbsWorkItem implements WorkItem{
 		return activityInstance;
 	}
 
+	public String getFormUrl() {
+		return formUrl;
+	}
+
+	public void setFormUrl(String formUrl) {
+		this.formUrl = formUrl;
+	}
+
+	public String getMobileFormUrl(){
+		return this.mobileFormUrl;
+	}
+	
+	public void setMobileFormUrl(String url){
+		this.mobileFormUrl = url;
+	}
 	/**
 	 * @param activityInstance the activityInstance to set
 	 */
@@ -337,15 +397,98 @@ public abstract class AbsWorkItem implements WorkItem{
 	}
 	
 
-	public AssignmentStrategy getAssignmentStrategy() {
+	public WorkItemAssignmentStrategy getAssignmentStrategy() {
 		
 		return this.assignmentStrategy;
 	}
 	
-	public void setAssignmentStrategy(AssignmentStrategy assignmentStrategy){
+	public void setAssignmentStrategy(WorkItemAssignmentStrategy assignmentStrategy){
 		this.assignmentStrategy = assignmentStrategy;
 	}
 	
+	
+	
+	
+	public String getWorkItemName() {
+		return workItemName;
+	}
+
+	public void setWorkItemName(String workItemName) {
+		this.workItemName = workItemName;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String description) {
+		this.subject = description;
+	}
+
+	public String getOriginalSystemName() {
+		return originalSystemName;
+	}
+
+	public void setOriginalSystemName(String originalSystemName) {
+		this.originalSystemName = originalSystemName;
+	}
+
+	public String getProcInstCreatorName() {
+		return procInstCreatorName;
+	}
+
+	public void setProcInstCreatorName(String procInstCreatorName) {
+		this.procInstCreatorName = procInstCreatorName;
+	}
+
+	public String getBizId() {
+		return bizId;
+	}
+
+	public void setBizId(String bizId) {
+		this.bizId = bizId;
+	}
+
+	public Date getExpiredTime() {
+		return expiredTime;
+	}
+
+	public void setExpiredTime(Date expiredTime) {
+		this.expiredTime = expiredTime;
+	}
+
+	public String getResponsiblePersonOrgId() {
+		return responsiblePersonOrgId;
+	}
+
+	public void setResponsiblePersonOrgId(String responsiblePersonOrgId) {
+		this.responsiblePersonOrgId = responsiblePersonOrgId;
+	}
+
+	public String getResponsiblePersonOrgName() {
+		return responsiblePersonOrgName;
+	}
+
+	public void setResponsiblePersonOrgName(String responsiblePersonOrgName) {
+		this.responsiblePersonOrgName = responsiblePersonOrgName;
+	}
+
+	public String getWorkflowEngineLocation() {
+		return workflowEngineLocation;
+	}
+
+	public void setWorkflowEngineLocation(String workflowEngineLocation) {
+		this.workflowEngineLocation = workflowEngineLocation;
+	}
+
+	public String getWorkItemType() {
+		return workItemType;
+	}
+
+	public void setWorkItemType(String workItemType) {
+		this.workItemType = workItemType;
+	}
+
 	public WorkItem clone(){
 		AbsWorkItem wi = null;
 		if (this instanceof WorkItemImpl){
@@ -355,6 +498,16 @@ public abstract class AbsWorkItem implements WorkItem{
 		}else {
 			return null;
 		}
+		wi.setWorkItemName(this.workItemName);
+		wi.setWorkItemType(this.workItemType);
+		wi.setWorkflowEngineLocation(this.workflowEngineLocation);
+		wi.setBizId(this.bizId);
+		wi.setExpiredTime(this.expiredTime);
+		wi.setOriginalSystemName(this.originalSystemName);
+		wi.setSubject(this.subject);
+		wi.setProcInstCreatorName(this.procInstCreatorName);
+		
+		
 		wi.setActivityInstance(activityInstance);
 		wi.setAssignmentStrategy(assignmentStrategy);
 		wi.setClaimedTime(claimedTime);
@@ -374,6 +527,7 @@ public abstract class AbsWorkItem implements WorkItem{
 		wi.setOwnerDeptName(ownerDeptName);
 		wi.setOwnerId(ownerId);
 		wi.setOwnerName(ownerName);
+		wi.setFormUrl(formUrl);
 		return wi;
 	}
 }

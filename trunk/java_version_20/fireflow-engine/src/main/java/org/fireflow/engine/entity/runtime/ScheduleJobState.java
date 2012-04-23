@@ -54,11 +54,7 @@ public enum ScheduleJobState {
 	/**
 	 * 被取消
 	 */
-	CANCELLED(16),
-	/**
-	 * 被中止
-	 */
-	ABORTED(19),
+	ABORTED(16),
 	/**
 	 * 已经失效的，
 	 */
