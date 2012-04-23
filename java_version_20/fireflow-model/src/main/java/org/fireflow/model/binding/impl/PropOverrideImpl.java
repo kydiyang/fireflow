@@ -23,6 +23,7 @@ import org.fireflow.model.binding.PropOverride;
  * 
  * @author 非也
  * @version 2.0
+ * @deprecated
  */
 public class PropOverrideImpl implements PropOverride {
 	private String propGroupName = null;

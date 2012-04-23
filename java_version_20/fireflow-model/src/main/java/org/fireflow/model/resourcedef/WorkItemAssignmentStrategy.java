@@ -14,18 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.model.binding.impl;
+package org.fireflow.model.resourcedef;
 
-import org.fireflow.model.binding.OutputAssignment;
-import org.fireflow.model.data.Expression;
 
 /**
  * 
  * 
  * @author 非也
  * @version 2.0
- * @deprecated
  */
-public class OutputAssignmentImpl extends AssignmentImpl implements OutputAssignment {
-
+public enum WorkItemAssignmentStrategy {
+	ASSIGN_TO_ALL("org.fireflow.constants.ASSIGN_TO_ALL"),
+	ASSIGN_TO_ANY("org.fireflow.constants.ASSIGN_TO_ANY");
+	
+	private String value = null;
+	private WorkItemAssignmentStrategy(String value){
+		this.value = value;
+	}
+	
+	public String getValue(){
+		return value;
+	}
+	
+	public static WorkItemAssignmentStrategy fromValue(String v){
+		WorkItemAssignmentStrategy[] values =  WorkItemAssignmentStrategy.values();
+		for (WorkItemAssignmentStrategy strategy : values){
+			if (strategy.getValue().equals(v)){
+				return strategy;
+			}
+		}
+		return null;
+	}	
 }

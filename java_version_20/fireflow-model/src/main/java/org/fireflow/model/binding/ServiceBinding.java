@@ -2,8 +2,8 @@ package org.fireflow.model.binding;
 
 import java.util.List;
 
-import org.fireflow.model.servicedef.Operation;
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.servicedef.OperationDef;
+import org.fireflow.model.servicedef.ServiceDef;
 
 
 /**
@@ -38,20 +38,27 @@ public interface ServiceBinding {
 	public String getOperationName();
 	public void setOperationName(String opName);
 	
-	public Operation getOperation();
-	public void setOperation(Operation op);
+	public OperationDef getOperation();
+	public void setOperation(OperationDef op);
 	
-	public Service getService();
+	public ServiceDef getService();
 
-	public void setService(Service svc);
+	public void setService(ServiceDef svc);
 
-	public List<InputAssignment> getInputAssignments();
-	public void setInputAssignments(List<InputAssignment> assignments);
+	//1、输入参数的赋值方式之一：Assignment
+	public List<Assignment> getInputAssignments();
+	public void setInputAssignments(List<Assignment> assignments);	
+	public List<Assignment> getOutputAssignments();
+	public void setOutputAssignments(List<Assignment> assignments);
 	
-	public List<OutputAssignment> getOutputAssignments();
-	public void setOutputAssignments(List<OutputAssignment> assignments);
 	
-	public List<PropOverride> getPropOverrides();
+	//2、输入参数的赋值方式之二：实现ServiceInputOutputHandler接口
+	public String getServiceInputOutputHandler();
+	public void setServiceInputOutputHandler(String handlerClassName);
 	
-	public void setPropOverrides(List<PropOverride> propOverrides);
+	//3、输入输出赋值方式之三：Transformation xml转换？
+	
+//	public List<PropOverride> getPropOverrides();
+//	
+//	public void setPropOverrides(List<PropOverride> propOverrides);
 }

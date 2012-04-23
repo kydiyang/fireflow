@@ -19,8 +19,15 @@ package org.fireflow.model.binding;
 
 import java.util.List;
 
+import org.fireflow.model.resourcedef.ResourceDef;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+
 /**
+ * 资源绑定。
  * 
+ * AssignmentHandlerBeanName具有第一优先级。
+ * AssignmentHandlerClassName具有第二优先级
+ * PotentialOwners等具有第三优先级
  * 
  * @author 非也
  * @version 2.0
@@ -37,31 +44,43 @@ public interface ResourceBinding {
 	 * 工作项分配策略
 	 * @return
 	 */
-	public AssignmentStrategy getAssignmentStrategy();
+	public WorkItemAssignmentStrategy getAssignmentStrategy();
 	
-	public void setAssignmentStrategy(AssignmentStrategy strategy);
+	public void setAssignmentStrategy(WorkItemAssignmentStrategy strategy);
 	
 	/**
 	 * 业务领导
 	 * @return
 	 */
-	public List<ResourceRef> getAdministrators();
+	public List<ResourceDef> getAdministrators();
 	
-	public void setAdministrators(List<ResourceRef> admins);
+	public void setAdministrators(List<ResourceDef> admins);
 	
 	/**
 	 * 潜在所有者，即参与者
 	 * @return
 	 */
-	public List<ResourceRef> getPotentialOwners();
+	public List<ResourceDef> getPotentialOwners();
 	
-	public void setPotentialOwners(List<ResourceRef> potentialOwners);
+	public void setPotentialOwners(List<ResourceDef> potentialOwners);
 	
 	/**
 	 * 抄送人
 	 * @return
 	 */
-	public List<ResourceRef> getReaders();
+	public List<ResourceDef> getReaders();
 	
-	public void setReaders(List<ResourceRef> readers);
+	public void setReaders(List<ResourceDef> readers);
+	
+	/**
+	 * 返回自定义AssignmentHandler 的class name 
+	 * @return
+	 */
+	public String getAssignmentHandlerClassName();
+	
+	/**
+	 * 返回自定义的AssignmentHandler 的Bean Name
+	 * @return
+	 */
+	public String getAssignmentHandlerBeanName();
 }

@@ -23,6 +23,7 @@ package org.fireflow.model;
  */
 public class InvalidModelException extends Exception{
 
+	
 	/**
 	 * 
 	 */

@@ -16,27 +16,13 @@
  */
 package org.fireflow.model.binding;
 
-import org.fireflow.model.data.Expression;
 
 /**
  * 
- * 
+ * @deprecated
  * @author 非也
  * @version 2.0
  */
-public interface InputAssignment {
-	/**
-	 * 将该表达式计算出来的结果赋值给Service的输入。
-	 * 该表达式一般是一个基于流程变量的表达式。
-	 * @return
-	 */
-	public Expression getFrom();
-	public void setFrom(Expression exp);
-	
-	/**
-	 * service输入的名字
-	 * @return
-	 */
-	public String getTo();
-	public void setTo(String inputName);
+public interface InputAssignment extends Assignment{
+
 }
