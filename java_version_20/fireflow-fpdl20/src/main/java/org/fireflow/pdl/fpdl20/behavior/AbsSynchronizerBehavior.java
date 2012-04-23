@@ -16,36 +16,36 @@
  */
 package org.fireflow.pdl.fpdl20.behavior;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
+import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ScheduleJob;
 import org.fireflow.engine.entity.runtime.ScheduleJobState;
-import org.fireflow.engine.entity.runtime.WorkItem;
-import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.ScheduleJobImpl;
-import org.fireflow.engine.entity.runtime.impl.WorkItemImpl;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
+import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
 import org.fireflow.engine.modules.persistence.ScheduleJobPersister;
 import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.engine.modules.persistence.WorkItemPersister;
 import org.fireflow.engine.modules.schedule.Scheduler;
+import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.Transition;
+import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenState;
 import org.fireflow.pvm.pdllogic.BusinessStatus;
-import org.fireflow.pvm.pdllogic.CancellationHandler;
 import org.fireflow.pvm.pdllogic.ContinueDirection;
 import org.fireflow.pvm.pdllogic.ExecuteResult;
 
@@ -54,44 +54,9 @@ import org.fireflow.pvm.pdllogic.ExecuteResult;
  * @version 2.0
  */
 public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
-	protected CancellationHandler cancellationHandler = new SynchronizerCancellationHandler();
+	//（2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
+//	protected CancellationHandler cancellationHandler = new SynchronizerCancellationHandler();
 	
-	/**
-	 * 汇聚计算，这是fpdl1.0,和fpdl2.0本质区别的地方。
-	 * @param session
-	 * @param token
-	 * @param thisNode
-	 * @return
-	 */
-	protected boolean hasAlivePreviousNode(WorkflowSession session,Token token,Node thisNode){
-		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
-		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
-		
-		List<Transition> enteringTransitions = thisNode.getEnteringTransitions();		
-		if (enteringTransitions==null || enteringTransitions.size()==0){
-			return false;
-		}
-		
-		for (Transition transition:enteringTransitions){
-			if (!transition.isLoop()){//排除循环的情况
-				Node fromNode = transition.getFromNode();
-				
-				int aliveCount = tokenPersister.countAliveToken(token.getProcessInstanceId(), fromNode.getId(),token.getOperationContextName());
-				if (aliveCount>0){
-					return true;
-				}
-				
-				boolean b = hasAlivePreviousNode(session,token,fromNode);
-				
-				if (b){
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.pdllogic.WorkflowBehavior#execute(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, java.lang.Object)
@@ -105,105 +70,70 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 
 	}
 	
+	
+	public abstract Boolean canBeFired(WorkflowSession session, Token token,
+			Synchronizer synchronizer);
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.pdllogic.WorkflowBehavior#prepare(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, java.lang.Object)
 	 */
 	public Boolean prepare(WorkflowSession session, Token token,
 			Object workflowElement) {
-		Node node = (Node)workflowElement;
-//		int count = 0;
-//		
-//		//只有多于1条输入边时，才需要判断ActivityInstance是否已经创建，0条或者1条边的情况下，必然需要创建activityInstance。
-//		if (node.getEnteringTransitions() != null
-//				&& node.getEnteringTransitions().size() > 1) {
-//			RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
-//					.getRuntimeContext();
-//			PersistenceService persistenceStrategy = ctx.getEngineModule(
-//					PersistenceService.class, FpdlConstants.PROCESS_TYPE);
-//			ActivityInstancePersister activityInstancePersister = persistenceStrategy
-//					.getActivityInstancePersister();
-//
-//			count = activityInstancePersister.countAliveActivityInstance(token
-//					.getProcessInstanceId(), node.getId());
-//		}
-//		if (count==0){
-//			//创建环节实例
-//			super.prepare(session, token, workflowElement);
-//		}
-//		else{
-//			//TODO 将tokenId归并到ActivityInstance.tokenId字段
-//		}
+		Synchronizer node = (Synchronizer)workflowElement;
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
-				.getRuntimeContext();
+		.getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(
 				PersistenceService.class, FpdlConstants.PROCESS_TYPE);
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 
-		boolean multiEnteringTransitions = false;//表示是否有多条输入边
+		boolean multiEnteringTransitions = false;// 表示是否有多条输入边
 		if (node.getEnteringTransitions() != null
 				&& node.getEnteringTransitions().size() > 1) {
 			multiEnteringTransitions = true;
 		}
 		
-		// 1、通过elementInstanceId判断是否已经被执行
-		if (multiEnteringTransitions) {
-			Token tokenFromDB = tokenPersister.find(Token.class, token.getId());
-			if (tokenFromDB.getElementInstanceId() != null
-					&& !tokenFromDB.getElementInstanceId().trim().equals("")) {
-				// 说明已经执行过
-				tokenFromDB.setState(TokenState.COMPLETED);
-				tokenPersister.saveOrUpdate(tokenFromDB);
-				return false;
-			}
-		}
-		
-		//2、判断汇聚是否完成
-		boolean canBeFired = false;
-		if (multiEnteringTransitions) {
+		//1、缺省采用AndJoinEvaluator判断
+		Boolean canBeFired = this.canBeFired(session, token, node);
 
-			if (this.hasAlivePreviousNode(session, token, node)) {
-				canBeFired = false;
-			} else {
-				canBeFired = true;
-			}
-		} else {// 只有一条输入边的synchronizer直接启动
-			canBeFired = true;
-		}
-
-		//3、如果汇聚完成，则创建对应的ActivityInstance
-
-		if (canBeFired){
+		// 2、如果汇聚完成，则创建对应的ActivityInstance
+		if (canBeFired) {
 			int stepNumber = token.getStepNumber();
 			List<Token> siblings = null;
-			if (multiEnteringTransitions){
+			if (multiEnteringTransitions) {
 				siblings = tokenPersister.findSiblings(token);
-				if (siblings!=null){
-					for (Token sibling : siblings){
-						if (sibling.getStepNumber()>stepNumber){
+				if (siblings != null) {
+					for (Token sibling : siblings) {
+						if (sibling.getStepNumber() > stepNumber) {
 							stepNumber = sibling.getStepNumber();
 						}
 					}
 				}
 			}
-			
-			ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE);
-			ActivityInstancePersister actInstPersistSvc = persistenceStrategy.getActivityInstancePersister();
-			ProcessInstance processInstance = session.getCurrentProcessInstance();
-			//1、创建并保存活动实例
-			ActivityInstanceImpl activityInstance = (ActivityInstanceImpl)activityInstanceMgr.createActivityInstance(session, processInstance, workflowElement);
-			
+
+			ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(
+					ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE);
+			ActivityInstancePersister actInstPersistSvc = persistenceStrategy
+					.getActivityInstancePersister();
+			ProcessInstance processInstance = session
+					.getCurrentProcessInstance();
+			// 1、创建并保存活动实例
+			ActivityInstanceImpl activityInstance = (ActivityInstanceImpl) activityInstanceMgr
+					.createActivityInstance(session, processInstance,
+							node);
+
 			activityInstance.setStepNumber(stepNumber);
 			activityInstance.setTokenId(token.getId());
 			actInstPersistSvc.saveOrUpdate(activityInstance);
-			
-			//2、设置session和token
-			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(activityInstance);
-			token.setElementInstanceId(activityInstance.getId());	
+
+			// 2、设置session和token
+			((WorkflowSessionLocalImpl) session)
+					.setCurrentActivityInstance(activityInstance);
+			token.setElementInstanceId(activityInstance.getId());
 			tokenPersister.saveOrUpdate(token);
-			
-			if (siblings!=null && siblings.size()>0){
-				for (Token sibling : siblings){
-					if (!sibling.getId().equals(token.getId())){
+
+			if (siblings != null && siblings.size() > 0) {
+				for (Token sibling : siblings) {
+					if (!sibling.getId().equals(token.getId())) {
 						sibling.setElementInstanceId(activityInstance.getId());
 						sibling.setState(TokenState.COMPLETED);
 						tokenPersister.saveOrUpdate(sibling);
@@ -214,6 +144,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 		
 		return canBeFired;
 	}
+	
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.pdllogic.WorkflowBehavior#continueOn(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, java.lang.Object)
@@ -256,10 +187,65 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 		return direction;
 	}
 	
-	public CancellationHandler getCancellationHandler(){
-		return this.cancellationHandler;
+	//（2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
+//	public CancellationHandler getCancellationHandler(){
+//		return this.cancellationHandler;
+//	}
+	
+	/* (non-Javadoc)
+	 * @see org.fireflow.pvm.pdllogic.WorkflowBehavior#onTokenStateChanged(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, java.lang.Object)
+	 */
+	public void onTokenStateChanged(WorkflowSession session, Token token,
+			Object workflowElement) {
+		
+		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
+	
+		CalendarService calendarService = ctx.getEngineModule(CalendarService.class,  FpdlConstants.PROCESS_TYPE);
+		
+		ActivityInstance oldActInst = session.getCurrentActivityInstance();
+		ActivityInstance activityInstance = oldActInst;
+		if (oldActInst==null || !oldActInst.getId().equals(token.getElementInstanceId())){
+			activityInstance = actInstPersistenceService.find(ActivityInstance.class, token.getElementInstanceId());
+			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(activityInstance);
+		}
+		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, token.getProcessType());
+		try{
+			ActivityInstanceState state = ActivityInstanceState.valueOf(token.getState().name());
+
+			if (state.getValue()>ActivityInstanceState.DELIMITER.getValue()){
+				
+				//将调度器中的timmer删除	，同时将ScheduleJob的状态修改为非活动状态。
+				ScheduleJobPersister scheduleJobPersister = persistenceStrategy.getScheduleJobPersister();
+				List<ScheduleJob> scheduleJobs = scheduleJobPersister.findScheduleJob4ActivityInstance(activityInstance.getId());
+				if (scheduleJobs!=null && scheduleJobs.size()>0){
+					for (ScheduleJob job : scheduleJobs){
+						if (job.getState().getValue()<ScheduleJobState.DELIMITER.getValue()){
+							Scheduler scheduler = ctx.getEngineModule(Scheduler.class, activityInstance.getProcessType());
+							scheduler.unSchedule(job, ctx);
+							ScheduleJobState scheduleJobState = ScheduleJobState.COMPLETED;
+							try{
+								scheduleJobState = ScheduleJobState.valueOf(state.getValue());
+							}catch(Exception e){
+								scheduleJobState = ScheduleJobState.ABORTED;
+							}
+							((ScheduleJobImpl)job).setState(scheduleJobState);
+							scheduleJobPersister.saveOrUpdate(job);
+						}
+					}
+				}
+			}
+			
+			//修改ActivityInstance的状态，在此处调用ActivityInstanceManager.changeActivityInstanceState(...)完成
+			activityInstanceMgr.changeActivityInstanceState(session, activityInstance, state, workflowElement);
+		}finally{
+			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(oldActInst);
+		}
 	}
 	
+	/*
+	//2012-02-05 abort方法没有意义
 	public void abort(WorkflowSession session,Token token,Object workflowElement){
 		//1、检验currentActivityInstance和currentProcessInstance的一致性
 		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
@@ -300,5 +286,5 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 			((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(oldProcInst);
 			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(oldActInst);
 		}
-	}
+	}*/
 }

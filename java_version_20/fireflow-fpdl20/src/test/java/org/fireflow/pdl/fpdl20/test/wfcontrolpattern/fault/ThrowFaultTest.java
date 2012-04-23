@@ -16,34 +16,21 @@
  */
 package org.fireflow.pdl.fpdl20.test.wfcontrolpattern.fault;
 
-import java.util.List;
-
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
-import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
 import org.fireflow.engine.WorkflowStatement;
-import org.fireflow.engine.entity.runtime.ActivityInstance;
-import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
-import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.entity.runtime.ProcessInstanceState;
-import org.fireflow.engine.entity.runtime.WorkItem;
-import org.fireflow.engine.entity.runtime.WorkItemProperty;
-import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
-import org.fireflow.model.servicedef.impl.OperationImpl;
-import org.fireflow.model.servicedef.impl.ServiceImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.endnode.impl.ThrowFaultDecoratorImpl;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.impl.CatchCompensationDecoratorImpl;
+import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowFaultFeatureImpl;
+import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.RouterImpl;
@@ -51,9 +38,7 @@ import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.TransitionImpl;
 import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.fireflow.pvm.kernel.KernelException;
-import org.fireflow.pvm.kernel.Token;
-import org.fireflow.pvm.kernel.TokenProperty;
-import org.fireflow.pvm.kernel.TokenState;
+import org.fireflow.service.human.HumanService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -67,6 +52,7 @@ import org.springframework.transaction.support.TransactionCallback;
  */
 public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 	protected static final String processName = "ThrowFaultTest";
+	protected static final String processDisplayName = "";
 	protected static final String bizId = "ThisIsAJunitTest";
 
 	@Test
@@ -115,115 +101,112 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 	 *            |-->Activity2-->End2
 	 */
 	public WorkflowProcess createWorkflowProcess(){
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processName);
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
+
+		Subflow subflow = process.getMainflow();
 		
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
+		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		
-		RouterImpl router1 = new RouterImpl(process,"Router");
+		RouterImpl router1 = new RouterImpl(subflow,"Router");
 		
 		//////////////////////////////////////////////////////////////
 		//////////  Activity1 及其 异常处理分支，以及EndNode1////////////
 		//////////////////////////////////////////////////////////////
-		ActivityImpl activity1 = new ActivityImpl(process,"Activity1");
+		ActivityImpl activity1 = new ActivityImpl(subflow,"Activity1");
 		
 		//补偿捕获节点
-		StartNodeImpl catchCompensationNode = new StartNodeImpl(process,"CatchCompensation");
-		CatchCompensationDecoratorImpl catchCompensationDecorator = new CatchCompensationDecoratorImpl();
+		StartNodeImpl catchCompensationNode = new StartNodeImpl(subflow,"CatchCompensation");
+		CatchCompensationFeatureImpl catchCompensationDecorator = new CatchCompensationFeatureImpl();
 		catchCompensationDecorator.setAttachedToActivity(activity1);
-		catchCompensationNode.setDecorator(catchCompensationDecorator);
+		catchCompensationNode.setFeature(catchCompensationDecorator);
 		
 		activity1.getAttachedStartNodes().add(catchCompensationNode);
 		
-		ActivityImpl handleCompensationNode = new ActivityImpl(process,"HandleCompensation");
+		ActivityImpl handleCompensationNode = new ActivityImpl(subflow,"HandleCompensation");
 		
-		TransitionImpl transition0 = new TransitionImpl(process,"catchCompensation2HandleCompensation");
+		TransitionImpl transition0 = new TransitionImpl(subflow,"catchCompensation2HandleCompensation");
 		transition0.setFromNode(catchCompensationNode);
 		transition0.setToNode(handleCompensationNode);
 		catchCompensationNode.getLeavingTransitions().add(transition0);
 		handleCompensationNode.getEnteringTransitions().add(transition0);
 		
 		
-		EndNodeImpl endNode1 = new EndNodeImpl(process,"End1");
-		ThrowFaultDecoratorImpl decorator = new ThrowFaultDecoratorImpl();
-		endNode1.setDecorator(decorator);
+		EndNodeImpl endNode1 = new EndNodeImpl(subflow,"End1");
+		ThrowFaultFeatureImpl decorator = new ThrowFaultFeatureImpl();
+		endNode1.setFeature(decorator);
 		
 		//////////////////////////////////////////////////////////////
 		//////////  Activity1以及EndNode2                 ////////////
 		//////////////////////////////////////////////////////////////			
-		ActivityImpl activity2 = new ActivityImpl(process,"Activity2");
+		ActivityImpl activity2 = new ActivityImpl(subflow,"Activity2");
 		//构造Human service	
-		String opName = "xyz/Application.jsp";
-		OperationImpl operation = new OperationImpl();
-		operation.setOperationName(opName);
-		
-		ServiceImpl humanService = new ServiceImpl();
-		process.getLocalServices().add(humanService);
-		humanService.setServiceType("Human");
-		humanService.setName("Application");
-		humanService.setDisplayName("申请");
-		humanService.setOperation(operation);
+		String formUrl = "xyz/Application.jsp";		
+		HumanService humanService = new HumanService();
+		humanService.setName("HumanService");
+		humanService.setDisplayName("人工任务");
+		humanService.setFormUrl(formUrl);
+		process.addService(humanService);
 		
 		//将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(humanService);
-		serviceBinding.setServiceId(humanService.getId());
-		serviceBinding.setOperation(humanService.getOperation(opName));
-		serviceBinding.setOperationName(opName);		
+		serviceBinding.setServiceId(humanService.getId());	
 
-		activity2.setServiceBinding(serviceBinding);
+		activity2.setServiceBinding(serviceBinding);	
+
 		
-		EndNodeImpl endNode2 = new EndNodeImpl(process,"End2");
+		EndNodeImpl endNode2 = new EndNodeImpl(subflow,"End2");
 		
 		
 		////////////////////////////////////////////////
 		/////////   转移   ///////////////////////////////
 		////////////////////////////////////////////////
-		TransitionImpl t_start_router = new TransitionImpl(process,"start_router1");
+		TransitionImpl t_start_router = new TransitionImpl(subflow,"start_router1");
 		t_start_router.setFromNode(startNode);
 		t_start_router.setToNode(router1);
 		startNode.getLeavingTransitions().add(t_start_router);
 		router1.getEnteringTransitions().add(t_start_router);
 		
-		TransitionImpl t_router1_activity1 = new TransitionImpl(process,"router1_activity1");
+		TransitionImpl t_router1_activity1 = new TransitionImpl(subflow,"router1_activity1");
 		t_router1_activity1.setFromNode(router1);
 		t_router1_activity1.setToNode(activity1);
 		router1.getLeavingTransitions().add(t_router1_activity1);
 		activity1.getEnteringTransitions().add(t_router1_activity1);
 		
-		TransitionImpl t_activity1_end1 = new TransitionImpl(process,"activity1_end1");
+		TransitionImpl t_activity1_end1 = new TransitionImpl(subflow,"activity1_end1");
 		t_activity1_end1.setFromNode(activity1);
 		t_activity1_end1.setToNode(endNode1);
 		activity1.getLeavingTransitions().add(t_activity1_end1);
 		endNode1.getEnteringTransitions().add(t_activity1_end1);
 		
-		TransitionImpl t_router1_activity2 = new TransitionImpl(process,"router1_activity2");
+		TransitionImpl t_router1_activity2 = new TransitionImpl(subflow,"router1_activity2");
 		t_router1_activity2.setFromNode(router1);
 		t_router1_activity2.setToNode(activity2);
 		router1.getLeavingTransitions().add(t_router1_activity2);
 		activity2.getEnteringTransitions().add(t_router1_activity2);		
 		
-		TransitionImpl t_activity2_end2 = new TransitionImpl(process,"activity2_end2");
+		TransitionImpl t_activity2_end2 = new TransitionImpl(subflow,"activity2_end2");
 		t_activity2_end2.setFromNode(activity1);
 		t_activity2_end2.setToNode(endNode1);
 		activity2.getLeavingTransitions().add(t_activity2_end2);
 		endNode2.getEnteringTransitions().add(t_activity2_end2);
 		
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getRouters().add(router1);
-		process.getActivities().add(activity1);
-		process.getActivities().add(activity2);
-		process.getEndNodes().add(endNode1);
-		process.getEndNodes().add(endNode2);
-		process.getStartNodes().add(catchCompensationNode);
-		process.getActivities().add(handleCompensationNode);
+		subflow.setEntry(startNode);
+		subflow.getStartNodes().add(startNode);
+		subflow.getRouters().add(router1);
+		subflow.getActivities().add(activity1);
+		subflow.getActivities().add(activity2);
+		subflow.getEndNodes().add(endNode1);
+		subflow.getEndNodes().add(endNode2);
+		subflow.getStartNodes().add(catchCompensationNode);
+		subflow.getActivities().add(handleCompensationNode);
 		
-		process.getTransitions().add(transition0);
-		process.getTransitions().add(t_start_router);
-		process.getTransitions().add(t_router1_activity1);
-		process.getTransitions().add(t_activity1_end1);
-		process.getTransitions().add(t_router1_activity2);
-		process.getTransitions().add(t_activity2_end2);
+		subflow.getTransitions().add(transition0);
+		subflow.getTransitions().add(t_start_router);
+		subflow.getTransitions().add(t_router1_activity1);
+		subflow.getTransitions().add(t_activity1_end1);
+		subflow.getTransitions().add(t_router1_activity2);
+		subflow.getTransitions().add(t_activity2_end2);
 		return process;
 	}
 	

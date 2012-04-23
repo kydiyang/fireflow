@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -37,14 +36,15 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.PersistenceServiceImpl;
 import org.fireflow.engine.modules.persistence.classpath.ResourcePersisterClassPathImpl;
 import org.fireflow.engine.modules.persistence.classpath.ServicePersisterClassPathImpl;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLParser;
+import org.fireflow.pdl.fpdl20.io.FPDLDeserializer;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pvm.kernel.Token;
@@ -90,21 +90,17 @@ public class TheSimplestHumanProcessTest3 extends FireWorkflowJunitEnviroment {
 
 				// 1.1发布一条流程
 				WorkflowProcess process = createWorkflowProcess();
-				Map<ProcessDescriptorProperty, Object> props = new HashMap<ProcessDescriptorProperty, Object>();
-				props
-						.put(ProcessDescriptorProperty.PUBLISH_STATE,
-								Boolean.TRUE);// true表示流程是发布状态
+
 				try {
-					stmt.uploadProcess(process, props);
+					stmt.uploadProcess(process, true, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 				// 1.2 上传一个流程，不发布
-				props = new HashMap<ProcessDescriptorProperty, Object>();
 				try {
-					stmt.uploadProcess(process, props);
+					stmt.uploadProcess(process, false, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -155,9 +151,9 @@ public class TheSimplestHumanProcessTest3 extends FireWorkflowJunitEnviroment {
 			File f = new File(
 					"src/test/java/org/fireflow/pdl/fpdl20/test/service/human/HumanServiceProcess.fpdl20.xml");
 			FileInputStream fIn = new FileInputStream(f);
-			Dom4JFPDLParser parser = new Dom4JFPDLParser();
+			FPDLDeserializer parser = new FPDLDeserializer();
 
-			WorkflowProcess process = parser.parse(fIn);
+			WorkflowProcess process = parser.deserialize(fIn);
 
 			return process;
 		} catch (Exception e) {
@@ -181,9 +177,9 @@ public class TheSimplestHumanProcessTest3 extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst
 				.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
-		Assert.assertEquals(processName, procInst.getName());// name
+		Assert.assertEquals(processName, procInst.getProcessName());// name
 																// 为空的情况下默认等于processId,
-		Assert.assertEquals(processName, procInst.getDisplayName());// displayName为空的情况下默认等于name
+		Assert.assertEquals(processName, procInst.getProcessDisplayName());// displayName为空的情况下默认等于name
 		Assert.assertEquals(ProcessInstanceState.RUNNING, procInst.getState());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(), procInst
@@ -272,9 +268,9 @@ public class TheSimplestHumanProcessTest3 extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(new Integer(1), activityInstance.getVersion());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, activityInstance
 				.getProcessType());
-		Assert.assertEquals(procInst.getName(), activityInstance
+		Assert.assertEquals(procInst.getProcessName(), activityInstance
 				.getProcessName());
-		Assert.assertEquals(procInst.getDisplayName(), activityInstance
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance
 				.getProcessDisplayName());
 
 		// 验证Activity1的WorkItem

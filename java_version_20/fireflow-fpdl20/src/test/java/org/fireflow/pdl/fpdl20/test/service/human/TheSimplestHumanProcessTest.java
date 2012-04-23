@@ -16,11 +16,11 @@
  */
 package org.fireflow.pdl.fpdl20.test.service.human;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -33,26 +33,22 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.binding.AssignmentStrategy;
-import org.fireflow.model.binding.impl.ParameterAssignmentImpl;
 import org.fireflow.model.binding.impl.ResourceBindingImpl;
-import org.fireflow.model.binding.impl.ResourceRefImpl;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.model.data.impl.ExpressionImpl;
-import org.fireflow.model.data.impl.InputImpl;
 import org.fireflow.model.data.impl.PropertyImpl;
 import org.fireflow.model.misc.Duration;
+import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.resourcedef.ResourceType;
-import org.fireflow.model.resourcedef.impl.ResolverDefImpl;
-import org.fireflow.model.resourcedef.impl.ResourceImpl;
-import org.fireflow.model.servicedef.impl.OperationImpl;
-import org.fireflow.model.servicedef.impl.ServiceImpl;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLParser;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLSerializer;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+import org.fireflow.model.resourcedef.impl.ResourceDefImpl;
+import org.fireflow.model.servicedef.impl.OperationDefImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -62,6 +58,8 @@ import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenProperty;
 import org.fireflow.pvm.kernel.TokenState;
+import org.fireflow.service.human.HumanService;
+import org.firesoa.common.schema.NameSpaces;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -121,134 +119,111 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 	 */
 	public WorkflowProcess createWorkflowProcess(){
 		//构造流程
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processName);
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processName);
+		
+		Subflow mainflow = process.getMainflow();
+		
 		Duration du = new Duration(3,"DAY");
-		process.setDuration(du);
+		mainflow.setDuration(du);
 		
-		PropertyImpl property = new PropertyImpl(process,"x");//流程变量x
-		property.setDataType("java.lang.Integer");
-		property.setInitialValueAsString("1");
-		process.getProperties().add(property);
+		PropertyImpl property = new PropertyImpl(mainflow,"applicant");//流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
+		property.setInitialValueAsString("张三");
+		mainflow.getProperties().add(property);
 		
-		property = new PropertyImpl(process,"y");//流程变量x
-		property.setDataType("java.lang.Integer");
+		property = new PropertyImpl(process,"days");//流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("2");
-		process.getProperties().add(property);
+		mainflow.getProperties().add(property);
 		
 		property = new PropertyImpl(process,"z");//流程变量x
-		property.setDataType("java.lang.Integer");
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("3");
-		process.getProperties().add(property);
+		mainflow.getProperties().add(property);
 		
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
-		ActivityImpl activity = new ActivityImpl(process,"Activity1");
+		StartNodeImpl startNode = new StartNodeImpl(mainflow,"Start");
+		ActivityImpl activity = new ActivityImpl(mainflow,"Activity1");
 		activity.setDuration(du);
-		EndNodeImpl endNode = new EndNodeImpl(process,"End");
+		EndNodeImpl endNode = new EndNodeImpl(mainflow,"End");
 		
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getActivities().add(activity);
-		process.getEndNodes().add(endNode);
+		mainflow.setEntry(startNode);
+		mainflow.getStartNodes().add(startNode);
+		mainflow.getActivities().add(activity);
+		mainflow.getEndNodes().add(endNode);
 		
-		TransitionImpl transition1 = new TransitionImpl(process,"start2activity");
+		TransitionImpl transition1 = new TransitionImpl(mainflow,"start2activity");
 		transition1.setFromNode(startNode);
 		transition1.setToNode(activity);
 		startNode.getLeavingTransitions().add(transition1);
 		activity.getEnteringTransitions().add(transition1);
 		
-		TransitionImpl transition2 = new TransitionImpl(process,"activity2end");
+		TransitionImpl transition2 = new TransitionImpl(mainflow,"activity2end");
 		transition2.setFromNode(activity);
 		transition2.setToNode(endNode);
 		activity.getLeavingTransitions().add(transition2);
 		endNode.getEnteringTransitions().add(transition2);
 		
-		process.getTransitions().add(transition1);
-		process.getTransitions().add(transition2);
+		mainflow.getTransitions().add(transition1);
+		mainflow.getTransitions().add(transition2);
 		
-		//构造Human service	
-		String opName = "xyz/Application.jsp";
-		OperationImpl operation = new OperationImpl();
-		operation.setOperationName(opName);
-		
-		ServiceImpl humanService = new ServiceImpl();
-		humanService.setServiceType("Human");
-		humanService.setName("Application");
+		//构造Human service			
+		HumanService humanService = new HumanService();
+		humanService.setName("Apply");
 		humanService.setDisplayName("申请");
-		humanService.setOperation(operation);
+		humanService.setFormUrl("abc/zyx.jsp");
+		ExpressionImpl descExpression = new ExpressionImpl();
+		descExpression.setLanguage("JEXL");
+		descExpression.setBody("'请假申请[申请人:'+processVars.applicant+',请假天数:'+processVars.days+']'");
+		humanService.setWorkItemSubject(descExpression);
+
 		
-		process.getLocalServices().add(humanService);
+		process.addService(humanService);
 
 		
 		//将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(humanService);
-		serviceBinding.setServiceId(humanService.getId());
-		serviceBinding.setOperation(humanService.getOperation(opName));
-		serviceBinding.setOperationName(opName);		
+		serviceBinding.setServiceId(humanService.getId());	
 
 		activity.setServiceBinding(serviceBinding);
 		
-		//构造Resource以及ResourceBinding
-		ResourceImpl resource = new ResourceImpl();
-		resource.setName("Tester");
-		resource.setDisplayName("测试用户");
-		resource.setResourceType(ResourceType.CUSTOM);
-		ResolverDefImpl resolver = new ResolverDefImpl();
-		resolver.setBeanName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
-		InputImpl input = new InputImpl();
-		input.setName("flag");
-		input.setDisplayName("标志");
-		input.setDataType("java.lang.Integer");
-		resolver.getParameters().add(input);
-		resource.setResolver(resolver);
-		
-		process.getLocalResources().add(resource);
-		
 		//resourceBinding
 		ResourceBindingImpl resourceBinding = new ResourceBindingImpl();
-		resourceBinding.setAssignmentStrategy(AssignmentStrategy.ASSIGN_TO_ALL);
+		resourceBinding.setAssignmentStrategy(WorkItemAssignmentStrategy.ASSIGN_TO_ALL);
 		resourceBinding.setDisplayName("审批科");
 		
 		activity.setResourceBinding(resourceBinding);
 		
+		
 		//业务领导
-		ResourceRefImpl resourceRef = new ResourceRefImpl();
-		resourceRef.setResourceId("Tester");
-		resourceRef.setResource(resource);		
-		ParameterAssignmentImpl paramAssign = new ParameterAssignmentImpl();
-		ExpressionImpl exp = new ExpressionImpl();
-		exp.setLanguage("JEXL");
-		exp.setBody("processVars.x");
-		paramAssign.setFrom(exp);
-		paramAssign.setTo("flag");
-		resourceRef.getParameterAssignments().add(paramAssign);
-		resourceBinding.getAdministrators().add(resourceRef);
+		ResourceDefImpl resource = new ResourceDefImpl();
+		resource.getExtendedAttributes().put("FLAG", "1");
+		resource.setName("Administrators");
+		resource.setDisplayName("业务领导");
+		resource.setResourceType(ResourceType.CUSTOM);
+		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
+		process.addResource(resource);
+		resourceBinding.getAdministrators().add(resource);
 		
 		//操作者
-		resourceRef = new ResourceRefImpl();
-		resourceRef.setResourceId("Tester");
-		resourceRef.setResource(resource);		
-		paramAssign = new ParameterAssignmentImpl();
-		exp = new ExpressionImpl();
-		exp.setLanguage("JEXL");
-		exp.setBody("processVars.y");
-		paramAssign.setFrom(exp);
-		paramAssign.setTo("flag");
-		resourceRef.getParameterAssignments().add(paramAssign);
-		resourceBinding.getPotentialOwners().add(resourceRef);
+		resource = new ResourceDefImpl();
+		resource.getExtendedAttributes().put("FLAG", "2");
+		resource.setName("Performers");
+		resource.setDisplayName("操作者");
+		resource.setResourceType(ResourceType.CUSTOM);
+		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
+		process.addResource(resource);
+		resourceBinding.getPotentialOwners().add(resource);
 		
 		//抄送人
-		resourceRef = new ResourceRefImpl();
-		resourceRef.setResourceId("Tester");
-		resourceRef.setResource(resource);		
-		paramAssign = new ParameterAssignmentImpl();
-		exp = new ExpressionImpl();
-		exp.setLanguage("JEXL");
-		exp.setBody("processVars.z");
-		paramAssign.setFrom(exp);
-		paramAssign.setTo("flag");
-		resourceRef.getParameterAssignments().add(paramAssign);
-		resourceBinding.getReaders().add(resourceRef);
+		resource = new ResourceDefImpl();
+		resource.getExtendedAttributes().put("FLAG", "3");
+		resource.setName("cc");
+		resource.setDisplayName("抄送");
+		resource.setResourceType(ResourceType.CUSTOM);
+		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
+		process.addResource(resource);
+		resourceBinding.getReaders().add(resource);
 		
 		return process;
 	}
@@ -265,8 +240,8 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(processName, procInst.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
-		Assert.assertEquals(processName, procInst.getName());//name 为空的情况下默认等于processId,
-		Assert.assertEquals(processName, procInst.getDisplayName());//displayName为空的情况下默认等于name
+		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
+		Assert.assertEquals(processName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
 		Assert.assertEquals(ProcessInstanceState.RUNNING, procInst.getState());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(),procInst.getCreatorId());
@@ -291,7 +266,7 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(4, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName,procInstToken.getElementId() );
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -314,7 +289,7 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -335,14 +310,16 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
-		Assert.assertEquals(procInst.getName(), activityInstance.getProcessName());
-		Assert.assertEquals(procInst.getDisplayName(), activityInstance.getProcessDisplayName());
+		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
 		
 		//验证Activity1的WorkItem
 		WorkflowQuery<WorkItem> q4WorkItem = session.createWorkflowQuery(WorkItem.class);
-		q4WorkItem.add(Restrictions.eq(WorkItemProperty.ACTIVITY_INSTANCE_$_ACTIVITY_ID, processName+".Activity1"));
+		q4WorkItem.add(Restrictions.eq(WorkItemProperty.ACTIVITY_INSTANCE_$_ACTIVITY_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
 		List<WorkItem> workItemList = q4WorkItem.list();
 		Assert.assertNotNull(workItemList);
 		Assert.assertEquals(2,workItemList.size());
+		
+		
 	}
 }

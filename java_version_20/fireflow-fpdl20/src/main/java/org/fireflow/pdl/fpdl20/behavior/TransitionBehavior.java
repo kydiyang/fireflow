@@ -41,9 +41,10 @@ public class TransitionBehavior implements WorkflowBehavior {
 		return null;
 	}
 	
-	public CancellationHandler getCancellationHandler(){
-		return null;
-	}
+	//（2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
+//	public CancellationHandler getCancellationHandler(){
+//		return null;
+//	}
 	
 	public FaultHandler getFaultHandler(String errorCode){
 		return null;
@@ -89,7 +90,5 @@ public class TransitionBehavior implements WorkflowBehavior {
 			Object workflowElement) {
 		return true;
 	}
-	public void abort(WorkflowSession session,Token thisToken,Object workflowElement){
-		
-	}
+
 }

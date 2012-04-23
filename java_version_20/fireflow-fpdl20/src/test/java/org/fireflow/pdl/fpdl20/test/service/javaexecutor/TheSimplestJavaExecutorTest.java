@@ -16,11 +16,11 @@
  */
 package org.fireflow.pdl.fpdl20.test.service.javaexecutor;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -32,24 +32,20 @@ import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.entity.runtime.Variable;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.Restrictions;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
+import org.fireflow.engine.modules.script.ScriptContextVariableNames;
+import org.fireflow.engine.query.Order;
+import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.binding.impl.InputAssignmentImpl;
-import org.fireflow.model.binding.impl.OutputAssignmentImpl;
+import org.fireflow.model.binding.impl.AssignmentImpl;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.model.data.impl.ExpressionImpl;
-import org.fireflow.model.data.impl.InputImpl;
-import org.fireflow.model.data.impl.OutputImpl;
 import org.fireflow.model.data.impl.PropertyImpl;
-import org.fireflow.model.servicedef.ServicePropGroup;
-import org.fireflow.model.servicedef.impl.IOSpecificationImpl;
-import org.fireflow.model.servicedef.impl.OperationImpl;
-import org.fireflow.model.servicedef.impl.ServiceImpl;
-import org.fireflow.model.servicedef.impl.ServicePropImpl;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLParser;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLSerializer;
+import org.fireflow.model.process.WorkflowElement;
+import org.fireflow.model.servicedef.OperationDef;
+import org.fireflow.model.servicedef.impl.JavaInterfaceDef;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -59,6 +55,8 @@ import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenProperty;
 import org.fireflow.pvm.kernel.TokenState;
+import org.fireflow.service.java.JavaService;
+import org.firesoa.common.schema.NameSpaces;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -72,6 +70,7 @@ import org.springframework.transaction.support.TransactionCallback;
  */
 public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 	protected static final String processName = "TheSimplestJavaExecutorProcess";
+	protected static final String processDisplayName = "测试Java调用";
 	protected static final String bizId = "TheJunitTester";
 
 	@Test
@@ -115,210 +114,176 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 	 */
 	public WorkflowProcess createWorkflowProcess(){
 		//构造流程
-		WorkflowProcessImpl process = new WorkflowProcessImpl(processName);
+		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		PropertyImpl property = new PropertyImpl(process,"x");//流程变量x
-		property.setDataType("java.lang.Integer");
+		Subflow subflow = process.getMainflow();
+		
+		PropertyImpl property = new PropertyImpl(subflow,"x");//流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("1");
-		process.getProperties().add(property);
+		subflow.getProperties().add(property);
 		
-		property = new PropertyImpl(process,"y");//流程变量x
-		property.setDataType("java.lang.Integer");
+		property = new PropertyImpl(subflow,"y");//流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("5");
-		process.getProperties().add(property);
+		subflow.getProperties().add(property);
 		
-		property = new PropertyImpl(process,"z");//流程变量x
-		property.setDataType("java.lang.Integer");
+		property = new PropertyImpl(subflow,"z");//流程变量x
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("0");
-		process.getProperties().add(property);
+		subflow.getProperties().add(property);
 		
-		property = new PropertyImpl(process,"m");//流程变量m
-		property.setDataType("java.lang.Integer");
+		property = new PropertyImpl(subflow,"m");//流程变量m
+		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
 		property.setInitialValueAsString("0");
-		process.getProperties().add(property);		
+		subflow.getProperties().add(property);		
 		
-		StartNodeImpl startNode = new StartNodeImpl(process,"Start");
-		ActivityImpl activity1 = new ActivityImpl(process,"Activity1");
-		ActivityImpl activity2 = new ActivityImpl(process,"Activity2");
-		EndNodeImpl endNode = new EndNodeImpl(process,"End");
+		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
+		ActivityImpl activity1 = new ActivityImpl(subflow,"Activity1");
+		ActivityImpl activity2 = new ActivityImpl(subflow,"Activity2");
+		EndNodeImpl endNode = new EndNodeImpl(subflow,"End");
 		
-		process.setEntry(startNode);
-		process.getStartNodes().add(startNode);
-		process.getActivities().add(activity1);
-		process.getActivities().add(activity2);
-		process.getEndNodes().add(endNode);
+		subflow.setEntry(startNode);
+		subflow.getStartNodes().add(startNode);
+		subflow.getActivities().add(activity1);
+		subflow.getActivities().add(activity2);
+		subflow.getEndNodes().add(endNode);
 		
-		TransitionImpl transition1 = new TransitionImpl(process,"start_activity1");
+		TransitionImpl transition1 = new TransitionImpl(subflow,"start_activity1");
 		transition1.setFromNode(startNode);
 		transition1.setToNode(activity1);
 		startNode.getLeavingTransitions().add(transition1);
 		activity1.getEnteringTransitions().add(transition1);
 		
-		TransitionImpl t_act1_act2 = new TransitionImpl(process,"activity1_activity2");
+		TransitionImpl t_act1_act2 = new TransitionImpl(subflow,"activity1_activity2");
 		t_act1_act2.setFromNode(activity1);
 		t_act1_act2.setToNode(activity2);
 		activity1.getLeavingTransitions().add(t_act1_act2);
 		activity2.getEnteringTransitions().add(t_act1_act2);
 		
-		TransitionImpl transition2 = new TransitionImpl(process,"activity2_end");
+		TransitionImpl transition2 = new TransitionImpl(subflow,"activity2_end");
 		transition2.setFromNode(activity2);
 		transition2.setToNode(endNode);
 		activity2.getLeavingTransitions().add(transition2);
 		endNode.getEnteringTransitions().add(transition2);
 		
-		process.getTransitions().add(transition1);
-		process.getTransitions().add(transition2);
-		process.getTransitions().add(t_act1_act2);
+		subflow.getTransitions().add(transition1);
+		subflow.getTransitions().add(transition2);
+		subflow.getTransitions().add(t_act1_act2);
 		
-		//构造java service	
-		ServiceImpl javaService = new ServiceImpl();
-		process.getLocalServices().add(javaService);
+		//构造java service 1
+		JavaService javaService = new JavaService();
+		process.addService(javaService);
 		
-		javaService.setServiceType("Java");
-		javaService.setName("MathOperationBean1");
-		javaService.setDisplayName("数学运算操作");
-		
-		//service的加法操作
-		String opName = "add";
-		IOSpecificationImpl ioSpec = new IOSpecificationImpl();
-		InputImpl input = new InputImpl();
-		input.setName("a");
-		input.setDataType("int");
-		ioSpec.addInput(input);
-		
-		input = new InputImpl();
-		input.setName("b");
-		input.setDataType("int");
-		ioSpec.addInput(input);
-		
-		OutputImpl output = new OutputImpl();
-		output.setName("out");
-		output.setDataType("int");
-		ioSpec.addOutput(output);
-		
-		
-		OperationImpl operation = new OperationImpl();
-		operation.setOperationName(opName);
-		operation.setIOSpecification(ioSpec);
-		
-		javaService.setOperation(operation);
-	
-		
-		ServicePropGroup servicePropGroup = javaService.getServicePropGroup(ServicePropGroup.COMMON_PROPERTIES_GROUP);
-		ServicePropImpl serviceProp = new ServicePropImpl();
-		serviceProp.setName("JavaClassName");
-		serviceProp.setDisplayName("java类名");
-		serviceProp.setValue("org.fireflow.pdl.fpdl20.test.service.javaexecutor.MathOperationBean");
-		servicePropGroup.getServiceProps().add(serviceProp);
+		javaService.setName("JavaService1");
+		javaService.setDisplayName("Java调用1");
+		javaService.setJavaClassName("org.fireflow.pdl.fpdl20.test.service.javaexecutor.MathOperationBean");
+		JavaInterfaceDef _interface = new JavaInterfaceDef();
+		_interface.setInterfaceClassName("org.fireflow.pdl.fpdl20.test.service.javaexecutor.IMathOperationBean");
+		javaService.setInterface(_interface);
 		
 		//将service绑定到activity1
+		OperationDef operation = _interface.getOperation("add");
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(javaService);
 		serviceBinding.setServiceId(javaService.getId());
-		serviceBinding.setOperation(javaService.getOperation(opName));
-		serviceBinding.setOperationName(opName);
+		serviceBinding.setOperation(operation);
+		serviceBinding.setOperationName(operation.getOperationName());
 		
+		//aa 赋值
+		AssignmentImpl inputAssignment = new AssignmentImpl();
 		ExpressionImpl expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setBody("processVars.x");
-		InputAssignmentImpl inputAssignment = new InputAssignmentImpl();
 		inputAssignment.setFrom(expression);
-		inputAssignment.setTo("inputs.a");
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(0).getName());
+		inputAssignment.setTo(expression);
 		
 		serviceBinding.getInputAssignments().add(inputAssignment);
 		
+		//bb赋值
+		inputAssignment = new AssignmentImpl();
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setBody("processVars.y");
-		inputAssignment = new InputAssignmentImpl();
 		inputAssignment.setFrom(expression);
-		inputAssignment.setTo("inputs.b");
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(1).getName());
+		inputAssignment.setTo(expression);
 		
 		serviceBinding.getInputAssignments().add(inputAssignment);
 		
+		//返回值赋值
+		AssignmentImpl outputAssignment = new AssignmentImpl();
+		serviceBinding.getOutputAssignments().add(outputAssignment);
+		
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
-		expression.setBody("outputs.out");
-		OutputAssignmentImpl outputAssignment = new OutputAssignmentImpl();
+		expression.setBody(ScriptContextVariableNames.OUTPUTS+"."+operation.getOutputs().get(0).getName());		
 		outputAssignment.setFrom(expression);
-		outputAssignment.setTo("processVars.z");
-		serviceBinding.getOutputAssignments().add(outputAssignment);
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/z");	
+		outputAssignment.setTo(expression);
 
 		activity1.setServiceBinding(serviceBinding);
 		
 		
-		//构造java service	2
-		javaService = new ServiceImpl();
-		process.getLocalServices().add(javaService);
-		
-		javaService.setServiceType("Java");
-		javaService.setName("MathOperationBean");
-		javaService.setDisplayName("数学运算操作");
-		
-		//乘法操作 
-		opName = "multiply";
-		ioSpec = new IOSpecificationImpl();
-		input = new InputImpl();
-		input.setName("a");
-		input.setDataType("int");
-		ioSpec.addInput(input);
-		
-		input = new InputImpl();
-		input.setName("b");
-		input.setDataType("int");
-		ioSpec.addInput(input);
-		
-		output = new OutputImpl();
-		output.setName("out");
-		output.setDataType("int");
-		ioSpec.addOutput(output);
-		
-		
-		operation = new OperationImpl();
-		operation.setOperationName(opName);
-		operation.setIOSpecification(ioSpec);
-		
-		javaService.setOperation(operation);
-		
-		servicePropGroup = javaService.getServicePropGroup(ServicePropGroup.COMMON_PROPERTIES_GROUP);
-		serviceProp = new ServicePropImpl();
-		serviceProp.setName("JavaBeanName");
-		serviceProp.setDisplayName("Java Bean 名称");
-		serviceProp.setValue("#MathOperationBean");//井号开头表示从容器中查找该bean
-		servicePropGroup.getServiceProps().add(serviceProp);
-		
-		//将service2绑定到activity2
+		//将service1绑定到activity2
+		operation = _interface.getOperation("multiply");
 		serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(javaService);
 		serviceBinding.setServiceId(javaService.getId());
-		serviceBinding.setOperation(javaService.getOperation(opName));
-		serviceBinding.setOperationName(opName);
+		serviceBinding.setOperation(operation);
+		serviceBinding.setOperationName(operation.getOperationName());
 		
+		//aa赋值
+		inputAssignment = new AssignmentImpl();
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setBody("processVars.y");
-		inputAssignment = new InputAssignmentImpl();
 		inputAssignment.setFrom(expression);
-		inputAssignment.setTo("inputs.a");
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(0).getName());
+		inputAssignment.setTo(expression);
 		
 		serviceBinding.getInputAssignments().add(inputAssignment);
 		
+		//b赋值
+		inputAssignment = new AssignmentImpl();
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
-		expression.setBody("processVars.z");
-		inputAssignment = new InputAssignmentImpl();
+		expression.setBody("processVars.z");		
 		inputAssignment.setFrom(expression);
-		inputAssignment.setTo("inputs.b");
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(1).getName());
+		inputAssignment.setTo(expression);
 		
 		serviceBinding.getInputAssignments().add(inputAssignment);
 		
-		expression = new ExpressionImpl();
-		expression.setLanguage("JEXL");
-		expression.setBody("outputs.out");
-		outputAssignment = new OutputAssignmentImpl();
-		outputAssignment.setFrom(expression);
-		outputAssignment.setTo("processVars.m");
+		//返回值
+		outputAssignment = new AssignmentImpl();
 		serviceBinding.getOutputAssignments().add(outputAssignment);
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("JEXL");
+		expression.setBody(ScriptContextVariableNames.OUTPUTS+"."+operation.getOutputs().get(0).getName());		
+		outputAssignment.setFrom(expression);
+		
+		expression = new ExpressionImpl();
+		expression.setLanguage("XPATH");
+		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/m");	
+		outputAssignment.setTo(expression);
+
 
 		activity2.setServiceBinding(serviceBinding);		
 		return process;
@@ -336,8 +301,8 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(processName, procInst.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
-		Assert.assertEquals(processName, procInst.getName());//name 为空的情况下默认等于processId,
-		Assert.assertEquals(processName, procInst.getDisplayName());//displayName为空的情况下默认等于name
+		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
+		Assert.assertEquals(processDisplayName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
 		Assert.assertEquals(ProcessInstanceState.COMPLETED, procInst.getState());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		Assert.assertEquals(FireWorkflowSystem.getInstance().getId(),procInst.getCreatorId());
@@ -361,7 +326,7 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(8, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName,procInstToken.getElementId() );
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -384,8 +349,9 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
+
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
 		ActivityInstance activityInstance = actInstList.get(0);
@@ -404,8 +370,8 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
-		Assert.assertEquals(procInst.getName(), activityInstance.getProcessName());
-		Assert.assertEquals(procInst.getDisplayName(), activityInstance.getProcessDisplayName());
+		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
+		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
 		
 		WorkflowQuery<Variable> q4Var = session.createWorkflowQuery(Variable.class);
 		List<Variable> vars = q4Var.list();
@@ -414,10 +380,10 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		
 		for (Variable v : vars){
 			if (v.getName().equals("z")){
-				Assert.assertEquals(6, v.getValue());
+				Assert.assertEquals(6, v.getPayload());
 			}
 			if (v.getName().equals("m")){
-				Assert.assertEquals(30,v.getValue());
+				Assert.assertEquals(30,v.getPayload());
 			}
 		}
 	}	

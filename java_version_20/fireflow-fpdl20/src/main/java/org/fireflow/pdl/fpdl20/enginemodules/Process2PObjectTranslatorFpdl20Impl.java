@@ -19,6 +19,7 @@ package org.fireflow.pdl.fpdl20.enginemodules;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
@@ -30,6 +31,7 @@ import org.fireflow.pdl.fpdl20.behavior.ActivityBehavior;
 import org.fireflow.pdl.fpdl20.behavior.EndNodeBehavior;
 import org.fireflow.pdl.fpdl20.behavior.RouterBehavior;
 import org.fireflow.pdl.fpdl20.behavior.StartNodeBehavior;
+import org.fireflow.pdl.fpdl20.behavior.SubflowBehavior;
 import org.fireflow.pdl.fpdl20.behavior.TransitionBehavior;
 import org.fireflow.pdl.fpdl20.behavior.WorkflowProcessBehavior;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
@@ -37,11 +39,12 @@ import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.EndNode;
 import org.fireflow.pdl.fpdl20.process.Router;
 import org.fireflow.pdl.fpdl20.process.StartNode;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.Decorator;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.CatchCompensationDecorator;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.CatchFaultDecorator;
+import org.fireflow.pdl.fpdl20.process.features.Feature;
+import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
+import org.fireflow.pdl.fpdl20.process.features.startnode.CatchFaultFeature;
 import org.fireflow.pvm.kernel.PObject;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.impl.ArcInstanceImpl;
@@ -53,7 +56,7 @@ import org.fireflow.pvm.translate.Process2PObjectTranslator;
  * @author 非也
  * @version 2.0
  */
-public class Process2PObjectTranslatorFpdl20Impl implements
+public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implements
 		Process2PObjectTranslator {
 
 	/* (non-Javadoc)
@@ -61,51 +64,63 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 	 */
 	public List<PObject> translateProcess(ProcessKey processKey ,Object process) {
 		WorkflowProcess fpdl20Process = (WorkflowProcess)process;
-		WorkflowProcessBehavior workflowProcessBehavior = new WorkflowProcessBehavior();
+		List<Subflow> subflows = fpdl20Process.getLocalSubflows();
+
+		List<PObject> allPObject = new ArrayList<PObject>();
+		for (Subflow subflow:subflows){
+			List<PObject> pobjectList = translateSubflow(subflow,processKey);
+			if (pobjectList!=null)	allPObject.addAll(pobjectList);
+		}
+		return allPObject;
+	}
+	
+	private List<PObject> translateSubflow(Subflow subflow,ProcessKey processKey){
+		SubflowBehavior workflowProcessBehavior = new SubflowBehavior();
 		
 		PObjectKey key = new PObjectKey(processKey.getProcessId(),
-				processKey.getVersion(), processKey.getProcessType(), fpdl20Process.getId());
+				processKey.getVersion(), processKey.getProcessType(), subflow.getId());
+
 		
 		PObject pObject = new NetInstanceImpl(key);
 		pObject.setWorkflowBehavior(workflowProcessBehavior);
-		pObject.setWorkflowElement(fpdl20Process);
+		pObject.setWorkflowElement(subflow);
 		
 		List<PObject> pobjectList = new ArrayList<PObject>();
 		pobjectList.add(pObject);
 		
 		ProcessKey pk = ProcessKey.valueOf(key);
 		
-		List<StartNode> startNodes = fpdl20Process.getStartNodes();
+		List<StartNode> startNodes = subflow.getStartNodes();
 		if (startNodes!=null && startNodes.size()>0){
 			List<PObject> pos = this.translateStartNodes(startNodes, pk);
 			pobjectList.addAll(pos);
 		}
 		
-		List<Router> routers = fpdl20Process.getRouters();
+		List<Router> routers = subflow.getRouters();
 		if (routers!=null && routers.size()>0){
 			List<PObject> pos = this.translateRouters(routers, pk);
 			pobjectList.addAll(pos);
 		}
 		
-		List<EndNode> endNodes = fpdl20Process.getEndNodes();
+		List<EndNode> endNodes = subflow.getEndNodes();
 		if (endNodes!=null && endNodes.size()>0){
 			List<PObject> pos = this.translateEndNodes(endNodes, pk);
 			pobjectList.addAll(pos);
 		}
 		
-		List<Activity> activities = fpdl20Process.getActivities();
+		List<Activity> activities = subflow.getActivities();
 		if (activities!=null && activities.size()>0){
 			List<PObject> pos = this.translateActivities(activities, pk);
 			pobjectList.addAll(pos);
 		}
 		
-		List<Transition> transitions = fpdl20Process.getTransitions();
+		List<Transition> transitions = subflow.getTransitions();
 		if (transitions!=null && transitions.size()>0){
 			List<PObject> pos = this.translateTransitions(transitions, pk);
 			pobjectList.addAll(pos);
 		}
 
-		assemblePObject(fpdl20Process,pobjectList,pk);
+		assemblePObject(subflow,pobjectList,pk);
 		
 		return pobjectList;
 	}
@@ -217,11 +232,11 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 	
 	/**
 	 * 组装异常处理器，补偿处理器等
-	 * @param fpdl20Process
+	 * @param subflow
 	 * @param pobjectList
 	 */
-	private void assemblePObject(WorkflowProcess fpdl20Process ,List<PObject> pobjectList,ProcessKey pk){
-		List<Activity> activities = fpdl20Process.getActivities();
+	private void assemblePObject(Subflow subflow ,List<PObject> pobjectList,ProcessKey pk){
+		List<Activity> activities = subflow.getActivities();
 		if (activities==null || activities.size()==0){
 			return;
 		}
@@ -233,9 +248,9 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 			List<StartNode> attachedStartNodes = activity.getAttachedStartNodes();
 			if (attachedStartNodes!=null && attachedStartNodes.size()>0){
 				for (StartNode startNode : attachedStartNodes){
-					Decorator decorator = startNode.getDecorator();
-					if (decorator!=null && decorator instanceof CatchCompensationDecorator){
-						CatchCompensationDecorator compensationDecorator = (CatchCompensationDecorator)decorator;
+					Feature decorator = startNode.getFeature();
+					if (decorator!=null && decorator instanceof CatchCompensationFeature){
+						CatchCompensationFeature compensationDecorator = (CatchCompensationFeature)decorator;
 						PObjectKey pkey = new PObjectKey(pk.getProcessId(),pk.getVersion(),pk.getProcessType(),startNode.getId());
 						PObject po = this.findPObject(pobjectList, pkey);
 						if (po!=null){
@@ -250,8 +265,8 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 							}
 							
 						}
-					}else if (decorator!=null && decorator instanceof CatchFaultDecorator){
-						CatchFaultDecorator exceptionDecorator = (CatchFaultDecorator)decorator;
+					}else if (decorator!=null && decorator instanceof CatchFaultFeature){
+						CatchFaultFeature exceptionDecorator = (CatchFaultFeature)decorator;
 						PObjectKey pkey = new PObjectKey(pk.getProcessId(),pk.getVersion(),pk.getProcessType(),startNode.getId());
 						PObject po = this.findPObject(pobjectList, pkey);
 						if (po!=null){
@@ -275,8 +290,8 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 			}
 		}			
 		//装配流程级别的handler
-		List<StartNode> startNodes = fpdl20Process.getStartNodes();
-		PObject pobject4Process = this.findPObject(pobjectList, new PObjectKey(pk.getProcessId(),pk.getVersion(),pk.getProcessType(),pk.getProcessId()));
+		List<StartNode> startNodes = subflow.getStartNodes();
+		PObject pobject4Process = this.findPObject(pobjectList, new PObjectKey(pk.getProcessId(),pk.getVersion(),pk.getProcessType(),subflow.getId()));
 		if (startNodes!=null && startNodes.size()>0){
 			for (StartNode start : startNodes) {
 				PObjectKey pkey4Start = new PObjectKey(pk.getProcessId(), pk
@@ -284,10 +299,10 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 				PObject pobject4Start = this.findPObject(pobjectList,
 						pkey4Start);
 
-				Decorator decorator = start.getDecorator();
+				Feature decorator = start.getFeature();
 				if (decorator != null
-						&& (decorator instanceof CatchFaultDecorator)) {					
-					CatchFaultDecorator faultDecorator = (CatchFaultDecorator) decorator;
+						&& (decorator instanceof CatchFaultFeature)) {					
+					CatchFaultFeature faultDecorator = (CatchFaultFeature) decorator;
 					
 					if (faultDecorator.getAttachedToActivity()==null){
 						String errorCode = faultDecorator.getErrorCode();
@@ -300,8 +315,8 @@ public class Process2PObjectTranslatorFpdl20Impl implements
 						}
 					}
 				} else if (decorator != null
-						&& (decorator instanceof CatchCompensationDecorator)) {
-					CatchCompensationDecorator compensationDecorator = (CatchCompensationDecorator) decorator;
+						&& (decorator instanceof CatchCompensationFeature)) {
+					CatchCompensationFeature compensationDecorator = (CatchCompensationFeature) decorator;
 					if (compensationDecorator.getAttachedToActivity() == null) {
 						String compensationCode = compensationDecorator
 								.getCompensationCode();

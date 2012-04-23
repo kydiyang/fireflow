@@ -1,6 +1,6 @@
 package org.fireflow.pdl.fpdl20.misc;
 
-import org.fireflow.model.binding.AssignmentStrategy;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 
 public enum LoopStrategy {
     /**

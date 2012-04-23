@@ -16,6 +16,9 @@
  */
 package org.fireflow.pdl.fpdl20.test.service.javaexecutor;
 
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+
 /**
  * 
  * 
@@ -23,7 +26,7 @@ package org.fireflow.pdl.fpdl20.test.service.javaexecutor;
  * @version 2.0
  */
 public interface IMathOperationBean {
-	public int add(int a,int b);
+	public @WebResult(name="result") int add(@WebParam(name="aa") int a,@WebParam(name="bb") int b);
 	
-	public int multiply(int a,int b);
+	public int multiply(@WebParam(name="aa") int a,@WebParam(name="b")  int b);
 }

@@ -19,9 +19,9 @@ package org.fireflow.pdl.fpdl20.process.impl;
 import java.util.List;
 
 import org.fireflow.pdl.fpdl20.process.StartNode;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.Transition;
-import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.decorator.startnode.impl.NormalStartDecoratorImpl;
+import org.fireflow.pdl.fpdl20.process.features.startnode.impl.NormalStartFeatureImpl;
 
 
 
@@ -33,12 +33,12 @@ import org.fireflow.pdl.fpdl20.process.decorator.startnode.impl.NormalStartDecor
 public class StartNodeImpl extends SynchronizerImpl implements StartNode{
 
     private StartNodeImpl() {
-    	this.setDecorator(new NormalStartDecoratorImpl());
+    	this.setFeature(new NormalStartFeatureImpl());
     }
 
-    public StartNodeImpl(WorkflowProcess workflowProcess, String name) {
-        super(workflowProcess, name);
-    	this.setDecorator(new NormalStartDecoratorImpl());
+    public StartNodeImpl(Subflow subflow, String name) {
+        super(subflow, name);
+    	this.setFeature(new NormalStartFeatureImpl());
     }
 
     /**

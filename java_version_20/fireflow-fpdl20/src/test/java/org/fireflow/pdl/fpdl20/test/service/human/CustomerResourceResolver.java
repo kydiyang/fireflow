@@ -18,13 +18,14 @@ package org.fireflow.pdl.fpdl20.test.service.human;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.fireflow.engine.WorkflowSession;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
+import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.UserImpl;
 import org.fireflow.engine.resource.ResourceResolver;
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.resourcedef.ResourceDef;
 
 /**
  * 
@@ -32,7 +33,7 @@ import org.fireflow.model.resourcedef.Resource;
  * @author 非也
  * @version 2.0
  */
-public class CustomerResourceResolver implements ResourceResolver{
+public class CustomerResourceResolver extends ResourceResolver{
 	public static String ADMINISTRATOR = "Administrator";
 	public static String ACTOR = "Actor";
 	public static String READER = "Reader";
@@ -40,29 +41,29 @@ public class CustomerResourceResolver implements ResourceResolver{
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.resource.ResourceResolver#resolve(org.fireflow.engine.WorkflowSession, org.fireflow.model.resourcedef.Resource, java.util.Map)
 	 */
-	public List<User> resolve(WorkflowSession session, Resource resource,
-			Map<String, Object> inputValues) {
+	public List<User> resolve(WorkflowSession session, ProcessInstance currentProcessInstance,
+			ActivityInstance currentActivityInstance, ResourceDef resource) {
 		List<User> users = new ArrayList<User>();
-		Integer flag = (Integer)inputValues.get("flag");
+		String flag = resource.getExtendedAttributes().get("FLAG");
 		if (flag==null){
-			flag = -1;
+			flag = "1";
 		}
-		if (flag.equals(1)){
+		if (flag.equals("1")){
 			UserImpl u = new UserImpl();
 			u.setId(ADMINISTRATOR);
-			u.setName("管理者");
+			u.setName("管理者王总");
 			users.add(u);
 		}
-		if (flag.equals(2)){
+		if (flag.equals("2")){
 			UserImpl u = new UserImpl();
 			u.setId(ACTOR);
-			u.setName("操作者");
+			u.setName("操作者张三");
 			users.add(u);
 		}	
-		if (flag.equals(3)){
+		if (flag.equals("3")){
 			UserImpl u = new UserImpl();
 			u.setId(READER);
-			u.setName("抄送者");
+			u.setName("抄送者李总监");
 			users.add(u);
 		}		
 		return users;

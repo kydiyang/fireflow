@@ -65,14 +65,14 @@ public class JunitInitializer extends HibernateDaoSupport{
 				Query q4DeleteProcessRepository = session.createQuery(deleteProcessRepository);
 				q4DeleteProcessRepository.executeUpdate();
 				
-//				String deleteServiceRepository = "Delete From ServiceRepositoryImpl";
-//				Query q4DeleteServiceRepository = session.createQuery(deleteServiceRepository);
-//				q4DeleteServiceRepository.executeUpdate();				
-//
-//				String deleteResourceRepository = "Delete From ResourceRepositoryImpl";
-//				Query q4DeleteResourceRepository = session.createQuery(deleteResourceRepository);
-//				q4DeleteResourceRepository.executeUpdate();	
-//				
+				String deleteServiceRepository = "Delete From ServiceRepositoryImpl";
+				Query q4DeleteServiceRepository = session.createQuery(deleteServiceRepository);
+				q4DeleteServiceRepository.executeUpdate();				
+
+				String deleteResourceRepository = "Delete From ResourceRepositoryImpl";
+				Query q4DeleteResourceRepository = session.createQuery(deleteResourceRepository);
+				q4DeleteResourceRepository.executeUpdate();	
+				
 				return null;
 			}
 			

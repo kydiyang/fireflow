@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.fireflow.model.io.Dom4JResourceParser;
-import org.fireflow.model.io.Dom4JServiceParser;
-import org.fireflow.model.io.ParserException;
-import org.fireflow.model.resourcedef.Resource;
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.io.DeserializerException;
+import org.fireflow.model.io.resource.ResourceDeserializer;
+import org.fireflow.model.io.service.ServiceParser;
+import org.fireflow.model.resourcedef.ResourceDef;
+import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * 
@@ -37,7 +38,7 @@ public class ImportLoaderClasspathImpl implements ImportLoader {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.io.ImportLoader#loadResources(java.lang.String)
 	 */
-	public List<Resource> loadResources(String resourceLocation) throws ParserException,IOException{
+	public List<ResourceDef> loadResources(String resourceLocation) throws DeserializerException,IOException{
 		if (resourceLocation==null || resourceLocation.trim().equals("")){
 			return null;
 		}
@@ -47,15 +48,15 @@ public class ImportLoaderClasspathImpl implements ImportLoader {
 		}
 		
 		InputStream inStream = this.getClass().getClassLoader().getResourceAsStream(fileName);	
-		Dom4JResourceParser parser = new Dom4JResourceParser();
+		ResourceDeserializer parser = new ResourceDeserializer();
 		
-		return parser.parse(inStream);
+		return parser.deserialize(inStream);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.io.ImportLoader#loadServices(java.lang.String)
 	 */
-	public List<Service> loadServices(String serviceFileName) throws ParserException,IOException{
+	public List<ServiceDef> loadServices(String serviceFileName) throws InvalidModelException,DeserializerException,IOException{
 		if (serviceFileName==null || serviceFileName.trim().equals("")){
 			return null;
 		}
@@ -65,9 +66,8 @@ public class ImportLoaderClasspathImpl implements ImportLoader {
 		}
 		
 		InputStream inStream = this.getClass().getClassLoader().getResourceAsStream(fileName);	
-		Dom4JServiceParser parser = new Dom4JServiceParser();
 		
-		return parser.parse(inStream);
+		return ServiceParser.deserialize(inStream);
 	}
 
 }

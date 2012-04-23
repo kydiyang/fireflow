@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.Order;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
@@ -25,8 +24,9 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.schedule.Scheduler;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLParser;
-import org.fireflow.pdl.fpdl20.io.Dom4JFPDLSerializer;
+import org.fireflow.engine.query.Order;
+import org.fireflow.pdl.fpdl20.io.FPDLDeserializer;
+import org.fireflow.pdl.fpdl20.io.FPDLSerializer;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pvm.kernel.Token;
@@ -100,8 +100,8 @@ public abstract class FireWorkflowJunitEnviroment {
 		});
 
 		final WorkflowSession session = WorkflowSessionFactory
-				.createWorkflowSession(runtimeContext, FireWorkflowSystem
-						.getInstance());
+				.createWorkflowSession(runtimeContext,
+						FireWorkflowSystem.getInstance());
 		final WorkflowStatement stmt = session
 				.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
 
@@ -176,11 +176,9 @@ public abstract class FireWorkflowJunitEnviroment {
 				WorkItem.class, FpdlConstants.PROCESS_TYPE);
 		q4WorkItem
 				.addOrder(
-						Order
-								.asc(WorkItemProperty.ACTIVITY_INSTANCE_$_PROCESSS_ID))
+						Order.asc(WorkItemProperty.ACTIVITY_INSTANCE_$_PROCESSS_ID))
 				.addOrder(
-						Order
-								.asc(WorkItemProperty.ACTIVITY_INSTANCE_$_PROCESSINSTANCE_ID))
+						Order.asc(WorkItemProperty.ACTIVITY_INSTANCE_$_PROCESSINSTANCE_ID))
 				.addOrder(Order.asc(WorkItemProperty.ACTIVITY_INSTANCE_$_ID));
 		List<WorkItem> workItemList = q4WorkItem.list();
 
@@ -189,8 +187,7 @@ public abstract class FireWorkflowJunitEnviroment {
 		q4ScheduleJob
 				.addOrder(Order.asc(ScheduleJobProperty.PROCESS_ID))
 				.addOrder(
-						Order
-								.asc(ScheduleJobProperty.ACTIVITY_INSTANCE_$_STEP_NUMBER));
+						Order.asc(ScheduleJobProperty.ACTIVITY_INSTANCE_$_STEP_NUMBER));
 		List<ScheduleJob> jobList = q4ScheduleJob.list();
 
 		// //////////////////////////////////////////////////////////////////////////////////////////
@@ -202,16 +199,18 @@ public abstract class FireWorkflowJunitEnviroment {
 				.println("**********Process Instance Staroge Content***********");
 		System.out
 				.println("******************************************************");
-		System.out.println("Id\t\tState\t\tName\t\tDisplayName\t\t");
+		System.out.println("Id\t\tsubflowid\t\tState\t\tSubflowName\t\tSubflowDisplayName\t\t");
 
 		for (ProcessInstance procInst : processInstanceList) {
 			System.out.print(procInst.getId());
 			System.out.print("\t\t");
+			System.out.println(procInst.getSubflowId());
+			System.out.print("\t\t");
 			System.out.print(procInst.getState().getDisplayName());
 			System.out.print("\t\t");
-			System.out.print(procInst.getName());
+			System.out.print(procInst.getSubflowName());
 			System.out.print("\t\t");
-			System.out.print(procInst.getDisplayName());
+			System.out.print(procInst.getSubflowDisplayName());
 
 			System.out.println("\n");
 		}
@@ -286,7 +285,7 @@ public abstract class FireWorkflowJunitEnviroment {
 			System.out.print("\t\t");
 			System.out.print(var.getDataType());
 			System.out.print("\t\t");
-			System.out.print(var.getValueAsString());
+			System.out.print(var.getPayload());
 			System.out.println("\n");
 		}
 
@@ -356,23 +355,31 @@ public abstract class FireWorkflowJunitEnviroment {
 
 	public WorkflowProcess getWorkflowProcess() {
 		try {
-			Dom4JFPDLSerializer ser = new Dom4JFPDLSerializer();
+			FPDLSerializer ser = new FPDLSerializer();
 
-			String xml = ser
-					.workflowProcessToXMLString(createWorkflowProcess());
+			String xml = ser.serializeToXmlString(createWorkflowProcess());
 
 			System.out
-					.println("===================Workflow Process is :==================");
+					.println("===================原始的 Workflow Process 是 :==================");
 			System.out.println(xml);
 			System.out
 					.println("==========================================================");
 
-			Dom4JFPDLParser parser = new Dom4JFPDLParser();
+			FPDLDeserializer deserializer = new FPDLDeserializer();
 
-			ByteArrayInputStream byteArrIn = new ByteArrayInputStream(xml
-					.getBytes("UTF-8"));
+			ByteArrayInputStream byteArrIn = new ByteArrayInputStream(
+					xml.getBytes("UTF-8"));
 
-			return parser.parse(byteArrIn);
+			WorkflowProcess workflowProcess = deserializer
+					.deserialize(byteArrIn);
+			xml = ser.serializeToXmlString(workflowProcess);
+			System.out
+					.println("===================反序列化后的 Workflow Process 是 :==================");
+			System.out.println(xml);
+			System.out
+					.println("==========================================================");
+			
+			return workflowProcess;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

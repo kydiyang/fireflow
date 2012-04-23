@@ -18,6 +18,7 @@ package org.fireflow.pdl.fpdl20.process.impl;
 
 import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.process.Node;
+import org.fireflow.pdl.fpdl20.process.Subflow;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
@@ -36,12 +37,12 @@ public class TransitionImpl extends ArcImpl implements Transition{
     public TransitionImpl() {
     }
 
-    public TransitionImpl(WorkflowProcess workflowProcess, String name) {
-        super(workflowProcess, name);
+    public TransitionImpl(Subflow subflow, String name) {
+        super(subflow, name);
     }
 
-    public TransitionImpl(WorkflowProcess workflowProcess, String name, Node fromNode, Node toNode) {
-        super(workflowProcess, name);
+    public TransitionImpl(Subflow subflow, String name, Node fromNode, Node toNode) {
+        super(subflow, name);
         this.fromNode = fromNode;
         this.toNode = toNode;
     }
