@@ -17,15 +17,18 @@
 package org.fireflow.engine.modules.instancemanager.event;
 
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.modules.event.Event;
+import org.fireflow.engine.modules.event.EventTrigger;
 
 /**
  * 流程实例事件
  * @author 非也,nychen2000@163.com
  *
  */
-public class ProcessInstanceEvent {
-    EventType eventType = null;
+public class ProcessInstanceEvent implements Event{
+    ProcessInstanceEventTrigger eventType = null;
     ProcessInstance source = null;
+    Object workflowElement = null;
 
     /**
      * 返回触发事件的流程实例
@@ -43,11 +46,23 @@ public class ProcessInstanceEvent {
      * 返回事件类型，取值为BEFORE_PROCESS_INSTANCE_RUN或者AFTER_PROCESS_INSTANCE_COMPLETE
      * @return
      */
-    public EventType getEventType() {
+    public EventTrigger getEventTrigger() {
         return eventType;
     }
 
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
+    public void setEventTrigger(EventTrigger eventType) {
+        this.eventType = (ProcessInstanceEventTrigger)eventType;
     }
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.event.Event#getWorkflowElement()
+	 */
+	@Override
+	public Object getWorkflowElement() {
+		return workflowElement;
+	}
+	
+	public void setWorkflowElement(Object wfElm){
+		this.workflowElement = wfElm;
+	}
 }

@@ -30,8 +30,8 @@ import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
+import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.engine.service.AssignmentHandler;
 
 
 /**
@@ -175,7 +175,7 @@ public class WorkflowSessionLocalImpl implements WorkflowSession,RuntimeContextA
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowSession#getAttributes()
 	 */
-	public Map<String, Object> getAttributes() {
+	public Map<String, Object> getAllAttributes() {
 		return this.attributes;
 	}
 

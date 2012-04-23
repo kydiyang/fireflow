@@ -22,7 +22,7 @@ package org.fireflow.pvm.kernel;
  */
 public enum OperationContextName {
 	NORMAL,
-//	FAULT,//Fault分支也设置为OperationContextName.NORMAL
-	CANCELLATION,
+	FAULT,
+//	CANCELLATION,//（2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	COMPENSATION;
 }

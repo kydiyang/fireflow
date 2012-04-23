@@ -17,15 +17,18 @@
 package org.fireflow.engine.modules.instancemanager.event;
 
 import org.fireflow.engine.entity.runtime.ActivityInstance;
+import org.fireflow.engine.modules.event.Event;
+import org.fireflow.engine.modules.event.EventTrigger;
 
 /**
  *
  * @author chennieyun
  */
-public class ActivityInstanceEvent {
+public class ActivityInstanceEvent implements Event{
 
 	private ActivityInstance source = null;
-	private EventType eventType = null;
+	private ActivityInstanceEventTrigger eventType = null;
+	private Object workflowElement = null;
 	
 	public ActivityInstance getSource(){
 		return source;
@@ -35,11 +38,24 @@ public class ActivityInstanceEvent {
 		this.source = activityInstance;
 	}
 	
-	public EventType getEventType(){
+	public EventTrigger getEventTrigger(){
 		return eventType;
 	}
 	
-	public void setEventType(EventType eventType){
-		this.eventType = eventType;
+	public void setEventTrigger(EventTrigger eventType){
+		this.eventType = (ActivityInstanceEventTrigger)eventType;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.event.Event#getWorkflowElement()
+	 */
+	@Override
+	public Object getWorkflowElement() {
+		return workflowElement;
+	}
+	
+	public void setWorkflowElement(Object wfElm){
+		this.workflowElement = wfElm;
 	}
 }

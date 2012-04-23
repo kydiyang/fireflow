@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.fireflow.engine.entity.repository.ResourceDescriptor;
 import org.fireflow.engine.entity.repository.ResourceRepository;
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.resourcedef.ResourceDef;
 
 /**
  * 
@@ -32,15 +32,15 @@ public class ResourceRepositoryImpl implements ResourceRepository {
 	protected String id = null;
 	protected String fileContent;
 	protected String resourceFileName ;
-	protected List<Resource> resources = null;
+	protected List<ResourceDef> resources = null;
 	protected List<ResourceDescriptor> resourceDescriptors = null;
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.repository.ResourceRepository#getResource(java.lang.String)
 	 */
-	public Resource getResource(String resourceId) {
+	public ResourceDef getResource(String resourceId) {
 		if (resources==null)return null;
-		for (Resource rsc : resources){
+		for (ResourceDef rsc : resources){
 			if (rsc.getId().equals(resourceId)){
 				return rsc;
 			}
@@ -84,11 +84,11 @@ public class ResourceRepositoryImpl implements ResourceRepository {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.repository.ResourceRepository#getResources()
 	 */
-	public List<Resource> getResources() {
+	public List<ResourceDef> getResources() {
 		return resources;
 	}
 	
-	public void setResources(List<Resource> rscs){
+	public void setResources(List<ResourceDef> rscs){
 		this.resources = rscs;
 	}
 

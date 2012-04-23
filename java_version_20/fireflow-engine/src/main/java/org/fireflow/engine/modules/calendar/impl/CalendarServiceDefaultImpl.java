@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.model.misc.Duration;
@@ -35,7 +36,7 @@ import org.fireflow.model.misc.Duration;
  * 缺省的日历服务实现类。请在业务系统中扩展该类。
  * @author 非也，nychen2000@163.com
  */
-public class CalendarServiceDefaultImpl implements CalendarService {
+public class CalendarServiceDefaultImpl  extends AbsEngineModule implements CalendarService {
 
     /**
      * 时间格式,如HH:mm。

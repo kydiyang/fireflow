@@ -5,11 +5,15 @@ import java.util.Date;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 
 /**
+ * TODO 如何体现“流程族”的概念
+ * 
  * 流程定义相关信息对象
  * @author 非也
  *
  */
 public class ProcessDescriptorImpl implements ProcessDescriptor{
+	//TODO 如何体现“流程族”的概念
+	
     protected String id; //主键
     protected String processId;//流程id
     protected String processType = null;//定义文件的语言类型，fpdl,xpdl,bepl...
@@ -31,7 +35,10 @@ public class ProcessDescriptorImpl implements ProcessDescriptor{
     protected String approver = null;//批准发布人
     protected Date approvedTime = null;//批准发布时间
 
-
+    
+    protected Boolean isTimerStart = Boolean.FALSE;//是否是定时启动的流程
+    
+    protected Boolean hasCallbackService = Boolean.FALSE;//是否有回调接口，即是否要发布Webservice
     
     public String getId() {
         return id;
@@ -210,4 +217,20 @@ public class ProcessDescriptorImpl implements ProcessDescriptor{
 	public void setBizCategory(String bizCategory){
 		this.bizCategory = bizCategory;
 	}
+	
+    public Boolean getTimerStart(){
+    	return this.isTimerStart;
+    }
+    
+    public void setTimerStart(Boolean b){
+    	this.isTimerStart = b;
+    }
+    
+    public Boolean getHasCallbackService(){
+    	return this.hasCallbackService;
+    }
+    
+    public void setHasCallbackService(Boolean b){
+    	this.hasCallbackService = b;
+    }
 }

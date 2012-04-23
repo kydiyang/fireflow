@@ -47,7 +47,7 @@ public enum ProcessInstanceState {
 	/**
 	 * 取消处理中
 	 */
-	CANCELLING(6),
+	ABORTING(6),
 	/**
 	 * 补偿操作中
 	 */
@@ -68,17 +68,15 @@ public enum ProcessInstanceState {
 	 */
 	FAULTED(15),
 	
-	
+	/**
+	 * 被取消
+	 */
+	ABORTED(16),
 	/**
 	 * 被补偿
 	 */
-	COMPENSATED(17),
-	
-	
-	/**
-	 * 被中止
-	 */
-	ABORTED(19);
+	COMPENSATED(17);
+
 	
 	
 	

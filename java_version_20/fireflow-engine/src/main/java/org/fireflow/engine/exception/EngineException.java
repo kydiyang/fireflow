@@ -116,8 +116,8 @@ public class EngineException extends RuntimeException {
 			this.processId = processInstance.getProcessId();
 			this.processType = processInstance.getProcessType();
 			this.version = processInstance.getVersion();
-			this.processName = processInstance.getName();
-			this.processDisplayName = processInstance.getDisplayName();
+			this.processName = processInstance.getProcessName();
+			this.processDisplayName = processInstance.getProcessDisplayName();
 		}
     }    
 

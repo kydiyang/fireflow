@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.fireflow.engine.entity.runtime.WorkItemState;
-import org.fireflow.model.binding.AssignmentStrategy;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
@@ -48,7 +48,7 @@ public class AssignmentStrategyType implements UserType, Serializable{
 	public Object assemble(Serializable arg0, Object arg1)
 			throws HibernateException {
 		String str = (String)arg0;
-		return AssignmentStrategy.fromValue(str);
+		return WorkItemAssignmentStrategy.fromValue(str);
 	}
 
 	/* (non-Javadoc)
@@ -62,15 +62,15 @@ public class AssignmentStrategyType implements UserType, Serializable{
 	 * @see org.hibernate.usertype.UserType#disassemble(java.lang.Object)
 	 */
 	public Serializable disassemble(Object arg0) throws HibernateException {
-		return ((AssignmentStrategy)arg0).getValue();
+		return ((WorkItemAssignmentStrategy)arg0).getValue();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.hibernate.usertype.UserType#equals(java.lang.Object, java.lang.Object)
 	 */
 	public boolean equals(Object x, Object y) throws HibernateException {
-		AssignmentStrategy _x = (AssignmentStrategy)x;
-		AssignmentStrategy _y = (AssignmentStrategy)y;
+		WorkItemAssignmentStrategy _x = (WorkItemAssignmentStrategy)x;
+		WorkItemAssignmentStrategy _y = (WorkItemAssignmentStrategy)y;
 		if (_x!=null){
 			return _x.equals(_y);
 		}else{
@@ -86,7 +86,7 @@ public class AssignmentStrategyType implements UserType, Serializable{
 	 * @see org.hibernate.usertype.UserType#hashCode(java.lang.Object)
 	 */
 	public int hashCode(Object arg0) throws HibernateException {
-		return ((AssignmentStrategy)arg0).hashCode();
+		return ((WorkItemAssignmentStrategy)arg0).hashCode();
 	}
 
 	/* (non-Javadoc)
@@ -103,7 +103,7 @@ public class AssignmentStrategyType implements UserType, Serializable{
 			throws HibernateException, SQLException {
 		String str = (String) Hibernate.STRING.nullSafeGet(rs,names[0]);
 		if (str!=null){
-			return AssignmentStrategy.fromValue(str);
+			return WorkItemAssignmentStrategy.fromValue(str);
 		}
 		return null;
 	}
@@ -114,7 +114,7 @@ public class AssignmentStrategyType implements UserType, Serializable{
 	public void nullSafeSet(PreparedStatement st, Object value, int index)
 			throws HibernateException, SQLException {
 		if (value != null) {
-			Hibernate.STRING.nullSafeSet(st, ((AssignmentStrategy)value).getValue(), index);
+			Hibernate.STRING.nullSafeSet(st, ((WorkItemAssignmentStrategy)value).getValue(), index);
 		} else {
 			Hibernate.STRING.nullSafeSet(st, null, index);
 		}
@@ -133,7 +133,7 @@ public class AssignmentStrategyType implements UserType, Serializable{
 	 * @see org.hibernate.usertype.UserType#returnedClass()
 	 */
 	public Class returnedClass() {
-		return AssignmentStrategy.class;
+		return WorkItemAssignmentStrategy.class;
 	}
 
 	/* (non-Javadoc)

@@ -23,7 +23,7 @@ package org.fireflow.pvm.kernel;
 public enum ExecutionEntrance {
 	TAKE_TOKEN,
 	FORWARD_TOKEN,
-	HANDLE_CANCELLATION,
+	//HANDLE_CANCELLATION,（2012-02-03，该动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	HANDLE_TERMINATION,
 	HANDLE_COMPENSATION,
 	HANDLE_FAULT,

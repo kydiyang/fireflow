@@ -68,17 +68,13 @@ public enum WorkItemState {
 	/**
 	 * 被取消
 	 */
-	CANCELLED(16),
+	ABORTED(16),
 	/**
 	 * 被补偿
 	 */
 	COMPENSATED(17),
 	
-	
-	/**
-	 * 被中止
-	 */
-	ABORTED(19),
+
 	
 	/**
 	 * 退签收，用于WorkItem

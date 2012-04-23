@@ -19,64 +19,77 @@ package org.fireflow.engine.modules.instancemanager.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.fireflow.engine.WorkflowSession;
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.context.RuntimeContextAware;
+import org.fireflow.engine.entity.EntityProperty;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.entity.runtime.ProcessInstanceProperty;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
-import org.fireflow.engine.exception.InvalidOperationException;
-import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.impl.InternalSessionAttributeKeys;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
+import org.fireflow.engine.modules.event.EventBroadcaster;
+import org.fireflow.engine.modules.event.EventBroadcasterManager;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
+import org.fireflow.engine.modules.instancemanager.event.ActivityInstanceEvent;
+import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEvent;
+import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
-import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.model.InvalidModelException;
-import org.fireflow.pvm.kernel.KernelManager;
-import org.fireflow.pvm.kernel.PObjectKey;
-import org.fireflow.pvm.kernel.Token;
-import org.fireflow.pvm.kernel.TokenState;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public abstract class AbsProcessInstanceManager implements ProcessInstanceManager,RuntimeContextAware{
+public abstract class AbsProcessInstanceManager  extends AbsEngineModule implements ProcessInstanceManager,RuntimeContextAware{
 	protected RuntimeContext runtimeContext = null;
 
 	
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.instancemanager.ProcessInstanceManager#runProcessInstance(org.fireflow.engine.WorkflowSession, org.fireflow.engine.entity.runtime.ProcessInstance)
-	 */
-	public ProcessInstance startProcess(WorkflowSession session,String workflowProcessId, int version,String processType,
-			String bizId, Map<String, Object> variables)
-			throws InvalidModelException,
-			WorkflowProcessNotFoundException, InvalidOperationException{
-		assert (session instanceof WorkflowSessionLocalImpl);
+	public void changeProcessInstanceSate(WorkflowSession session,ProcessInstance procInst,ProcessInstanceState state,Object workflowElement){
+		CalendarService calendarService = runtimeContext.getEngineModule(CalendarService.class,procInst.getProcessType());
+		PersistenceService persistenceStrategy = runtimeContext.getEngineModule(PersistenceService.class, procInst.getProcessType());
+		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();
+
+		//从session取相关字段的值
+		//TODO 是否需要state.getValue()==ProcessInstanceState.ABORTED.getValue() 这个判断
+		if (state.getValue()==ProcessInstanceState.ABORTED.getValue()){
+			Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)session.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
+			if (fieldsValues!=null){
+				String note = (String)fieldsValues.get(ProcessInstanceProperty.NOTE);
+				if (!StringUtils.isEmpty(note)){
+					((ProcessInstanceImpl)procInst).setNote(note);
+				}
+			}
+		}
+
 		
-		session.setAttribute(InternalSessionAttributeKeys.BIZ_ID, bizId);
-		session.setAttribute(InternalSessionAttributeKeys.VARIABLES, variables);
-		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);			
-		kernelManager.startPObject(session, new PObjectKey(workflowProcessId,version,processType,workflowProcessId));
+		((ProcessInstanceImpl)procInst).setState(state);
+		if (state.getValue()>ProcessInstanceState.DELIMITER.getValue()){
+			((ProcessInstanceImpl)procInst).setEndTime(calendarService.getSysDate());
+		}
+		procInstPersistenceService.saveOrUpdate(procInst);
 		
-		return session.getCurrentProcessInstance();
+		if (state.getValue() > ProcessInstanceState.DELIMITER.getValue()) {
+			// 发布AFTER_PROCESS_INSTANCE_END事件
+			this.fireProcessInstanceEvent(session, procInst,
+					workflowElement, ProcessInstanceEventTrigger.AFTER_PROCESS_INSTANCE_END);
+		}
 	}
-	
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.instancemanager.ProcessInstanceManager#abortProcessInstance(org.fireflow.engine.WorkflowSession, org.fireflow.engine.entity.runtime.ProcessInstance)
 	 */
-	public ProcessInstance abortProcessInstance(WorkflowSession session,
-			ProcessInstance processInstance) {		
-		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+//	public ProcessInstance abortProcessInstance(WorkflowSession session,
+//			ProcessInstance processInstance) {		
+//		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 //		PersistenceService persistenceService = context.getEngineModule(PersistenceService.class, processInstance.getProcessType());
 		
 //		//1、首先abort相应的activityInstance
@@ -98,13 +111,13 @@ public abstract class AbsProcessInstanceManager implements ProcessInstanceManage
 //		((ProcessInstanceImpl)processInstance).setEndTime(calendarService.getSysDate());
 //		persister.saveOrUpdate(processInstance);
 		
-		KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);		
-		Token token = kernelManager.getToken(processInstance.getTokenId(), processInstance.getProcessType());
-
-		kernelManager.fireTerminationEvent(session, token, null);
-
-		return processInstance;
-	}
+//		KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);		
+//		Token token = kernelManager.getToken(processInstance.getTokenId(), processInstance.getProcessType());
+//
+//		kernelManager.fireTerminationEvent(session, token, null);
+//
+//		return processInstance;
+//	}
 
 
 
@@ -116,7 +129,7 @@ public abstract class AbsProcessInstanceManager implements ProcessInstanceManage
 		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceService = context.getEngineModule(PersistenceService.class, processInstance.getProcessType());
 		
-		//1、首先suspend相应的activityInstance
+		//1、首先restore相应的activityInstance
 		ActivityInstancePersister actInstPersister = persistenceService.getActivityInstancePersister();
 		List<ActivityInstance> activityInstanceList = actInstPersister.findActivityInstances(processInstance.getId());
 		ActivityInstanceManager actInstMgr = context.getEngineModule(ActivityInstanceManager.class, processInstance.getProcessType());
@@ -128,8 +141,15 @@ public abstract class AbsProcessInstanceManager implements ProcessInstanceManage
 			}
 		}
 		
-		//2、然后suspend processInstance
-		
+		//2、然后restore processInstance
+		//从session取相关字段的值
+		Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)session.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
+		if (fieldsValues!=null){
+			String note = (String)fieldsValues.get(ProcessInstanceProperty.NOTE);
+			if (!StringUtils.isEmpty(note)){
+				((ProcessInstanceImpl)processInstance).setNote(note);
+			}
+		}
 		ProcessInstancePersister persister = persistenceService.getProcessInstancePersister();
 		((ProcessInstanceImpl)processInstance).setSuspended(false);
 		persister.saveOrUpdate(processInstance);
@@ -159,7 +179,14 @@ public abstract class AbsProcessInstanceManager implements ProcessInstanceManage
 		}
 		
 		//2、然后suspend processInstance
-		
+		//从session取相关字段的值
+		Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)session.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
+		if (fieldsValues!=null){
+			String note = (String)fieldsValues.get(ProcessInstanceProperty.NOTE);
+			if (!StringUtils.isEmpty(note)){
+				((ProcessInstanceImpl)processInstance).setNote(note);
+			}
+		}
 		ProcessInstancePersister persister = persistenceService.getProcessInstancePersister();
 		((ProcessInstanceImpl)processInstance).setSuspended(true);
 		persister.saveOrUpdate(processInstance);
@@ -180,5 +207,21 @@ public abstract class AbsProcessInstanceManager implements ProcessInstanceManage
 	public void setRuntimeContext(RuntimeContext ctx) {
 		runtimeContext = ctx;		
 	}
+	
+	public void fireProcessInstanceEvent(WorkflowSession session,ProcessInstance procInst,Object subflow,ProcessInstanceEventTrigger eventType){
 
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+		RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
+		EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
+		
+		EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(ProcessInstanceEvent.class.getName());
+		if (broadcaster!=null){
+			ProcessInstanceEvent event = new ProcessInstanceEvent();
+			event.setSource(procInst);
+			event.setEventTrigger(eventType);
+			event.setWorkflowElement(subflow);
+			
+			broadcaster.fireEvent(sessionLocalImpl, event);
+		}
+	}
 }

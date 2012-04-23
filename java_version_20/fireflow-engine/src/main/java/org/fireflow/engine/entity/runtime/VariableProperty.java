@@ -35,6 +35,7 @@ public enum VariableProperty implements EntityProperty {
 	PROCESS_ID("processId"),
 	VERSION("version"),
 	PROCESS_TYPE("processType"),
+	PROCESS_ELEMENT_ID("processElementId")
 	;
 	private String propertyName = null;
 	private VariableProperty(String propertyName){

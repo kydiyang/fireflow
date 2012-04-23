@@ -18,10 +18,11 @@ package org.fireflow.engine.entity.runtime;
 
 import java.util.Date;
 
+import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
-import org.fireflow.model.binding.AssignmentStrategy;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.fireflow.pvm.kernel.KernelException;
 
 /**
@@ -38,7 +39,12 @@ public interface WorkItem extends WorkflowEntity{
     public static final String REASSIGN_BEFORE_ME = "org.fireflow.constants.BEFORE_ME";
     
     public static final String NO_PARENT_WORKITEM = "org.fireflow.constants.NO_PARENT_WORKITEM";
-	//////////////////////////////////////////////////////////
+	
+    public static final String WORKITEM_TYPE_LOCAL = "org.fireflow.constants.LOCAL_WORKITEM";
+    public static final String WORKITEM_TYPE_REMOTE = "org.fireflow.constants.LOCAL_REMOTE";
+    public static final String WORKITEM_TYPE_NOT_FF = "org.fireflow.constants.NOT_FF_WORKITEM";
+    
+    //////////////////////////////////////////////////////////
 	///////////////// 工作项属性              /////////////////////////
 	/////////////////////////////////////////////////////////
     /**
@@ -180,7 +186,41 @@ public interface WorkItem extends WorkflowEntity{
 	 * 
 	 * @return
 	 */
-	public AssignmentStrategy getAssignmentStrategy();
+	public WorkItemAssignmentStrategy getAssignmentStrategy();
+	
+	
+	/**
+	 * 表单URL<br/>
+	 * 
+	 * @return
+	 */
+	public String getFormUrl();
+	
+	/**
+	 * 移动终端表单URL。（备用）
+	 * @return
+	 */
+	public String getMobileFormUrl();
+	
+	public String getWorkItemName() ;
+
+	public String getSubject();
+
+	public String getOriginalSystemName() ;
+
+	public String getProcInstCreatorName();
+
+	public String getBizId();
+
+	public Date getExpiredTime() ;
+
+	public String getResponsiblePersonOrgId() ;
+
+	public String getResponsiblePersonOrgName() ;
+
+	public String getWorkflowEngineLocation() ;
+
+	public String getWorkItemType();
     
 	//////////////////////////////////////////////////////////
 	///////////////// 工作项业务操作              /////////////////////////
@@ -197,14 +237,14 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.kenel.KenelException
      * @return 如果签收成功，则返回一个新的IWorkItem对象；否则返回null
      */
-    public WorkItem claim() throws InvalidOperationException;
+    public WorkItem claim(WorkflowSession session) throws InvalidOperationException;
     
     /**
      * 退签收，将工单放回到工单池中
      * @param commentDetail 备注信息
      * @throws InvalidOperationException
      */
-    public void disclaim(String commentDetail) throws InvalidOperationException;
+    public void disclaim(WorkflowSession session,String commentDetail) throws InvalidOperationException;
     /**
      * 对已经结束的工作项执行取回操作<br/>
      * 只有满足如下约束才能正确执行取回操作：<br/>
@@ -217,7 +257,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public WorkItem withdraw()throws EngineException, KernelException;
+    public WorkItem withdraw(WorkflowSession session)throws EngineException, KernelException;
 
     /**
      * 执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。<br/>
@@ -225,10 +265,11 @@ public interface WorkItem extends WorkflowEntity{
      * 1、前驱环节中没有没有Tool类型和Subflow类型的Task；<br/>
      * 2、没有和当前TaskInstance并行的其他TaskInstance；<br/>
      * 该方法和IWorkflowSession.rejectWorkItem(String workItemId)等价。
+     * TODO 这个方法是否继续保留，貌似用JumpTo会更加好一点，该方法在1.0中表现不好。
      * @throws EngineException
      * @throws KernelException
      */
-    public void reject()throws EngineException, KernelException;
+    public void reject(WorkflowSession session)throws EngineException, KernelException;
 
     /**
      * 执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。<br/>
@@ -240,7 +281,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws EngineException
      * @throws KernelException
      */
-    public void reject(String comments)throws EngineException, KernelException;
+    public void reject(WorkflowSession session,String comments)throws EngineException, KernelException;
     
     
     /**
@@ -254,7 +295,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void complete() throws EngineException, KernelException;
+    public void complete(WorkflowSession session) throws InvalidOperationException;
 
     /**
      * 结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下<br/>
@@ -268,7 +309,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws EngineException
      * @throws KernelException
      */
-    public void complete(String comments)throws EngineException, KernelException;
+//    public void complete(WorkflowSession session,String comments) throws InvalidOperationException;
     
     /**
      * 结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下<br/>
@@ -298,7 +339,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.engine.exception.EngineException 
      * @throws org.fireflow.kenel.KenelException
      */
-    public void jumpTo(String targetActivityId) throws EngineException, KernelException;
+    public void jumpTo(WorkflowSession session,String targetActivityId) throws InvalidOperationException;
 
     /**
      * 结束当前WorkItem，跳转到指定的Activity<br/>
@@ -313,7 +354,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws EngineException
      * @throws KernelException
      */
-    public void jumpTo(String targetActivityId,String comments) throws EngineException, KernelException;
+    public void jumpTo(WorkflowSession session,String targetActivityId,String comments) throws InvalidOperationException;
 
 
     /**
@@ -340,7 +381,7 @@ public interface WorkItem extends WorkflowEntity{
      * @param actorId 接受任务的操作员Id
      * @return 新创建的工作项
      */    
-    public WorkItem reassignTo(String actorId) throws EngineException;
+    public WorkItem reassignTo(WorkflowSession session,String actorId) throws EngineException;
     
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -348,7 +389,7 @@ public interface WorkItem extends WorkflowEntity{
      * @param comments 相关的备注信息
      * @return 新创建的工作项
      */    
-    public WorkItem reassignTo(String actorId,String comments) throws EngineException;
+    public WorkItem reassignTo(WorkflowSession session,String actorId,String comments) throws EngineException;
 
 
 }

@@ -18,6 +18,7 @@ package org.fireflow.engine.modules.beanfactory.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -25,39 +26,38 @@ import org.springframework.beans.factory.BeanFactoryAware;
  * 用Spring 的IOC容器作为Fire Workflow 的BeanFactory
  * @author 非也，nychen2000@163.com
  */
-public class BeanFactorySpringImpl implements BeanFactory,BeanFactoryAware {
+public class BeanFactorySpringImpl extends AbsEngineModule implements BeanFactory,BeanFactoryAware {
 	Log log = LogFactory.getLog(BeanFactorySpringImpl.class);
 	
 	org.springframework.beans.factory.BeanFactory springBeanFactory = null;
+
 
     /**
      * @param beanName
      * @return
      */
     public Object getBean(String beanName) {
-    	
-    		if (beanName == null)
+		if (beanName == null) {
 			return null;
-		if (beanName.startsWith("#")) {
-			// 去掉"#"号，然后从容器中查找bean 。
-			Object bean = springBeanFactory.getBean(beanName.substring(1));
-			return bean;
-		} else {
-			// bean name 当做class name处理。
-
-			Class clz = null;
-			try {
-				clz = Class.forName(beanName);
-				return clz.newInstance();
-			} catch (ClassNotFoundException e) {
-				log.error("ClassNotFoundException", e);
-			} catch (InstantiationException e) {
-				log.error("InstantiationException", e);
-			} catch (IllegalAccessException e) {
-				log.error("IllegalAccessException", e);
-			}
-
 		}
+
+		Object bean = springBeanFactory.getBean(beanName);
+		return bean;
+    }
+    
+    public Object createBean(String javaClassName){
+		Class clz = null;
+		try {
+			clz = Class.forName(javaClassName);
+			return clz.newInstance();
+		} catch (ClassNotFoundException e) {
+			log.error("ClassNotFoundException", e);
+		} catch (InstantiationException e) {
+			log.error("InstantiationException", e);
+		} catch (IllegalAccessException e) {
+			log.error("IllegalAccessException", e);
+		}
+		
 		return null;
     }
 

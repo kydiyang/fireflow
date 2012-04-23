@@ -24,4 +24,5 @@ package org.fireflow.engine.impl;
 public interface InternalSessionAttributeKeys {
 	public static final String BIZ_ID = "org.fireflow.engine.impl.InternalSessionAttributeKeys.BIZ_ID";
 	public static final String VARIABLES = "org.fireflow.engine.impl.InternalSessionAttributeKeys.VARIABLES";
+	public static final String FIELDS_VALUES = "org.fireflow.engine.impl.InternalSessionAttributeKeys.FIELDS_VALUES";
 }

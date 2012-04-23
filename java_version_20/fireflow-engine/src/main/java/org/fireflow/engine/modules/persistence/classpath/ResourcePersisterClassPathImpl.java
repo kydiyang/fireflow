@@ -27,19 +27,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
-import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.entity.repository.ResourceDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ResourceRepository;
 import org.fireflow.engine.entity.repository.impl.ResourceDescriptorImpl;
 import org.fireflow.engine.entity.repository.impl.ResourceRepositoryImpl;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
-import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.io.Dom4JResourceParser;
-import org.fireflow.model.io.ParserException;
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.io.DeserializerException;
+import org.fireflow.model.io.resource.ResourceDeserializer;
+import org.fireflow.model.resourcedef.ResourceDef;
 
 
 /**
@@ -61,7 +60,7 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 	 * @see org.fireflow.engine.modules.persistence.ResourcePersister#findServiceRepositoryByFileName(java.lang.String)
 	 */
 	public ResourceRepository findResourceRepositoryByFileName(
-			String resourceFileName) throws ParserException{
+			String resourceFileName) throws DeserializerException{
 		if (resourceFileName==null || resourceFileName.trim().equals("")){
 			throw new EngineException("The resource file name can NOT be empty!");
 		}
@@ -76,12 +75,12 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 	
 	private ResourceRepository repositoryFromInputStream(
 			String resourceFileName, InputStream inStream)
-			throws ParserException {
-		Dom4JResourceParser parser = new Dom4JResourceParser();
+			throws DeserializerException {
+		ResourceDeserializer parser = new ResourceDeserializer();
 		try {
 			byte[] bytes = Utils.getBytes(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
-			List<Resource> resources = parser.parse(bytesIn);
+			List<ResourceDef> resources = parser.deserialize(bytesIn);
 			
 			ResourceRepositoryImpl repository = new ResourceRepositoryImpl();
 			repository.setResourceContent(new String(bytes,"UTF-8"));
@@ -90,7 +89,7 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 			
 			if (resources!=null){
 				List<ResourceDescriptor> resourceDescriptors = new ArrayList<ResourceDescriptor>();
-				for (Resource rsc : resources){
+				for (ResourceDef rsc : resources){
 					ResourceDescriptorImpl desc = new ResourceDescriptorImpl();
 					desc.setResourceId(rsc.getId());
 					desc.setResourceType(rsc.getResourceType().getValue());
@@ -104,12 +103,12 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 			}
 			
 			return repository;
-		} catch (ParserException e) {
+		} catch (DeserializerException e) {
 			log.error(e);
 			throw e;
 		} catch (IOException e) {
 			log.error(e);
-			throw new ParserException(e);
+			throw new DeserializerException(e);
 		}
 
 	}

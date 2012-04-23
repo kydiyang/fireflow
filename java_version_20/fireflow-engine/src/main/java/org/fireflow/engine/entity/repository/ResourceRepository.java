@@ -18,7 +18,7 @@ package org.fireflow.engine.entity.repository;
 
 import java.util.List;
 
-import org.fireflow.model.resourcedef.Resource;
+import org.fireflow.model.resourcedef.ResourceDef;
 
 /**
  * 
@@ -34,6 +34,6 @@ public interface ResourceRepository {
 	
 //	public List<ResourceDescriptor> getResourceDescriptors();
 	
-	public List<Resource> getResources();
-	public Resource getResource(String resourceId);
+	public List<ResourceDef> getResources();
+	public ResourceDef getResource(String resourceId);
 }

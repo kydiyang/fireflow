@@ -71,7 +71,31 @@ public class RuntimeContext {
      */
     public void initialize() throws EngineException, KernelException {
         if (!isInitialized) {
-            initAllNetInstances();
+        	if (processDefinitionLanguageRegistry.size()>0){
+        		Iterator<ProcessDefinitionLanguageExtension> processDefExtReg = this.processDefinitionLanguageRegistry.values().iterator();
+        		while(processDefExtReg.hasNext()){
+        			ProcessDefinitionLanguageExtension ext = processDefExtReg.next();
+        			if (ext.getEngineModules()!=null && ext.getEngineModules().size()>0){
+        				Iterator<EngineModule> engineModules = ext.getEngineModules().values().iterator();
+        				while(engineModules.hasNext()){
+        					EngineModule module = engineModules.next();
+        					module.init(this);
+        				}
+        			}
+        		}
+        	
+        	}
+        	
+        	if (this.defaultEngineModules.size()>0){
+        		Iterator<EngineModule> iter = this.defaultEngineModules.values().iterator();
+        		while(iter.hasNext()){
+        			EngineModule module = iter.next();
+        			module.init(this);
+        		}
+        	}
+        	
+        	
+//            initAllNetInstances();
             isInitialized = true;
         }
     }
@@ -80,9 +104,9 @@ public class RuntimeContext {
      * 初始化所有的工作流网实例
      * @throws KernelException
      */
-    protected void initAllNetInstances() throws KernelException {
-
-    }
+//    protected void initAllNetInstances() throws KernelException {
+//
+//    }
 
     public boolean isEnableTrace() {
         return enableTrace;
@@ -135,6 +159,17 @@ public class RuntimeContext {
     	return (T)module;
     }
     
+    public ScriptEngine getScriptEngine(String expressionLanguageName){
+    	ScriptEngineManager manager = new ScriptEngineManager();
+    	ScriptEngine engine = manager.getEngineByName(expressionLanguageName);
+    	
+    	return engine;
+    }
+    
+    public Map<String,ProcessDefinitionLanguageExtension> getRegistedProcessDefinitionLanguages(){
+    	return this.processDefinitionLanguageRegistry;
+    }
+    
     
     public void setDefaultEngineModules(Map<String,EngineModule> _engineModules){
     	if (_engineModules==null){
@@ -160,14 +195,6 @@ public class RuntimeContext {
     	}
     }
     
-    public ScriptEngine getScriptEngine(String expressionLanguageName){
-    	ScriptEngineManager manager = new ScriptEngineManager();
-    	ScriptEngine engine = manager.getEngineByName(expressionLanguageName);
-    	
-    	return engine;
-    }
-
-
 
 	/**
 	 * @return the defaultProcessType

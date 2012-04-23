@@ -29,20 +29,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ResourceRepository;
-import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
-import org.fireflow.engine.entity.repository.ServiceRepository;
 import org.fireflow.engine.entity.repository.impl.ResourceDescriptorImpl;
 import org.fireflow.engine.entity.repository.impl.ResourceRepositoryImpl;
-import org.fireflow.engine.entity.repository.impl.ServiceDescriptorImpl;
-import org.fireflow.engine.entity.repository.impl.ServiceRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
-import org.fireflow.model.io.Dom4JResourceParser;
-import org.fireflow.model.io.Dom4JServiceParser;
-import org.fireflow.model.io.ParserException;
-import org.fireflow.model.resourcedef.Resource;
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.io.DeserializerException;
+import org.fireflow.model.io.resource.ResourceDeserializer;
+import org.fireflow.model.resourcedef.ResourceDef;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -81,13 +75,13 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 			try {
 				ByteArrayInputStream byteIn = new ByteArrayInputStream(result.getResourceContent().getBytes("UTF-8"));
 				
-				Dom4JResourceParser parser = new Dom4JResourceParser();
-				List<Resource> resources = parser.parse(byteIn);
+				ResourceDeserializer parser = new ResourceDeserializer();
+				List<ResourceDef> resources = parser.deserialize(byteIn);
 				
 				((ResourceRepositoryImpl)result).setResources(resources);
 			} catch (UnsupportedEncodingException e) {
 				log.error(e);
-			}catch(ParserException e){
+			}catch(DeserializerException e){
 				log.error(e);
 			}
 			catch(IOException e){
@@ -132,9 +126,9 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 		});
 		
 		
-		List<Resource> services = repository.getResources();
+		List<ResourceDef> services = repository.getResources();
 		if (services!=null){
-			for (Resource rsc : services){
+			for (ResourceDef rsc : services){
 				ResourceDescriptorImpl desc = new ResourceDescriptorImpl();
 				desc.setResourceId(rsc.getId());
 				desc.setName(rsc.getName());
@@ -163,18 +157,18 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 		}
 			
 		
-		Dom4JResourceParser parser = new Dom4JResourceParser();
+		ResourceDeserializer parser = new ResourceDeserializer();
 		try {
 			byte[] bytes = Utils.getBytes(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
-			List<Resource> resources = parser.parse(bytesIn);
+			List<ResourceDef> resources = parser.deserialize(bytesIn);
 			
 			
 			repository.setResourceContent(new String(bytes,"UTF-8"));
 			repository.setFileName(resourceFileName);
 			repository.setResources(resources);
 			return repository;
-		} catch (ParserException e) {
+		} catch (DeserializerException e) {
 			log.error(e);
 		} catch (IOException e) {
 			log.error(e);

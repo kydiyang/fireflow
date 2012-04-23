@@ -19,20 +19,22 @@ package org.fireflow.engine.modules.instancemanager;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
+import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.exception.ServiceExecutionException;
-import org.fireflow.engine.modules.instancemanager.event.EventType;
+import org.fireflow.engine.exception.ServiceInvocationException;
+import org.fireflow.engine.modules.instancemanager.event.ActivityInstanceEventTrigger;
 
 /**
  * @author 非也
  * @version 2.0
  */
 public interface ActivityInstanceManager extends EngineModule{
+	
 	public ActivityInstance createActivityInstance(WorkflowSession session,ProcessInstance processInstance,Object activity);
-	public boolean runActivityInstance(WorkflowSession session,Object workflowElement,ActivityInstance activityInstance) throws ServiceExecutionException;
+
 	
-	
-	public void onServiceCompleted(WorkflowSession session,ActivityInstance activityInstance);
+	public boolean runActivityInstance(WorkflowSession session,Object workflowElement,ActivityInstance activityInstance) throws ServiceInvocationException;
+
 	
 	/**
 	 * 返回值必须是 org.fireflow.pvm.pdllogic.ContinueDirection中定义的几个整形常量：
@@ -44,11 +46,15 @@ public interface ActivityInstanceManager extends EngineModule{
 	public int tryCloseActivityInstance(WorkflowSession session,ActivityInstance activityInstance,Object workflowElement);
 	
 	
-	public ActivityInstance abortActivityInstance(WorkflowSession session , ActivityInstance activityInstance);
+	
+	public void onServiceCompleted(WorkflowSession session,ActivityInstance activityInstance);
+
+
+	public void changeActivityInstanceState(WorkflowSession session,ActivityInstance activityInstance,ActivityInstanceState newState,Object workflowElement);
 	
 	public ActivityInstance suspendActivityInstance(WorkflowSession session , ActivityInstance activityInstance);
 	
 	public ActivityInstance restoreActivityInstance(WorkflowSession session , ActivityInstance activityInstance);
 	
-	public void fireActivityInstanceEvent(WorkflowSession session,ActivityInstance actInstance,Object workflowElement,EventType eventType);
+	public void fireActivityInstanceEvent(WorkflowSession session,ActivityInstance actInstance,Object workflowElement,ActivityInstanceEventTrigger eventType);
 }

@@ -246,6 +246,13 @@ public class NodeInstanceImpl extends AbstractPObject implements NodeInstance {
 		}
 	}
 
+	/**
+	 * （2012-02-05，该动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
+	 * @param session
+	 * @param thisToken
+	 * @param sourceToken
+	 */
+	/*
 	public void handleCancellation(WorkflowSession session, Token thisToken, Token sourceToken) {
 		if (!this.isCancellable()){
 			return;
@@ -327,6 +334,7 @@ public class NodeInstanceImpl extends AbstractPObject implements NodeInstance {
 			}
 		}
 	}
+	*/
 
 	
 	/* (non-Javadoc)

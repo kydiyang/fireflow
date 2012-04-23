@@ -17,9 +17,7 @@
 package org.fireflow.engine.modules.persistence;
 
 import java.util.List;
-import java.util.Map;
 
-import org.fireflow.engine.entity.runtime.Scope;
 import org.fireflow.engine.entity.runtime.Variable;
 
 /**
@@ -30,22 +28,9 @@ public interface VariablePersister extends Persister {
 	public Variable findVariable(String scopeId,String name);
 	public List<Variable> findVariables(String scopeId);
 	
-	public Object findVariableValue(String scopeId,String name);
-	public Map<String ,Object> findVariableValues(String scopeId);
+//	public Object findVariableValue(String scopeId,String name);
+//	public Map<String ,Object> findVariableValues(String scopeId);
 	
-	public Variable setVariable(Scope scope,String name,Object value);
+//	public Variable setVariable(Scope scope,String name,Object value);
 	
-	/**
-	 * 将java对象序列化成字符串
-	 * @param object
-	 * @return
-	 */
-	public String serializeObject2String(Object object);
-	
-	/**
-	 * 将字符串反序列化成java对象
-	 * @param strValue
-	 * @return
-	 */
-	public Object deserializeString2Object(String strValue);
 }

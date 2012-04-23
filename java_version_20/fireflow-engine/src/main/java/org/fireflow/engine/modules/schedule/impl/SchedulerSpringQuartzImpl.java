@@ -22,6 +22,7 @@ import java.util.Date;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.WorkflowSessionFactory;
 import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
@@ -38,7 +39,6 @@ import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ScheduleJobPersister;
 import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.engine.modules.schedule.ScheduleJobBean;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pvm.kernel.BookMark;
 import org.fireflow.pvm.kernel.ExecutionEntrance;
@@ -62,7 +62,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author 非也
  * @version 2.0
  */
-public class SchedulerSpringQuartzImpl extends AbsScheduler {
+public class SchedulerSpringQuartzImpl  extends AbsScheduler {
     private Scheduler quartzScheduler;
     private TransactionTemplate transactionTemplate = null;
 	/* (non-Javadoc)
@@ -149,7 +149,7 @@ public class SchedulerSpringQuartzImpl extends AbsScheduler {
             //TODO 检验trigger是否可以被触发
             
             
-            JobDetail jobDetail = new JobDetail(timerHandler.getId(),JOB_GROUP_NAME, ScheduleJobBean.class);
+            JobDetail jobDetail = new JobDetail(timerHandler.getId(),JOB_GROUP_NAME, ScheduleJobBean4SpringQuartz.class);
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.put(ScheduleJob.class.getName(), timerHandler);
             jobDataMap.put(RuntimeContext.class.getName(), runtimeContext);
@@ -321,7 +321,7 @@ public class SchedulerSpringQuartzImpl extends AbsScheduler {
 							
 							BookMark bookMark = new BookMark();
 							bookMark.setToken(attachedToToken);
-							bookMark.setExecutionEntrance(ExecutionEntrance.HANDLE_CANCELLATION);
+							bookMark.setExecutionEntrance(ExecutionEntrance.HANDLE_TERMINATION);
 							bookMark.setExtraArg(BookMark.SOURCE_TOKEN, thisToken);
 							
 							kernelManager.addBookMark(bookMark);

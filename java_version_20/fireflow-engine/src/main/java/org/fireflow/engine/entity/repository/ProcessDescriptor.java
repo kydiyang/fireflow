@@ -89,6 +89,18 @@ public interface ProcessDescriptor extends WorkflowEntity{
      * @return
      */
     public Boolean getPublishState();
+    
+    /**
+     * 是否是定时启动的流程
+     * @return
+     */
+    public Boolean getTimerStart();
+    
+    /**
+     * 是否具有回调接口，回调接口将被发布成WebService。
+     * @return
+     */
+    public Boolean getHasCallbackService();
 
     //////////////////////////////////////////////////////
     ////////// 下面是流程存储库的管理字段    ////////////////

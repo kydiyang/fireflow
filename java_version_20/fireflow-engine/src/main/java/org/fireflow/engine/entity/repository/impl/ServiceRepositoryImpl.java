@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.fireflow.engine.entity.repository.ServiceDescriptor;
 import org.fireflow.engine.entity.repository.ServiceRepository;
-import org.fireflow.model.servicedef.Service;
+import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * 
@@ -34,13 +34,13 @@ public class ServiceRepositoryImpl implements
 	private List<ServiceDescriptor> serviceDescriptors = null;
 	private String serviceFileName = null;
 	private String serviceFileContent = null;
-	private List<Service> services = null;
+	private List<ServiceDef> services = null;
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.repository.ServiceRepository#getService()
 	 */
-	public Service getService(String serviceId) {
+	public ServiceDef getService(String serviceId) {
 		if (services==null)return null;
-		for (Service svc : services){
+		for (ServiceDef svc : services){
 			if (svc.getId().equals(serviceId)){
 				return svc;
 			}
@@ -90,14 +90,14 @@ public class ServiceRepositoryImpl implements
 	/**
 	 * @return the services
 	 */
-	public List<Service> getServices() {
+	public List<ServiceDef> getServices() {
 		return services;
 	}
 
 	/**
 	 * @param services the services to set
 	 */
-	public void setServices(List<Service> services) {
+	public void setServices(List<ServiceDef> services) {
 		this.services = services;
 	}
 

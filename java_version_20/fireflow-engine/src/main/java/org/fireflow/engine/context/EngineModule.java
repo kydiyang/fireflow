@@ -16,10 +16,12 @@
  */
 package org.fireflow.engine.context;
 
+import org.fireflow.engine.exception.EngineException;
+
 /**
  * @author 非也
  * @version 2.0
  */
 public interface EngineModule {
-
+	public void init(RuntimeContext runtimeContext)throws EngineException;
 }
