@@ -24,9 +24,12 @@ import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.repository.impl.ProcessRepositoryImpl;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.modules.process.ProcessUtil;
+import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.data.Property;
 import org.fireflow.pdl.bpel.BpelProcess;
 
 /**
@@ -85,7 +88,7 @@ public class ProcessUtilBpelImpl implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.repository.ProcessRepositoryService#getActivity(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String)
 	 */
-	public Object getActivity(ProcessKey processKey, String activityId) {
+	public Object getActivity(ProcessKey processKey, String subflow, String activityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -94,7 +97,7 @@ public class ProcessUtilBpelImpl implements
 	 * @see org.fireflow.engine.repository.ProcessRepositoryService#getResourceBinding(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String)
 	 */
 	public ResourceBinding getResourceBinding(ProcessKey processKey,
-			String activityId) {
+			String subflowId, String activityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -103,7 +106,7 @@ public class ProcessUtilBpelImpl implements
 	 * @see org.fireflow.engine.repository.ProcessRepositoryService#getServiceBinding(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String)
 	 */
 	public ServiceBinding getServiceBinding(ProcessKey processKey,
-			String activityId) {
+			String subflowId, String activityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -145,6 +148,32 @@ public class ProcessUtilBpelImpl implements
 		repository.setPublishState(true);
 		repository.setProcess(process);
 		return repository;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getProcessEntryElementId(java.lang.String, int, java.lang.String)
+	 */
+	public String getProcessEntryId(String workflowProcessId,
+			int version, String processType) {
+		return workflowProcessId;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getProperty(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String, java.lang.String)
+	 */
+	public Property getProperty(ProcessKey processKey,
+			String workflowElementId, String propertyName)
+			throws InvalidModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.context.EngineModule#init(org.fireflow.engine.context.RuntimeContext)
+	 */
+	public void init(RuntimeContext runtimeContext) throws EngineException {
+		// TODO Auto-generated method stub
+		
 	}
 
 
