@@ -55,13 +55,20 @@ public interface WorkflowProcess extends ModelElement{
 	
 	/**
 	 * 流程定义文件在classpath中的位置
+	 * 该属性放在WorkflowProcess中不合理，2012-04-29
 	 * @return
 	 */
-	public String getClasspathUri();
+//	public String getClasspathUri();
+//	
+//	public void setClasspathUri(String classPathUri);
 	
-	public void setClasspathUri(String classPathUri);
-	
-
+	/**
+	 * 根据WorkflowElmentId查找对应的Workflow Element; 
+	 * Workflow Element可以是Subflow,StartNode,Activity,EndNode,Router,Transition。
+	 * @param workflowElementId
+	 * @return
+	 */
+	public WorkflowElement findWorkflowElementById(String workflowElementId);
 	
 	/**
 	 * 返回主流程的流程Id
@@ -74,7 +81,7 @@ public interface WorkflowProcess extends ModelElement{
 	 * @param workflowId
 	 * @return
 	 */
-	public Subflow getSubflow(String workflowId);
+	public Subflow getLocalSubflow(String workflowId);
 	
 	/**
 	 * 向WorkflowProcess中增加一个subflow
@@ -84,9 +91,10 @@ public interface WorkflowProcess extends ModelElement{
 	
 	/**
 	 * 获得流程所有的subflows，包括引入的外部流程的main_flow
+	 * 暂不启用对WorkflowProcess的引用，因为容易发生循环引用，导致死锁
 	 * @return
 	 */
-	public List<Subflow> getSubflows();
+//	public List<Subflow> getSubflows();
 	
 	/**
 	 * 获得本WorkflowProcess内部定义的所有subflow
@@ -94,13 +102,7 @@ public interface WorkflowProcess extends ModelElement{
 	 */
 	public List<Subflow> getLocalSubflows();
 	
-	/**
-	 * 根据WorkflowElmentId查找对应的Workflow Element; 
-	 * Workflow Element可以是Subflow,StartNode,Activity,EndNode,Router,Transition。
-	 * @param workflowElementId
-	 * @return
-	 */
-	public WorkflowElement findWorkflowElementById(String workflowElementId);
+
 	
 	/**
 	 * 获得所有的Service，包括import进来的
@@ -147,16 +149,28 @@ public interface WorkflowProcess extends ModelElement{
 	public Import getImportByLocation(String location);
 	
 	/**
-	 * 服务import列表
+	 * 服务servicedef import列表
 	 * @return
 	 */
-	public List<Import<ServiceDef>> getProcessImportForServices();
+	public List<Import<ServiceDef>> getImportsForService();
+	
+	public void addServiceImport(Import<ServiceDef> svcImport);
 	
 	/**
-	 * 资源import列表
+	 * 资源resourcedef import列表
 	 * @return
 	 */
-	public List<Import<ResourceDef>> getProcessImportForResources();
+	public List<Import<ResourceDef>> getImportsForResource();
+	
+	public void addResourceImport(Import<ResourceDef> rscImport);
+	/**
+	 * 获得workflowprocess import 列表
+	 * @return
+	 */
+	public List<Import<WorkflowProcess>> getImportsForProcess();
+	
+	
+	public void addProcessImport(Import<WorkflowProcess> processImport);
 	
 	/**
 	 * 流程的namespace

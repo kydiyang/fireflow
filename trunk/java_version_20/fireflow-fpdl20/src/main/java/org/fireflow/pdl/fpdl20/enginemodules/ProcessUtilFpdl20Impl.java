@@ -70,7 +70,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public ServiceBinding getServiceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	Subflow subflow = process.getSubflow(subflowId);
+    	Subflow subflow = process.getLocalSubflow(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	if (activity==null){
     		return null;
@@ -82,7 +82,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public ResourceBinding getResourceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	Subflow subflow = process.getSubflow(subflowId);
+    	Subflow subflow = process.getLocalSubflow(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	if (activity==null){
     		return null;
@@ -94,7 +94,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public Object getActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	Subflow subflow = process.getSubflow(subflowId);
+    	Subflow subflow = process.getLocalSubflow(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	return activity;
     }
@@ -121,7 +121,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
 		ProcessPersister processPersister = persistenceService.getProcessPersister();
 		ProcessRepository repository = processPersister.findProcessRepositoryByProcessKey(processKey);
-		return repository.getProcess();
+		return repository.getProcessObject();
 	}
 
 	/* (non-Javadoc)
@@ -181,14 +181,17 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		repository.setDisplayName((displayName==null || displayName.trim().equals(""))?wfProcess.getName():displayName);
 		repository.setDescription(wfProcess.getDescription());
 		
-		repository.setProcess(process);
-		repository.setProcessAsXml(this.serializeProcess2Xml(process));	
+		//设置缺省的FileName 为 <processId>.f20.xml
+		repository.setFileName(wfProcess.getId()+FpdlConstants.PROCESS_FILE_SUFFIX);
+		
+		repository.setProcessObject(process);
+		repository.setProcessContent(this.serializeProcess2Xml(process));	
 
 		return repository;
 	}
 	
 	private boolean hasCallbackService(WorkflowProcess workflowProcess){
-		List<Subflow> subflowList = workflowProcess.getSubflows();
+		List<Subflow> subflowList = workflowProcess.getLocalSubflows();
 		if (subflowList == null || subflowList.size() == 0)
 			return false;
 		for (Subflow subflow : subflowList) {
@@ -266,6 +269,16 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 			
 			ServiceRepository repository = servicePersister.findServiceRepositoryByFileName(serviceLocation);
 			return repository.getServices();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.fireflow.pdl.fpdl20.io.ImportLoader#loadProcess(java.lang.String)
+		 */
+		public WorkflowProcess loadProcess(String processLocation)
+				throws InvalidModelException, DeserializerException,
+				IOException {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}

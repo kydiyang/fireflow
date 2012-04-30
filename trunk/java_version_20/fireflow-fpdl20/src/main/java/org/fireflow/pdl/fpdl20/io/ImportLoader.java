@@ -23,6 +23,7 @@ import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
+import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 /**
  * 负责load “import” 标签的具体内容
@@ -33,4 +34,5 @@ import org.fireflow.model.servicedef.ServiceDef;
 public interface ImportLoader {
 	public List<ServiceDef> loadServices(String serviceLocation)throws InvalidModelException,DeserializerException,IOException;
 	public List<ResourceDef> loadResources(String resourceLocation)throws DeserializerException,IOException;
+	public WorkflowProcess loadProcess(String processLocation) throws InvalidModelException,DeserializerException,IOException;
 }

@@ -184,7 +184,6 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
 		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());	
-
 		activity.setServiceBinding(serviceBinding);
 		
 		//resourceBinding

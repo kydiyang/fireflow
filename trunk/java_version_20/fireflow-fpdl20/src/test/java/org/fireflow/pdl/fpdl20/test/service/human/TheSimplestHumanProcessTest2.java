@@ -94,7 +94,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 				// 1.1发布一条流程
 				WorkflowProcess process = getWorkflowProcess();
 				try {
-					stmt.uploadProcess(process, true, null);
+					stmt.uploadProcessObject(process, true, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -102,7 +102,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 
 				// 1.2 上传一个流程，不发布
 				try {
-					stmt.uploadProcess(process, false, null);
+					stmt.uploadProcessObject(process, false, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -110,7 +110,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 
 				// 1.3 再发布一个流程
 				try {
-					stmt.uploadProcess(process, true, null);
+					stmt.uploadProcessObject(process, true, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

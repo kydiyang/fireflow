@@ -170,13 +170,15 @@ public class FPDLSerializer implements FPDLNames {
         workflowProcessElement.setAttribute(BIZ_CATEGORY, workflowProcess.getBizCategory());
 
         Util4Serializer.addElement(workflowProcessElement, DESCRIPTION,
-                workflowProcess.getDescription());
- 
+                workflowProcess.getDescription()); 
         
-        writerProcessImports4Service(workflowProcess.getProcessImportForServices(),workflowProcessElement);
-        writerProcessImports4Resource(workflowProcess.getProcessImportForResources(),workflowProcessElement);
-
-
+        //序列化import信息
+        writeImports4Service(workflowProcess.getImportsForService(),workflowProcessElement);
+        writeImports4Resource(workflowProcess.getImportsForResource(),workflowProcessElement);
+        this.writeImport4Process(workflowProcess.getImportsForProcess(),workflowProcessElement);
+        
+        
+        //序列化 service信息
         ServiceParser.writeServices(workflowProcess.getLocalServices(),workflowProcessElement);   
         
         
@@ -572,58 +574,45 @@ public class FPDLSerializer implements FPDLNames {
         		subflowElement);
     }
     
-    protected void writerProcessImports4Service(List<Import<ServiceDef>> processImports,Element parentElement){
-//    	if (processImports==null || processImports.size()==0){
-//    		return ;
-//    	}
-//    	for (Import<ServiceDef> processImport : processImports){
-//            Element processImportElem = Util4Serializer.addElement(
-//            		parentElement, IMPORT);
-//            
-//            processImportElem.setAttribute(ID, processImport.getId());
-//            if (processImport.getName()!=null && !processImport.getName().trim().equals("")){
-//            	processImportElem.setAttribute(NAME, processImport.getName());
-//            }
-//            if (processImport.getDisplayName()!=null && !processImport.getDisplayName().trim().equals("")){
-//            	processImportElem.setAttribute(DISPLAY_NAME, processImport.getDisplayName());
-//            }
-//            processImportElem.setAttribute(IMPORT_TYPE, Import.SERVICES_IMPORT);
-//            processImportElem.setAttribute(LOCATION, processImport.getLocation());
-//
-//
-//            if (processImport.getDescription()!=null && !processImport.getDescription().trim().equals("")){
-//                Util4Serializer.addElement(processImportElem, DESCRIPTION,
-//                        processImport.getDescription());
-//            }
-//            
-//    	}
+    protected void writeImports4Service(List<Import<ServiceDef>> imports4Service,Element parentElement){
+    	if (imports4Service==null || imports4Service.size()==0){
+    		return ;
+    	}
+    	for (Import<ServiceDef> processImport : imports4Service){
+            Element processImportElem = Util4Serializer.addElement(
+            		parentElement, IMPORT);
+
+            processImportElem.setAttribute(IMPORT_TYPE, Import.SERVICES_IMPORT);
+            processImportElem.setAttribute(LOCATION, processImport.getLocation());
+
+            
+    	}
     }
     
-    protected void writerProcessImports4Resource(List<Import<ResourceDef>> processImports,Element parentElement){
-//    	if (processImports==null || processImports.size()==0){
-//    		return ;
-//    	}
-//    	for (Import<ResourceDef> processImport : processImports){
-//            Element processImportElem = Util4Serializer.addElement(
-//            		parentElement, IMPORT);
-//            
-//            processImportElem.setAttribute(ID, processImport.getId());
-//            if (processImport.getName()!=null && !processImport.getName().trim().equals("")){
-//            	processImportElem.setAttribute(NAME, processImport.getName());
-//            }
-//            if (processImport.getDisplayName()!=null && !processImport.getDisplayName().trim().equals("")){
-//            	processImportElem.setAttribute(DISPLAY_NAME, processImport.getDisplayName());
-//            }
-//            processImportElem.setAttribute(IMPORT_TYPE, Import.RESOURCES_IMPORT);
-//            processImportElem.setAttribute(LOCATION, processImport.getLocation());
-//
-//
-//            if (processImport.getDescription()!=null && !processImport.getDescription().trim().equals("")){
-//                Util4Serializer.addElement(processImportElem, DESCRIPTION,
-//                        processImport.getDescription());
-//            }
-//            
-//    	}
+    protected void writeImport4Process(List<Import<WorkflowProcess>> imports4Process,Element parentElement){
+    	if (imports4Process==null || imports4Process.size()==0){
+    		return ;
+    	}
+    	for (Import<WorkflowProcess> processImport : imports4Process){
+            Element processImportElem = Util4Serializer.addElement(
+            		parentElement, IMPORT);
+            
+            processImportElem.setAttribute(IMPORT_TYPE, Import.RESOURCES_IMPORT);
+            processImportElem.setAttribute(LOCATION, processImport.getLocation());
+    	}
+    }
+    
+    protected void writeImports4Resource(List<Import<ResourceDef>> processImports,Element parentElement){
+    	if (processImports==null || processImports.size()==0){
+    		return ;
+    	}
+    	for (Import<ResourceDef> processImport : processImports){
+            Element processImportElem = Util4Serializer.addElement(
+            		parentElement, IMPORT);
+            
+            processImportElem.setAttribute(IMPORT_TYPE, Import.RESOURCES_IMPORT);
+            processImportElem.setAttribute(LOCATION, processImport.getLocation());
+    	}
     }    
 
     protected void writeEventListeners(List<EventListenerDef> eventListeners, Element parentElement) {

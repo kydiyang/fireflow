@@ -85,7 +85,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 					Map<ServiceDescriptorProperty, Object> props = new HashMap<ServiceDescriptorProperty, Object>();
 					props.put(ServiceDescriptorProperty.FILE_NAME, "org/fireflow/pdl/fpdl20/test/service/human/TheHumanServices.svc.xml");
 					
-					stmt.uploadServices(fIn, props);
+					stmt.uploadServicesStream(fIn, Boolean.TRUE, props);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -98,7 +98,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 					Map<ResourceDescriptorProperty, Object> props = new HashMap<ResourceDescriptorProperty, Object>();
 					props.put(ResourceDescriptorProperty.FILE_NAME, "org/fireflow/pdl/fpdl20/test/service/human/TheParticipants.rsc.xml");
 					
-					stmt.uploadResources(fIn, props);
+					stmt.uploadResourcesStream(fIn, Boolean.TRUE, props);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}				
@@ -106,7 +106,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 				// 1.2发布一条流程
 				WorkflowProcess process = createWorkflowProcess();
 				try {
-					stmt.uploadProcess(process, true, null);
+					stmt.uploadProcessObject(process, true, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

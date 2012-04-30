@@ -125,7 +125,7 @@ import org.fireflow.pdl.fpdl20.process.features.startnode.impl.TimerStartFeature
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.WebserviceStartFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
-import org.fireflow.pdl.fpdl20.process.impl.ProcessImportImpl;
+import org.fireflow.pdl.fpdl20.process.impl.ImportImpl;
 import org.fireflow.pdl.fpdl20.process.impl.RouterImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.SubflowImpl;
@@ -845,30 +845,35 @@ public class FPDLDeserializer implements FPDLNames{
 		for (Element importElm : importElems){
 			String type = importElm.getAttribute(IMPORT_TYPE);
 			if (Import.SERVICES_IMPORT.equals(type)){
-				String name = importElm.getAttribute(NAME);
-				ProcessImportImpl<ServiceDef> serviceImport = new ProcessImportImpl<ServiceDef>(wp,name);
+				ImportImpl<ServiceDef> serviceImport = new ImportImpl<ServiceDef>(wp);
 				serviceImport.setImportType(type);
-				serviceImport.setDisplayName(importElm.getAttribute(DISPLAY_NAME));
-				serviceImport.setDescription(Util4Deserializer.elementAsString(importElm, DESCRIPTION));
 				serviceImport.setLocation(importElm.getAttribute(LOCATION));
 				
 				List<ServiceDef> services = this.importLoader.loadServices(serviceImport.getLocation());
 				serviceImport.setContents(services);
 				
-				wp.getProcessImportForServices().add(serviceImport);
+				wp.getImportsForService().add(serviceImport);
 			}
 			else if (Import.RESOURCES_IMPORT.equals(type)){
-				String name = importElm.getAttribute(NAME);
-				ProcessImportImpl<ResourceDef> resourceImport = new ProcessImportImpl<ResourceDef>(wp,name);
+				ImportImpl<ResourceDef> resourceImport = new ImportImpl<ResourceDef>(wp);
 				resourceImport.setImportType(type);
-				resourceImport.setDisplayName(importElm.getAttribute(DISPLAY_NAME));
-				resourceImport.setDescription(Util4Deserializer.elementAsString(importElm, DESCRIPTION));
 				resourceImport.setLocation(importElm.getAttribute(LOCATION));
 				
 				List<ResourceDef> resources = this.importLoader.loadResources(resourceImport.getLocation());
 				resourceImport.setContents(resources);
 				
-				wp.getProcessImportForResources().add(resourceImport);
+				wp.getImportsForResource().add(resourceImport);
+			}
+			else if (Import.PROCESS_IMPORT.equals(type)){
+				ImportImpl<WorkflowProcess> processImport = new ImportImpl<WorkflowProcess>(wp);
+				processImport.setImportType(type);
+				processImport.setLocation(importElm.getAttribute(LOCATION));
+				wp.getImportsForProcess().add(processImport);
+//				WorkflowProcess processes = this.importLoader.loadProcess(processImport.getLocation());
+//				List<WorkflowProcess> content = new ArrayList<WorkflowProcess>();
+//				content.add(processes);
+//				
+//				processImport.setContents(content);
 			}
 		}
 	}
@@ -1380,7 +1385,7 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 		serviceBinding.setService(service);
 		
-		if (service.getInterface()==null) return null;//人工活动无需定义interface，2012-02-03 
+		if (service.getInterface()==null) return serviceBinding;//人工活动无需定义interface，2012-02-03 
 		InterfaceDef interfaceDef = service.getInterface();
 		OperationDef op = interfaceDef.getOperation(serviceBinding.getOperationName());
 		if (op==null){
