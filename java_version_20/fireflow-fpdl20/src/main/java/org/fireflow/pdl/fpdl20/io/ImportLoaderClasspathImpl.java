@@ -26,6 +26,7 @@ import org.fireflow.model.io.resource.ResourceDeserializer;
 import org.fireflow.model.io.service.ServiceParser;
 import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
+import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 /**
  * 
@@ -68,6 +69,25 @@ public class ImportLoaderClasspathImpl implements ImportLoader {
 		InputStream inStream = this.getClass().getClassLoader().getResourceAsStream(fileName);	
 		
 		return ServiceParser.deserialize(inStream);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.io.ImportLoader#loadProcess(java.lang.String)
+	 */
+	public WorkflowProcess loadProcess(String processLocation)
+			throws InvalidModelException,DeserializerException, IOException {
+		if (processLocation==null || processLocation.trim().equals("")){
+			return null;
+		}
+		String fileName = processLocation;
+		if (processLocation.startsWith("/") || processLocation.startsWith("\\")){
+			fileName = processLocation.substring(1);
+		}
+		
+		InputStream inStream = this.getClass().getClassLoader().getResourceAsStream(fileName);	
+		FPDLDeserializer deserializer = new FPDLDeserializer();
+		deserializer.setImportLoader(this);
+		return deserializer.deserialize(inStream);
 	}
 
 }

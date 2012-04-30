@@ -57,7 +57,10 @@ import org.springframework.transaction.support.TransactionCallback;
 
 /**
  * 这个用例：<br/>
- * 从数据库中获取流程定义，从classpath获取服务定义，从classpath中获取资源定义
+ * 
+ * 从classpath中获取流程定义，从classpath获取服务定义，从classpath中获取资源定义
+ * 
+ * 注：Fire workflow v2 的存储库有两种实现方式：1、classpath（即 文件系统）；2、数据库
  * 
  * @author 非也
  * @version 2.0
@@ -84,30 +87,30 @@ public class TheSimplestHumanProcessTest3 extends FireWorkflowJunitEnviroment {
 		final WorkflowStatement stmt = session
 				.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
 
-		// 1 首先上传流程定义和服务定义
-		transactionTemplate.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus arg0) {
-
-				// 1.1发布一条流程
-				WorkflowProcess process = createWorkflowProcess();
-
-				try {
-					stmt.uploadProcess(process, true, null);
-				} catch (InvalidModelException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				// 1.2 上传一个流程，不发布
-				try {
-					stmt.uploadProcess(process, false, null);
-				} catch (InvalidModelException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
-		});
+//		// 1 首先上传流程定义和服务定义
+//		transactionTemplate.execute(new TransactionCallback() {
+//			public Object doInTransaction(TransactionStatus arg0) {
+//
+//				// 1.1发布一条流程
+//				WorkflowProcess process = createWorkflowProcess();
+//
+//				try {
+//					stmt.uploadProcess(process, true, null);
+//				} catch (InvalidModelException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//				// 1.2 上传一个流程，不发布
+//				try {
+//					stmt.uploadProcess(process, false, null);
+//				} catch (InvalidModelException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				return null;
+//			}
+//		});
 
 		// 2 然后运行流程
 		transactionTemplate.execute(new TransactionCallback() {

@@ -360,7 +360,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 		if (repository==null){
 			throw new WorkflowProcessNotFoundException("The process is not found, id="+processKey.getProcessId()+", version="+processKey.getVersion()+", processType="+processKey.getProcessType());
 		}else{
-			return this.translateProcess(processKey, repository.getProcess());
+			return this.translateProcess(processKey, repository.getProcessObject());
 		}
 		
 	}

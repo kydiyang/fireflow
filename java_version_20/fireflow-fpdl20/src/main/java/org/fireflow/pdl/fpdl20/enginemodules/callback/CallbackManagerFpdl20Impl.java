@@ -190,7 +190,7 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 										.getProcessType()));
 
 				publishCallbackService((WorkflowProcess) repository
-						.getProcess());
+						.getProcessObject());
 			} catch (InvalidModelException ex) {
 				// TODO 记录操作日志
 				ex.printStackTrace();
@@ -199,7 +199,7 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 	}
 
 	protected void publishCallbackService(WorkflowProcess workflowProcess)throws WebservicePublishException {
-		List<Subflow> subflowList = workflowProcess.getSubflows();
+		List<Subflow> subflowList = workflowProcess.getLocalSubflows();
 		if (subflowList == null || subflowList.size() == 0)
 			return;
 		for (Subflow subflow : subflowList) {

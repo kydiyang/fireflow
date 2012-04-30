@@ -32,14 +32,20 @@ import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
  * @author 非也
  * @version 2.0
  */
-public class ProcessImportImpl<T  extends ModelElement> extends AbstractModelElement implements Import<T> {
+public class ImportImpl<T  extends ModelElement> implements Import<T> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3733329124937924288L;
+	
+	private WorkflowProcess parent = null;
 	private String importType;
 	private String location;
 	private List<T> contents = new ArrayList<T>();
 	private Map<String,String> extendAttributes = new HashMap<String,String>();
 	
-	public ProcessImportImpl(WorkflowProcess process,String name){
-		super(process,name);
+	public ImportImpl(WorkflowProcess process){
+		parent = process;
 	}
 	
 	/**
@@ -83,10 +89,6 @@ public class ProcessImportImpl<T  extends ModelElement> extends AbstractModelEle
 		return null;
 	}
 	
-	
-	public Map<String, String> getExtendedAttributes() {		
-		return extendAttributes;
-	}
 	
 	public void setContents(List<T> contents){
 		this.contents = contents;

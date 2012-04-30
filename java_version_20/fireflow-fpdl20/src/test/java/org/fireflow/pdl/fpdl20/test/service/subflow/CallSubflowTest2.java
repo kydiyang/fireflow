@@ -83,7 +83,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 				
 				//启动流程
 				try {
-					stmt.uploadProcess(process, Boolean.TRUE, null);
+					stmt.uploadProcessObject(process, Boolean.TRUE, null);
 					
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block

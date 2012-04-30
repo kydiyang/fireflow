@@ -33,8 +33,7 @@
 				</entry>
 				<!-- 工作项管理器 -->
 				<entry key="org.fireflow.engine.modules.workitem.WorkItemManager">
-					<bean
-						class="org.fireflow.pdl.fpdl20.enginemodules.workitem.WorkItemManagerFpdl20Impl" />
+					<ref bean="workItemManager"/>
 				</entry>
 
 				<!-- Webservice管理器 -->
@@ -49,6 +48,8 @@
 			</map>
 		</property>
 	</bean>
+
+	<bean id="workItemManager" class="org.fireflow.pdl.fpdl20.enginemodules.workitem.WorkItemManagerFpdl20Impl"></bean>
 
 	<bean id="activityInstanceEventBroadcaster"
 		class="org.fireflow.pdl.fpdl20.enginemodules.event.ActivityInstanceEventbroadcaster"></bean>

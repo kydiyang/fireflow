@@ -40,15 +40,17 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	// ********************************************************************
 //	private String targetNamespace = null;//2012-02-26 该属性在service中定义
 	private String bizCategory = null;
-	private String classpathUri = null;
+//	private String classpathUri = null;//该属性放在WorkflowProcess中不合理
 	
 	private Map<String,ServiceDef> localServices = new HashMap<String,ServiceDef>();
 	private Map<String,ResourceDef> localResources = new HashMap<String,ResourceDef>();
 	private Map<String,Subflow> localFlowsMap = new HashMap<String,Subflow>();
 	
-	private List<Import<ResourceDef>> processImportForResources = new ArrayList<Import<ResourceDef>>();
-	private List<Import<ServiceDef>> processImportForServices = new ArrayList<Import<ServiceDef>>();
-
+	private List<Import<ResourceDef>> importsForResource = new ArrayList<Import<ResourceDef>>();
+	private List<Import<ServiceDef>> importsForService = new ArrayList<Import<ServiceDef>>();
+	private List<Import<WorkflowProcess>> importsForProcess = new ArrayList<Import<WorkflowProcess>>();
+	
+	
 	private Map<String,Diagram> diagramsMap = new HashMap<String,Diagram>();
 	
 	// ********************************************************************
@@ -72,7 +74,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		return this.localFlowsMap.get(mainFlowId);
 	}
 	
-	public Subflow getSubflow(String flowId){
+	public Subflow getLocalSubflow(String flowId){
 		return this.localFlowsMap.get(flowId);
 	}
 	
@@ -81,7 +83,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	}
 
 	public WorkflowElement findWorkflowElementById(String workflowElementId){
-		Subflow subflow = this.getSubflow(workflowElementId);
+		Subflow subflow = this.getLocalSubflow(workflowElementId);
 		if (subflow!=null)return subflow;
 		
 		List<Subflow> subflowList = this.getLocalSubflows();
@@ -113,13 +115,13 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		this.bizCategory = bizCategory;
 	}	
 
-	public String getClasspathUri(){
-		return this.classpathUri;
-	}
-	
-	public void setClasspathUri(String classPathUri){
-		this.classpathUri = classPathUri;
-	}
+//	public String getClasspathUri(){
+//		return this.classpathUri;
+//	}
+//	
+//	public void setClasspathUri(String classPathUri){
+//		this.classpathUri = classPathUri;
+//	}
 	
 	public void addService(ServiceDef svc){
 		this.localServices.put(svc.getId(),svc);
@@ -157,7 +159,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		PrivateList<ResourceDef> privateList = new PrivateList<ResourceDef>();
 		privateList.privateAddAll(this.localResources.values());
 		// 将import进来的service也加入到列表中
-		for (Import<ResourceDef> processImport : this.processImportForResources) {
+		for (Import<ResourceDef> processImport : this.importsForResource) {
 			List<ResourceDef> content = (List<ResourceDef>) processImport
 					.getContents();
 			privateList.privateAddAll(content);
@@ -199,7 +201,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		PrivateList<ServiceDef> privateList = new PrivateList<ServiceDef>();
 		privateList.privateAddAll(localServices.values());
 		// 将import进来的service也加入到列表中
-		for (Import<ServiceDef> processImport : this.processImportForServices) {
+		for (Import<ServiceDef> processImport : this.importsForService) {
 			List<ServiceDef> content = (List<ServiceDef>) processImport.getContents();
 			privateList.privateAddAll(content);
 		}
@@ -217,12 +219,12 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	public Import getImportByLocation(String location) {
 		if (location == null || location.trim().equals(""))
 			return null;
-		for (Import processImport : processImportForResources) {
+		for (Import processImport : importsForResource) {
 			if (processImport.getLocation().equals(location)) {
 				return processImport;
 			}
 		}
-		for (Import processImport : this.processImportForServices){
+		for (Import processImport : this.importsForService){
 			if (processImport.getLocation().equals(location)){
 				return processImport;
 			}
@@ -230,24 +232,37 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		return null;
 	}
 
-	public List<Import<ServiceDef>> getProcessImportForServices() {
-		return this.processImportForServices;
+	public List<Import<ServiceDef>> getImportsForService() {
+		return this.importsForService;
 	}
 
-	public List<Import<ResourceDef>> getProcessImportForResources() {
-		return this.processImportForResources;
+	public List<Import<ResourceDef>> getImportsForResource() {
+		return this.importsForResource;
+	}
+	
+	public List<Import<WorkflowProcess>> getImportsForProcess(){
+		return this.importsForProcess;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getSubflows()
 	 */
-	public List<Subflow> getSubflows() {
-		PrivateList<Subflow> privateList = new PrivateList<Subflow>();
-		privateList.privateAddAll(this.localFlowsMap.values());
-		
-		//TODO 待加入import中的mainsubflow
-		return privateList;
-	}
+//	public List<Subflow> getSubflows() {
+//		PrivateList<Subflow> privateList = new PrivateList<Subflow>();
+//		privateList.privateAddAll(this.localFlowsMap.values());
+//		
+//		//将import进来的流程加入到Subflow List
+//		for (Import<WorkflowProcess> import4Process : this.importsForProcess){
+//			List<WorkflowProcess> processList = import4Process.getContents();
+//			
+//		
+//			for (WorkflowProcess process: processList){
+//				privateList.privateAdd(process.getMainflow());
+//			}
+//		}
+//
+//		return privateList;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getLocalSubflows()
@@ -284,6 +299,27 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	
 	public Diagram getDiagramBySubflowId(String subflowId){
 		return this.diagramsMap.get(subflowId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#addServiceImport(org.fireflow.pdl.fpdl20.process.Import)
+	 */
+	public void addServiceImport(Import<ServiceDef> svcImport) {
+		this.importsForService.add(svcImport);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#addResourceImport(org.fireflow.pdl.fpdl20.process.Import)
+	 */
+	public void addResourceImport(Import<ResourceDef> rscImport) {
+		this.importsForResource.add(rscImport);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#addProcessImport(org.fireflow.pdl.fpdl20.process.Import)
+	 */
+	public void addProcessImport(Import<WorkflowProcess> processImport) {
+		this.importsForProcess.add(processImport);
 	}
 }
 

@@ -121,7 +121,7 @@ public class WebserviceStartProcessTest  extends FireWorkflowJunitEnviroment{
 				//发布
 				try {
 
-					stmt.uploadProcess(process, true, null);
+					stmt.uploadProcessObject(process, true, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
