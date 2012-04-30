@@ -16,9 +16,6 @@
  */
 package org.fireflow.engine.entity.repository;
 
-import java.util.Date;
-
-import org.fireflow.engine.entity.WorkflowEntity;
 
 /**
  * 
@@ -26,12 +23,7 @@ import org.fireflow.engine.entity.WorkflowEntity;
  * @author 非也
  * @version 2.0
  */
-public interface ResourceDescriptor extends WorkflowEntity{
-	/**
-	 * repository id
-	 * @return
-	 */
-    public String getId();
+public interface ResourceDescriptor extends RepositoryDescriptor{
 
     /**
      * 资源Id
@@ -44,49 +36,5 @@ public interface ResourceDescriptor extends WorkflowEntity{
      * @return
      */
     public String getResourceType();
-    
-    /**
-     * 资源名称
-     * @return
-     */
-    public String getName();
-    
-    /**
-     * 资源中文名
-     * @return
-     */
-    public String getDisplayName();
-
-    /**
-     * 资源描述信息
-     * @return
-     */
-    public String getDescription() ;
-
-
-
-    //////////////////////////////////////////////////////
-    ////////// 下面是资源存储库的管理字段    ////////////////
-    /////////////////////////////////////////////////////
-
-    
-    /**
-     * 资源定义对应的文件名
-     * @return
-     */
-    public String getFileName();
-   
-
-    /**
-     * 最后修改人姓名
-     * @return
-     */
-	public String getLatestEditor() ;
-
-	/**
-	 * 最后修改时间
-	 * @return
-	 */
-	public Date getLatestEditTime();
 
 }

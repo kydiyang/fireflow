@@ -21,12 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fireflow.engine.entity.repository.ServiceDescriptor;
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ServiceRepository;
 import org.fireflow.engine.entity.repository.impl.ServiceDescriptorImpl;
@@ -97,21 +99,19 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.ServicePersister#persistServiceFileToRepository(java.io.InputStream, java.util.Map)
 	 */
-	public ServiceRepository persistServiceFileToRepository(
+	public List<ServiceDescriptor> persistServiceFileToRepository(
 			InputStream serviceFileInput,
-			Map<ServiceDescriptorProperty, Object> properties) {
+			Map<ServiceDescriptorProperty, Object> properties)throws InvalidModelException,DeserializerException {
 		if (properties==null) throw new EngineException("The service descriptor properties can NOT be emtpy!");
 		final String fileName = (String)properties.get(ServiceDescriptorProperty.FILE_NAME);
-		String lastEditor = (String)properties.get(ServiceDescriptorProperty.LATEST_EDITOR);
-		Date lastEditTime = (Date)properties.get(ServiceDescriptorProperty.LATEST_EDIT_TIME);
+		String lastEditor = (String)properties.get(ServiceDescriptorProperty.LAST_EDITOR);
+		Date lastEditTime = (Date)properties.get(ServiceDescriptorProperty.LAST_EDIT_TIME);
 		
 		if (fileName==null || fileName.trim().equals("")){
 			throw new EngineException("The FILE_NAME property can NOT be emtpy!");
 		}
 		ServiceRepository repository = repositoryFromInputStream(fileName,serviceFileInput);
-		
-		
-		
+
 		this.saveOrUpdate(repository);
 		
 		//将Service Descriptor先删后插……
@@ -131,9 +131,11 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 		
 		
 		List<ServiceDef> services = repository.getServices();
+		List<ServiceDescriptor> descriptors = new ArrayList<ServiceDescriptor>();
 		if (services!=null){
 			for (ServiceDef svc : services){
 				ServiceDescriptorImpl desc = new ServiceDescriptorImpl();
+				
 				desc.setServiceId(svc.getId());
 				desc.setBizCategory(svc.getBizCategory());
 				desc.setName(svc.getName());
@@ -141,20 +143,37 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 				desc.setDescription(svc.getDescription());
 				
 				desc.setFileName(fileName);
-				desc.setLatestEditor(lastEditor);
+				desc.setLastEditor(lastEditor);
 				if (lastEditTime!=null){
-					desc.setLatestEditTime(lastEditTime);
+					desc.setLastEditTime(lastEditTime);
 				}else{
-					desc.setLatestEditTime(new Date());
+					desc.setLastEditTime(new Date());
 				}
 				
+				Object obj = properties.get(ServiceDescriptorProperty.PUBLISH_STATE);
+				Boolean publishState = Boolean.TRUE;
+				if (obj!=null && obj instanceof Boolean){
+					publishState = (Boolean) obj;
+				}
+				desc.setPublishState(publishState);
+				
+				if (publishState){
+					desc.setLastOperation(ServiceDescriptor.OPERATION_PUBLISH);
+				}else{
+					desc.setLastOperation(ServiceDescriptor.OPERATION_UPLOAD);
+				}
+				
+				
 				this.saveOrUpdate(desc);
+				
+				descriptors.add(desc);
 			}
 		}
-		return repository;
+		return descriptors;
 	}
 
-	private ServiceRepository repositoryFromInputStream(String serviceFileName,InputStream inStream){
+	private ServiceRepository repositoryFromInputStream(String serviceFileName,InputStream inStream)
+			throws InvalidModelException,DeserializerException{
 		ServiceRepositoryImpl repository = (ServiceRepositoryImpl)this.findServiceRepositoryByFileName(serviceFileName);
 		if (repository==null){
 			repository = new ServiceRepositoryImpl();
@@ -170,14 +189,9 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 			repository.setFileName(serviceFileName);
 			repository.setServices(services);
 			return repository;
-		} catch (DeserializerException e) {
-			log.error(e);
 		} catch (IOException e) {
-			log.error(e);
-		} catch (InvalidModelException e) {
-			log.error(e);
+			throw new DeserializerException(e);
 		}
-		return null;
 	}
 
 	/* (non-Javadoc)

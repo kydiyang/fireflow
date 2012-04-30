@@ -114,7 +114,7 @@ public class ServicePersisterClassPathImpl implements ServicePersister {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.ServicePersister#persistServiceFileToRepository(java.io.InputStream, java.util.Map)
 	 */
-	public ServiceRepository persistServiceFileToRepository(
+	public List<ServiceDescriptor> persistServiceFileToRepository(
 			InputStream serviceFileInput,
 			Map<ServiceDescriptorProperty, Object> properties) {
 		throw new UnsupportedOperationException("This method is unsupported");

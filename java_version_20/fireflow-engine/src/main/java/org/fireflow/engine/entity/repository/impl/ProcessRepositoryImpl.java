@@ -30,19 +30,19 @@ public class ProcessRepositoryImpl extends ProcessDescriptorImpl implements Proc
     protected String processContent; //流程定义文件的内容
 
 
-    public String getProcessAsXml() {
+    public String getProcessContent() {
         return processContent;
     }
 
-    public void setProcessAsXml(String processContent) {
+    public void setProcessContent(String processContent) {
         this.processContent = processContent;
     }
     
-    public void setProcess(Object process){
+    public void setProcessObject(Object process){
     	this.process = process;
     }
     
-    public Object getProcess(){
+    public Object getProcessObject(){
     	return process;
     }
 

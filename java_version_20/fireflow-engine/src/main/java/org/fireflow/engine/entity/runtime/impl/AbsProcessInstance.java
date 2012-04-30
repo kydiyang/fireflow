@@ -24,7 +24,6 @@ import org.fireflow.engine.WorkflowStatement;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
-import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.model.InvalidModelException;
 
@@ -70,7 +69,7 @@ public abstract class AbsProcessInstance implements ProcessInstance {
     
     protected String note;
     
-    protected long lastUpdateTime = 0;
+    protected Date lastUpdateTime = null;
     
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ProcessInstance#getId()
@@ -222,11 +221,11 @@ public abstract class AbsProcessInstance implements ProcessInstance {
 		this.note = note;
 	}
 	
-	public long getLastUpdateTime(){
+	public Date getLastUpdateTime(){
 		return this.lastUpdateTime;
 	}
 	
-	public void setLastUpdateTime(long time){
+	public void setLastUpdateTime(Date time){
 		this.lastUpdateTime = time;
 	}
 

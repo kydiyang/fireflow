@@ -16,20 +16,12 @@
  */
 package org.fireflow.engine.entity.repository;
 
-import java.util.Date;
-
-import org.fireflow.engine.entity.WorkflowEntity;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public interface ServiceDescriptor extends WorkflowEntity {
-	/**
-	 * repository id
-	 * @return
-	 */
-    public String getId();
+public interface ServiceDescriptor extends RepositoryDescriptor {
 
     /**
      * 服务Id
@@ -37,51 +29,4 @@ public interface ServiceDescriptor extends WorkflowEntity {
      */
     public String getServiceId();
 
-    
-    /**
-     * 服务名称
-     * @return
-     */
-    public String getName();
-    
-    /**
-     * 服务中文名
-     * @return
-     */
-    public String getDisplayName();
-
-    /**
-     * 服务描述信息
-     * @return
-     */
-    public String getDescription() ;
-
-    //////////////////////////////////////////////////////
-    ////////// 下面是服务存储库的管理字段    ////////////////
-    /////////////////////////////////////////////////////
-    /**
-     * 服务的业务类别，表现为"某OA系统/某模块/某子模块"
-     */
-    public String getBizCategory();
-    
-    
-    /**
-     * 资源定义对应的文件名
-     * @return
-     */
-    public String getFileName();
-   
-
-    /**
-     * 最后修改人姓名
-     * @return
-     */
-	public String getLatestEditor() ;
-
-	/**
-	 * 最后修改时间
-	 * @return
-	 */
-	public Date getLatestEditTime();
-	
 }

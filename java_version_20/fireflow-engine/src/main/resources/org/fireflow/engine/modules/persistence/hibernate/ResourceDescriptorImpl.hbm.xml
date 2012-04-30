@@ -10,6 +10,10 @@
 		<property name="resourceId" type="java.lang.String" update="false" unique-key="RSC_DESC_RESOUCE_ID">
 			<column length="100" name="RESOURCE_ID" not-null="true" />
 		</property>	
+		<property name="resourceType" type="java.lang.String" >
+			<column length="300" name="RESOURCE_TYPE" />
+		</property>		
+				
 		<property name="name" type="java.lang.String">
 			<column length="100" name="NAME" not-null="true" />
 		</property>
@@ -18,19 +22,48 @@
 		</property>
 		<property name="description" type="java.lang.String">
 			<column length="1024" name="DESCRIPTION" />
-		</property>		
-		<property name="resourceType" type="java.lang.String" >
-			<column length="300" name="RESOURCE_TYPE" />
-		</property>				
-		<property name="fileName" type="java.lang.String" >
-			<column length="200" name="FILE_NAME" not-null="true" />
+		</property>
+		<property name="bizCategory" type="java.lang.String">
+			<column length="200" name="BIZ_CATEGORY" />
 		</property>		
 		
-		<property name="latestEditor" type="java.lang.String">
-			<column length="50" name="LATEST_EDITOR" not-null="true"/>
+		<!--  必须要有文件名，便于repository和workspace同步 -->
+		<property name="fileName" type="java.lang.String">
+			<column length="200" name="FILE_NAME" not-null="true"/>
+		</property>			
+		
+		<property name="publishState" type="java.lang.Boolean">
+			<column length="1" name="PUBLISH_STATE" not-null="true" />
 		</property>
-		<property name="latestEditTime" type="java.util.Date">
-			<column name="LATEST_EDIT_TIME" not-null="true"/>
+		
+		
+		<property name="lastEditor" type="java.lang.String">
+			<column length="50" name="LAST_EDITOR" not-null="true"/>
+		</property>
+		<property name="lastEditTime" type="java.util.Date">
+			<column name="LAST_EDIT_TIME" not-null="true"/>
+		</property>	
+		<property name="lastOperation" type="java.lang.String">
+			<column length="50" name="LAST_OPERATION" not-null="true"/>
+		</property>				
+		
+		<property name="ownerDeptId" type="java.lang.String">
+			<column length="100" name="OWNER_DEPT_ID" />
+		</property>			
+		<property name="ownerDeptName" type="java.lang.String">
+			<column length="100" name="OWNER_DEPT_NAME" />
+		</property>	
+		<property name="approver" type="java.lang.String">
+			<column length="100" name="APPROVER" />
+		</property>	
+		<property name="approvedTime" type="java.util.Date">
+			<column name="APPROVED_TIME"/>
 		</property>		
+		
+		<property name="lastUpdateTime" type="java.util.Date"  generated="always" >
+			<column name="LAST_UPDATE_TIME"  sql-type="timestamp"  default="CURRENT_TIMESTAMP">
+				<comment>最后更新时间</comment>
+			</column>
+		</property>			
 	</class>
 </hibernate-mapping>

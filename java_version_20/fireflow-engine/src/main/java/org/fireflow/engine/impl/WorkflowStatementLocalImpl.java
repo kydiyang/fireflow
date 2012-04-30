@@ -16,10 +16,20 @@
  */
 package org.fireflow.engine.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import javax.xml.namespace.QName;
 
@@ -33,10 +43,11 @@ import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
+import org.fireflow.engine.entity.repository.RepositoryDescriptor;
+import org.fireflow.engine.entity.repository.ResourceDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
-import org.fireflow.engine.entity.repository.ResourceRepository;
+import org.fireflow.engine.entity.repository.ServiceDescriptor;
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
-import org.fireflow.engine.entity.repository.ServiceRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -49,8 +60,8 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceHistory;
-import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.invocation.AssignmentHandler;
@@ -70,6 +81,7 @@ import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.workitem.WorkItemManager;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.data.Property;
+import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.PObjectKey;
@@ -211,7 +223,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
 
-		ProcessRepository repository = this.uploadProcess(process, Boolean.TRUE, null);
+		ProcessDescriptor repository = this.uploadProcessObject(process, Boolean.TRUE, null);
 		return this.startProcess(repository.getProcessId(),
 				repository.getVersion(), bizId, variables);
 	}
@@ -732,7 +744,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 	/*****************************************************************/
 	/*************** 流程定义相关的api ******************************/
 	/*****************************************************************/
-	public ProcessRepository uploadProcess(Object process,
+	public ProcessDescriptor uploadProcessObject(Object process,
 			boolean publishState, Map<ProcessDescriptorProperty, Object> metadata)
 			throws InvalidModelException {
 		RuntimeContext ctx = this.session.getRuntimeContext();
@@ -751,9 +763,9 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		props.put(ProcessDescriptorProperty.PUBLISH_STATE, publishState);
 		props.put(ProcessDescriptorProperty.PROCESS_TYPE, processType);
 		//TODO LATEST_EDIT_TIME应该让数据库系统自动生成？
-		props.put(ProcessDescriptorProperty.LATEST_EDIT_TIME,
+		props.put(ProcessDescriptorProperty.LAST_EDIT_TIME,
 				calendarService.getSysDate());
-		props.put(ProcessDescriptorProperty.LATEST_EDITOR, this.session
+		props.put(ProcessDescriptorProperty.LAST_EDITOR, this.session
 				.getCurrentUser().getId()
 				+ "["
 				+ this.session.getCurrentUser().getName() + "]");// 直接用Id+Name增强可读性
@@ -761,6 +773,179 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		return processPersister.persistProcessToRepository(process, props);
 	}
 
+	public ProcessDescriptor uploadProcessStream(InputStream inStream,
+			boolean publishState,
+			Map<ProcessDescriptorProperty, Object> metadata)
+			throws InvalidModelException {
+		if (metadata == null){
+			throw new EngineException("The process metadata can NOT be null");
+		}
+		String fileName = (String)metadata.get(ProcessDescriptorProperty.FILE_NAME);
+		if (fileName==null || fileName.trim().equals("")){
+			throw new EngineException("The process file name can NOT be null");
+		}
+		RuntimeContext ctx = this.session.getRuntimeContext();
+		
+		ProcessUtil processUtil = ctx.getEngineModule(ProcessUtil.class, processType);
+		//如果存在Process间的交叉引用，此处可能会死锁，报错
+		//WorkflowProcess 之间的调用，不考虑是 用Import机制，2012-04-30
+		Object processObject = processUtil.deserializeXml2Process(inStream);
+		
+		
+		return this.uploadProcessObject(processObject, publishState, metadata);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.fireflow.engine.WorkflowStatement#uploadResources(java.io.InputStream
+	 * , java.util.Map)
+	 */
+	public List<ResourceDescriptor> uploadResourcesStream(InputStream inStream,
+			Boolean publishState, Map<ResourceDescriptorProperty, Object> resourceDescriptorKeyValue)
+			throws InvalidModelException {
+		Map<ResourceDescriptorProperty, Object> props = new HashMap<ResourceDescriptorProperty, Object>();
+
+		if (resourceDescriptorKeyValue != null) {
+			props.putAll(resourceDescriptorKeyValue);
+		}
+		RuntimeContext ctx = this.session.getRuntimeContext();
+		PersistenceService persistenceService = ctx.getEngineModule(
+				PersistenceService.class, this.processType);
+		ResourcePersister resourcePersister = persistenceService
+				.getResourcePersister();
+		CalendarService calendarService = ctx.getEngineModule(
+				CalendarService.class, this.processType);
+		props.put(ResourceDescriptorProperty.LAST_EDITOR, this.session
+				.getCurrentUser().getId()
+				+ "["
+				+ this.session.getCurrentUser().getName() + "]");
+		props.put(ResourceDescriptorProperty.LAST_EDIT_TIME,
+				calendarService.getSysDate());
+		props.put(ResourceDescriptorProperty.PUBLISH_STATE, publishState);
+
+		try {
+			List<ResourceDescriptor> descriptors = resourcePersister.persistResourceFileToRepository(inStream,
+					props);
+			return descriptors ;
+		} catch (DeserializerException e) {
+			throw new InvalidModelException(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.fireflow.engine.WorkflowStatement#uploadServices(java.io.InputStream,
+	 * java.util.Map)
+	 */
+	public List<ServiceDescriptor> uploadServicesStream(InputStream inStream,
+			Boolean publishState, Map<ServiceDescriptorProperty, Object> serviceDescriptorKeyValue)
+			throws InvalidModelException {
+		Map<ServiceDescriptorProperty, Object> props = new HashMap<ServiceDescriptorProperty, Object>();
+
+		if (serviceDescriptorKeyValue != null) {
+			props.putAll(serviceDescriptorKeyValue);
+		}
+		RuntimeContext ctx = this.session.getRuntimeContext();
+		PersistenceService persistenceService = ctx.getEngineModule(
+				PersistenceService.class, this.processType);
+		ServicePersister servicePersister = persistenceService
+				.getServicePersister();
+		CalendarService calendarService = ctx.getEngineModule(
+				CalendarService.class, this.processType);
+		props.put(ServiceDescriptorProperty.LAST_EDITOR, this.session
+				.getCurrentUser().getId()
+				+ "["
+				+ this.session.getCurrentUser().getName() + "]");
+		props.put(ServiceDescriptorProperty.LAST_EDIT_TIME,
+				calendarService.getSysDate());
+		props.put(ServiceDescriptorProperty.PUBLISH_STATE, publishState);
+		try {
+			List<ServiceDescriptor> descriptors = servicePersister.persistServiceFileToRepository(inStream, props);
+			return descriptors;
+		} catch (DeserializerException e) {
+			throw new InvalidModelException(e);
+		}
+	}
+	
+	
+	public List<RepositoryDescriptor> uploadModelDefsInZipFile(File zipFile,boolean publishState) throws InvalidModelException{
+		Map<String,InputStream> modelDefsMap = parseModelDefsFromZipFile(zipFile);
+		
+		Iterator<Entry<String,InputStream>> entries = modelDefsMap.entrySet().iterator();
+		
+		List<RepositoryDescriptor> allDescriptors = new ArrayList<RepositoryDescriptor>();
+	
+		while(entries.hasNext()){
+			Entry<String,InputStream> entry = entries.next();
+			String fName = entry.getKey();
+			InputStream inStream = entry.getValue();
+			
+			if (fName.toLowerCase().endsWith(".svc.xml")){
+				Map<ServiceDescriptorProperty,Object> props = new HashMap<ServiceDescriptorProperty,Object>();
+				props.put(ServiceDescriptorProperty.FILE_NAME, fName);
+
+				List<ServiceDescriptor> svcDescs = this.uploadServicesStream(inStream, publishState, props);
+				allDescriptors.addAll(svcDescs);
+			}
+			else if (fName.toLowerCase().endsWith(".rsc.xml")){
+				Map<ResourceDescriptorProperty,Object> props = new HashMap<ResourceDescriptorProperty,Object>();
+				props.put(ResourceDescriptorProperty.FILE_NAME, fName);
+
+				List<ResourceDescriptor> svcDescs = this.uploadResourcesStream(inStream, publishState, props);
+				allDescriptors.addAll(svcDescs);
+			}else {
+				Map<ProcessDescriptorProperty,Object> props = new HashMap<ProcessDescriptorProperty,Object>();
+				props.put(ProcessDescriptorProperty.FILE_NAME, fName);
+				
+				this.uploadProcessStream(inStream, publishState, props);
+			}
+		}
+		return allDescriptors;
+	}
+
+	private Map<String,InputStream> parseModelDefsFromZipFile(File processZipFile)
+			throws InvalidModelException {
+		Map<String,InputStream> modelDefsMap = new HashMap<String,InputStream>();
+		ZipFile zf = null;
+		try {
+			zf = new ZipFile(processZipFile);
+		} catch (ZipException e) {
+			throw new InvalidModelException(e);
+		} catch (IOException e) {
+			throw new InvalidModelException(e);
+		}
+
+		Enumeration enu = zf.entries();
+		while (enu.hasMoreElements()) {
+			ZipEntry entry = (ZipEntry) enu.nextElement();
+			String fileName = entry.getName();
+			try {
+				if (!(entry.isDirectory())) {
+					InputStream inputStream = zf.getInputStream(entry);
+					modelDefsMap.put(fileName, inputStream);
+//					ByteArrayOutputStream out = new ByteArrayOutputStream();
+//
+//					byte[] buf = new byte[1024];
+//					int read = 0;
+//					do {
+//						read = inputStream.read(buf, 0, buf.length);
+//						if (read > 0)
+//							out.write(buf, 0, read);
+//					} while (read >= 0);
+//					processDefinitionsContent.put(fileName,
+//							out.toString("UTF-8"));
+				}
+			} catch (IOException e) {
+				throw new InvalidModelException(e);
+			}
+		}
+
+		return modelDefsMap;
+	}
 	/*****************************************************************/
 	/*************** 流程变量相关的api ******************************/
 	/*****************************************************************/
@@ -928,7 +1113,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		ProcessRepository repository = processPersister
 				.findProcessRepositoryByProcessKey(key);
 
-		return repository.getProcess();
+		return repository.getProcessObject();
 	}
 
 	private <T> Persister getPersister(Class<T> entityClass) {
@@ -955,70 +1140,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		return persister;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.fireflow.engine.WorkflowStatement#uploadResources(java.io.InputStream
-	 * , java.util.Map)
-	 */
-	public ResourceRepository uploadResources(InputStream inStream,
-			Map<ResourceDescriptorProperty, Object> resourceDescriptorKeyValue)
-			throws InvalidModelException {
-		Map<ResourceDescriptorProperty, Object> props = new HashMap<ResourceDescriptorProperty, Object>();
 
-		if (resourceDescriptorKeyValue != null) {
-			props.putAll(resourceDescriptorKeyValue);
-		}
-		RuntimeContext ctx = this.session.getRuntimeContext();
-		PersistenceService persistenceService = ctx.getEngineModule(
-				PersistenceService.class, this.processType);
-		ResourcePersister resourcePersister = persistenceService
-				.getResourcePersister();
-		CalendarService calendarService = ctx.getEngineModule(
-				CalendarService.class, this.processType);
-		props.put(ResourceDescriptorProperty.LATEST_EDITOR, this.session
-				.getCurrentUser().getId()
-				+ "["
-				+ this.session.getCurrentUser().getName() + "]");
-		props.put(ResourceDescriptorProperty.LATEST_EDIT_TIME,
-				calendarService.getSysDate());
-
-		return resourcePersister.persistResourceFileToRepository(inStream,
-				props);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.fireflow.engine.WorkflowStatement#uploadServices(java.io.InputStream,
-	 * java.util.Map)
-	 */
-	public ServiceRepository uploadServices(InputStream inStream,
-			Map<ServiceDescriptorProperty, Object> serviceDescriptorKeyValue)
-			throws InvalidModelException {
-		Map<ServiceDescriptorProperty, Object> props = new HashMap<ServiceDescriptorProperty, Object>();
-
-		if (serviceDescriptorKeyValue != null) {
-			props.putAll(serviceDescriptorKeyValue);
-		}
-		RuntimeContext ctx = this.session.getRuntimeContext();
-		PersistenceService persistenceService = ctx.getEngineModule(
-				PersistenceService.class, this.processType);
-		ServicePersister servicePersister = persistenceService
-				.getServicePersister();
-		CalendarService calendarService = ctx.getEngineModule(
-				CalendarService.class, this.processType);
-		props.put(ServiceDescriptorProperty.LATEST_EDITOR, this.session
-				.getCurrentUser().getId()
-				+ "["
-				+ this.session.getCurrentUser().getName() + "]");
-		props.put(ServiceDescriptorProperty.LATEST_EDIT_TIME,
-				calendarService.getSysDate());
-
-		return servicePersister.persistServiceFileToRepository(inStream, props);
-	}
 
 	/**
 	 * WorkflowStatement都是客户端调用，在调用执行前，把上一次调用的一些遗留清除

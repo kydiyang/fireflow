@@ -16,7 +16,6 @@
  */
 package org.fireflow.engine.modules.persistence;
 
-import java.io.InputStream;
 import java.util.Map;
 
 import org.fireflow.engine.entity.repository.ProcessDescriptor;

@@ -16,6 +16,9 @@
  */
 package org.fireflow.engine.entity;
 
+import java.util.Date;
+
+
 /**
  * 
  * 
@@ -23,5 +26,13 @@ package org.fireflow.engine.entity;
  * @version 2.0
  */
 public interface WorkflowEntity {
-
+	/**
+	 * WorkflowEntity 的 Id
+	 * 
+	 * @return
+	 */
+	public String getId();
+	
+	//TODO 将公共字段设置在此处，如lastUpdateTime
+	public Date getLastUpdateTime();
 }

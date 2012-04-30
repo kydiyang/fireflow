@@ -49,6 +49,8 @@ public class ReassignConfigImpl implements ReassignConfig{
 	protected Date endTime;
 	
 	protected Boolean alive;
+	
+	protected Date lastUpdateTime = null;
 
 	
 	/**
@@ -303,5 +305,11 @@ public class ReassignConfigImpl implements ReassignConfig{
 		this.alive = alive;
 	}
 	
+	public Date getLastUpdateTime(){
+		return this.lastUpdateTime;
+	}
 	
+	public void setLastUpdateTime(Date lastUpdateTime){
+		this.lastUpdateTime = lastUpdateTime;
+	}
 }

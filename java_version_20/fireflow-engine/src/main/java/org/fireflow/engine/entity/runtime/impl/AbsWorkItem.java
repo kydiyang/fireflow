@@ -105,8 +105,9 @@ public abstract class AbsWorkItem implements WorkItem{
 	protected String reassignType;
 	
 	protected ActivityInstance activityInstance;
-    private WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
+    protected WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
 	
+    protected Date lastUpdateTime = null;
     /**
 	 * @return the id
 	 */
@@ -487,6 +488,14 @@ public abstract class AbsWorkItem implements WorkItem{
 
 	public void setWorkItemType(String workItemType) {
 		this.workItemType = workItemType;
+	}
+	
+	public Date getLastUpdateTime(){
+		return this.lastUpdateTime;
+	}
+	
+	public void setLastUpdateTime(Date lastUpdateTime){
+		this.lastUpdateTime = lastUpdateTime;
 	}
 
 	public WorkItem clone(){

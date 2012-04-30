@@ -33,11 +33,6 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
     /////////////////////////////////////////////////////////////////
     ///////////////////    实例属性      ////////////////////////////////
     ////////////////////////////////////////////////////////////////
-    /**
-     * 主键
-     * @return
-     */
-    public String getId();
     
     /**
      * 返回流程实例所关联的业务表单的Id
@@ -173,11 +168,6 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
     
     public String getTokenId();
     
-    /**
-     * 最后一次更新本记录的时间，存储的是java.util.Date.getTime()值
-     * @return
-     */
-    public long getLastUpdateTime();
     
     /////////////////////////////////////////////////////////////////
     ///////////////////    业务操作    ////////////////////////////////

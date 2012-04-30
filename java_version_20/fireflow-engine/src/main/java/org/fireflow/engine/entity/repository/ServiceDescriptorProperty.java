@@ -29,17 +29,25 @@ import org.fireflow.engine.entity.EntityProperty;
  */
 public enum ServiceDescriptorProperty implements EntityProperty {
 	ID("id"),
-	SERVICE_ID("serviceId"),
 	NAME("name"),
 	DISPLAY_NAME("displayName"),
 	DESCRIPTION("description"),
 	FILE_NAME("fileName"),
 
 	BIZ_CATEGORY("bizCategory"),
-
-	LATEST_EDITOR("latestEditor"),
-	LATEST_EDIT_TIME("latestEditTime"),
-
+	
+	PUBLISH_STATE("publishState"),
+	LAST_EDITOR("lastEditor"),
+	LAST_EDIT_TIME("lastEditTime"),
+	LAST_OPERATION("lastOperation"),
+	
+	OWNER_DEPT_ID("ownerDeptId"),
+	OWNER_DEPT_NAME("ownerDeptName"),
+	APPROVER("approver"),
+	APPROVED_TIME("approvedTime"),
+	
+	//Service 特定的属性
+	SERVICE_ID("serviceId"),
 	;
 	private String propertyName = null;
 	private ServiceDescriptorProperty(String propertyName){

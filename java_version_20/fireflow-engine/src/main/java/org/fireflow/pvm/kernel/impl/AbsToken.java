@@ -16,6 +16,8 @@
  */
 package org.fireflow.pvm.kernel.impl;
 
+import java.util.Date;
+
 import org.fireflow.pvm.kernel.OperationContextName;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenState;
@@ -50,6 +52,8 @@ public class AbsToken implements Token {
     private Boolean isContainer = Boolean.FALSE;
     
     private String attachedToToken = null;
+    
+    private Date lastUpdateTime = null;
 
     public AbsToken(){
     	
@@ -307,5 +311,13 @@ public class AbsToken implements Token {
 	}
 	public void setContainer(Boolean b){
 		isContainer = b;
+	}
+	
+	public Date getLastUpdateTime(){
+		return this.lastUpdateTime;
+	}
+	
+	public void setLastUpdateTime(Date lastUpdateTime){
+		this.lastUpdateTime = lastUpdateTime;
 	}
 }
