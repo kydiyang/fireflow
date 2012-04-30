@@ -29,25 +29,26 @@ import org.fireflow.engine.entity.runtime.ScheduleJobState;
  * @version 2.0
  */
 public abstract class AbsScheduleJob implements ScheduleJob{
-	private String id;
-	private String name = null;
-	private String displayName = null;
-	private Date createdTime;
-	private Integer triggeredTimes = 0;
-	private Date latestTriggeredTime = null;
+	protected String id;
+	protected String name = null;
+	protected String displayName = null;
+	protected Date createdTime;
+	protected Integer triggeredTimes = 0;
+	protected Date latestTriggeredTime = null;
 	
-	private String triggerType;
-	private String triggerExpression;
-	private Date endTime;
+	protected String triggerType;
+	protected String triggerExpression;
+	protected Date endTime;
 
-	private ScheduleJobState state = ScheduleJobState.RUNNING;
-	private ActivityInstance activityInstance;
-	private String processId;
-	private String processType;
-	private Integer version;
-	private Boolean createNewProcessInstance = false;
-	private Boolean cancelAttachedToActivity=false;
-	private String note;
+	protected ScheduleJobState state = ScheduleJobState.RUNNING;
+	protected ActivityInstance activityInstance;
+	protected String processId;
+	protected String processType;
+	protected Integer version;
+	protected Boolean createNewProcessInstance = false;
+	protected Boolean cancelAttachedToActivity=false;
+	protected String note;
+	protected Date lastUpdateTime = null;
 	
 	
 	/**
@@ -251,5 +252,13 @@ public abstract class AbsScheduleJob implements ScheduleJob{
 	
 	public void setCancelAttachedToActivity(Boolean b){
 		this.cancelAttachedToActivity = b;
+	}
+	
+	public Date getLastUpdateTime(){
+		return this.lastUpdateTime;
+	}
+	
+	public void setLastUpdateTime(Date lastUpdateTime){
+		this.lastUpdateTime = lastUpdateTime;
 	}
 }

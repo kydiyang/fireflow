@@ -25,11 +25,8 @@ import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.binding.ResourceBinding;
-import org.fireflow.model.binding.ServiceBinding;
 
 
 /**
@@ -38,49 +35,47 @@ import org.fireflow.model.binding.ServiceBinding;
  */
 public abstract class AbsActivityInstance implements ActivityInstance {
 
-    private String id = null;
-    private String name = null;
-    private String displayName = null;
-    private String nodeId = null;
+	protected String id = null;
+	protected String name = null;
+	protected String displayName = null;
+	protected String nodeId = null;
     
-    private String processId = null;
-    private Integer version = null;
-    private String processType = null;   
-    private String subflowId = null;
-    private String processName = null;
-    private String processDisplayName = null;
-    private String subflowName = null;
-    private String subflowDisplayName = null;
-    private String bizCategory = null;
-    private String serviceId = null;
-    private String serviceVersion = null;
-    private String serviceType = null;
+	protected String processId = null;
+	protected Integer version = null;
+	protected String processType = null;   
+	protected String subflowId = null;
+	protected String processName = null;
+	protected String processDisplayName = null;
+	protected String subflowName = null;
+	protected String subflowDisplayName = null;
+	protected String bizCategory = null;
+	protected String serviceId = null;
+	protected String serviceVersion = null;
+	protected String serviceType = null;
     
-    private String bizId = null;
-    private String subBizId = null;
+	protected String bizId = null;
+	protected String subBizId = null;
 
-    private ActivityInstanceState state = ActivityInstanceState.INITIALIZED;
-    private Boolean suspended = Boolean.FALSE;
-    private Date createdTime = null;
-    private Date startedTime = null;
-    private Date expiredTime = null;
-    private Date endTime = null;
-    
+	protected ActivityInstanceState state = ActivityInstanceState.INITIALIZED;
+	protected Boolean suspended = Boolean.FALSE;
+	protected Date createdTime = null;
+	protected Date startedTime = null;
+	protected Date expiredTime = null;
+	protected Date endTime = null;
 
-
-    private String processInstanceId = null;
-    private String parentScopeId = null;
-    private String tokenId = null;
-    private Integer stepNumber = null;
+	protected String processInstanceId = null;
+	protected String parentScopeId = null;
+	protected String tokenId = null;
+	protected Integer stepNumber = null;
     
 
-    private String targetActivityId = null;
-    private String fromActivityId = null;
-    private Boolean canBeWithdrawn = true;
+	protected String targetActivityId = null;
+	protected String fromActivityId = null;
+	protected Boolean canBeWithdrawn = true;
 
-    private String note = null;
+	protected String note = null;
     
-    private long lastUpdateTime = 0;
+	protected Date lastUpdateTime = null;
 
 
 //	/* (non-Javadoc)
@@ -199,11 +194,11 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		this.note = note;
 	}
 
-	public long getLastUpdateTime(){
+	public Date getLastUpdateTime(){
 		return this.lastUpdateTime;
 	}
 	
-	public void setLastUpdateTime(long time){
+	public void setLastUpdateTime(Date time){
 		this.lastUpdateTime = time;
 	}
 	

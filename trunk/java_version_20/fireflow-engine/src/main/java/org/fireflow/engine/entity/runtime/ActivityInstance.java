@@ -40,13 +40,6 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 	////////////////////////////////////////////////////////////////
 
 	/**
-	 * 返回活动实例的Id
-	 * 
-	 * @return
-	 */
-	public String getId();
-
-	/**
 	 * 获得整个流程的业务单据Id
 	 * @return
 	 */
@@ -211,8 +204,7 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 	public String getNote();
 	
 	public String getTokenId();
-	
-    public long getLastUpdateTime();
+
     
 	/////////////////////////////////////////////////////////////////
 	/////////          获得关联的其他对象           /////////////////////////

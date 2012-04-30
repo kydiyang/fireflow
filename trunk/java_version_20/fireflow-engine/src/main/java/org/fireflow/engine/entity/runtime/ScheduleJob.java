@@ -31,8 +31,6 @@ public interface ScheduleJob extends WorkflowEntity{
 	public static final String STARTTIME_ENDTIME_INTERVAL = "STARTTIME_ENDTIME_INTERVAL";
 	public static final String STARTTIME_REPEATCOUNT_INTERVAL = "STARTTIME_REPEATCOUNT_INTERVAL";
 	
-	public String getId();
-	
 	public String getName();
 	
 	public String getDisplayName();

@@ -16,18 +16,20 @@
  */
 package org.fireflow.engine;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import org.fireflow.engine.entity.WorkflowEntity;
+import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ProcessKey;
-import org.fireflow.engine.entity.repository.ProcessRepository;
+import org.fireflow.engine.entity.repository.RepositoryDescriptor;
+import org.fireflow.engine.entity.repository.ResourceDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
-import org.fireflow.engine.entity.repository.ResourceRepository;
+import org.fireflow.engine.entity.repository.ServiceDescriptor;
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
-import org.fireflow.engine.entity.repository.ServiceRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.Scope;
@@ -338,15 +340,35 @@ public interface WorkflowStatement {
 	//
 	/**
 	 * 将流程定义发布到系统中
-	 * @param process 流程定义对象
+	 * @param processObject 流程定义对象
 	 * @param publishState 发布状态，true表示发布，false表示未发布。
-	 * @param processDescriptorKeyValue 元数据信息，如流程类别、packagename等等，该HashMap的key是ProcessDescriptorProperty
+	 * @param metadata 元数据信息，如流程类别、packagename等等，该HashMap的key是ProcessDescriptorProperty
 	 */
-	public ProcessRepository uploadProcess(Object process,boolean publishState, Map<ProcessDescriptorProperty,Object> processDescriptorKeyValue) throws InvalidModelException;
+	public ProcessDescriptor uploadProcessObject(Object processObject,boolean publishState, Map<ProcessDescriptorProperty,Object> metadata) throws InvalidModelException;
 	
-	public ServiceRepository uploadServices(InputStream inStream,Map<ServiceDescriptorProperty,Object> serviceDescriptorKeyValue)throws InvalidModelException;
+	public ProcessDescriptor uploadProcessStream(InputStream inStream,boolean publishState, Map<ProcessDescriptorProperty,Object> metadata) throws InvalidModelException;
 	
-	public ResourceRepository uploadResources(InputStream inStream,Map<ResourceDescriptorProperty,Object> resourceDescriptorKeyValue)throws InvalidModelException;
+	/**
+	 * 将zip文件中的所有流程定义文件、服务定义和资源定义发布到流程库中。<br/>
+	 * 
+	 * 以FPDL20为例：<br/>
+	 * 该zip文件包含流程文件（.f20.xml结尾），或者流程文件import的service文件和resource文件。<br/>
+	 * 系统首先将service文件和resource文件保存到存储库，然后再逐一发布流程定义文件。
+	 * 
+	 * 所有存储库的fileName字段均采用定义文件在zipFile中的路径。
+	 * 
+	 * 注意：如果zip中没有流程定义文件，则系统仅发布找到的service或者resource。
+	 * @param zipFile
+	 * @param publishState
+	 * @return
+	 * @throws InvalidModelException
+	 */
+	public List<RepositoryDescriptor> uploadModelDefsInZipFile(File zipFile,boolean publishState) throws InvalidModelException;
+	
+	
+	public List<ServiceDescriptor> uploadServicesStream(InputStream inStream,Boolean publishState, Map<ServiceDescriptorProperty,Object> metadata)throws InvalidModelException;
+	
+	public List<ResourceDescriptor> uploadResourcesStream(InputStream inStream,Boolean publishState, Map<ResourceDescriptorProperty,Object> metadata)throws InvalidModelException;
 	/*****************************************************************/
 	/***************   流程变量相关的api ******************************/
 	/*****************************************************************/

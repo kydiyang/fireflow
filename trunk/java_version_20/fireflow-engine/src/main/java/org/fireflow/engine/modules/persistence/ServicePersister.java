@@ -17,10 +17,13 @@
 package org.fireflow.engine.modules.persistence;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
+import org.fireflow.engine.entity.repository.ServiceDescriptor;
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ServiceRepository;
+import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.io.DeserializerException;
 
 /**
@@ -36,12 +39,12 @@ public interface ServicePersister extends Persister {
 	 * @param servicesFileName
 	 * @return
 	 */
-	public ServiceRepository findServiceRepositoryByFileName(String serviceFileName)throws DeserializerException;;
+	public ServiceRepository findServiceRepositoryByFileName(String serviceFileName)throws DeserializerException;
 	
 	/**
 	 * 将一个服务定义文件保存到存储库中
 	 * @param serviceFileInput
 	 * @return
 	 */
-	public ServiceRepository persistServiceFileToRepository(InputStream serviceFileInput,Map<ServiceDescriptorProperty,Object> properties);
+	public List<ServiceDescriptor> persistServiceFileToRepository(InputStream serviceFileInput,Map<ServiceDescriptorProperty,Object> properties)throws InvalidModelException,DeserializerException;
 }

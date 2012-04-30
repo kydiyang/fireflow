@@ -17,7 +17,6 @@
 package org.fireflow.engine.modules.persistence.hibernate;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -122,10 +121,13 @@ public class ProcessPersisterHibernateImpl extends
 		if (repository != null) {
 			try{
 				ProcessUtil processUtil = persistenceService.getProcessUtil(processKey.getProcessType());
-				String xml = repository.getProcessAsXml();
+				String xml = repository.getProcessContent();
 				ByteArrayInputStream inStream = new ByteArrayInputStream(xml.getBytes("UTF-8"));
 				Object obj = processUtil.deserializeXml2Process(inStream);
-				((ProcessRepositoryImpl)repository).setProcess(obj);
+				((ProcessRepositoryImpl)repository).setProcessObject(obj);
+				//TODO 
+				// repository.getFileName() 与 WorkflowProcess.getClasspathUri()的设置关系如何处理？
+				
 			}catch(UnsupportedEncodingException e){
 				log.error(e);
 			}
@@ -294,16 +296,16 @@ public class ProcessPersisterHibernateImpl extends
 		}
 
 		//7.process
-		processRepository.setProcess(process);
+		processRepository.setProcessObject(process);
 		
 
 		//8.latestEditTime
 		//TODO 是否有DB系统自动生成？
-		Date d = (Date)descriptorKeyValues.get(ProcessDescriptorProperty.LATEST_EDIT_TIME);
+		Date d = (Date)descriptorKeyValues.get(ProcessDescriptorProperty.LAST_EDIT_TIME);
 		if (d==null){
-			processRepository.setLatestEditTime(new Date());
+			processRepository.setLastEditTime(new Date());
 		}else{
-			processRepository.setLatestEditTime(d);
+			processRepository.setLastEditTime(d);
 		}
 
 
@@ -351,19 +353,22 @@ public class ProcessPersisterHibernateImpl extends
 				}
 			}
 		}
-		processRepository.setLatestOperation(latestOperation);
+		processRepository.setLastOperation(latestOperation);
 		
 		//11.latestEditor
-		processRepository.setLatestEditor((String) descriptorKeyValues
-				.get(ProcessDescriptorProperty.LATEST_EDITOR));
+		processRepository.setLastEditor((String) descriptorKeyValues
+				.get(ProcessDescriptorProperty.LAST_EDITOR));
 		
 		//12,filename
 		String fileName = (String) descriptorKeyValues
 		.get(ProcessDescriptorProperty.FILE_NAME);
-		if (fileName==null || fileName.trim().equals("")){
-			fileName=processId+".fpdl20.xml";
+		if (fileName!=null && !fileName.trim().equals("")){
+			processRepository.setFileName(fileName);
+		}else if (existProcess!=null){
+			//如果已经有现有的Respository，则采用已有的fileName
+			processRepository.setFileName(existProcess.getFileName());
 		}
-		processRepository.setFileName(fileName);
+
 
 		//12.other properties
 		processRepository.setOwnerDeptId((String) descriptorKeyValues
@@ -379,7 +384,9 @@ public class ProcessPersisterHibernateImpl extends
 
 		this.saveOrUpdate(processRepository);
 		
-		this.cache(processRepository);
+		if (useProcessCache){
+			this.cache(processRepository);
+		}
 		
 		return processRepository;
 

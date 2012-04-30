@@ -28,7 +28,6 @@ public interface Token extends WorkflowEntity{
 	///////////////// 下面是token的 图属性                          ////////////
 	//////////////////////////////////////////////////////////
 	public void setId(String id);
-	public String getId();
 
 	/**
 	 * 设置token的值，该值表示token的数量，在petri 网中表示资源的数量。

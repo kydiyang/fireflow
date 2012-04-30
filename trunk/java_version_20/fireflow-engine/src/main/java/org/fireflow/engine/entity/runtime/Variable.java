@@ -30,13 +30,7 @@ import org.fireflow.engine.invocation.Message;
  */
 public interface  Variable extends WorkflowEntity,Message{
 	public static final String HEADER_KEY_CLASS_NAME = "org.fireflow.engine.variable.CLASS_NAME";
-	public static final String HEADER_KEY_ENCODING = "org.fireflow.engine.variable.ENCODING";
-	/**
-	 * 系统内部Id，不能用作变量赋值、Javascript变量引用等场合。
-	 * @return
-	 */
-	public String getId();
-	
+	public static final String HEADER_KEY_ENCODING = "org.fireflow.engine.variable.ENCODING";	
 	/**
 	 * 流程变量的名称，用于变量赋值，Javascript变量引用等场合。
 	 * @return

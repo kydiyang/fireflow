@@ -21,12 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fireflow.engine.entity.repository.ResourceDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ResourceRepository;
 import org.fireflow.engine.entity.repository.impl.ResourceDescriptorImpl;
@@ -34,6 +36,7 @@ import org.fireflow.engine.entity.repository.impl.ResourceRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
+import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.resource.ResourceDeserializer;
 import org.fireflow.model.resourcedef.ResourceDef;
@@ -95,13 +98,13 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.ResourcePersister#persistResourceFileToRepository(java.io.InputStream, java.util.Map)
 	 */
-	public ResourceRepository persistResourceFileToRepository(
+	public List<ResourceDescriptor> persistResourceFileToRepository(
 			InputStream resourceFileInput,
-			Map<ResourceDescriptorProperty, Object> properties) {
+			Map<ResourceDescriptorProperty, Object> properties)throws DeserializerException,InvalidModelException {
 		if (properties==null) throw new EngineException("The resource descriptor properties can NOT be emtpy!");
 		final String fileName = (String)properties.get(ResourceDescriptorProperty.FILE_NAME);
-		String lastEditor = (String)properties.get(ResourceDescriptorProperty.LATEST_EDITOR);
-		Date lastEditTime = (Date)properties.get(ResourceDescriptorProperty.LATEST_EDIT_TIME);
+		String lastEditor = (String)properties.get(ResourceDescriptorProperty.LAST_EDITOR);
+		Date lastEditTime = (Date)properties.get(ResourceDescriptorProperty.LAST_EDIT_TIME);
 		
 		if (fileName==null || fileName.trim().equals("")){
 			throw new EngineException("The FILE_NAME property can NOT be emtpy!");
@@ -127,6 +130,7 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 		
 		
 		List<ResourceDef> services = repository.getResources();
+		List<ResourceDescriptor> descriptors = new ArrayList<ResourceDescriptor>();
 		if (services!=null){
 			for (ResourceDef rsc : services){
 				ResourceDescriptorImpl desc = new ResourceDescriptorImpl();
@@ -137,19 +141,33 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 				desc.setResourceType(rsc.getResourceType().getValue());
 				
 				desc.setFileName(fileName);
-				desc.setLatestEditor(lastEditor);
+				desc.setLastEditor(lastEditor);
 				if (lastEditTime!=null){
-					desc.setLatestEditTime(lastEditTime);
+					desc.setLastEditTime(lastEditTime);
 				}else{
-					desc.setLatestEditTime(new Date());
+					desc.setLastEditTime(new Date());
+				}
+				
+				Object obj = properties.get(ResourceDescriptorProperty.PUBLISH_STATE);
+				Boolean publishState = Boolean.TRUE;
+				if (obj!=null && obj instanceof Boolean){
+					publishState = (Boolean) obj;
+				}
+				desc.setPublishState(publishState);
+				
+				if (publishState){
+					desc.setLastOperation(ResourceDescriptor.OPERATION_PUBLISH);
+				}else{
+					desc.setLastOperation(ResourceDescriptor.OPERATION_UPLOAD);
 				}
 				
 				this.saveOrUpdate(desc);
+				descriptors.add(desc);
 			}
 		}
-		return repository;
+		return descriptors;
 	}
-	private ResourceRepository repositoryFromInputStream(String resourceFileName,InputStream inStream){
+	private ResourceRepository repositoryFromInputStream(String resourceFileName,InputStream inStream)throws DeserializerException,InvalidModelException{
 		
 		ResourceRepositoryImpl repository = (ResourceRepositoryImpl)this.findResourceRepositoryByFileName(resourceFileName);
 		if (repository==null){
@@ -168,12 +186,9 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 			repository.setFileName(resourceFileName);
 			repository.setResources(resources);
 			return repository;
-		} catch (DeserializerException e) {
-			log.error(e);
 		} catch (IOException e) {
-			log.error(e);
+			throw new InvalidModelException(e);
 		}
-		return null;
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.hibernate.AbsPersisterHibernateImpl#getEntityClass4Runtime(java.lang.Class)

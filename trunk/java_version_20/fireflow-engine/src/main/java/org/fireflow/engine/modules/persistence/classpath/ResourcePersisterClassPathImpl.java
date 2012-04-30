@@ -51,7 +51,7 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 	private static Log log = LogFactory.getLog(ResourcePersisterClassPathImpl.class);
 
 	PersistenceService persistenceService = null;
-	public ResourceRepository persistResourceFileToRepository(
+	public List<ResourceDescriptor> persistResourceFileToRepository(
 			InputStream resourceFileInput,
 			Map<ResourceDescriptorProperty, Object> properties){
 		throw new UnsupportedOperationException("This method is unsupported");

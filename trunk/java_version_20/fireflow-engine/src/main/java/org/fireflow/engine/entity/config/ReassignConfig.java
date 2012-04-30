@@ -31,8 +31,7 @@ public interface ReassignConfig extends WorkflowEntity{
 	public static final String AGENT_TYPE_DEPT = "DEPT";
 	public static final String AGENT_TYPE_ROLE = "ROLE";
 	public static final String AGENT_TYPE_GROUP = "GROUP";
-	
-	public String getId();
+
 	/**
 	 * 被委派的流程的Id
 	 * @return

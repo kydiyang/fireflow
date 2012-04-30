@@ -62,6 +62,10 @@
 				<comment>流程类型</comment>
 			</column>
 		</property>
-
+		<property name="lastUpdateTime" type="java.util.Date"  generated="always" >
+			<column name="LAST_UPDATE_TIME"  sql-type="timestamp"  default="CURRENT_TIMESTAMP">
+				<comment>最后更新时间</comment>
+			</column>
+		</property>	
 	</class>
 </hibernate-mapping>

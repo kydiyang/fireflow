@@ -30,8 +30,10 @@
 		<property name="bizCategory" type="java.lang.String">
 			<column length="200" name="BIZ_CATEGORY" />
 		</property>		
+		
+		<!--  必须要有文件名，便于repository和workspace同步 -->
 		<property name="fileName" type="java.lang.String">
-			<column length="200" name="FILE_NAME" />
+			<column length="200" name="FILE_NAME" not-null="true"/>
 		</property>			
 		
 		<property name="publishState" type="java.lang.Boolean">
@@ -46,14 +48,14 @@
 			<column length="1" name="HAS_CALLBACK_SERVICE"  />
 		</property>		
 		
-		<property name="latestEditor" type="java.lang.String">
-			<column length="50" name="LATEST_EDITOR" not-null="true"/>
+		<property name="lastEditor" type="java.lang.String">
+			<column length="50" name="LAST_EDITOR" not-null="true"/>
 		</property>
-		<property name="latestEditTime" type="java.util.Date">
-			<column name="LATEST_EDIT_TIME" not-null="true"/>
+		<property name="lastEditTime" type="java.util.Date">
+			<column name="LAST_EDIT_TIME" not-null="true"/>
 		</property>	
-		<property name="latestOperation" type="java.lang.String">
-			<column length="50" name="LATEST_OPERATION" not-null="true"/>
+		<property name="lastOperation" type="java.lang.String">
+			<column length="50" name="LAST_OPERATION" not-null="true"/>
 		</property>				
 		
 		<property name="ownerDeptId" type="java.lang.String">
@@ -67,6 +69,11 @@
 		</property>	
 		<property name="approvedTime" type="java.util.Date">
 			<column name="APPROVED_TIME"/>
+		</property>	
+		<property name="lastUpdateTime" type="java.util.Date"  generated="always" >
+			<column name="LAST_UPDATE_TIME"  sql-type="timestamp"  default="CURRENT_TIMESTAMP">
+				<comment>最后更新时间</comment>
+			</column>
 		</property>	
 	</class>
 </hibernate-mapping>

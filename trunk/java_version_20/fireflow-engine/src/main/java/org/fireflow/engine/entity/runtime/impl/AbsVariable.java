@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.entity.runtime.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ public abstract class AbsVariable implements Variable {
 	String processId = null;
 	Integer version = null;
 	String processType = null;
+	Date lastUpdateTime = null;
 
 	
 	public String getId() {
@@ -162,5 +164,11 @@ public abstract class AbsVariable implements Variable {
 //		this.javaClassName = javaClassName;
 //	}
 	
+	public Date getLastUpdateTime(){
+		return this.lastUpdateTime;
+	}
 	
+	public void setLastUpdateTime(Date lastUpdateTime){
+		this.lastUpdateTime = lastUpdateTime;
+	}
 }

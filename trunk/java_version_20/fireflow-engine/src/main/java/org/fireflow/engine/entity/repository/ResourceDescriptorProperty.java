@@ -28,17 +28,28 @@ import org.fireflow.engine.entity.EntityProperty;
  * @version 2.0
  */
 public enum ResourceDescriptorProperty implements EntityProperty {
-
 	ID("id"),
-	RESOURCE_ID("resourceId"),
-	RESOURCE_TYPE("resourceType"),
 	NAME("name"),
 	DISPLAY_NAME("displayName"),
 	DESCRIPTION("description"),
 	FILE_NAME("fileName"),
 
-	LATEST_EDITOR("latestEditor"),
-	LATEST_EDIT_TIME("latestEditTime"),
+	BIZ_CATEGORY("bizCategory"),
+	
+	PUBLISH_STATE("publishState"),
+	LAST_EDITOR("lastEditor"),
+	LAST_EDIT_TIME("lastEditTime"),
+	LAST_OPERATION("lastOperation"),
+	
+	OWNER_DEPT_ID("ownerDeptId"),
+	OWNER_DEPT_NAME("ownerDeptName"),
+	APPROVER("approver"),
+	APPROVED_TIME("approvedTime"),
+	
+	//resource 特定的属性
+	RESOURCE_ID("resourceId"),
+	RESOURCE_TYPE("resourceType")
+
 
 	;
 	private String propertyName = null;
