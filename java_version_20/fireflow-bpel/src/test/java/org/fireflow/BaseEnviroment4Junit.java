@@ -112,7 +112,7 @@ public class BaseEnviroment4Junit {
 					props.put(ResourceDescriptorProperty.FILE_NAME,
 							"FireWorkflow-Default-Resources.rsc.xml");
 
-					stmt.uploadResources(in, props);
+					stmt.uploadResourcesStream(in, Boolean.TRUE, props);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

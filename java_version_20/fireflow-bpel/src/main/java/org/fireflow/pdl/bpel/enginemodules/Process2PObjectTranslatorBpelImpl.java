@@ -100,7 +100,7 @@ public class Process2PObjectTranslatorBpelImpl implements
 		if (repository==null){
 			throw new WorkflowProcessNotFoundException("The process is not found, id="+processKey.getProcessId()+", version="+processKey.getVersion()+", processType="+processKey.getProcessType());
 		}else{
-			return this.translateProcess(processKey, repository.getProcess());
+			return this.translateProcess(processKey, repository.getProcessObject());
 		}
 	}
 
