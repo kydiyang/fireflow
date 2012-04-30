@@ -146,7 +146,8 @@ public class ProcessUtilBpelImpl implements
 		repository.setProcessType("BPEL");
 		repository.setVersion(1);
 		repository.setPublishState(true);
-		repository.setProcess(process);
+		repository.setProcessObject(process);
+		repository.setFileName(bpelProcess.getId()+".bpel.xml");
 		return repository;
 	}
 
