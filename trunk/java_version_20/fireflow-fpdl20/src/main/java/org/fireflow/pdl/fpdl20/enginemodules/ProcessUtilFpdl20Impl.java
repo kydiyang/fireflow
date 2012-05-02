@@ -182,7 +182,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		repository.setDescription(wfProcess.getDescription());
 		
 		//设置缺省的FileName 为 <processId>.f20.xml
-		repository.setFileName(wfProcess.getId()+FpdlConstants.PROCESS_FILE_SUFFIX);
+		repository.setFileName(wfProcess.getId()+"."+FpdlConstants.PROCESS_FILE_SUFFIX);
 		
 		repository.setProcessObject(process);
 		repository.setProcessContent(this.serializeProcess2Xml(process));	
