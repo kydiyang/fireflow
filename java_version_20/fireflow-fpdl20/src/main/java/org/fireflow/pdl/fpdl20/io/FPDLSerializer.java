@@ -542,9 +542,7 @@ public class FPDLSerializer implements FPDLNames {
         subflowElement.setAttribute(DISPLAY_NAME, subflow.getDisplayName());
         Util4Serializer.addElement(subflowElement, DESCRIPTION,
                 subflow.getDescription());
-        if (subflow.getEntry()==null){
-        	throw new InvalidModelException("The entry of the subflow[id="+subflow.getId()+"] can NOT be null, ");
-        }else{
+        if (subflow.getEntry()!=null){        	
         	subflowElement.setAttribute(ENTRY, subflow.getEntry().getId());
         }
         
