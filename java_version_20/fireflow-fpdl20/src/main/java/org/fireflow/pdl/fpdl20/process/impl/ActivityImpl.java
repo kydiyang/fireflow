@@ -53,6 +53,10 @@ public class ActivityImpl extends NodeImpl implements Activity{
 	
 	private LoopStrategy loopStrategy = LoopStrategy.REDO;
 	
+	public ActivityImpl(){
+		super();
+	}
+	
     public ActivityImpl(Subflow subflow, String name) {
         super(subflow, name);
     }
