@@ -32,7 +32,7 @@ import org.fireflow.pdl.fpdl20.process.features.startnode.impl.NormalStartFeatur
 @SuppressWarnings("serial")
 public class StartNodeImpl extends SynchronizerImpl implements StartNode{
 
-    private StartNodeImpl() {
+    public StartNodeImpl() {
     	this.setFeature(new NormalStartFeatureImpl());
     }
 
