@@ -83,7 +83,7 @@ import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
-import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFreature;
+import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowTerminationFeature;
@@ -281,6 +281,7 @@ public class FPDLSerializer implements FPDLNames {
     	poolElm.setAttribute(TYPE, POOL);
     	poolElm.setAttribute(ID, pool.getId());
     	poolElm.setAttribute(REF, pool.getWorkflowElementRef());
+    	poolElm.setAttribute(IS_ABSTRACT, Boolean.toString(pool.isAbstract()));
     	
     	Shape shape = pool.getShape();
     	writeShape(shape,poolElm);
@@ -764,44 +765,46 @@ public class FPDLSerializer implements FPDLNames {
     	else if (feature instanceof ThrowTerminationFeature){
     		Util4Serializer.addElement(parent, THROW_TERMINATION_FEATURE);
     	}
-    	else if (feature instanceof NormalEndFreature){
+    	else if (feature instanceof NormalEndFeature){
     		Util4Serializer.addElement(parent, NORMAL_END_FEATURE);
     	}
     }
     protected void writeStartNodeFeature(Feature dec,Element featuresElement){
     	if (dec instanceof TimerStartFeature){
-        	TimerStartFeature timerDec = (TimerStartFeature)dec;
+        	TimerStartFeature timerFeature = (TimerStartFeature)dec;
         	Element timerDecElem = Util4Serializer.addElement(featuresElement, TIMER_START_FEATURE);
-        	if (timerDec.getAttachedToActivity()!=null){
-        		timerDecElem.setAttribute(ATTACHED_TO_ACTIVITY, timerDec.getAttachedToActivity().getId());
-        		timerDecElem.setAttribute(IS_CANCEL_ATTACHED_TO_ACTIVITY, Boolean.toString(timerDec.getCancelAttachedToActivity()));
+        	if (timerFeature.getAttachedToActivity()!=null){
+        		timerDecElem.setAttribute(ATTACHED_TO_ACTIVITY, timerFeature.getAttachedToActivity().getId());
+        		timerDecElem.setAttribute(IS_CANCEL_ATTACHED_TO_ACTIVITY, Boolean.toString(timerFeature.getCancelAttachedToActivity()));
         	}
-        	timerDecElem.setAttribute(TIMER_OPERATION_NAME, timerDec.getTimerOperationName().getValue());
-        	Expression cronExp = timerDec.getCronExpression();
+        	if (timerFeature.getTimerOperationName()!=null){
+        		timerDecElem.setAttribute(TIMER_OPERATION_NAME, timerFeature.getTimerOperationName().getValue());
+        	}
+        	Expression cronExp = timerFeature.getCronExpression();
         	if(cronExp!=null){
         		Element expElem =  Util4Serializer.addElement(timerDecElem, CRON_EXPRESSION);
                 this.writeExpression(cronExp, expElem);
         	}
         	
-        	Expression startTimeExp = timerDec.getStartTimeExpression();
+        	Expression startTimeExp = timerFeature.getStartTimeExpression();
         	if (startTimeExp!=null){
         		Element expElem =  Util4Serializer.addElement(timerDecElem, START_TIME_EXPRESSION);
                 this.writeExpression(startTimeExp, expElem);
         	}
         	
-        	Expression endTimeExp = timerDec.getEndTimeExpression();
+        	Expression endTimeExp = timerFeature.getEndTimeExpression();
         	if (endTimeExp!=null){
         		Element expElem =  Util4Serializer.addElement(timerDecElem, END_TIME_EXPRESSION);
                 this.writeExpression(endTimeExp, expElem);
         	}
         	
-        	Expression intervalExp = timerDec.getRepeatIntervalExpression();
+        	Expression intervalExp = timerFeature.getRepeatIntervalExpression();
         	if (intervalExp!=null){
         		Element expElem =  Util4Serializer.addElement(timerDecElem, REPEAT_INTERVAL_EXPRESSION);
                 this.writeExpression(intervalExp, expElem);
         	}
         	
-        	Expression countExp = timerDec.getRepeatCountExpression();
+        	Expression countExp = timerFeature.getRepeatCountExpression();
         	if (countExp!=null){
         		Element expElem =  Util4Serializer.addElement(timerDecElem, REPEAT_COUNT_EXPRESSION);
                 this.writeExpression(countExp, expElem);

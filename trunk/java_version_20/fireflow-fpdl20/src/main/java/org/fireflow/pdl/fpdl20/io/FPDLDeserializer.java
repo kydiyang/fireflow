@@ -302,7 +302,19 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 		
 		String id = poolElm.getAttribute(ID);		
+		String wfElementRef = poolElm.getAttribute(REF);
+		String isAbs = poolElm.getAttribute(IS_ABSTRACT);
+		
 		PoolShape pool = new PoolShapeImpl(id);
+		pool.setWorkflowElementRef(wfElementRef);
+		try{
+			if (isAbs!=null){
+				pool.setAbstract(Boolean.valueOf(isAbs));
+			}
+			
+		}catch(Exception e){
+			
+		}
 		diagram.addPool(pool);
 		
 		Element planeElm = Util4Deserializer.child(poolElm, PLANE);
@@ -791,8 +803,7 @@ public class FPDLDeserializer implements FPDLNames{
 		String entryNodeId = subflowElement.getAttribute(ENTRY);
 		WorkflowElement entryNode = subflow.findWFElementById(entryNodeId);
 		if (entryNode==null){
-			throw new DeserializerException("Can't find the Entry Node , entry node id =["+entryNodeId+"]");
-		}else{
+			
 			subflow.setEntry((Node)entryNode);
 		}
 		

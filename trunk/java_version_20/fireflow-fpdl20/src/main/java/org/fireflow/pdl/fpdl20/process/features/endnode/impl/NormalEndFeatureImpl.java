@@ -16,12 +16,12 @@
  */
 package org.fireflow.pdl.fpdl20.process.features.endnode.impl;
 
-import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFreature;
+import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFeature;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public class NormalEndFeatureImpl implements NormalEndFreature {
+public class NormalEndFeatureImpl implements NormalEndFeature {
 
 }
