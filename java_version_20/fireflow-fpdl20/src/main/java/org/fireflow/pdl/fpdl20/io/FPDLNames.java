@@ -148,6 +148,7 @@ public interface FPDLNames extends ModelElementNames{
     String SUBFLOW = "subflow";
 
     String POOL = "pool";
+    String IS_ABSTRACT = "is-abstract";
     String MESSAGEFLOW = "messgeflow";
     String ASSOCIATION = "association";
     String COMMENT = "comment";
