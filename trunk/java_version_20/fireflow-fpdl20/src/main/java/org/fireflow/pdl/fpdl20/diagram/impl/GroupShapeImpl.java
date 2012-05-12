@@ -40,20 +40,41 @@ public class GroupShapeImpl extends AbsDiagramElement implements GroupShape {
 		this.id = id;
 	}
 	
-	public DiagramElement findChild(String id){
+	public DiagramElement findChild(String diagramElementId){
 		
 		for (DiagramElement diagramElm : transitions){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElm.getId().equals(diagramElementId)){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : workflowNodes){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElm.getId().equals(diagramElementId)){
 				return diagramElm;
 			}
 			if (diagramElm instanceof GroupShape){
-				DiagramElement tmp = diagramElm.findChild(id);
+				DiagramElement tmp = diagramElm.findChild(diagramElementId);
+				if (tmp!=null){
+					return tmp;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
+		for (DiagramElement diagramElm : transitions){
+			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+				return diagramElm;
+			}
+		}
+		
+		for (DiagramElement diagramElm : workflowNodes){
+			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+				return diagramElm;
+			}
+			if (diagramElm instanceof GroupShape){
+				DiagramElement tmp = diagramElm.findChild(workflowElementId);
 				if (tmp!=null){
 					return tmp;
 				}

@@ -89,6 +89,13 @@ public interface FPDLNames extends ModelElementNames{
 
     String FEATURES = "features";
     
+    String ANDJOIN_ANDSPLIT_FEATURE = "andjoin-andsplit-feature";
+    String ORJOIN_ORSPLIT_FEATURE = "orjoin-orsplit-feature";
+    String DYNAMIC_JOIN_SPLIT_FEATURE = "dynamic-join-split-feature";
+    String CUSTOMIZED_JOIN_SPLIT_FEATURE = "customized-join-split-feature";
+    String JOIN_EVALUATOR = "join-evaluator";
+    String SPLIT_EVALUATOR = "split-evaluator";
+    
     String NORMAL_START_FEATURE = "normal-start-feature";
     String NORMAL_END_FEATURE = "normal-end-feature";
     String THROW_TERMINATION_FEATURE = "throw-termination-feature";
@@ -170,7 +177,7 @@ public interface FPDLNames extends ModelElementNames{
     String SUBFLOW_ID = "subflow_id";
     String DIRECTION = "direction";
     
-    String PLANE = "plane";
+    //String PLANE = "plane";
     String LABEL = "label";
     String CONTENT = "content";
     
@@ -198,13 +205,14 @@ public interface FPDLNames extends ModelElementNames{
     String THE_CENTER = "the-center";
     
     String LINE = "line";
-    String LINE_STYLE = "line-style";
+
     
     String POINT_LIST = "point-list";
 
     String COLOR = "color";
     String SIZE = "size";
     String WEIGHT = "weight";
+    String GRADIENT_STYLE = "gradient-style";
     
     
 

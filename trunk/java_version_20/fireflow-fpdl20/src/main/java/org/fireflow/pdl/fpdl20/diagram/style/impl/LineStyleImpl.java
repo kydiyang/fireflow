@@ -30,7 +30,7 @@ public class LineStyleImpl implements LineStyle {
 	protected int thick = 2;
 	protected String lineType = LineStyle.LINETYPE_SOLID;
 	
-	protected int space = 3;
+	protected int space = 0;
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.style.Style#getColor()

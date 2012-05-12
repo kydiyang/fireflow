@@ -24,8 +24,12 @@ package org.fireflow.pdl.fpdl20.diagram.style;
  *
  */
 public interface FulfilStyle extends Style {
+	public static final String GRADIENT_STYLE_NONE = "NONE";
+	public static final String GRADIENT_STYLE_LEFT2RIGHT = "LEFT2RIGHT";
+	
 	public String getColor();
 	public void setColor(String color);
 	
-	
+	public String getGradientStyle();
+	public void setGradientStyle(String style);
 }

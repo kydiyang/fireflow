@@ -61,6 +61,7 @@ import org.fireflow.pdl.fpdl20.diagram.CommentShape;
 import org.fireflow.pdl.fpdl20.diagram.Diagram;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.EndNodeShape;
+import org.fireflow.pdl.fpdl20.diagram.GroupShape;
 import org.fireflow.pdl.fpdl20.diagram.LaneShape;
 import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
 import org.fireflow.pdl.fpdl20.diagram.PoolShape;
@@ -72,14 +73,12 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Bounds;
 import org.fireflow.pdl.fpdl20.diagram.basic.Circle;
 import org.fireflow.pdl.fpdl20.diagram.basic.Label;
 import org.fireflow.pdl.fpdl20.diagram.basic.Line;
-import org.fireflow.pdl.fpdl20.diagram.basic.Plane;
 import org.fireflow.pdl.fpdl20.diagram.basic.Point;
 import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.BoundsImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.CircleImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.LabelImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.LineImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.PlaneImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.PointImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.ActivityShapeImpl;
@@ -87,6 +86,7 @@ import org.fireflow.pdl.fpdl20.diagram.impl.AssociationShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.CommentShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.DiagramImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.EndNodeShapeImpl;
+import org.fireflow.pdl.fpdl20.diagram.impl.GroupShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.LaneShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.MessageFlowShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.PoolShapeImpl;
@@ -116,6 +116,10 @@ import org.fireflow.pdl.fpdl20.process.features.Feature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowFaultFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowTerminationFeatureImpl;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.AndJoinAndSplitRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.CustomizedRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.DynamicRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.OrJoinOrSplitRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.TimerStartFeature;
@@ -272,7 +276,25 @@ public class FPDLDeserializer implements FPDLNames{
 			for (Element childElm : childElmList){
 				String type = childElm.getAttribute(TYPE);
 				if (type==null) type="";
-				if (type.equals(POOL)){
+
+				if (ACTIVITY.equals(type)){
+					ActivityShape activityShape =loadActivityShape(childElm);
+					diagram.addWorkflowNodeShape(activityShape);
+				}else if (START_NODE.equals(type)){
+					StartNodeShape startNodeShape = loadStartNodeShape(childElm);
+					diagram.addWorkflowNodeShape(startNodeShape);
+				}else if (END_NODE.equals(type)){
+					EndNodeShape endNodeShape = loadEndNodeShape(childElm);
+					diagram.addWorkflowNodeShape(endNodeShape);
+				}else if (ROUTER.equals(type)){
+					RouterShape routerShape = loadRouterShape(childElm);
+					diagram.addWorkflowNodeShape(routerShape);
+				}
+				else if (GROUP.equals(type)){
+					GroupShape groupShape = loadGroupShape(diagram,childElm);
+					diagram.addWorkflowNodeShape(groupShape);
+				}
+				else if (type.equals(POOL)){
 					loadPoolShape(diagram,childElm);
 				}
 				else if (type.equals(COMMENT)){
@@ -281,12 +303,17 @@ public class FPDLDeserializer implements FPDLNames{
 			}
 		}
 		
+		
 		childElmList = Util4Deserializer.children(diagramElm, CONNECTOR);
 		if (childElmList!=null){
 			for (Element childElm : childElmList){
 				String type = childElm.getAttribute(TYPE);
 				if (type==null) type="";
-				if (type.equals(MESSAGEFLOW)){
+				if (TRANSITION.equals(type)){
+					TransitionShape transitionShape = loadTransitionShape(diagram,childElm);
+					diagram.addTransition(transitionShape);
+				}
+				else if (type.equals(MESSAGEFLOW)){
 					loadMessageFlowShape(diagram,childElm);
 				}
 				else if (type.equals(ASSOCIATION)){
@@ -296,6 +323,47 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 	}
 	
+	protected GroupShape loadGroupShape(Diagram diagram ,Element groupElement){
+		String id = groupElement.getAttribute(ID);
+		GroupShape groupShape = new GroupShapeImpl(id);
+		
+		List<Element> childElmList = Util4Deserializer.children(groupElement,CHILD);
+		if (childElmList!=null){
+			for (Element childElm : childElmList){
+				String type = childElm.getAttribute(TYPE);
+				if (type==null) type="";
+				if (ACTIVITY.equals(type)){
+					ActivityShape activityShape =loadActivityShape(childElm);
+					groupShape.addWorkflowNodeShape(activityShape);
+				}else if (START_NODE.equals(type)){
+					StartNodeShape startNodeShape = loadStartNodeShape(childElm);
+					groupShape.addWorkflowNodeShape(startNodeShape);
+				}else if (END_NODE.equals(type)){
+					EndNodeShape endNodeShape = loadEndNodeShape(childElm);
+					groupShape.addWorkflowNodeShape(endNodeShape);
+				}else if (ROUTER.equals(type)){
+					RouterShape routerShape = loadRouterShape(childElm);
+					groupShape.addWorkflowNodeShape(routerShape);
+				}
+
+			}
+		}
+		
+		childElmList = Util4Deserializer.children(groupElement, CONNECTOR);
+		if (childElmList!=null){
+			for (Element childElm : childElmList){
+				String type = childElm.getAttribute(TYPE);
+				if (type==null) type="";
+				if (TRANSITION.equals(type)){
+					TransitionShape transitionShape = loadTransitionShape(diagram,childElm);
+					groupShape.addTransition(transitionShape);	
+				}
+			}
+		}
+		
+		return groupShape;
+	}
+	
 	protected void loadPoolShape(Diagram diagram,Element poolElm){
 		if (poolElm==null){
 			return ;
@@ -303,22 +371,17 @@ public class FPDLDeserializer implements FPDLNames{
 		
 		String id = poolElm.getAttribute(ID);		
 		String wfElementRef = poolElm.getAttribute(REF);
-		String isAbs = poolElm.getAttribute(IS_ABSTRACT);
 		
 		PoolShape pool = new PoolShapeImpl(id);
-		pool.setWorkflowElementRef(wfElementRef);
-		try{
-			if (isAbs!=null){
-				pool.setAbstract(Boolean.valueOf(isAbs));
-			}
-			
-		}catch(Exception e){
-			
+		if (!StringUtils.isEmpty(wfElementRef)){
+			pool.setWorkflowElementRef(wfElementRef);
 		}
+		
+		
 		diagram.addPool(pool);
 		
-		Element planeElm = Util4Deserializer.child(poolElm, PLANE);
-		this.loadPlane(pool, planeElm);
+		Element planeElm = Util4Deserializer.child(poolElm, RECTANGLE);
+		this.loadRectangle(pool, planeElm);
 		
 		//下级节点
 		List<Element> children = Util4Deserializer.children(poolElm, CHILD);
@@ -329,48 +392,22 @@ public class FPDLDeserializer implements FPDLNames{
 				
 				if (LANE.equals(type)){
 					loadLaneShape(pool,child);
-				}else if (ACTIVITY.equals(type)){
-					ActivityShape activityShape =loadActivityShape(child);
-					pool.addWorkflowNodeShape(activityShape);
-				}else if (START_NODE.equals(type)){
-					StartNodeShape startNodeShape = loadStartNodeShape(child);
-					pool.addWorkflowNodeShape(startNodeShape);
-				}else if (END_NODE.equals(type)){
-					EndNodeShape endNodeShape = loadEndNodeShape(child);
-					pool.addWorkflowNodeShape(endNodeShape);
-				}else if (ROUTER.equals(type)){
-					RouterShape routerShape = loadRouterShape(child);
-					pool.addWorkflowNodeShape(routerShape);
-				}
-				else if (GROUP.equals(type)){
-					//TODO load Group
 				}
 			}
 		}
-		
-		
-		//transition
-		List<Element> connectorChildren = Util4Deserializer.children(poolElm, CONNECTOR);
-		if (connectorChildren!=null){
-			for (Element child : connectorChildren){
-				String type = child.getAttribute(TYPE);
-				if (TRANSITION.equals(type)){
-					loadTransitionShape(pool,child);
-				}
-			}
-		}
+
 	}
 	
-	protected void loadTransitionShape(PoolShape poolShape,Element transitionElm){
-		if (transitionElm==null)return;
+	protected TransitionShape loadTransitionShape(Diagram diagram,Element transitionElm){
+		if (transitionElm==null)return null;
 		
 		String id = transitionElm.getAttribute(ID);
 		String ref = transitionElm.getAttribute(REF);
 		String from = transitionElm.getAttribute(FROM);
 		String to = transitionElm.getAttribute(TO);
 		
-		DiagramElement fromElm = poolShape.findChild(from);
-		DiagramElement toElm = poolShape.findChild(to);
+		DiagramElement fromElm = diagram.findChild(from);
+		DiagramElement toElm = diagram.findChild(to);
 		
 		
 		TransitionShape transitionShape = new TransitionShapeImpl(id);
@@ -382,7 +419,7 @@ public class FPDLDeserializer implements FPDLNames{
 		Element lineElm = Util4Deserializer.child(transitionElm, LINE);
 		this.loadLine(transitionShape, lineElm);
 		
-		poolShape.addTransition(transitionShape);
+		return transitionShape;
 	}
 	
 	protected RouterShape loadRouterShape(Element routerShapeElm){
@@ -447,35 +484,33 @@ public class FPDLDeserializer implements FPDLNames{
 		Element labelElm = Util4Deserializer.child(circleElm, LABEL);
 		Label lb = this.loadLabel(labelElm);
 		circle.setLabel(lb);
-		
-		Element fulfilStyleElm= Util4Deserializer.child(circleElm, FULFIL_STYLE);
+
+		Element fulfilStyleElm = Util4Deserializer.child(circleElm,
+				FULFIL_STYLE);
 		FulfilStyle fulfilStyle = this.loadFulfilStyle(fulfilStyleElm);
 		circle.setFulfilStyle(fulfilStyle);
-		
-		Element lineStyleElm = Util4Deserializer.child(circleElm, BOUNDS_STYLE);
-		if (lineStyleElm!=null){
-			LineStyle lineStyle = new LineStyleImpl();
-			circle.setBoundsStyle(lineStyle);
-			
-			String color = lineStyleElm.getAttribute(COLOR);
-			if (!StringUtils.isEmpty(color)){
-				lineStyle.setColor(color);
-			}
-			
-			String thick = lineStyleElm.getAttribute(THICK);
-			if (StringUtils.isNumeric(thick)){
-				lineStyle.setThick(Integer.parseInt(thick));
-			}
-			
-			String space = lineStyleElm.getAttribute(SPACE);
-			if (StringUtils.isNumeric(space)){
-				lineStyle.setSpace(Integer.parseInt(space));
-			}
-			
-			String lineType = lineStyleElm.getAttribute(LINE_STYLE);
-			if (!StringUtils.isEmpty(lineType)){
-				lineStyle.setLineType(lineType);
-			}
+
+		LineStyle lineStyle = new LineStyleImpl();
+		circle.setLineStyle(lineStyle);
+
+		String color = circleElm.getAttribute(COLOR);
+		if (!StringUtils.isEmpty(color)) {
+			lineStyle.setColor(color);
+		}
+
+		String thick = circleElm.getAttribute(THICK);
+		if (!StringUtils.isEmpty(thick) && StringUtils.isNumeric(thick)) {
+			lineStyle.setThick(Integer.parseInt(thick));
+		}
+
+		String space = circleElm.getAttribute(SPACE);
+		if (!StringUtils.isEmpty(space) && StringUtils.isNumeric(space)) {
+			lineStyle.setSpace(Integer.parseInt(space));
+		}
+
+		String lineType = circleElm.getAttribute(LINE_TYPE);
+		if (!StringUtils.isEmpty(lineType)) {
+			lineStyle.setLineType(lineType);
 		}
 	}
 	
@@ -501,10 +536,13 @@ public class FPDLDeserializer implements FPDLNames{
 		String id = laneElm.getAttribute(ID);
 		LaneShape lane = new LaneShapeImpl(id);
 		
-		Element planeElm = Util4Deserializer.child(laneElm, PLANE);
-		this.loadPlane(lane, planeElm);
+		Element planeElm = Util4Deserializer.child(laneElm, RECTANGLE);
+		this.loadRectangle(lane, planeElm);
+		
+		pool.addLane(lane);
 	}
 	
+	/*
 	protected void loadPlane(DiagramElement diagramElm, Element planeElm){
 		if (planeElm==null) return ;
 		Plane plane = new PlaneImpl();
@@ -522,7 +560,7 @@ public class FPDLDeserializer implements FPDLNames{
 		FulfilStyle fulfilStyle = this.loadFulfilStyle(fulfilStyleElm);
 		plane.setFulfilStyle(fulfilStyle);
 	}
-	
+	*/
 	protected void loadCommentShape(Diagram diagram , Element commentElm){
 		if (commentElm==null) return;
 		String id = commentElm.getAttribute(ID);
@@ -592,9 +630,9 @@ public class FPDLDeserializer implements FPDLNames{
 				style.setColor(color);
 			}
 			
-			String lineStyle = boundsStyleElm.getAttribute(LINE_STYLE);
-			if (!StringUtils.isEmpty(lineStyle)){
-				style.setLineType(lineStyle);
+			String lineType = boundsStyleElm.getAttribute(LINE_TYPE);
+			if (!StringUtils.isEmpty(lineType)){
+				style.setLineType(lineType);
 			}
 			
 			String thick = boundsStyleElm.getAttribute(THICK);
@@ -627,8 +665,15 @@ public class FPDLDeserializer implements FPDLNames{
 		
 		FulfilStyle fulfilStyle = new FulfilStyleImpl();
 		String color = fulfilStyleElm.getAttribute(COLOR);
+		if (color!=null){
+			fulfilStyle.setColor(color);
+		}
 		
-		fulfilStyle.setColor(color);
+		
+		String gradientStyle = fulfilStyleElm.getAttribute(GRADIENT_STYLE);
+		if (gradientStyle!=null){
+			fulfilStyle.setGradientStyle(gradientStyle);
+		}
 		
 		return fulfilStyle;
 	}
@@ -679,47 +724,44 @@ public class FPDLDeserializer implements FPDLNames{
 			line.setLabelDirection(direction);
 		}
 		
-		if (!StringUtils.isEmpty(position)){
+		if (!StringUtils.isEmpty(position)) {
 			Point p = PointImpl.fromString(position);
 			line.setLabelPosition(p);
 		}
-		
-		Element linestyleElm = Util4Deserializer.child(lineElm, LINE_STYLE);
-		if (linestyleElm!=null){
-			LineStyle lineStyle = new LineStyleImpl();
-			String color = linestyleElm.getAttribute(COLOR);
-			if (!StringUtils.isEmpty(color)){
-				lineStyle.setColor(color);
-			}
-			
-			String lineType = linestyleElm.getAttribute(LINE_TYPE);
-			if (!StringUtils.isEmpty(lineType)){
-				lineStyle.setLineType(lineType);
-			}
-			
-			String spaceStr = linestyleElm.getAttribute(SPACE);
-			if (!StringUtils.isEmpty(spaceStr)){
-				try{
-					lineStyle.setSpace(Integer.parseInt(spaceStr));
-				}catch(Exception e){
-					
-				}
-				
-			}
-			
-			String thickStr = linestyleElm.getAttribute(THICK);
-			if (!StringUtils.isEmpty(thickStr)){
-				try{
-					lineStyle.setThick(Integer.parseInt(thickStr));
-				}catch(Exception e){
-					
-				}
-				
-			}
-			
-			line.setLineStyle(lineStyle);
+
+		LineStyle lineStyle = new LineStyleImpl();
+		String color = lineElm.getAttribute(COLOR);
+		if (!StringUtils.isEmpty(color)) {
+			lineStyle.setColor(color);
 		}
-		
+
+		String lineType = lineElm.getAttribute(LINE_TYPE);
+		if (!StringUtils.isEmpty(lineType)) {
+			lineStyle.setLineType(lineType);
+		}
+
+		String spaceStr = lineElm.getAttribute(SPACE);
+		if (!StringUtils.isEmpty(spaceStr)) {
+			try {
+				lineStyle.setSpace(Integer.parseInt(spaceStr));
+			} catch (Exception e) {
+
+			}
+
+		}
+
+		String thickStr = lineElm.getAttribute(THICK);
+		if (!StringUtils.isEmpty(thickStr)) {
+			try {
+				lineStyle.setThick(Integer.parseInt(thickStr));
+			} catch (Exception e) {
+
+			}
+
+		}
+
+		line.setLineStyle(lineStyle);
+
 		Element labelElm = Util4Deserializer.child(lineElm, LABEL);
 		Label lb = loadLabel(labelElm);
 		line.setLabel(lb);
@@ -1204,17 +1246,37 @@ public class FPDLDeserializer implements FPDLNames{
 		Iterator<Element> iter = synchronizerElms.iterator();
 		while (iter.hasNext()) {
 			Element elm = iter.next();
-			Router synchronizer = new RouterImpl(wp, elm
+			Router router = new RouterImpl(wp, elm
 					.getAttribute(NAME));
 
-			synchronizer.setDescription(Util4Deserializer.elementAsString(elm,
+			router.setDescription(Util4Deserializer.elementAsString(elm,
 					DESCRIPTION));
-			synchronizer.setDisplayName(elm.getAttribute(DISPLAY_NAME));
+			router.setDisplayName(elm.getAttribute(DISPLAY_NAME));
 
-			loadExtendedAttributes(synchronizer.getExtendedAttributes(),
+			loadExtendedAttributes(router.getExtendedAttributes(),
 					Util4Deserializer.child(elm, EXTENDED_ATTRIBUTES));
 
-			routers.add(synchronizer);
+			Element featuresElm = Util4Deserializer.child(elm, FEATURES);
+			if (featuresElm!=null){				
+				Element fElm = Util4Deserializer.child(featuresElm, ANDJOIN_ANDSPLIT_FEATURE);
+				if (fElm!=null){
+					router.setFeature(new AndJoinAndSplitRouterFeature());
+				}
+				fElm = Util4Deserializer.child(featuresElm, ORJOIN_ORSPLIT_FEATURE);
+				if (fElm!=null){
+					router.setFeature(new OrJoinOrSplitRouterFeature());
+				}
+				fElm = Util4Deserializer.child(featuresElm, DYNAMIC_JOIN_SPLIT_FEATURE);
+				if (fElm!=null){
+					router.setFeature(new DynamicRouterFeature());
+				}
+				fElm = Util4Deserializer.child(featuresElm, CUSTOMIZED_JOIN_SPLIT_FEATURE);
+				if (fElm!=null){
+					router.setFeature(new CustomizedRouterFeature());
+				}
+			}
+			
+			routers.add(router);
 		}
 	}
 

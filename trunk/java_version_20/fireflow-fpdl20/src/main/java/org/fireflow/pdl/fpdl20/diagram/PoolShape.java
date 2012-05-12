@@ -28,9 +28,10 @@ import java.util.List;
 public interface PoolShape extends DiagramElement {
 	/**
 	 * 是否是抽象Pool
+	 * （该属性无意义，2012-05-10）
 	 */
-	public boolean isAbstract();
-	public void setAbstract(boolean b);
+//	public boolean isAbstract();
+//	public void setAbstract(boolean b);
 	
 	/**
 	 * 获得所有的泳道
@@ -43,24 +44,5 @@ public interface PoolShape extends DiagramElement {
 	 * @param ln
 	 */
 	public void addLane(LaneShape ln);
-	
-	/**
-	 * 所有的流程节点
-	 * @return
-	 */
-	public List<WorkflowNodeShape> getWorkflowNodeShapes();
-	
-	public void addWorkflowNodeShape(WorkflowNodeShape shape);
-	
-	/**
-	 * 返回所有的Transition
-	 * @return
-	 */
-	public List<TransitionShape> getTransitions();
-	
-	/**
-	 * 
-	 * @param transitionShape
-	 */
-	public void addTransition(TransitionShape transitionShape);
+
 }

@@ -66,7 +66,6 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Bounds;
 import org.fireflow.pdl.fpdl20.diagram.basic.Circle;
 import org.fireflow.pdl.fpdl20.diagram.basic.Label;
 import org.fireflow.pdl.fpdl20.diagram.basic.Line;
-import org.fireflow.pdl.fpdl20.diagram.basic.Plane;
 import org.fireflow.pdl.fpdl20.diagram.basic.Point;
 import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
 import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
@@ -87,6 +86,10 @@ import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowTerminationFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.AndJoinAndSplitRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.CustomizedRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.DynamicRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.OrJoinOrSplitRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.NormalStartFeature;
@@ -207,8 +210,22 @@ public class FPDLSerializer implements FPDLNames {
     protected void writeDiagram(Diagram diagram,Element diagramsElement){
     	Element diagramElm = Util4Serializer.addElement(diagramsElement, DIAGRAM);
     	diagramElm.setAttribute(ID, diagram.getId());
-    	diagramElm.setAttribute(SUBFLOW_ID, diagram.getSubflowId());
+    	diagramElm.setAttribute(REF, diagram.getWorkflowElementRef());
     	diagramElm.setAttribute(DIRECTION, diagram.getDirection());
+    	
+    	List<WorkflowNodeShape> workflowNodeShapeList = diagram.getWorkflowNodeShapes();
+    	if(workflowNodeShapeList!=null && workflowNodeShapeList.size()>0){
+    		for (WorkflowNodeShape node : workflowNodeShapeList){
+    			writeNodeShape(node,diagramElm);
+    		}
+    	}
+    	
+    	List<TransitionShape> transitionShapeList = diagram.getTransitions();
+    	if (transitionShapeList!=null && transitionShapeList.size()>0){
+    		for (TransitionShape transition : transitionShapeList){
+    			writeTransitionShape(transition,diagramElm);
+    		}
+    	}
     	
     	List<PoolShape> poolList = diagram.getPools();
     	if (poolList!=null && poolList.size()>0){
@@ -239,6 +256,8 @@ public class FPDLSerializer implements FPDLNames {
     		}
     	}
     }
+    
+
     
     protected void writeMessageFlowShape(MessageFlowShape messageFlowShape,Element messageFlowShapesElm){
     	Element messageFlowElm = Util4Serializer.addElement(messageFlowShapesElm, CONNECTOR);
@@ -280,8 +299,10 @@ public class FPDLSerializer implements FPDLNames {
     	Element poolElm = Util4Serializer.addElement(poolshapesElm, CHILD);
     	poolElm.setAttribute(TYPE, POOL);
     	poolElm.setAttribute(ID, pool.getId());
-    	poolElm.setAttribute(REF, pool.getWorkflowElementRef());
-    	poolElm.setAttribute(IS_ABSTRACT, Boolean.toString(pool.isAbstract()));
+    	if (!StringUtils.isEmpty(pool.getWorkflowElementRef())){
+    		poolElm.setAttribute(REF, pool.getWorkflowElementRef());
+    	}
+    	
     	
     	Shape shape = pool.getShape();
     	writeShape(shape,poolElm);
@@ -293,19 +314,6 @@ public class FPDLSerializer implements FPDLNames {
     		}
     	}
     	
-    	List<WorkflowNodeShape> workflowNodeShapeList = pool.getWorkflowNodeShapes();
-    	if(workflowNodeShapeList!=null && workflowNodeShapeList.size()>0){
-    		for (WorkflowNodeShape node : workflowNodeShapeList){
-    			writeNodeShape(node,poolElm);
-    		}
-    	}
-    	
-    	List<TransitionShape> transitionShapeList = pool.getTransitions();
-    	if (transitionShapeList!=null && transitionShapeList.size()>0){
-    		for (TransitionShape transition : transitionShapeList){
-    			writeTransitionShape(transition,poolElm);
-    		}
-    	}
     }
     
     protected void writeTransitionShape(TransitionShape transitionShape,Element transitionsElm){
@@ -349,6 +357,20 @@ public class FPDLSerializer implements FPDLNames {
     	nodeElm.setAttribute(ID, node.getId());
     	nodeElm.setAttribute(REF, node.getWorkflowElementRef());
     	writeShape(node.getShape(),nodeElm);
+    	
+    	//序列化Group内部的元素
+    	if (node instanceof GroupShape){
+    		GroupShape groupShape = (GroupShape)node;
+    		List<WorkflowNodeShape> nodeShapeList = groupShape.getWorkflowNodeShapes();
+    		for (WorkflowNodeShape nodeShape : nodeShapeList){
+    			this.writeNodeShape(nodeShape, nodeElm);
+    		}
+    		
+    		List<TransitionShape> transitionShapeList = groupShape.getTransitions();
+    		for (TransitionShape transShape : transitionShapeList){
+    			this.writeTransitionShape(transShape, nodeElm);
+    		}
+    	}
     }
     
     protected void writeLaneShape(LaneShape lane,Element lanesElm){
@@ -360,10 +382,8 @@ public class FPDLSerializer implements FPDLNames {
 
     protected void writeShape(Shape shape,Element parentElement){
     	if (shape==null) return;
-    	if (shape instanceof Plane){
-    		writePlane((Plane)shape,parentElement);
-    	}
-    	else if (shape instanceof Rectangle){
+
+    	if (shape instanceof Rectangle){
     		writeRectangle((Rectangle)shape,parentElement);
     	}
     	else if (shape instanceof Circle){
@@ -386,13 +406,24 @@ public class FPDLSerializer implements FPDLNames {
     	
     	LineStyle lineStyle = line.getLineStyle();
     	if (lineStyle!=null){
-    		Element lineStyleElm = Util4Serializer.addElement(lineElm, LINE_STYLE);
-    		lineStyleElm.setAttribute(LINE_TYPE, lineStyle.getLineType());
-    		lineStyleElm.setAttribute(THICK,
-					Integer.toString(lineStyle.getThick()));
-    		lineStyleElm.setAttribute(SPACE,
-					Integer.toString(lineStyle.getSpace()));
-    		lineStyleElm.setAttribute(COLOR, lineStyle.getColor());
+    		if (!StringUtils.isEmpty(lineStyle.getLineType())){
+    			lineElm.setAttribute(LINE_TYPE, lineStyle.getLineType());
+    		}
+    		
+    		if (lineStyle.getThick()>0){
+    			lineElm.setAttribute(THICK,
+    					Integer.toString(lineStyle.getThick()));
+    		}
+
+    		if (lineStyle.getSpace()>0){
+    			lineElm.setAttribute(SPACE,
+    					Integer.toString(lineStyle.getSpace()));
+    		}
+    		
+    		if (!StringUtils.isEmpty(lineStyle.getColor())){
+
+    			lineElm.setAttribute(COLOR, lineStyle.getColor());
+    		}  			
     	}
 
     	List<Point> pointList = line.getPoints();
@@ -423,17 +454,25 @@ public class FPDLSerializer implements FPDLNames {
     	
     	this.writeFulfilStyle(circle.getFulfilStyle(), circleElm);
     	
-		LineStyle boundsStyle = circle.getBoundsStyle();
+		LineStyle boundsStyle = circle.getLineStyle();
 		if (boundsStyle != null) {
-			Element boundsStyleElm = Util4Serializer.addElement(circleElm,
-					BOUNDS_STYLE);
-
-			boundsStyleElm.setAttribute(LINE_TYPE, boundsStyle.getLineType());
-			boundsStyleElm.setAttribute(THICK,
-					Integer.toString(boundsStyle.getThick()));
-			boundsStyleElm.setAttribute(SPACE,
-					Integer.toString(boundsStyle.getSpace()));
-			boundsStyleElm.setAttribute(COLOR, boundsStyle.getColor());
+			if (!StringUtils.isEmpty(boundsStyle.getLineType())){
+				circleElm.setAttribute(LINE_TYPE, boundsStyle.getLineType());
+			}
+			
+			if (boundsStyle.getThick()>0){
+				circleElm.setAttribute(THICK,
+						Integer.toString(boundsStyle.getThick()));
+			}
+			
+			if (boundsStyle.getSpace()>0){
+				circleElm.setAttribute(SPACE,
+						Integer.toString(boundsStyle.getSpace()));
+			}
+			if (!StringUtils.isEmpty(boundsStyle.getColor())){
+				circleElm.setAttribute(COLOR, boundsStyle.getColor());
+			}
+			
 		}
     	
     }
@@ -457,17 +496,17 @@ public class FPDLSerializer implements FPDLNames {
     	this.writeFulfilStyle(rect.getFulfilStyle(), rectElm);
     }
     
-    protected void writePlane(Plane plane,Element parentElement){
-    	Element planeElm = Util4Serializer.addElement(parentElement, PLANE);
-    	
-    	writeLabel(plane.getLabel(),planeElm);
-    	
-    	Bounds bounds = plane.getBounds();
-    	writeBounds(bounds,planeElm);
-    	
-    	FulfilStyle fulfilStyle = plane.getFulfilStyle();
-    	writeFulfilStyle(fulfilStyle,planeElm);
-    }
+//    protected void writePlane(Plane plane,Element parentElement){
+//    	Element planeElm = Util4Serializer.addElement(parentElement, PLANE);
+//    	
+//    	writeLabel(plane.getLabel(),planeElm);
+//    	
+//    	Bounds bounds = plane.getBounds();
+//    	writeBounds(bounds,planeElm);
+//    	
+//    	FulfilStyle fulfilStyle = plane.getFulfilStyle();
+//    	writeFulfilStyle(fulfilStyle,planeElm);
+//    }
     
     protected void writeLabel(Label lb,Element parentElm){
     	if (lb!=null){
@@ -523,6 +562,7 @@ public class FPDLSerializer implements FPDLNames {
     	if (fulfilStyle!=null){
     		Element fulfilStyleElm = Util4Serializer.addElement(parentElm, FULFIL_STYLE);
     		fulfilStyleElm.setAttribute(COLOR, fulfilStyle.getColor());
+    		fulfilStyleElm.setAttribute(GRADIENT_STYLE, fulfilStyle.getGradientStyle());
     	}
     }
     
@@ -859,24 +899,37 @@ public class FPDLSerializer implements FPDLNames {
 
     protected void writeRouter(Router router, Element parent)
             throws SerializerException {
-        Element synchronizerElement = Util4Serializer.addElement(parent,
+        Element routerElement = Util4Serializer.addElement(parent,
                 ROUTER);
-        synchronizerElement.setAttribute(ID, router.getId());
-        synchronizerElement.setAttribute(NAME, router.getName());
+        routerElement.setAttribute(ID, router.getId());
+        routerElement.setAttribute(NAME, router.getName());
         
         if (router.getDisplayName()!=null && !router.getDisplayName().trim().equals("")){
-            synchronizerElement.setAttribute(DISPLAY_NAME, router.getDisplayName());
+            routerElement.setAttribute(DISPLAY_NAME, router.getDisplayName());
         }
         if (router.getDescription()!=null && !router.getDescription().equals("")){
-            Util4Serializer.addElement(synchronizerElement, DESCRIPTION,
+            Util4Serializer.addElement(routerElement, DESCRIPTION,
             		router.getDescription());
         }
-        Feature dec = router.getFeature();
-        if (dec!=null){
-        	//TODO 有待进一步完善Router的decorator
+        Feature feature = router.getFeature();
+        if (feature!=null){
+        	Element decElement = Util4Serializer.addElement(routerElement, FEATURES);
+        	if (feature instanceof AndJoinAndSplitRouterFeature){
+        		Util4Serializer.addElement(decElement, ANDJOIN_ANDSPLIT_FEATURE);
+        	}else if (feature instanceof OrJoinOrSplitRouterFeature){
+        		Util4Serializer.addElement(decElement, ORJOIN_ORSPLIT_FEATURE);
+        	}else if (feature instanceof DynamicRouterFeature){
+        		Util4Serializer.addElement(decElement, DYNAMIC_JOIN_SPLIT_FEATURE);
+        	}
+        	else if (feature instanceof CustomizedRouterFeature){
+        		Element fElm = Util4Serializer.addElement(decElement, CUSTOMIZED_JOIN_SPLIT_FEATURE);
+        		CustomizedRouterFeature customizedFeature = (CustomizedRouterFeature)feature;
+        		fElm.setAttribute(JOIN_EVALUATOR, customizedFeature.getJoinEvaluatorClass());
+        		fElm.setAttribute(SPLIT_EVALUATOR, customizedFeature.getSplitEvalutorClass());
+        	}
         }
         writeExtendedAttributes(router.getExtendedAttributes(),
-                synchronizerElement);
+                routerElement);
     }
 
     protected void writeActivities(List<Activity> activities, Element parent)

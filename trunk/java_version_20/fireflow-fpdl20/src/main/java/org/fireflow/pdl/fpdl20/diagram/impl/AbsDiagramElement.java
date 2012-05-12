@@ -17,6 +17,8 @@
  */
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
+import java.util.UUID;
+
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
 
@@ -27,10 +29,15 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
  *
  */
 public abstract class AbsDiagramElement implements DiagramElement {
+	protected String sn = UUID.randomUUID().toString();
 	protected String id = null;
 	protected String workflowElementId = null;
 	protected Shape shape = null;
 
+	public String getSn(){
+		return sn;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.DiagramElement#getId()
 	 */
@@ -68,5 +75,7 @@ public abstract class AbsDiagramElement implements DiagramElement {
 	public DiagramElement findChild(String id){
 		return null;
 	}
-
+	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
+		return null;
+	}
 }

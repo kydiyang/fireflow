@@ -22,7 +22,6 @@ import org.fireflow.model.misc.Duration;
 import org.fireflow.pdl.fpdl20.diagram.ActivityShape;
 import org.fireflow.pdl.fpdl20.diagram.EndNodeShape;
 import org.fireflow.pdl.fpdl20.diagram.LaneShape;
-import org.fireflow.pdl.fpdl20.diagram.PoolShape;
 import org.fireflow.pdl.fpdl20.diagram.StartNodeShape;
 import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
 import org.fireflow.pdl.fpdl20.diagram.impl.ActivityShapeImpl;
@@ -105,11 +104,7 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		process.addDiagram(diagram);		
 		
 		PoolShapeImpl pool = new PoolShapeImpl(mainflow.getId()+"_pool");
-		pool.setWorkflowElementRef(mainflow.getId());
-		pool.setAbstract(false);
 		diagram.addPool(pool);
-		
-		PoolShape defaultPoolShape = diagram.getDefaultPoolShape();
 		
 		CommentShapeImpl commentShape = new CommentShapeImpl("comment_1");
 		commentShape.setContent("This is a comment");
@@ -117,7 +112,7 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		
 		AssociationShapeImpl associationShape = new AssociationShapeImpl("association_1");
 		associationShape.setFromDiagramElement(commentShape);
-		associationShape.setToDiagramElement(diagram.getDefaultPoolShape());
+		associationShape.setToDiagramElement(pool);
 		associationShape.setLabel("This is a association");
 		diagram.addAssociation(associationShape);
 		
@@ -125,7 +120,7 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		diagram.addPool(pool2);
 		
 		MessageFlowShapeImpl messageFlow = new MessageFlowShapeImpl("message_1");
-		messageFlow.setFromDiagramElement(diagram.getDefaultPoolShape());
+		messageFlow.setFromDiagramElement(pool);
 		messageFlow.setToDiagramElement(pool2);
 		messageFlow.setLabel("This is a message Flow");
 		diagram.addMessageFlow(messageFlow);
@@ -133,33 +128,33 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		
 		StartNodeShape startNodeShape = new StartNodeShapeImpl(startNode.getId()+"_shape");
 		startNodeShape.setWorkflowElementRef(startNode.getId());
-		defaultPoolShape.addWorkflowNodeShape(startNodeShape);
+		diagram.addWorkflowNodeShape(startNodeShape);
 		
 		ActivityShape activityShape = new ActivityShapeImpl(activity.getId()+"_shape");
 		activityShape.setWorkflowElementRef(activity.getId());
-		defaultPoolShape.addWorkflowNodeShape(activityShape);
+		diagram.addWorkflowNodeShape(activityShape);
 		
 		EndNodeShape endNodeShape = new EndNodeShapeImpl(endNode.getId()+"_shape");
 		endNodeShape.setWorkflowElementRef(endNode.getId());
-		defaultPoolShape.addWorkflowNodeShape(endNodeShape);
+		diagram.addWorkflowNodeShape(endNodeShape);
 		
 		TransitionShape transitionShape1 = new TransitionShapeImpl(transition1.getId()+"_shape");
 		transitionShape1.setWorkflowElementRef(transition1.getId());
 		transitionShape1.setFromWorkflowNodeShape(startNodeShape);
 		transitionShape1.setToWorkflowNodeShape(activityShape);
-		defaultPoolShape.addTransition(transitionShape1);
+		diagram.addTransition(transitionShape1);
 		
 		TransitionShape transitionShape2 = new TransitionShapeImpl(transition2.getId()+"_shape");
 		transitionShape2.setWorkflowElementRef(transition2.getId());
 		transitionShape2.setFromWorkflowNodeShape(activityShape);
 		transitionShape2.setToWorkflowNodeShape(endNodeShape);
-		defaultPoolShape.addTransition(transitionShape2);
+		diagram.addTransition(transitionShape2);
 		
 		LaneShape lane = new LaneShapeImpl("lane_1");
-		defaultPoolShape.addLane(lane);
+		pool.addLane(lane);
 		
 		LaneShape lane2 = new LaneShapeImpl("lane_2");
-		defaultPoolShape.addLane(lane2);
+		pool.addLane(lane2);
 
 		return process;
 	}

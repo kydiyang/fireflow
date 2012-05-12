@@ -18,6 +18,7 @@ package org.fireflow.pdl.fpdl20.process.impl;
 
 import org.fireflow.pdl.fpdl20.process.Router;
 import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.DynamicRouterFeature;
 
 /**
  * @author 非也
@@ -44,8 +45,5 @@ public class RouterImpl extends SynchronizerImpl implements Router {
 	 */
 	public RouterImpl(Subflow subflow, String name) {
 		super(subflow, name);
-		// TODO Auto-generated constructor stub
-	}
-
-	
+	}	
 }

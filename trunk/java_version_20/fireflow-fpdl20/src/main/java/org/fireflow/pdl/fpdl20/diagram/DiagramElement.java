@@ -26,6 +26,7 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
  *
  */
 public interface DiagramElement {
+	public String getSn();
 	public String getId();
 	public void setId(String id);
 	
@@ -36,4 +37,6 @@ public interface DiagramElement {
 	public void setShape(Shape sp);
 	
 	public DiagramElement findChild(String id);
+	
+	public DiagramElement findChildByWorkflowElementId(String workflowElementId);
 }
