@@ -37,7 +37,7 @@ public interface ModelElement {
      * 业务系统无须关心该序列号。
      * @return 元素序列号
      */
-    public String getSn();
+//    public String getSn();
 
 
     /**

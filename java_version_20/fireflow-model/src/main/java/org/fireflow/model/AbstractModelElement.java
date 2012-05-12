@@ -36,7 +36,7 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
 	/**
 	 * 元素序列号，请不要在业务代码里面使用该属性的信息。因为这个属性的值是变化的。
 	 */
-    private String sn = UUID.randomUUID().toString();
+//    private String sn = UUID.randomUUID().toString();
     
     /**
      * 父元素
@@ -167,8 +167,8 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
         this.parentElement = parentElement;
     }
 
-    public String getSn(){
-        return sn;
-    }
+//    public String getSn(){
+//        return sn;
+//    }
 
 }
