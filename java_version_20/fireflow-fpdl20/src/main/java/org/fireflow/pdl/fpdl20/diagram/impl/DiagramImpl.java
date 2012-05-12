@@ -24,8 +24,11 @@ import org.fireflow.pdl.fpdl20.diagram.AssociationShape;
 import org.fireflow.pdl.fpdl20.diagram.CommentShape;
 import org.fireflow.pdl.fpdl20.diagram.Diagram;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
+import org.fireflow.pdl.fpdl20.diagram.GroupShape;
 import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
 import org.fireflow.pdl.fpdl20.diagram.PoolShape;
+import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
+import org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape;
 
 /**
  *
@@ -33,11 +36,11 @@ import org.fireflow.pdl.fpdl20.diagram.PoolShape;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class DiagramImpl implements Diagram {
-	private String id = null;
-	private String subflowId = null;
+public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	private String direction = Diagram.HORIZONAL;
 	
+	private List<TransitionShape> transitions = new ArrayList<TransitionShape>();
+	private List<WorkflowNodeShape> workflowNodes = new ArrayList<WorkflowNodeShape>();
 
 	private List<PoolShape> pools = new ArrayList<PoolShape>();
 	private List<MessageFlowShape> messageFlows = new ArrayList<MessageFlowShape>();
@@ -46,34 +49,53 @@ public class DiagramImpl implements Diagram {
 
 	public DiagramImpl(String id,String subflowId){
 		this.id = id;
-		this.subflowId = subflowId;
+		this.workflowElementId = subflowId;
 	}
 	
-	
-	public DiagramElement findChild(String id){
-		for (DiagramElement diagramElm : associations){
+	public DiagramElement findChild(String diagramElementId){
+		if (diagramElementId.equals(this.id)){
+			return this;
+		}
+		for (DiagramElement diagramElm : transitions){
 			if (diagramElm.getId().equals(id)){
 				return diagramElm;
 			}
 		}
-		for (DiagramElement diagramElm : comments){
+		
+		for (DiagramElement diagramElm : workflowNodes){
 			if (diagramElm.getId().equals(id)){
+				return diagramElm;
+			}
+			if (diagramElm instanceof GroupShape){
+				DiagramElement tmp = diagramElm.findChild(id);
+				if (tmp!=null){
+					return tmp;
+				}
+			}
+		}
+		for (DiagramElement diagramElm : associations){
+			if (diagramElm.getId().equals(diagramElementId)){
+				return diagramElm;
+			}
+		}
+		for (DiagramElement diagramElm : comments){
+			if (diagramElm.getId().equals(diagramElementId)){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : messageFlows){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElm.getId().equals(diagramElementId)){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : pools){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElm.getId().equals(diagramElementId)){
 				return diagramElm;
 			}
 			if (diagramElm instanceof PoolShape){
-				DiagramElement tmp = diagramElm.findChild(id);
+				DiagramElement tmp = diagramElm.findChild(diagramElementId);
 				if (tmp!=null){
 					return tmp;
 				}
@@ -81,38 +103,53 @@ public class DiagramImpl implements Diagram {
 		}
 		return null;
 	}
+
 	
-	public PoolShape getDefaultPoolShape(){
-		for (PoolShape poolShape : pools){
-			if (subflowId.equals(poolShape.getWorkflowElementRef())){
-				return poolShape;
+	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
+		if (workflowElementId.equals(this.workflowElementId)){
+			return this;
+		}
+		for (DiagramElement diagramElm : transitions){
+			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+				return diagramElm;
+			}
+		}
+		
+		for (DiagramElement diagramElm : workflowNodes){
+			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+				return diagramElm;
+			}
+			if (diagramElm instanceof GroupShape){
+				DiagramElement tmp = diagramElm.findChild(workflowElementId);
+				if (tmp!=null){
+					return tmp;
+				}
 			}
 		}
 		return null;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.Diagram#getId()
-	 */
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id){
-		this.id = id;
+	}	
+
+	public List<TransitionShape> getTransitions() {
+		return transitions;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.Diagram#getSubflowId()
-	 */
-	public String getSubflowId() {
-		return subflowId;
-	}
-	
-	public void setSubflowId(String subflowId){
-		this.subflowId = subflowId;
+
+	public void addTransition(TransitionShape transitionShape) {
+		transitions.add(transitionShape);
+
 	}
 
+
+	public List<WorkflowNodeShape> getWorkflowNodeShapes() {		
+		return workflowNodes;
+	}
+
+
+	public void addWorkflowNodeShape(WorkflowNodeShape shape) {
+		workflowNodes.add(shape);		
+	}
+
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.Diagram#getDirection()
 	 */

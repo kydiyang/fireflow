@@ -288,7 +288,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	
 	public void addDiagram(Diagram diagram){
 		if (diagram==null)return;
-		this.diagramsMap.put(diagram.getSubflowId(), diagram);
+		this.diagramsMap.put(diagram.getWorkflowElementRef(), diagram);
 	}
 	
 	public List<Diagram> getDiagrams(){

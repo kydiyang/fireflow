@@ -88,14 +88,14 @@ public class CircleImpl implements Circle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Circle#getBoundsStyle()
 	 */
-	public LineStyle getBoundsStyle() {
+	public LineStyle getLineStyle() {
 		return this.boundStyle;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Circle#setBoundsStyle(org.fireflow.pdl.fpdl20.diagram.style.BoundsStyle)
 	 */
-	public void setBoundsStyle(LineStyle style) {
+	public void setLineStyle(LineStyle style) {
 		this.boundStyle = style ;
 
 	}

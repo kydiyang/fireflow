@@ -26,7 +26,8 @@ import org.fireflow.pdl.fpdl20.diagram.style.FulfilStyle;
  *
  */
 public class FulfilStyleImpl implements FulfilStyle {
-	protected String color = "#000000";
+	protected String color = "#FFFFFF";
+	protected String gradientStyle = FulfilStyle.GRADIENT_STYLE_NONE;
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.style.FulfillStyle#getColor()
@@ -42,4 +43,10 @@ public class FulfilStyleImpl implements FulfilStyle {
 		this.color = color;
 	}
 
+	public String getGradientStyle(){
+		return this.gradientStyle;
+	}
+	public void setGradientStyle(String style){
+		this.gradientStyle = style;
+	}
 }

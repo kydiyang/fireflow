@@ -18,7 +18,8 @@
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
 import org.fireflow.pdl.fpdl20.diagram.LaneShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.PlaneImpl;
+import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
+import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
 
 /**
  *
@@ -30,7 +31,7 @@ public class LaneShapeImpl extends AbsDiagramElement implements LaneShape {
 	public LaneShapeImpl(String id){
 		this.id = id;
 		
-		PlaneImpl plane = new PlaneImpl();
+		Rectangle plane = new RectangleImpl();
 		
 		plane.getBounds().setWidth(560);
 		plane.getBounds().setHeight(400);

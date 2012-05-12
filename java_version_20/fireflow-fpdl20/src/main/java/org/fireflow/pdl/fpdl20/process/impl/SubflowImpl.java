@@ -138,13 +138,13 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 	 *            流程元素的id
 	 * @return 流程元素的序列号
 	 */
-	public String findSnById(String id) {
-		ModelElement elem = this.findWFElementById(id);
-		if (elem != null) {
-			return elem.getSn();
-		}
-		return null;
-	}
+//	public String findSnById(String id) {
+//		ModelElement elem = this.findWFElementById(id);
+//		if (elem != null) {
+//			return elem.getSn();
+//		}
+//		return null;
+//	}
 	
 	public Node getEntry() {
 		return this.entry;

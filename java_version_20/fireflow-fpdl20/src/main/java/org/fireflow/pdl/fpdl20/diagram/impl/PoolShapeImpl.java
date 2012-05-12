@@ -21,12 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
-import org.fireflow.pdl.fpdl20.diagram.GroupShape;
 import org.fireflow.pdl.fpdl20.diagram.LaneShape;
 import org.fireflow.pdl.fpdl20.diagram.PoolShape;
-import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
-import org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.PlaneImpl;
+import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
+import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
 
 /**
  *
@@ -35,15 +33,13 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.PlaneImpl;
  *
  */
 public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
-	private boolean isAbstract = true;
+//	private boolean isAbstract = true;
 	private List<LaneShape> lanes = new ArrayList<LaneShape>();
-	private List<TransitionShape> transitions = new ArrayList<TransitionShape>();
-	private List<WorkflowNodeShape> workflowNodes = new ArrayList<WorkflowNodeShape>();
-	
+
 	public PoolShapeImpl(String id ){
 		this.id = id ;
 		
-		PlaneImpl plane = new PlaneImpl();
+		Rectangle plane = new RectangleImpl();
 		
 		plane.getBounds().setWidth(560);
 		plane.getBounds().setHeight(400);
@@ -58,37 +54,18 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 				return diagramElm;
 			}
 		}
-		
-		for (DiagramElement diagramElm : transitions){
-			if (diagramElm.getId().equals(id)){
-				return diagramElm;
-			}
-		}
-		
-		for (DiagramElement diagramElm : workflowNodes){
-			if (diagramElm.getId().equals(id)){
-				return diagramElm;
-			}
-			if (diagramElm instanceof GroupShape){
-				DiagramElement tmp = diagramElm.findChild(id);
-				if (tmp!=null){
-					return tmp;
-				}
-			}
-		}
 		return null;
 	}
-	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.Pool#isAbstract()
 	 */
-	public boolean isAbstract() {
-		return isAbstract;
-	}
-	
-	public void setAbstract(boolean b){
-		this.isAbstract = b;
-	}
+//	public boolean isAbstract() {
+//		return isAbstract;
+//	}
+//	
+//	public void setAbstract(boolean b){
+//		this.isAbstract = b;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.Pool#getLanes()
@@ -105,32 +82,5 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.Pool#getTransitions()
-	 */
-	public List<TransitionShape> getTransitions() {
-		return transitions;
-	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.Pool#addTransition(org.fireflow.pdl.fpdl20.diagram.TransitionShape)
-	 */
-	public void addTransition(TransitionShape transitionShape) {
-		transitions.add(transitionShape);
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.PoolShape#getWorkflowNodeShapes()
-	 */
-	public List<WorkflowNodeShape> getWorkflowNodeShapes() {		
-		return workflowNodes;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.PoolShape#addWorkflowNodeShape(org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape)
-	 */
-	public void addWorkflowNodeShape(WorkflowNodeShape shape) {
-		workflowNodes.add(shape);		
-	}
 }

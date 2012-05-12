@@ -36,8 +36,8 @@ public interface Circle extends Shape{
 	public int getRadius();
 	public void setRadius(int r);
 	
-	public LineStyle getBoundsStyle();
-	public void setBoundsStyle(LineStyle style);
+	public LineStyle getLineStyle();
+	public void setLineStyle(LineStyle style);
 	
 	public FulfilStyle getFulfilStyle();
 	public void setFulfilStyle(FulfilStyle style);

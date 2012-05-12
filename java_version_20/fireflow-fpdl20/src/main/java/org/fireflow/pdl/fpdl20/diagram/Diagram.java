@@ -26,13 +26,34 @@ import java.util.Map;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface Diagram {
+public interface Diagram extends DiagramElement{
 	public static final String HORIZONAL = "H";
 	public static final String VERTICAL = "V";
-	public String getId();
-	public String getSubflowId();
+
+
 	public String getDirection();//泳道的方向
 	public void setDirection(String d);
+	
+	
+	/**
+	 * 所有的流程节点
+	 * @return
+	 */
+	public List<WorkflowNodeShape> getWorkflowNodeShapes();
+	
+	public void addWorkflowNodeShape(WorkflowNodeShape shape);
+	
+	/**
+	 * 返回所有的Transition
+	 * @return
+	 */
+	public List<TransitionShape> getTransitions();
+	
+	/**
+	 * 
+	 * @param transitionShape
+	 */
+	public void addTransition(TransitionShape transitionShape);	
 	
 	/**
 	 * 返回所有的Pool
@@ -41,9 +62,7 @@ public interface Diagram {
 	public List<PoolShape> getPools();
 	
 	public void addPool(PoolShape pool);
-	
-	public PoolShape getDefaultPoolShape();
-	
+
 	/**
 	 * 返回所有的消息流
 	 * @return
@@ -71,6 +90,6 @@ public interface Diagram {
 	public List<AssociationShape> getAssociations();
 	public void addAssociation(AssociationShape association);
 	
-	public DiagramElement findChild(String id);
+
 
 }
