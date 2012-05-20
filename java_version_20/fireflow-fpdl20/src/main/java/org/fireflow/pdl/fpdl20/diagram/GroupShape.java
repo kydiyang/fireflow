@@ -26,7 +26,7 @@ import java.util.List;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface GroupShape extends WorkflowNodeShape {
+public interface GroupShape extends DiagramElement {
 	/**
 	 * Group 是否展开
 	 * @return
@@ -38,15 +38,22 @@ public interface GroupShape extends WorkflowNodeShape {
 	public void addWorkflowNodeShape(WorkflowNodeShape shape);
 	
 	
-	/**
-	 * 返回所有的Transition
-	 * @return
-	 */
-	public List<TransitionShape> getTransitions();
+	public List<CommentShape> getComments();
+	public void addComment(CommentShape commentShape);
 	
-	/**
-	 * 
-	 * @param transitionShape
-	 */
-	public void addTransition(TransitionShape transitionShape);
+	//所有的链接线放在Diagram这一层
+//	/**
+//	 * 返回所有的Transition
+//	 * @return
+//	 */
+//	public List<TransitionShape> getTransitions();
+//	
+//	/**
+//	 * 
+//	 * @param transitionShape
+//	 */
+//	public void addTransition(TransitionShape transitionShape);
+//	public List<AssociationShape> getAssociations();
+//	public void addAssociation(AssociationShape association);
+	
 }

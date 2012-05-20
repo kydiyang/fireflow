@@ -53,10 +53,10 @@ public class MessageFlowShapeImpl extends AbsDiagramElement implements
 	}
 	
 	public void setLabel(String lb){
-		((Line)this.shape).getLabel().setContent(lb);
+		((Line)this.shape).getLabel().setText(lb);
 	}
 	public String getLabel(){
-		return ((Line)this.shape).getLabel().getContent();
+		return ((Line)this.shape).getLabel().getText();
 	}
 	
 	public DiagramElement getFromDiagramElement() {

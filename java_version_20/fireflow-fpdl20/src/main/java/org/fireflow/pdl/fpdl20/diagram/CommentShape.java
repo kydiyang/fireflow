@@ -26,4 +26,7 @@ package org.fireflow.pdl.fpdl20.diagram;
 public interface CommentShape extends DiagramElement {
 	public void setContent(String comment);
 	public String getContent();
+	
+	public void setTitle(String title);
+	public String getTitle();
 }

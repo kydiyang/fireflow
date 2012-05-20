@@ -39,6 +39,7 @@ public class CircleImpl implements Circle {
 	private FulfilStyle fulfilStyle = null;
 
 	public CircleImpl(){
+		label = new LabelImpl();
 		theCenter = new PointImpl(10,10);
 		fulfilStyle = new FulfilStyleImpl();
 		boundStyle = new LineStyleImpl();
@@ -113,5 +114,25 @@ public class CircleImpl implements Circle {
 	public void setFulfilStyle(FulfilStyle style) {
 		this.fulfilStyle = style;
 	}
-
+	public String getTitle(){
+		if (label==null) return "";
+		return label.getText();
+	}
+	public void setTitle(String title){
+		if (label==null){
+			label = new LabelImpl();
+		}
+		label.setText(title);
+	}
+	
+	public String getContent(){
+		if (label==null) return "";
+		return label.getText();
+	}
+	public void setContent(String content){
+		if (label==null){
+			label = new LabelImpl();
+		}
+		label.setText(content);
+	}
 }

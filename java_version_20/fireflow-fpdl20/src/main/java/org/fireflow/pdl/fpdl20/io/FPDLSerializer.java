@@ -213,10 +213,36 @@ public class FPDLSerializer implements FPDLNames {
     	diagramElm.setAttribute(REF, diagram.getWorkflowElementRef());
     	diagramElm.setAttribute(DIRECTION, diagram.getDirection());
     	
+    	List<PoolShape> poolList = diagram.getPools();
+    	if (poolList!=null && poolList.size()>0){
+    		for (PoolShape pool : poolList){
+    			writePoolShape(pool,diagramElm);
+    		}    		
+    	}
+    	
+
+    	List<GroupShape> groupList = diagram.getGroups();
+    	if (groupList!=null){
+    		for (GroupShape group : groupList){
+    			this.writeGroupShape(group, diagramElm);
+    		}
+    	}
+    	
+    	
     	List<WorkflowNodeShape> workflowNodeShapeList = diagram.getWorkflowNodeShapes();
     	if(workflowNodeShapeList!=null && workflowNodeShapeList.size()>0){
     		for (WorkflowNodeShape node : workflowNodeShapeList){
     			writeNodeShape(node,diagramElm);
+    		}
+    	}
+    	
+
+
+    	
+    	List<CommentShape> commentList = diagram.getComments();
+    	if (commentList!=null && commentList.size()>0){
+    		for (CommentShape comment : commentList){
+    			writeCommentShape(comment,diagramElm);
     		}
     	}
     	
@@ -227,19 +253,6 @@ public class FPDLSerializer implements FPDLNames {
     		}
     	}
     	
-    	List<PoolShape> poolList = diagram.getPools();
-    	if (poolList!=null && poolList.size()>0){
-    		for (PoolShape pool : poolList){
-    			writePoolShape(pool,diagramElm);
-    		}    		
-    	}
-    	
-    	List<CommentShape> commentList = diagram.getComments();
-    	if (commentList!=null && commentList.size()>0){
-    		for (CommentShape comment : commentList){
-    			writeCommentShape(comment,diagramElm);
-    		}
-    	}
     	
     	List<AssociationShape> associationList = diagram.getAssociations();
     	if (associationList!=null && associationList.size()>0){
@@ -295,26 +308,24 @@ public class FPDLSerializer implements FPDLNames {
     	this.writeShape(commentshape.getShape(), commentShapeElm);
     }
     
-    protected void writePoolShape(PoolShape pool,Element poolshapesElm){
-    	Element poolElm = Util4Serializer.addElement(poolshapesElm, CHILD);
-    	poolElm.setAttribute(TYPE, POOL);
-    	poolElm.setAttribute(ID, pool.getId());
-    	if (!StringUtils.isEmpty(pool.getWorkflowElementRef())){
-    		poolElm.setAttribute(REF, pool.getWorkflowElementRef());
-    	}
-    	
-    	
-    	Shape shape = pool.getShape();
-    	writeShape(shape,poolElm);
-    	
-    	List<LaneShape> laneList = pool.getLanes();
-    	if (laneList!=null && laneList.size()>0){
-    		for (LaneShape lane : laneList){
-    			writeLaneShape(lane,poolElm);
-    		}
-    	}
-    	
-    }
+	protected void writePoolShape(PoolShape pool, Element poolshapesElm) {
+		Element poolElm = Util4Serializer.addElement(poolshapesElm, CHILD);
+		poolElm.setAttribute(TYPE, POOL);
+		poolElm.setAttribute(ID, pool.getId());
+		if (!StringUtils.isEmpty(pool.getWorkflowElementRef())) {
+			poolElm.setAttribute(REF, pool.getWorkflowElementRef());
+		}
+
+		Shape shape = pool.getShape();
+		writeShape(shape, poolElm);
+
+		List<LaneShape> laneList = pool.getLanes();
+		if (laneList != null && laneList.size() > 0) {
+			for (LaneShape lane : laneList) {
+				writeLaneShape(lane, poolElm);
+			}
+		}
+	}
     
     protected void writeTransitionShape(TransitionShape transitionShape,Element transitionsElm){
     	Element transitionElm = Util4Serializer.addElement(transitionsElm, CONNECTOR);
@@ -331,7 +342,27 @@ public class FPDLSerializer implements FPDLNames {
     	
     	writeShape(transitionShape.getShape(),transitionElm);
     }
-    
+
+	protected void writeGroupShape(GroupShape groupShape, Element parentElem) {
+		Element groupElm = Util4Serializer.addElement(parentElem, CHILD);
+		groupElm.setAttribute(TYPE, GROUP);
+		groupElm.setAttribute(ID, groupShape.getId());
+		writeShape(groupShape.getShape(), groupElm);
+		// 序列化Group内部的元素
+
+		List<WorkflowNodeShape> nodeShapeList = groupShape
+				.getWorkflowNodeShapes();
+		for (WorkflowNodeShape nodeShape : nodeShapeList) {
+			this.writeNodeShape(nodeShape, groupElm);
+		}
+
+
+		List<CommentShape> commentShapeList = groupShape.getComments();
+		for (CommentShape commentshape : commentShapeList) {
+			this.writeCommentShape(commentshape, groupElm);
+		}
+
+	}
     protected void writeNodeShape(WorkflowNodeShape node,Element nodesElement){
     	Element nodeElm = null;
     	
@@ -347,9 +378,6 @@ public class FPDLSerializer implements FPDLNames {
     	}else if (node instanceof RouterShape){
     		nodeElm = Util4Serializer.addElement(nodesElement, CHILD);
     		nodeElm.setAttribute(TYPE, ROUTER);
-    	}else if (node instanceof GroupShape){
-    		nodeElm = Util4Serializer.addElement(nodesElement, CHILD);
-    		nodeElm.setAttribute(TYPE, GROUP);
     	}
     	
     	if (nodeElm==null) return;
@@ -357,20 +385,6 @@ public class FPDLSerializer implements FPDLNames {
     	nodeElm.setAttribute(ID, node.getId());
     	nodeElm.setAttribute(REF, node.getWorkflowElementRef());
     	writeShape(node.getShape(),nodeElm);
-    	
-    	//序列化Group内部的元素
-    	if (node instanceof GroupShape){
-    		GroupShape groupShape = (GroupShape)node;
-    		List<WorkflowNodeShape> nodeShapeList = groupShape.getWorkflowNodeShapes();
-    		for (WorkflowNodeShape nodeShape : nodeShapeList){
-    			this.writeNodeShape(nodeShape, nodeElm);
-    		}
-    		
-    		List<TransitionShape> transitionShapeList = groupShape.getTransitions();
-    		for (TransitionShape transShape : transitionShapeList){
-    			this.writeTransitionShape(transShape, nodeElm);
-    		}
-    	}
     }
     
     protected void writeLaneShape(LaneShape lane,Element lanesElm){
@@ -378,6 +392,23 @@ public class FPDLSerializer implements FPDLNames {
     	laneElm.setAttribute(TYPE, LANE);
     	laneElm.setAttribute(ID, lane.getId());
     	writeShape(lane.getShape(),laneElm);
+    	
+		List<WorkflowNodeShape> nodeShapeList = lane.getWorkflowNodeShapes();
+		for (WorkflowNodeShape nodeShape : nodeShapeList) {
+			this.writeNodeShape(nodeShape, laneElm);
+		}
+
+
+		List<CommentShape> commentShapeList = lane.getComments();
+		for (CommentShape commentshape : commentShapeList) {
+			this.writeCommentShape(commentshape, laneElm);
+		}
+
+
+		List<GroupShape> groupShapeList = lane.getGroups();
+		for (GroupShape groupShape:groupShapeList){
+			this.writeGroupShape(groupShape, laneElm);
+		}
     }
 
     protected void writeShape(Shape shape,Element parentElement){
@@ -480,14 +511,14 @@ public class FPDLSerializer implements FPDLNames {
     protected void writeRectangle(Rectangle rect,Element parentElement){
     	Element rectElm = Util4Serializer.addElement(parentElement, RECTANGLE);
     	
-    	if (rect.getTitle()!=null && !StringUtils.isEmpty(rect.getTitle().getContent())){
+    	if (rect.getTitle()!=null && !StringUtils.isEmpty(rect.getTitleLabel().getText())){
         	Element titleElm = Util4Serializer.addElement(rectElm, TITLE);
-        	this.writeLabel(rect.getTitle(), titleElm);
+        	this.writeLabel(rect.getTitleLabel(), titleElm);
     	}
 
-    	if (rect.getContent()!=null && !StringUtils.isEmpty(rect.getContent().getContent())){
+    	if (rect.getContent()!=null && !StringUtils.isEmpty(rect.getContentLabel().getText())){
     		Element contentElm = Util4Serializer.addElement(rectElm, CONTENT);
-        	this.writeLabel(rect.getContent(), contentElm);
+        	this.writeLabel(rect.getContentLabel(), contentElm);
     	}
 
     	
@@ -520,7 +551,7 @@ public class FPDLSerializer implements FPDLNames {
         	}
         	
         	Document doc = parentElm.getOwnerDocument();
-            CDATASection cdata = doc.createCDATASection(lb.getContent());
+            CDATASection cdata = doc.createCDATASection(lb.getText());
             labelElm.appendChild(cdata);
     	}
     	

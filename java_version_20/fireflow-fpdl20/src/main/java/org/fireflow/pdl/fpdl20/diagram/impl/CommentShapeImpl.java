@@ -35,10 +35,17 @@ public class CommentShapeImpl extends AbsDiagramElement implements CommentShape 
 	}
 	
 	public void setContent(String comment){
-		((RectangleImpl)this.shape).getTitle().setContent(comment);
+		((RectangleImpl)this.shape).setContent(comment);
 	}
 	
 	public String getContent(){
-		return ((RectangleImpl)this.shape).getTitle().getContent();
+		return ((RectangleImpl)this.shape).getContent();
+	}
+	
+	public void setTitle(String title){
+		this.shape.setTitle(title);
+	}
+	public String getTitle(){
+		return this.shape.getTitle();
 	}
 }

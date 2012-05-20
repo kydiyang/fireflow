@@ -17,6 +17,8 @@
  */
 package org.fireflow.pdl.fpdl20.diagram;
 
+import java.util.List;
+
 
 /**
  *
@@ -26,4 +28,29 @@ package org.fireflow.pdl.fpdl20.diagram;
  */
 public interface LaneShape extends DiagramElement {
 
+	public List<WorkflowNodeShape> getWorkflowNodeShapes();
+	
+	public void addWorkflowNodeShape(WorkflowNodeShape shape);
+
+//  所有的链接线 都放在Diagram这一层
+//	/**
+//	 * 返回所有的Transition
+//	 * @return
+//	 */
+//	public List<TransitionShape> getTransitions();
+//	
+//	/**
+//	 * 
+//	 * @param transitionShape
+//	 */
+//	public void addTransition(TransitionShape transitionShape);
+//	
+	
+	
+	public List<CommentShape> getComments();
+	public void addComment(CommentShape commentShape);
+	
+	
+	public List<GroupShape> getGroups();
+	public void addGroup(GroupShape groupShape);
 }

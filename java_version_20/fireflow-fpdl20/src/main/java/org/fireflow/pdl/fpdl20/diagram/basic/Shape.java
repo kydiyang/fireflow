@@ -17,6 +17,8 @@
  */
 package org.fireflow.pdl.fpdl20.diagram.basic;
 
+import org.fireflow.pdl.fpdl20.diagram.style.FulfilStyle;
+
 
 /**
  *
@@ -25,5 +27,10 @@ package org.fireflow.pdl.fpdl20.diagram.basic;
  *
  */
 public interface Shape {
-
+	public String getTitle();
+	public void setTitle(String title);
+	
+	public String getContent();
+	public void setContent(String content);
+	
 }

@@ -39,6 +39,10 @@ public class LineImpl implements Line {
 	List<Point> points = new ArrayList<Point>();
 	LineStyle lineStyle = null;
 
+	public LineImpl(){
+		label = new LabelImpl();
+	}
+	
 	public Label getLabel(){
 		return label;
 	}
@@ -82,5 +86,25 @@ public class LineImpl implements Line {
 		this.lineStyle = style;
 
 	}
-
+	public String getTitle(){
+		if (label==null) return "";
+		return label.getText();
+	}
+	public void setTitle(String title){
+		if (label==null){
+			label = new LabelImpl();
+		}
+		label.setText(title);
+	}
+	
+	public String getContent(){
+		if (label==null) return "";
+		return label.getText();
+	}
+	public void setContent(String content){
+		if (label==null){
+			label = new LabelImpl();
+		}
+		label.setText(content);
+	}
 }

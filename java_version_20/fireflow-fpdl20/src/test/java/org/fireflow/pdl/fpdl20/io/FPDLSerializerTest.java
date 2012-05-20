@@ -105,6 +105,8 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		
 		PoolShapeImpl pool = new PoolShapeImpl(mainflow.getId()+"_pool");
 		diagram.addPool(pool);
+		LaneShapeImpl lane1 = new LaneShapeImpl("lane_1");
+		pool.addLane(lane1);
 		
 		CommentShapeImpl commentShape = new CommentShapeImpl("comment_1");
 		commentShape.setContent("This is a comment");
@@ -132,7 +134,7 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		
 		ActivityShape activityShape = new ActivityShapeImpl(activity.getId()+"_shape");
 		activityShape.setWorkflowElementRef(activity.getId());
-		diagram.addWorkflowNodeShape(activityShape);
+		lane1.addWorkflowNodeShape(activityShape);
 		
 		EndNodeShape endNodeShape = new EndNodeShapeImpl(endNode.getId()+"_shape");
 		endNodeShape.setWorkflowElementRef(endNode.getId());
@@ -150,11 +152,11 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		transitionShape2.setToWorkflowNodeShape(endNodeShape);
 		diagram.addTransition(transitionShape2);
 		
-		LaneShape lane = new LaneShapeImpl("lane_1");
-		pool.addLane(lane);
+		LaneShape lane = new LaneShapeImpl("lane_3");
+		pool2.addLane(lane);
 		
-		LaneShape lane2 = new LaneShapeImpl("lane_2");
-		pool.addLane(lane2);
+		LaneShape lane2 = new LaneShapeImpl("lane_4");
+		pool2.addLane(lane2);
 
 		return process;
 	}

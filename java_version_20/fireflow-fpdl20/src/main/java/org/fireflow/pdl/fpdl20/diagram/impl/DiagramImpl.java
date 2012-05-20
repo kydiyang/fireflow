@@ -42,6 +42,7 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	private List<TransitionShape> transitions = new ArrayList<TransitionShape>();
 	private List<WorkflowNodeShape> workflowNodes = new ArrayList<WorkflowNodeShape>();
 
+	private List<GroupShape> groups = new ArrayList<GroupShape>();
 	private List<PoolShape> pools = new ArrayList<PoolShape>();
 	private List<MessageFlowShape> messageFlows = new ArrayList<MessageFlowShape>();
 	private List<CommentShape> comments = new ArrayList<CommentShape>();
@@ -101,6 +102,18 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 				}
 			}
 		}
+		
+		for (DiagramElement diagramElm : groups){
+			if (diagramElm.getId().equals(diagramElementId)){
+				return diagramElm;
+			}
+			if (diagramElm instanceof GroupShape){
+				DiagramElement tmp = diagramElm.findChild(diagramElementId);
+				if (tmp!=null){
+					return tmp;
+				}
+			}
+		}
 		return null;
 	}
 
@@ -110,20 +123,28 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 			return this;
 		}
 		for (DiagramElement diagramElm : transitions){
-			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : workflowNodes){
-			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
 				return diagramElm;
 			}
-			if (diagramElm instanceof GroupShape){
-				DiagramElement tmp = diagramElm.findChild(workflowElementId);
-				if (tmp!=null){
-					return tmp;
-				}
+		}
+		
+		for (DiagramElement diagramElm : groups){
+			DiagramElement tmp = diagramElm.findChildByWorkflowElementId(workflowElementId);
+			if (tmp!=null){
+				return tmp;
+			}
+		}
+		
+		for (DiagramElement diagramElm : pools){
+			DiagramElement tmp = diagramElm.findChildByWorkflowElementId(workflowElementId);
+			if (tmp!=null){
+				return tmp;
 			}
 		}
 		return null;
@@ -217,6 +238,21 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	 */
 	public void addAssociation(AssociationShape association) {
 		associations.add(association);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.diagram.Diagram#getGroups()
+	 */
+	public List<GroupShape> getGroups() {
+		return this.groups;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.diagram.Diagram#addGroup(org.fireflow.pdl.fpdl20.diagram.GroupShape)
+	 */
+	public void addGroup(GroupShape groupShape) {
+		this.groups.add(groupShape);
+		
 	}
 
 }

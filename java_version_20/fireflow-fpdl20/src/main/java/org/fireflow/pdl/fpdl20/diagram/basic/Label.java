@@ -28,8 +28,8 @@ import org.fireflow.pdl.fpdl20.diagram.style.Font;
 public interface Label {
 	public static final String CONTENT_FROM_WORKFLOW_ELEMENT = "#CONTENT_FROM_WF_ELEMENT#";
 	
-	public String getContent();
-	public void setContent(String content);
+	public String getText();
+	public void setText(String content);
 	
 	public Font getFont();
 	public void setFont(Font font);

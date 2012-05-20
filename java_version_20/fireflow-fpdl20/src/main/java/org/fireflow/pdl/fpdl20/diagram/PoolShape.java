@@ -45,4 +45,23 @@ public interface PoolShape extends DiagramElement {
 	 */
 	public void addLane(LaneShape ln);
 
+	
+	//所有的链接线放在diagram这一层
+//	/**
+//	 * 返回所有的Transition
+//	 * @return
+//	 */
+//	public List<TransitionShape> getTransitions();
+//	
+//	/**
+//	 * 
+//	 * @param transitionShape
+//	 */
+//	public void addTransition(TransitionShape transitionShape);
+//
+//	
+//	public List<AssociationShape> getAssociations();
+//	public void addAssociation(AssociationShape association);
+	
+
 }
