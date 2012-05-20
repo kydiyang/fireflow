@@ -30,22 +30,23 @@ import org.fireflow.pdl.fpdl20.diagram.style.impl.FulfilStyleImpl;
  *
  */
 public class RectangleImpl implements Rectangle {
-	private Label mainLabel = null;
-	private Label minorLabel = null;
+	private Label titleLabel = null;
+	private Label contentLabel = null;
 	private Bounds bounds = null;
 	private FulfilStyle fulfilStyle = null;
 	
 	public RectangleImpl(){
-		mainLabel = new LabelImpl();
+		titleLabel = new LabelImpl();
+		contentLabel = new LabelImpl();
 		bounds = new BoundsImpl();
 		fulfilStyle = new FulfilStyleImpl();
 	}
 	
-	public Label getTitle(){
-		return mainLabel;
+	public Label getTitleLabel(){
+		return titleLabel;
 	}
-	public void setTitle(Label lb){
-		this.mainLabel = lb;
+	public void setTitleLabel(Label lb){
+		this.titleLabel = lb;
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Node#getBounds()
@@ -77,14 +78,35 @@ public class RectangleImpl implements Rectangle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Rectangle#getMinorLabel()
 	 */
-	public Label getContent() {
-		return this.minorLabel;
+	public Label getContentLabel() {
+		return this.contentLabel;
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Rectangle#setMinorLabel(org.fireflow.pdl.fpdl20.diagram.basic.Label)
 	 */
-	public void setContent(Label lb) {
-		this.minorLabel = lb;		
+	public void setContentLabel(Label lb) {
+		this.contentLabel = lb;		
 	}
 
+	public String getTitle(){
+		if (titleLabel==null)return "";
+		return titleLabel.getText();
+	}
+	public void setTitle(String title){
+		if (titleLabel==null){
+			titleLabel = new LabelImpl();
+		}
+		titleLabel.setText(title);
+	}
+	
+	public String getContent(){
+		if (contentLabel==null) return "";
+		return contentLabel.getText();
+	}
+	public void setContent(String content){
+		if (contentLabel==null){
+			contentLabel = new LabelImpl();
+		}
+		contentLabel.setText(content);
+	}
 }

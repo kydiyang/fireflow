@@ -17,7 +17,11 @@
  */
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.fireflow.pdl.fpdl20.diagram.ActivityShape;
+import org.fireflow.pdl.fpdl20.diagram.StartNodeShape;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.BoundsImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.PointImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
@@ -32,6 +36,9 @@ import org.fireflow.pdl.fpdl20.diagram.style.impl.BoundsStyleImpl;
  */
 public class ActivityShapeImpl extends AbsDiagramElement implements
 		ActivityShape {
+	
+	List<StartNodeShape> attachedStartNodes = new ArrayList<StartNodeShape>();
+	
 	public ActivityShapeImpl(String id){
 		this.id = id;
 		
@@ -50,5 +57,16 @@ public class ActivityShapeImpl extends AbsDiagramElement implements
 		rect.setBounds(bounds);
 
 		this.shape = rect;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.diagram.ActivityShape#getAttachedStartNodes()
+	 */
+	public List<StartNodeShape> getAttachedStartNodeShapes() {
+		return attachedStartNodes;
+	}
+	
+	public void addAttachedStartNodeShape(StartNodeShape startNodeShape){
+		this.attachedStartNodes.add(startNodeShape);
 	}
 }

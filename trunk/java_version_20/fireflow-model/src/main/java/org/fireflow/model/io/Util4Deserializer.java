@@ -42,18 +42,23 @@ public class Util4Deserializer {
     	if (element==null){
     		return null;
     	}
-    	NodeList nodeList = element.getElementsByTagNameNS(qName.getNamespaceURI(), qName.getLocalPart());
+    	
+    	NodeList nodeList = element.getChildNodes();//element.getElementsByTagNameNS(qName.getNamespaceURI(), qName.getLocalPart());
     	if (nodeList!=null){
     		int length = nodeList.getLength();
     		for (int i = 0;i<length;i++){
     			Node node = nodeList.item(i);
-    			if (node.getNodeType()==Node.ELEMENT_NODE ){
+    			if (node.getNodeType()==Node.ELEMENT_NODE 
+    					&& equalStrings(node.getNamespaceURI(),qName.getNamespaceURI())
+    					&& equalStrings(node.getLocalName(),qName.getLocalPart())){
     				return (Element)node;
     			}
     		}
     	}
     	return null;
     }
+    
+    
 
     /** 
      * Return the child elements with the given name.  The elements must be in
@@ -68,15 +73,16 @@ public class Util4Deserializer {
             return null;
         }
 
-        NodeList nodeList = element.getElementsByTagNameNS(element.getNamespaceURI(), name);
+        NodeList nodeList = element.getChildNodes();//element.getElementsByTagNameNS(element.getNamespaceURI(), name);
 
         List<Element> result = new ArrayList<Element>();
-
+        QName qName = new QName(element.getNamespaceURI(),name);
         if (nodeList!=null){
         	int length = nodeList.getLength();
         	for (int i=0;i<length;i++){
         		Node node = nodeList.item(i);        		
-    			if (node.getNodeType()==Node.ELEMENT_NODE ){
+    			if (node.getNodeType()==Node.ELEMENT_NODE && equalStrings(node.getNamespaceURI(),qName.getNamespaceURI())
+    					&& equalStrings(node.getLocalName(),qName.getLocalPart())){
     				result.add((Element)node);
     			}
         	}

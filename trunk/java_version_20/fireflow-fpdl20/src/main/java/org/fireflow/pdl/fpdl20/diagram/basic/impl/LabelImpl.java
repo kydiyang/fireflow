@@ -38,14 +38,14 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Label#getContent()
 	 */
-	public String getContent() {
+	public String getText() {
 		return content;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.basic.Label#setContent(java.lang.String)
 	 */
-	public void setContent(String content) {
+	public void setText(String content) {
 		this.content = content;
 	}
 

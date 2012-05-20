@@ -36,21 +36,26 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 //	private boolean isAbstract = true;
 	private List<LaneShape> lanes = new ArrayList<LaneShape>();
 
+
+
+	
 	public PoolShapeImpl(String id ){
 		this.id = id ;
 		
 		Rectangle plane = new RectangleImpl();
 		
-		plane.getBounds().setWidth(560);
-		plane.getBounds().setHeight(400);
+		plane.getBounds().setWidth(600);
+		plane.getBounds().setHeight(250);
 		
 		this.shape = plane;
 	}
 	
-	public DiagramElement findChild(String id){
-		
+	public DiagramElement findChild(String diagramElementId){
+		if (diagramElementId.equals(id)){
+			return this;
+		}
 		for (DiagramElement diagramElm : lanes){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 		}
@@ -82,5 +87,17 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 
 	}
 
+	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
+	
+		for (DiagramElement diagramElm : lanes) {
+			DiagramElement tmp = diagramElm.findChild(workflowElementId);
+			if (tmp != null) {
+				return tmp;
+			}
+		}
+		
+		return null;
+	}
+	
 
 }

@@ -271,6 +271,8 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 		wp.addDiagram(diagram);
 		
+		
+		//1、首先load所有的节点
 		List<Element> childElmList = Util4Deserializer.children(diagramElm,CHILD);
 		if (childElmList!=null){
 			for (Element childElm : childElmList){
@@ -291,18 +293,37 @@ public class FPDLDeserializer implements FPDLNames{
 					diagram.addWorkflowNodeShape(routerShape);
 				}
 				else if (GROUP.equals(type)){
-					GroupShape groupShape = loadGroupShape(diagram,childElm);
-					diagram.addWorkflowNodeShape(groupShape);
+					GroupShape groupShape = loadGroupShapeWithoutConnector(childElm);
+					diagram.addGroup(groupShape);
 				}
 				else if (type.equals(POOL)){
-					loadPoolShape(diagram,childElm);
+					PoolShape poolShape = loadPoolShapeWithoutConnector(diagram,childElm);
+					diagram.addPool(poolShape);
 				}
 				else if (type.equals(COMMENT)){
-					loadCommentShape(diagram,childElm);
+					CommentShape commentShape = loadCommentShape(childElm);
+					diagram.addComment(commentShape);
 				}
 			}
 		}
 		
+		//2、然后load所有的线条
+		/*
+		if (childElmList!=null){
+			for (Element childElm : childElmList){
+				String type = childElm.getAttribute(TYPE);
+				String elmId = childElm.getAttribute(ID);
+				if (GROUP.equals(type)){
+					GroupShape groupShape = (GroupShape)diagram.findChild(elmId);
+					this.loadConnectorsInGroupShape(diagram, childElm, groupShape);
+				}
+				else if (type.equals(POOL)){
+					PoolShape poolShape = (PoolShape)diagram.findChild(elmId);
+					loadConnectorsInPoolShape(diagram,childElm,poolShape);
+				}
+			}
+		}
+		*/
 		
 		childElmList = Util4Deserializer.children(diagramElm, CONNECTOR);
 		if (childElmList!=null){
@@ -317,13 +338,14 @@ public class FPDLDeserializer implements FPDLNames{
 					loadMessageFlowShape(diagram,childElm);
 				}
 				else if (type.equals(ASSOCIATION)){
-					loadAssociationShape(diagram,childElm);
+					AssociationShape association = loadAssociationShape(diagram,childElm);
+					diagram.addAssociation(association);
 				}
 			}
 		}
 	}
 	
-	protected GroupShape loadGroupShape(Diagram diagram ,Element groupElement){
+	protected GroupShape loadGroupShapeWithoutConnector(Element groupElement){
 		String id = groupElement.getAttribute(ID);
 		GroupShape groupShape = new GroupShapeImpl(id);
 		
@@ -345,11 +367,21 @@ public class FPDLDeserializer implements FPDLNames{
 					RouterShape routerShape = loadRouterShape(childElm);
 					groupShape.addWorkflowNodeShape(routerShape);
 				}
+				else if (COMMENT.equals(type)){
+					CommentShape commentShape = this.loadCommentShape( childElm);
+					groupShape.addComment(commentShape);
+				}
 
 			}
 		}
 		
-		childElmList = Util4Deserializer.children(groupElement, CONNECTOR);
+
+		return groupShape;
+	}
+	
+	/* 所有的链接放在diagram中
+	protected void loadConnectorsInGroupShape(Diagram diagram ,Element groupElement,GroupShape groupShape){
+		List<Element> childElmList = Util4Deserializer.children(groupElement, CONNECTOR);
 		if (childElmList!=null){
 			for (Element childElm : childElmList){
 				String type = childElm.getAttribute(TYPE);
@@ -358,15 +390,17 @@ public class FPDLDeserializer implements FPDLNames{
 					TransitionShape transitionShape = loadTransitionShape(diagram,childElm);
 					groupShape.addTransition(transitionShape);	
 				}
+				else if (ASSOCIATION.equals(type)){
+					AssociationShape associationShape = this.loadAssociationShape(diagram, childElm);
+					groupShape.addAssociation(associationShape);
+				}
 			}
 		}
-		
-		return groupShape;
 	}
-	
-	protected void loadPoolShape(Diagram diagram,Element poolElm){
+	*/
+	protected PoolShape loadPoolShapeWithoutConnector(Diagram diagram,Element poolElm){
 		if (poolElm==null){
-			return ;
+			return null;
 		}
 		
 		String id = poolElm.getAttribute(ID);		
@@ -376,9 +410,6 @@ public class FPDLDeserializer implements FPDLNames{
 		if (!StringUtils.isEmpty(wfElementRef)){
 			pool.setWorkflowElementRef(wfElementRef);
 		}
-		
-		
-		diagram.addPool(pool);
 		
 		Element planeElm = Util4Deserializer.child(poolElm, RECTANGLE);
 		this.loadRectangle(pool, planeElm);
@@ -391,12 +422,45 @@ public class FPDLDeserializer implements FPDLNames{
 				if (type==null) type="";
 				
 				if (LANE.equals(type)){
-					loadLaneShape(pool,child);
+					LaneShape lane = loadLaneShape(child);
+					pool.addLane(lane);
 				}
 			}
 		}
 
+		return pool;
 	}
+	
+	/* 所有的链接放在diagram层里面
+	protected void loadConnectorsInPoolShape(Diagram diagram ,Element poolElement,PoolShape poolShape){
+		List<Element> childElmList = Util4Deserializer.children(poolElement, CONNECTOR);
+		if (childElmList!=null){
+			for (Element childElm : childElmList){
+				String type = childElm.getAttribute(TYPE);
+				if (type==null) type="";
+				if (TRANSITION.equals(type)){
+					TransitionShape transitionShape = loadTransitionShape(diagram,childElm);
+					poolShape.addTransition(transitionShape);	
+				}
+				else if (ASSOCIATION.equals(type)){
+					AssociationShape associationShape = this.loadAssociationShape(diagram, childElm);
+					poolShape.addAssociation(associationShape);
+				}
+			}
+		}
+		List<Element> children = Util4Deserializer.children(poolElement, CHILD);
+		if (children!=null){
+			for (Element child : children){
+				String type = child.getAttribute(TYPE);
+				String elmId = child.getAttribute(ID);
+				if (GROUP.equals(type)){
+					GroupShape groupShape = (GroupShape)diagram.findChild(elmId);
+					this.loadConnectorsInGroupShape(diagram, child, groupShape);
+				}
+			}
+		}
+	}
+	*/
 	
 	protected TransitionShape loadTransitionShape(Diagram diagram,Element transitionElm){
 		if (transitionElm==null)return null;
@@ -531,15 +595,46 @@ public class FPDLDeserializer implements FPDLNames{
 		return activityShape;
 	}
 	
-	protected void loadLaneShape(PoolShape pool,Element laneElm){
-		if (laneElm==null) return ;
+	protected LaneShape loadLaneShape(Element laneElm){
+		if (laneElm==null) return null;
 		String id = laneElm.getAttribute(ID);
 		LaneShape lane = new LaneShapeImpl(id);
 		
 		Element planeElm = Util4Deserializer.child(laneElm, RECTANGLE);
 		this.loadRectangle(lane, planeElm);
 		
-		pool.addLane(lane);
+		//下级节点
+		List<Element> children = Util4Deserializer.children(laneElm, CHILD);
+		if (children!=null){
+			for (Element child : children){
+				String type = child.getAttribute(TYPE);
+				if (type==null) type="";
+				
+				if (ACTIVITY.equals(type)){
+					ActivityShape activityShape =loadActivityShape(child);
+					lane.addWorkflowNodeShape(activityShape);
+				}else if (START_NODE.equals(type)){
+					StartNodeShape startNodeShape = loadStartNodeShape(child);
+					lane.addWorkflowNodeShape(startNodeShape);
+				}else if (END_NODE.equals(type)){
+					EndNodeShape endNodeShape = loadEndNodeShape(child);
+					lane.addWorkflowNodeShape(endNodeShape);
+				}else if (ROUTER.equals(type)){
+					RouterShape routerShape = loadRouterShape(child);
+					lane.addWorkflowNodeShape(routerShape);
+				}
+				else if (COMMENT.equals(type)){
+					CommentShape commentShape = this.loadCommentShape(child);
+					lane.addComment(commentShape);
+				}
+				else if (GROUP.equals(type)){
+					GroupShape groupShape = this.loadGroupShapeWithoutConnector(child);
+					lane.addGroup(groupShape);
+				}
+			}
+		}
+		
+		return lane;
 	}
 	
 	/*
@@ -561,14 +656,14 @@ public class FPDLDeserializer implements FPDLNames{
 		plane.setFulfilStyle(fulfilStyle);
 	}
 	*/
-	protected void loadCommentShape(Diagram diagram , Element commentElm){
-		if (commentElm==null) return;
+	protected CommentShape loadCommentShape( Element commentElm){
+		if (commentElm==null) return null;
 		String id = commentElm.getAttribute(ID);
 		CommentShape comment = new CommentShapeImpl(id);
 		Element rectElm = Util4Deserializer.child(commentElm,RECTANGLE);
 		loadRectangle(comment, rectElm);
 		
-		diagram.addComment(comment);
+		return comment;
 	}
 	
 	protected void loadRectangle(DiagramElement diagramElm , Element rectElm){
@@ -580,14 +675,14 @@ public class FPDLDeserializer implements FPDLNames{
 		if (titleElm!=null){
 			Element labelElm = Util4Deserializer.child(titleElm, LABEL);
 			Label lb = this.loadLabel(labelElm);
-			rect.setTitle(lb);
+			rect.setTitleLabel(lb);
 		}
 		
 		Element contentElm = Util4Deserializer.child(rectElm, CONTENT);
 		if (contentElm!=null){
 			Element labelElm = Util4Deserializer.child(contentElm, LABEL);
 			Label lb = this.loadLabel(labelElm);
-			rect.setContent(lb);
+			rect.setContentLabel(lb);
 		}
 		
 		Element boundsElm = Util4Deserializer.child(rectElm, BOUNDS);
@@ -678,7 +773,7 @@ public class FPDLDeserializer implements FPDLNames{
 		return fulfilStyle;
 	}
 	
-	protected void loadAssociationShape(Diagram diagram,Element associationElm){
+	protected AssociationShape loadAssociationShape(Diagram diagram,Element associationElm){
 		String id = associationElm.getAttribute(ID);
 		String from = associationElm.getAttribute(FROM);
 		String to = associationElm.getAttribute(TO);
@@ -693,7 +788,7 @@ public class FPDLDeserializer implements FPDLNames{
 		Element lineElm = Util4Deserializer.child(associationElm, LINE);
 		loadLine(associationShape,lineElm);
 		
-		diagram.addAssociation(associationShape);
+		return associationShape;
 	}
 	
 	protected void loadMessageFlowShape(Diagram diagram,Element messageFlowElm){
@@ -798,7 +893,7 @@ public class FPDLDeserializer implements FPDLNames{
 				org.w3c.dom.Node node = nodeList.item(i);
 				if(node.getNodeType()==org.w3c.dom.Node.CDATA_SECTION_NODE){
 					CDATASection cdataSection = (CDATASection)node;
-					lb.setContent(cdataSection.getData());
+					lb.setText(cdataSection.getData());
 					break;
 				}
 			}

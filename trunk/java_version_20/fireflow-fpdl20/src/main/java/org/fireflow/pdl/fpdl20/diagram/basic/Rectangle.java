@@ -26,11 +26,11 @@ import org.fireflow.pdl.fpdl20.diagram.style.FulfilStyle;
  *
  */
 public interface Rectangle extends Shape{
-	public Label getTitle();
-	public void setTitle(Label lb);
+	public Label getTitleLabel();
+	public void setTitleLabel(Label lb);
 	
-	public Label getContent();
-	public void setContent(Label lb);
+	public Label getContentLabel();
+	public void setContentLabel(Label lb);
 	
 	public Bounds getBounds();
 	public void setBounds(Bounds bounds);

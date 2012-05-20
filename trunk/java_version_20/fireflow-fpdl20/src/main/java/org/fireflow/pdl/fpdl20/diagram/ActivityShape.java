@@ -17,6 +17,8 @@
  */
 package org.fireflow.pdl.fpdl20.diagram;
 
+import java.util.List;
+
 /**
  *
  * @author 非也 nychen2000@163.com
@@ -24,5 +26,6 @@ package org.fireflow.pdl.fpdl20.diagram;
  *
  */
 public interface ActivityShape extends WorkflowNodeShape {
-
+	public List<StartNodeShape> getAttachedStartNodeShapes();
+	public void addAttachedStartNodeShape(StartNodeShape startNodeShape);
 }

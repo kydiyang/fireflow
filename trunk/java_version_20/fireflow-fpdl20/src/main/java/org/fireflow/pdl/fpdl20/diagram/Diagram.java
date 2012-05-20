@@ -55,6 +55,12 @@ public interface Diagram extends DiagramElement{
 	 */
 	public void addTransition(TransitionShape transitionShape);	
 	
+	
+	public List<GroupShape> getGroups();
+	
+	public void addGroup(GroupShape groupShape);
+	
+	
 	/**
 	 * 返回所有的Pool
 	 * @return
