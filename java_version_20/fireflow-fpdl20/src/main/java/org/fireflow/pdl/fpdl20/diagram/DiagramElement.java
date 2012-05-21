@@ -26,7 +26,7 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
  *
  */
 public interface DiagramElement {
-	public String getSn();
+//	public String getSn();
 	public String getId();
 	public void setId(String id);
 	

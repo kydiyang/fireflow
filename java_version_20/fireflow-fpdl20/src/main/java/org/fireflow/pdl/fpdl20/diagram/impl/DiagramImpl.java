@@ -58,41 +58,35 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 			return this;
 		}
 		for (DiagramElement diagramElm : transitions){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : workflowNodes){
-			if (diagramElm.getId().equals(id)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
-			}
-			if (diagramElm instanceof GroupShape){
-				DiagramElement tmp = diagramElm.findChild(id);
-				if (tmp!=null){
-					return tmp;
-				}
 			}
 		}
 		for (DiagramElement diagramElm : associations){
-			if (diagramElm.getId().equals(diagramElementId)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 		}
 		for (DiagramElement diagramElm : comments){
-			if (diagramElm.getId().equals(diagramElementId)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : messageFlows){
-			if (diagramElm.getId().equals(diagramElementId)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : pools){
-			if (diagramElm.getId().equals(diagramElementId)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 			if (diagramElm instanceof PoolShape){
@@ -104,7 +98,7 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 		}
 		
 		for (DiagramElement diagramElm : groups){
-			if (diagramElm.getId().equals(diagramElementId)){
+			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
 			if (diagramElm instanceof GroupShape){

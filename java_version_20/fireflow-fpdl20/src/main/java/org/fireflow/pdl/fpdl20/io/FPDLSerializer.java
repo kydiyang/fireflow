@@ -19,9 +19,11 @@ package org.fireflow.pdl.fpdl20.io;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -69,6 +71,7 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Line;
 import org.fireflow.pdl.fpdl20.diagram.basic.Point;
 import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
 import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
+import org.fireflow.pdl.fpdl20.diagram.basic.impl.PointImpl;
 import org.fireflow.pdl.fpdl20.diagram.style.BoundsStyle;
 import org.fireflow.pdl.fpdl20.diagram.style.FulfilStyle;
 import org.fireflow.pdl.fpdl20.diagram.style.LineStyle;
@@ -463,6 +466,7 @@ public class FPDLSerializer implements FPDLNames {
     	}
     }
     
+
     private String pointList2String(List<Point> pointList){
     	StringBuffer sbuf = new StringBuffer();
 		for (int i=0;i<pointList.size();i++){
@@ -511,12 +515,12 @@ public class FPDLSerializer implements FPDLNames {
     protected void writeRectangle(Rectangle rect,Element parentElement){
     	Element rectElm = Util4Serializer.addElement(parentElement, RECTANGLE);
     	
-    	if (rect.getTitle()!=null && !StringUtils.isEmpty(rect.getTitleLabel().getText())){
+    	if (rect.getTitleLabel()!=null && !StringUtils.isEmpty(rect.getTitleLabel().getText())){
         	Element titleElm = Util4Serializer.addElement(rectElm, TITLE);
         	this.writeLabel(rect.getTitleLabel(), titleElm);
     	}
 
-    	if (rect.getContent()!=null && !StringUtils.isEmpty(rect.getContentLabel().getText())){
+    	if (rect.getContentLabel()!=null && !StringUtils.isEmpty(rect.getContentLabel().getText())){
     		Element contentElm = Util4Serializer.addElement(rectElm, CONTENT);
         	this.writeLabel(rect.getContentLabel(), contentElm);
     	}

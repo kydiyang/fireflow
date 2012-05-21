@@ -116,7 +116,7 @@ public class LaneShapeImpl extends AbsDiagramElement implements LaneShape {
 		}
 		
 		for (DiagramElement diagramElm : groups) {
-			DiagramElement tmp = diagramElm.findChild(workflowElementId);
+			DiagramElement tmp = diagramElm.findChildByWorkflowElementId(workflowElementId);
 			if (tmp != null) {
 				return tmp;
 			}
