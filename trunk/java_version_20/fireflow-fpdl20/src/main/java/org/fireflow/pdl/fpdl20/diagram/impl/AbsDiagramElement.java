@@ -29,14 +29,14 @@ import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
  *
  */
 public abstract class AbsDiagramElement implements DiagramElement {
-	protected String sn = UUID.randomUUID().toString();
+//	protected String sn = UUID.randomUUID().toString();
 	protected String id = null;
 	protected String workflowElementId = null;
 	protected Shape shape = null;
 
-	public String getSn(){
-		return sn;
-	}
+//	public String getSn(){
+//		return sn;
+//	}
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.DiagramElement#getId()

@@ -90,7 +90,7 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
 	
 		for (DiagramElement diagramElm : lanes) {
-			DiagramElement tmp = diagramElm.findChild(workflowElementId);
+			DiagramElement tmp = diagramElm.findChildByWorkflowElementId(workflowElementId);
 			if (tmp != null) {
 				return tmp;
 			}

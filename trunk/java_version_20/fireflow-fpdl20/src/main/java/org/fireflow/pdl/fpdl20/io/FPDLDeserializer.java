@@ -262,7 +262,7 @@ public class FPDLDeserializer implements FPDLNames{
 		if (diagramElm==null) return;
 		
 		String id = diagramElm.getAttribute(ID);
-		String subflowId = diagramElm.getAttribute(SUBFLOW_ID);
+		String subflowId = diagramElm.getAttribute(REF);
 		String direction = diagramElm.getAttribute(DIRECTION);
 		
 		Diagram diagram = new DiagramImpl(id,subflowId);
@@ -348,6 +348,9 @@ public class FPDLDeserializer implements FPDLNames{
 	protected GroupShape loadGroupShapeWithoutConnector(Element groupElement){
 		String id = groupElement.getAttribute(ID);
 		GroupShape groupShape = new GroupShapeImpl(id);
+		
+		Element rectElm = Util4Deserializer.child(groupElement, RECTANGLE);
+		this.loadRectangle(groupShape, rectElm);
 		
 		List<Element> childElmList = Util4Deserializer.children(groupElement,CHILD);
 		if (childElmList!=null){
@@ -823,6 +826,12 @@ public class FPDLDeserializer implements FPDLNames{
 			Point p = PointImpl.fromString(position);
 			line.setLabelPosition(p);
 		}
+		
+		String pointListStr = lineElm.getAttribute(POINT_LIST);
+		if (!StringUtils.isEmpty(pointListStr)){
+			List<Point> l = string2PointList(pointListStr);
+			line.getPoints().addAll(l);
+		}
 
 		LineStyle lineStyle = new LineStyleImpl();
 		String color = lineElm.getAttribute(COLOR);
@@ -861,6 +870,16 @@ public class FPDLDeserializer implements FPDLNames{
 		Label lb = loadLabel(labelElm);
 		line.setLabel(lb);
 	}
+    private List<Point> string2PointList(String s){
+    	StringTokenizer tokenizer = new StringTokenizer(s,";");
+    	List<Point> l = new ArrayList<Point>();
+    	while(tokenizer.hasMoreTokens()){
+    		String tmp = tokenizer.nextToken();
+    		Point p = PointImpl.fromString(tmp);
+    		l.add(p);
+    	}
+    	return l;
+    }
 	
 	protected Label loadLabel(Element labelElm){
 		if (labelElm==null) return null;
