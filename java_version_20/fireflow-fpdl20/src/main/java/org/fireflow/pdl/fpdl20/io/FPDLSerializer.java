@@ -388,6 +388,18 @@ public class FPDLSerializer implements FPDLNames {
     	nodeElm.setAttribute(ID, node.getId());
     	nodeElm.setAttribute(REF, node.getWorkflowElementRef());
     	writeShape(node.getShape(),nodeElm);
+    	
+    	if (node instanceof ActivityShape){
+    		//write attached start node;
+    		ActivityShape activityShape = (ActivityShape)node;
+    		List<StartNodeShape> attachedStartNodeShapeList = activityShape.getAttachedStartNodeShapes();
+    		
+    		if (attachedStartNodeShapeList!=null && attachedStartNodeShapeList.size()>0){
+    			for (StartNodeShape startNodeShape : attachedStartNodeShapeList){
+    				this.writeNodeShape(startNodeShape, nodeElm);
+    			}
+    		}
+    	}
     }
     
     protected void writeLaneShape(LaneShape lane,Element lanesElm){
