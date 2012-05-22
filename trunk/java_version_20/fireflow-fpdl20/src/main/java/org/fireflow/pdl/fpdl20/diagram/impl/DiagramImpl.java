@@ -67,6 +67,10 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 			if (diagramElementId.equals(diagramElm.getId())){
 				return diagramElm;
 			}
+			DiagramElement tmp = diagramElm.findChild(diagramElementId);
+			if (tmp!=null){
+				return tmp;
+			}
 		}
 		for (DiagramElement diagramElm : associations){
 			if (diagramElementId.equals(diagramElm.getId())){
@@ -125,6 +129,10 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 		for (DiagramElement diagramElm : workflowNodes){
 			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
 				return diagramElm;
+			}
+			DiagramElement tmp = diagramElm.findChildByWorkflowElementId(workflowElementId);
+			if (tmp!=null){
+				return tmp;
 			}
 		}
 		

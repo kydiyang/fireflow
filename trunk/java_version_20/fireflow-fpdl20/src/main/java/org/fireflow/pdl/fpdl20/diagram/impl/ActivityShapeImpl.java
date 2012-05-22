@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fireflow.pdl.fpdl20.diagram.ActivityShape;
+import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.StartNodeShape;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.BoundsImpl;
 import org.fireflow.pdl.fpdl20.diagram.basic.impl.PointImpl;
@@ -58,7 +59,29 @@ public class ActivityShapeImpl extends AbsDiagramElement implements
 
 		this.shape = rect;
 	}
+	public DiagramElement findChild(String diagramElementId){
+		
+		
+		for (DiagramElement diagramElm : attachedStartNodes){
+			if (diagramElementId.equals(diagramElm.getId())){
+				return diagramElm;
+			}
+		}
 
+		return null;
+	}
+	
+	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
+
+		
+		for (DiagramElement diagramElm : attachedStartNodes){
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
+				return diagramElm;
+			}
+		}
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.ActivityShape#getAttachedStartNodes()
 	 */

@@ -595,6 +595,14 @@ public class FPDLDeserializer implements FPDLNames{
 		Element rectElm = Util4Deserializer.child(activityShapeElm, RECTANGLE);
 		this.loadRectangle(activityShape, rectElm);
 		
+		List<Element> attachedStartNodeList = Util4Deserializer.children(activityShapeElm, CHILD);
+		if (attachedStartNodeList!=null){
+			for (Element startNodeElm : attachedStartNodeList){
+				StartNodeShape startNodeShape = this.loadStartNodeShape(startNodeElm);
+				activityShape.addAttachedStartNodeShape(startNodeShape);
+			}
+		}
+		
 		return activityShape;
 	}
 	
