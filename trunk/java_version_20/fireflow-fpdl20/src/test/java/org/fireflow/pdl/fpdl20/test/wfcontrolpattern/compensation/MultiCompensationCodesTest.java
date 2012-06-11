@@ -108,7 +108,7 @@ public class MultiCompensationCodesTest extends FireWorkflowJunitEnviroment {
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		SubProcess subflow = process.getMainflow();
+		SubProcess subflow = process.getMainSubProcess();
 		//*****************************************/
 		//*************** 开始节点          *************/
 		//****************************************/

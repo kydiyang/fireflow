@@ -121,7 +121,7 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		//构造流程
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processName);
 		
-		SubProcess mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainSubProcess();
 		
 		Duration du = new Duration(3,"DAY");
 		mainflow.setDuration(du);

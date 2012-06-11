@@ -153,7 +153,7 @@ public class WorkflowStatementAbortActivityInstanceTest  extends FireWorkflowJun
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 
-		SubProcess subflow = process.getMainflow();
+		SubProcess subflow = process.getMainSubProcess();
 		
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		

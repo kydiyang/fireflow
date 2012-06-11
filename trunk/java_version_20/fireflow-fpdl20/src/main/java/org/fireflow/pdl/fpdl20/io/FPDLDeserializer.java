@@ -1008,7 +1008,7 @@ public class FPDLDeserializer implements FPDLNames{
 		loadExtendedAttributes(extAttrs, Util4Deserializer.child(
 				subflowElement, EXTENDED_ATTRIBUTES));
 		
-		wp.addSubflow(subflow);
+		wp.addSubProcess(subflow);
 
 	}
 	

@@ -111,7 +111,7 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 	 */
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
-		SubProcess subflow = process.getMainflow();
+		SubProcess subflow = process.getMainSubProcess();
 		subflow.setDuration(new Duration(5,Duration.MINUTE));
 		
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");

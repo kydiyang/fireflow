@@ -157,7 +157,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		process.setDescription(description);
 		
 		//一、创建主流程
-		SubProcess mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainSubProcess();
 		
 		PropertyImpl property = new PropertyImpl(mainflow,"id");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
@@ -176,29 +176,29 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		
 		mainflow.setDuration(new Duration(5,Duration.MINUTE));
 		
-		StartNodeImpl startNode = new StartNodeImpl(process.getMainflow(),"Start");
+		StartNodeImpl startNode = new StartNodeImpl(process.getMainSubProcess(),"Start");
 		
-		ActivityImpl activity = new ActivityImpl(process.getMainflow(),"Activity1");
+		ActivityImpl activity = new ActivityImpl(process.getMainSubProcess(),"Activity1");
 		activity.setDuration(new Duration(6,Duration.DAY));
 		property = new PropertyImpl(activity,"approveResult");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
 		property.setInitialValueAsString("This is the result!");
 		activity.getProperties().add(property);
 		
-		EndNodeImpl endNode = new EndNodeImpl(process.getMainflow(),"End");
+		EndNodeImpl endNode = new EndNodeImpl(process.getMainSubProcess(),"End");
 		
 		mainflow.setEntry(startNode);
 		mainflow.getStartNodes().add(startNode);
 		mainflow.getActivities().add(activity);
 		mainflow.getEndNodes().add(endNode);
 		
-		TransitionImpl transition1 = new TransitionImpl(process.getMainflow(),"start2activity");
+		TransitionImpl transition1 = new TransitionImpl(process.getMainSubProcess(),"start2activity");
 		transition1.setFromNode(startNode);
 		transition1.setToNode(activity);
 		startNode.getLeavingTransitions().add(transition1);
 		activity.getEnteringTransitions().add(transition1);
 		
-		TransitionImpl transition2 = new TransitionImpl(process.getMainflow(),"activity2end");
+		TransitionImpl transition2 = new TransitionImpl(process.getMainSubProcess(),"activity2end");
 		transition2.setFromNode(activity);
 		transition2.setToNode(endNode);
 		activity.getLeavingTransitions().add(transition2);
@@ -209,7 +209,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		
 		//二、创建子流程
 		SubProcess subflow2 = new SubProcessImpl(process,"subflow2");
-		process.addSubflow(subflow2);
+		process.addSubProcess(subflow2);
 		
 		PropertyImpl property4Subflow2 = new PropertyImpl(subflow2,"id");//流程变量x
 		property4Subflow2.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
