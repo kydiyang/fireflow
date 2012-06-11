@@ -191,7 +191,7 @@ public class FPDLSerializer implements FPDLNames {
         ResourceSerializer.writeResources(workflowProcess.getLocalResources(),workflowProcessElement);
 
         Element subflowsElement = Util4Serializer.addElement(workflowProcessElement, SUBFLOWS);
-        List<SubProcess> subflowList = workflowProcess.getLocalSubflows();
+        List<SubProcess> subflowList = workflowProcess.getLocalSubProcesses();
         if (subflowList!=null && subflowList.size()>0){
         	for (SubProcess subflow : subflowList){
         		writeSubflow(subflow, subflowsElement);

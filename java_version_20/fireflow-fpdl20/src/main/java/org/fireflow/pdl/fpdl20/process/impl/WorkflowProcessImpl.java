@@ -69,24 +69,24 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		localFlowsMap.put(flow.getId(), flow);
 	}
 	
-	public SubProcess getMainflow(){
+	public SubProcess getMainSubProcess(){
 		String mainFlowId = this.getName()+"."+WorkflowProcess.MAIN_PROCESS_NAME;
 		return this.localFlowsMap.get(mainFlowId);
 	}
 	
-	public SubProcess getLocalSubflow(String flowId){
+	public SubProcess getLocalSubProcess(String flowId){
 		return this.localFlowsMap.get(flowId);
 	}
 	
-	public void addSubflow(SubProcess flow){
+	public void addSubProcess(SubProcess flow){
 		this.localFlowsMap.put(flow.getId(), flow);
 	}
 
 	public WorkflowElement findWorkflowElementById(String workflowElementId){
-		SubProcess subflow = this.getLocalSubflow(workflowElementId);
+		SubProcess subflow = this.getLocalSubProcess(workflowElementId);
 		if (subflow!=null)return subflow;
 		
-		List<SubProcess> subflowList = this.getLocalSubflows();
+		List<SubProcess> subflowList = this.getLocalSubProcesses();
 		for (SubProcess tmpSubflow : subflowList){
 			WorkflowElement we = tmpSubflow.findWFElementById(workflowElementId);
 			if (we!=null) return we;
@@ -99,7 +99,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getDuration()
 	 */
 	public Duration getDuration() {
-		SubProcess mainflow = this.getMainflow();
+		SubProcess mainflow = this.getMainSubProcess();
 		if (mainflow!=null){
 			return mainflow.getDuration();
 		}
@@ -267,7 +267,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getLocalSubflows()
 	 */
-	public List<SubProcess> getLocalSubflows() {
+	public List<SubProcess> getLocalSubProcesses() {
 		PrivateList<SubProcess> privateList = new PrivateList<SubProcess>();
 		privateList.privateAddAll(this.localFlowsMap.values());
 		return privateList;
@@ -297,7 +297,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		return privateList;
 	}
 	
-	public Diagram getDiagramBySubflowId(String subflowId){
+	public Diagram getDiagramBySubProcessId(String subflowId){
 		return this.diagramsMap.get(subflowId);
 	}
 

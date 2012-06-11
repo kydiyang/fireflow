@@ -119,7 +119,7 @@ public class TerminationTest  extends FireWorkflowJunitEnviroment {
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		SubProcess subflow = process.getMainflow();
+		SubProcess subflow = process.getMainSubProcess();
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		
 		RouterImpl router1 = new RouterImpl(subflow,"Router");

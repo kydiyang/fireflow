@@ -64,7 +64,7 @@ public interface WorkflowProcess extends ModelElement{
 	
 	/**
 	 * 根据WorkflowElmentId查找对应的Workflow Element; 
-	 * Workflow Element可以是Subflow,StartNode,Activity,EndNode,Router,Transition。
+	 * Workflow Element可以是subprocess,StartNode,Activity,EndNode,Router,Transition。
 	 * @param workflowElementId
 	 * @return
 	 */
@@ -74,33 +74,33 @@ public interface WorkflowProcess extends ModelElement{
 	 * 返回主流程的流程Id
 	 * @return
 	 */
-	public SubProcess getMainflow();
+	public SubProcess getMainSubProcess();
 	
 	/**
-	 * 根据subflowId 返回subflow
-	 * @param workflowId
+	 * 根据subprocessId 返回subprocess
+	 * @param subProcessId
 	 * @return
 	 */
-	public SubProcess getLocalSubflow(String workflowId);
+	public SubProcess getLocalSubProcess(String subProcessId);
 	
 	/**
-	 * 向WorkflowProcess中增加一个subflow
-	 * @param flow
+	 * 向WorkflowProcess中增加一个subprocess
+	 * @param subProcess
 	 */
-	public void addSubflow(SubProcess flow);
+	public void addSubProcess(SubProcess subProcess);
 	
 	/**
-	 * 获得流程所有的subflows，包括引入的外部流程的main_flow
+	 * 获得流程所有的subprocesss，包括引入的外部流程的main_flow
 	 * 暂不启用对WorkflowProcess的引用，因为容易发生循环引用，导致死锁
 	 * @return
 	 */
-//	public List<SubProcess> getSubflows();
+//	public List<SubProcess> getsubprocesses();
 	
 	/**
-	 * 获得本WorkflowProcess内部定义的所有subflow
+	 * 获得本WorkflowProcess内部定义的所有subprocess
 	 * @return
 	 */
-	public List<SubProcess> getLocalSubflows();
+	public List<SubProcess> getLocalSubProcesses();
 	
 
 	
@@ -181,5 +181,5 @@ public interface WorkflowProcess extends ModelElement{
 	
 	public List<Diagram> getDiagrams();
 	public void addDiagram(Diagram diagram);
-	public Diagram getDiagramBySubflowId(String subflowId);
+	public Diagram getDiagramBySubProcessId(String subProcessId);
 }

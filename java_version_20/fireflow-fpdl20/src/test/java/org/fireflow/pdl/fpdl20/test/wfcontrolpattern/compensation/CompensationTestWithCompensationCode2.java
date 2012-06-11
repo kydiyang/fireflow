@@ -108,7 +108,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		SubProcess subflow = process.getMainflow();
+		SubProcess subflow = process.getMainSubProcess();
 		
 		//*****************************************/
 		//*************** 开始节点          *************/

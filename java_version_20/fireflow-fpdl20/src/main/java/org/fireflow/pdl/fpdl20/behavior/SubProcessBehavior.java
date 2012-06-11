@@ -68,8 +68,8 @@ import org.firesoa.common.util.JavaDataTypeConverter;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class SubflowBehavior implements WorkflowBehavior {
-	private static final Log log = LogFactory.getLog(SubflowBehavior.class);
+public class SubProcessBehavior implements WorkflowBehavior {
+	private static final Log log = LogFactory.getLog(SubProcessBehavior.class);
 	public CompensationHandler getCompensationHandler(String compensationCode){
 		return null;
 	}

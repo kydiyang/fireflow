@@ -200,7 +200,7 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 	}
 
 	protected void publishCallbackService(WorkflowProcess workflowProcess)throws WebservicePublishException {
-		List<SubProcess> subflowList = workflowProcess.getLocalSubflows();
+		List<SubProcess> subflowList = workflowProcess.getLocalSubProcesses();
 
 		if (subflowList == null || subflowList.size() == 0)
 			return;

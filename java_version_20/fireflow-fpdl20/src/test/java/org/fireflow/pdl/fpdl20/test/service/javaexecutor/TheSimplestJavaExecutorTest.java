@@ -116,7 +116,7 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		//构造流程
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		SubProcess subflow = process.getMainflow();
+		SubProcess subflow = process.getMainSubProcess();
 		
 		PropertyImpl property = new PropertyImpl(subflow,"x");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));

@@ -71,7 +71,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public ServiceBinding getServiceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	SubProcess subflow = process.getLocalSubflow(subflowId);
+    	SubProcess subflow = process.getLocalSubProcess(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	if (activity==null){
     		return null;
@@ -83,7 +83,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public ResourceBinding getResourceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	SubProcess subflow = process.getLocalSubflow(subflowId);
+    	SubProcess subflow = process.getLocalSubProcess(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	if (activity==null){
     		return null;
@@ -95,7 +95,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public Object getActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	SubProcess subflow = process.getLocalSubflow(subflowId);
+    	SubProcess subflow = process.getLocalSubProcess(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	return activity;
     }
@@ -192,7 +192,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	}
 	
 	private boolean hasCallbackService(WorkflowProcess workflowProcess){
-		List<SubProcess> subflowList = workflowProcess.getLocalSubflows();
+		List<SubProcess> subflowList = workflowProcess.getLocalSubProcesses();
 		if (subflowList == null || subflowList.size() == 0)
 			return false;
 		for (SubProcess subflow : subflowList) {
@@ -234,7 +234,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	}
 	
 	private boolean isTimerStart(WorkflowProcess wfProcess){
-		SubProcess subflow = wfProcess.getMainflow();
+		SubProcess subflow = wfProcess.getMainSubProcess();
 		if (subflow==null) return false;
 		StartNode startNode = (StartNode)subflow.getEntry();
 		if (startNode==null) return false;

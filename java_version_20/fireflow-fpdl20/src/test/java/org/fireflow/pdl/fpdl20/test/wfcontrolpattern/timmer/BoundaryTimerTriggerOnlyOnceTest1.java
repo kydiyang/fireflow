@@ -138,7 +138,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processName);
 		
 
-		SubProcess mainFlow = process.getMainflow();
+		SubProcess mainFlow = process.getMainSubProcess();
 		
 		PropertyImpl property = new PropertyImpl(mainFlow, "applicant");// 流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),

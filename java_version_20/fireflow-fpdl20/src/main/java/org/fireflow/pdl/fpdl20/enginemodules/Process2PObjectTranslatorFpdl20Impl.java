@@ -31,7 +31,7 @@ import org.fireflow.pdl.fpdl20.behavior.ActivityBehavior;
 import org.fireflow.pdl.fpdl20.behavior.EndNodeBehavior;
 import org.fireflow.pdl.fpdl20.behavior.RouterBehavior;
 import org.fireflow.pdl.fpdl20.behavior.StartNodeBehavior;
-import org.fireflow.pdl.fpdl20.behavior.SubflowBehavior;
+import org.fireflow.pdl.fpdl20.behavior.SubProcessBehavior;
 import org.fireflow.pdl.fpdl20.behavior.TransitionBehavior;
 import org.fireflow.pdl.fpdl20.behavior.WorkflowProcessBehavior;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
@@ -64,7 +64,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 	 */
 	public List<PObject> translateProcess(ProcessKey processKey ,Object process) {
 		WorkflowProcess fpdl20Process = (WorkflowProcess)process;
-		List<SubProcess> subflows = fpdl20Process.getLocalSubflows();
+		List<SubProcess> subflows = fpdl20Process.getLocalSubProcesses();
 
 		List<PObject> allPObject = new ArrayList<PObject>();
 		for (SubProcess subflow:subflows){
@@ -75,7 +75,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 	}
 	
 	private List<PObject> translateSubflow(SubProcess subflow,ProcessKey processKey){
-		SubflowBehavior workflowProcessBehavior = new SubflowBehavior();
+		SubProcessBehavior workflowProcessBehavior = new SubProcessBehavior();
 		
 		PObjectKey key = new PObjectKey(processKey.getProcessId(),
 				processKey.getVersion(), processKey.getProcessType(), subflow.getId());
