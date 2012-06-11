@@ -32,7 +32,7 @@ public class JavaServiceParserTest {
 			System.out.println(xml);
 			
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			
+			docBuilderFactory.setNamespaceAware(true);
 			try {
 				DocumentBuilder documentBuilder = docBuilderFactory.newDocumentBuilder();
 				Document document = documentBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));

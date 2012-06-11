@@ -7,6 +7,7 @@ import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.w3c.dom.Document;
 
 public class DBQueryInvoker extends AbsServiceInvoker implements
@@ -20,8 +21,8 @@ public class DBQueryInvoker extends AbsServiceInvoker implements
 	@Override
 	protected Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		DBQueryServiceDef dbQueryService = (DBQueryServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svc,Object activity) throws ServiceInvocationException {
+		DBQueryServiceDef dbQueryService = (DBQueryServiceDef)svc;
 		
 		DBQueryImpl dbQueryImpl = new DBQueryImpl();
 		

@@ -76,10 +76,10 @@ public class HumanServiceInvokerTest  extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("OpenForm");
-					serviceBinding.setOperation(service.getInterface().getOperation("OpenForm"));
+//					serviceBinding.setOperation(service.getInterface().getOperation("OpenForm"));
 					//serviceBinding.setInputAssignments(assignments);//TODO human service的Assignment 待补充
 					
 					//构造resourceBinding
@@ -194,10 +194,10 @@ public class HumanServiceInvokerTest  extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("OpenForm");
-					serviceBinding.setOperation(service.getInterface().getOperation("OpenForm"));
+//					serviceBinding.setOperation(service.getInterface().getOperation("OpenForm"));
 					//serviceBinding.setInputAssignments(assignments);//TODO human service的Assignment 待补充
 					
 					//构造resourceBinding
@@ -279,10 +279,10 @@ public class HumanServiceInvokerTest  extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("OpenForm");
-					serviceBinding.setOperation(service.getInterface().getOperation("OpenForm"));
+//					serviceBinding.setOperation(service.getInterface().getOperation("OpenForm"));
 					//serviceBinding.setInputAssignments(assignments);//TODO human service的Assignment 待补充
 					
 					//构造resourceBinding

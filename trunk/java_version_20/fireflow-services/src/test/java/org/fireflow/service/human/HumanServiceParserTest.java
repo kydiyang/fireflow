@@ -39,7 +39,7 @@ public class HumanServiceParserTest {
 			System.out.println(xml);
 			
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			
+			docBuilderFactory.setNamespaceAware(true);
 			try {
 				DocumentBuilder documentBuilder = docBuilderFactory.newDocumentBuilder();
 				

@@ -102,10 +102,10 @@ public class WebServiceInvokerTest extends AbsTestContext{
 					//构造service binding
 					OperationDef operation = service.getInterface().getOperation("sayHello");
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("sayHello");
-					serviceBinding.setOperation(operation);
+//					serviceBinding.setOperation(operation);
 
 					
 					//构造输入映射

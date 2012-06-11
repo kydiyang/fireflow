@@ -5,12 +5,14 @@ import java.io.InputStream;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.data.Property;
+import org.fireflow.model.servicedef.ServiceDef;
 
 public class ProcessUtilMock implements ProcessUtil {
 
@@ -80,6 +82,15 @@ public class ProcessUtilMock implements ProcessUtil {
 	public void init(RuntimeContext runtimeContext) throws EngineException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getServiceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
+	 */
+	public ServiceDef getServiceDef(ActivityInstance activityInstance,
+			Object activity, String serviceId) {
+		ActivityMock mock = (ActivityMock)activity;
+		return mock.getServiceDef();
 	}
 
 }

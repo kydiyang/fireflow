@@ -6,6 +6,7 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.w3c.dom.Document;
 
 public class DBInsertInvoker extends AbsServiceInvoker {
@@ -18,8 +19,8 @@ public class DBInsertInvoker extends AbsServiceInvoker {
 	@Override
 	protected Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		DBInsertServiceDef svc = (DBInsertServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svcDef,Object activity) throws ServiceInvocationException {
+		DBInsertServiceDef svc = (DBInsertServiceDef)svcDef;
 		DBInsertImpl impl = new DBInsertImpl();
 		impl.setDBInsertService(svc);
 		return impl;

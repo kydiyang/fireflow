@@ -38,12 +38,12 @@ public interface ServiceBinding {
 	public String getOperationName();
 	public void setOperationName(String opName);
 	
-	public OperationDef getOperation();
-	public void setOperation(OperationDef op);
-	
-	public ServiceDef getService();
-
-	public void setService(ServiceDef svc);
+//	public OperationDef getOperation();
+//	public void setOperation(OperationDef op);
+//	
+//	public ServiceDef getService();
+//
+//	public void setService(ServiceDef svc);
 
 	//1、输入参数的赋值方式之一：Assignment
 	public List<Assignment> getInputAssignments();

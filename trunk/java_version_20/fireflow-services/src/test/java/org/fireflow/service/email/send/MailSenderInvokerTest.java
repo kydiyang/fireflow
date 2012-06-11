@@ -145,10 +145,10 @@ public class MailSenderInvokerTest  extends AbsTestContext {
 					//构造service binding
 					OperationDef operationDef = operations.get(0);
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("sendEMail");
-					serviceBinding.setOperation(operationDef);					
+//					serviceBinding.setOperation(operationDef);					
 					
 
 					
@@ -346,10 +346,10 @@ public class MailSenderInvokerTest  extends AbsTestContext {
 					//构造service binding
 					OperationDef operationDef = operations.get(0);
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("sendEMail");
-					serviceBinding.setOperation(operationDef);					
+//					serviceBinding.setOperation(operationDef);					
 					
 
 					

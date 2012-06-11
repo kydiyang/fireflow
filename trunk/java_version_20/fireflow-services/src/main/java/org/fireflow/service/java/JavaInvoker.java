@@ -31,6 +31,7 @@ import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * java bean服务，负责调用java bean；
@@ -44,12 +45,12 @@ public class JavaInvoker extends AbsServiceInvoker implements ServiceInvoker {
 	@Override
 	public Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
+			ServiceBinding serviceBinding,ServiceDef svc,Object activity) throws ServiceInvocationException {
 
 		BeanFactory beanFactory = runtimeContext.getEngineModule(
 				BeanFactory.class, activityInstance.getProcessType());
 
-		JavaService javaService = (JavaService) serviceBinding.getService();
+		JavaService javaService = (JavaService) svc;
 		String beanName = javaService.getJavaBeanName();
 		String javaClass = javaService.getJavaClassName();
 		Object bean = null;
@@ -169,7 +170,11 @@ public class JavaInvoker extends AbsServiceInvoker implements ServiceInvoker {
 				}
 			}
 		}
-		return (Method[])foundMethods.toArray();
+		Method[] returnValue = new Method[foundMethods.size()];
+		for (int i=0;i<foundMethods.size();i++){
+			returnValue[i] = foundMethods.get(i);
+		}
+		return returnValue;
 	}
 	
 	private class NullClass {

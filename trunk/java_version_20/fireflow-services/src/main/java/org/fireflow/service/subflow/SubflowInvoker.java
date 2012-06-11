@@ -36,6 +36,7 @@ import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
+import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.engine.query.Restrictions;
@@ -68,9 +69,10 @@ public class SubflowInvoker implements ServiceInvoker {
 		ProcessInstance oldProcessInstance = session.getCurrentProcessInstance();
 		ActivityInstance oldActivityInstance = session.getCurrentActivityInstance();
 		
+		ProcessUtil processUtil = context.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
 		try{
 			//1、确定子流程的ProcessId,SubflowId,版本号等信息
-			SubflowService subflowService = (SubflowService)serviceBinding.getService();
+			SubflowService subflowService = (SubflowService)processUtil.getServiceDef(activityInstance, theActivity, serviceBinding.getServiceId());
 			String subflowId = subflowService.getSubflowId();
 			String processId = subflowService.getProcessId();
 			String processType = activityInstance.getProcessType();
@@ -90,7 +92,7 @@ public class SubflowInvoker implements ServiceInvoker {
 			session.setAttribute(InternalSessionAttributeKeys.BIZ_ID, activityInstance.getBizId());
 			Map<String, Object> variables = null;
 			try {
-				variables = AbsServiceInvoker.resolveInputAssignments(context, session, oldProcessInstance, oldActivityInstance, serviceBinding);
+				variables = AbsServiceInvoker.resolveInputAssignments(context, session, oldProcessInstance, oldActivityInstance, serviceBinding,subflowService);
 			} catch (ScriptException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -143,27 +145,25 @@ public class SubflowInvoker implements ServiceInvoker {
 			
 			
 			//处理输出，将子流程的流程变量反馈到父流程实例或者父活动实例
-			OperationDef operation = serviceBinding.getOperation();
-
-			Map<String,Object> scriptContext = new HashMap<String,Object>();
-			List<Output> outputs = operation.getOutputs();
-			if (outputs != null && outputs.size() > 0) {
+//			OperationDef operation = serviceBinding.getOperation();
+			List<Assignment> outputAssignments = serviceBinding
+					.getOutputAssignments();
+			if (outputAssignments != null && outputAssignments.size() > 0) {
+				Map<String, Object> scriptContext = new HashMap<String, Object>();
 
 				scriptContext.put(ScriptContextVariableNames.OUTPUTS,
 						subProcInstVars);
-				
-				List<Assignment> outputAssignments = serviceBinding
-				.getOutputAssignments();
 
 				try {
-					ScriptEngineHelper.assignOutputToVariable(session,context,
-							parentProcessInstance,activityInstance, outputAssignments,
-							scriptContext);
+					ScriptEngineHelper.assignOutputToVariable(session, context,
+							parentProcessInstance, activityInstance,
+							outputAssignments, scriptContext);
 				} catch (ScriptException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+
 		}
 		
 		return result;
