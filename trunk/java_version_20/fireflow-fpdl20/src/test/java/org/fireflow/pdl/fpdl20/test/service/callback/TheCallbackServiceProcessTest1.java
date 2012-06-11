@@ -64,7 +64,7 @@ import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.servicedef.impl.CommonInterfaceDef;
 import org.fireflow.model.servicedef.impl.OperationDefImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -261,7 +261,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(6, tokenList.size());
 
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME, procInstToken.getElementId());
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME, procInstToken.getElementId());
 		Assert.assertEquals(processInstanceId,
 				procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName, procInstToken.getProcessId());
@@ -292,7 +292,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 				Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).add(
 				Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName
-						+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+ ".Activity1"));
+						+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+ ".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -345,7 +345,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		process.setDescription(description);
 		
-		Subflow mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainflow();
 		
 		PropertyImpl property = new PropertyImpl(mainflow,"id");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
@@ -433,9 +433,9 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		
 		//绑定
 		ServiceBindingImpl svcBinding = new ServiceBindingImpl();
-		svcBinding.setService(callbackService);
+//		svcBinding.setService(callbackService);
 		svcBinding.setServiceId(callbackService.getId());
-		svcBinding.setOperation(op);
+//		svcBinding.setOperation(op);
 		svcBinding.setOperationName(op.getOperationName());
 		
 		//io输入映射

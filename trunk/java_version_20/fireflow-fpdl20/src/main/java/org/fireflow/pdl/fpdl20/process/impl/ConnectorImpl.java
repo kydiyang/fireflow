@@ -11,9 +11,9 @@ import org.fireflow.model.AbstractModelElement;
 import org.fireflow.model.process.lifecycle.InstanceCreatorDef;
 import org.fireflow.model.process.lifecycle.InstanceExecutorDef;
 import org.fireflow.model.process.lifecycle.InstanceTerminatorDef;
-import org.fireflow.pdl.fpdl20.process.Arc;
+import org.fireflow.pdl.fpdl20.process.Connector;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 
 /**
  * 工作流网的边。
@@ -22,7 +22,7 @@ import org.fireflow.pdl.fpdl20.process.Subflow;
  * Created on Mar 18, 2009
  */
 @SuppressWarnings("serial")
-public class ArcImpl extends AbstractModelElement implements Arc{
+public class ConnectorImpl extends AbstractModelElement implements Connector{
     /**
      * 转移(或者循环)的源节点。<br>
      * 转移的源节点可以是StartNode、 Activity或者Synchronizer。<br>
@@ -43,11 +43,11 @@ public class ArcImpl extends AbstractModelElement implements Arc{
     protected InstanceExecutorDef instanceExecutorDef = null;
     protected InstanceTerminatorDef instanceTerminatorDef = null;
 
-    public ArcImpl(){
+    public ConnectorImpl(){
         
     }
 
-    public ArcImpl(Subflow subflow, String name) {
+    public ConnectorImpl(SubProcess subflow, String name) {
         super(subflow, name);
     }
 

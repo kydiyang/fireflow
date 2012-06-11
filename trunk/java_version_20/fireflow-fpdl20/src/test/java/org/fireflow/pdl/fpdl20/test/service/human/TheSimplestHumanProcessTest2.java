@@ -51,7 +51,7 @@ import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.fireflow.model.resourcedef.impl.ResourceDefImpl;
 import org.fireflow.model.servicedef.impl.OperationDefImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -161,7 +161,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,
 				processName);
 
-		Subflow mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainflow();
 
 		Duration du = new Duration(3, "DAY");
 		mainflow.setDuration(du);
@@ -226,7 +226,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 
 		// 将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(humanService);
+//		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());
 
 		activity.setServiceBinding(serviceBinding);
@@ -321,7 +321,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(4, tokenList.size());
 
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME, procInstToken.getElementId());
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME, procInstToken.getElementId());
 		Assert.assertEquals(processInstanceId,
 				procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName, procInstToken.getProcessId());
@@ -352,7 +352,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 				Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).add(
 				Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName
-						+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+ ".Activity1"));
+						+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+ ".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -388,7 +388,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 				.createWorkflowQuery(WorkItem.class);
 		q4WorkItem.add(Restrictions.eq(
 				WorkItemProperty.ACTIVITY_INSTANCE_$_ACTIVITY_ID, processName
-						+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+ ".Activity1"));
+						+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+ ".Activity1"));
 		List<WorkItem> workItemList = q4WorkItem.list();
 		Assert.assertNotNull(workItemList);
 		Assert.assertEquals(2, workItemList.size());

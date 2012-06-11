@@ -27,7 +27,7 @@ import org.fireflow.model.misc.Duration;
 import org.fireflow.pdl.fpdl20.misc.LoopStrategy;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 
 
@@ -57,7 +57,7 @@ public class ActivityImpl extends NodeImpl implements Activity{
 		super();
 	}
 	
-    public ActivityImpl(Subflow subflow, String name) {
+    public ActivityImpl(SubProcess subflow, String name) {
         super(subflow, name);
     }
 	

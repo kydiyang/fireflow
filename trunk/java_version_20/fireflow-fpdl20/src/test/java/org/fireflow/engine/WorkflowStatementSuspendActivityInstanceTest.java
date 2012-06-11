@@ -33,7 +33,7 @@ import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
@@ -176,7 +176,7 @@ public class WorkflowStatementSuspendActivityInstanceTest extends FireWorkflowJu
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		
@@ -220,7 +220,7 @@ public class WorkflowStatementSuspendActivityInstanceTest extends FireWorkflowJu
 		
 		//将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(humanService);
+//		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());	
 
 		activity2.setServiceBinding(serviceBinding);	

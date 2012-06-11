@@ -40,7 +40,7 @@ import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.model.servicedef.impl.CommonInterfaceDef;
 import org.fireflow.model.servicedef.impl.OperationDefImpl;
 import org.fireflow.pdl.fpdl20.io.FPDLSerializer;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -92,7 +92,7 @@ public class Temp {
 		//构造流程
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processName);
 		
-		Subflow mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainflow();
 		
 		Duration du = new Duration(3,"DAY");
 		mainflow.setDuration(du);
@@ -153,7 +153,7 @@ public class Temp {
 		
 		//将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(humanService);
+//		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());	
 
 		activity.setServiceBinding(serviceBinding);

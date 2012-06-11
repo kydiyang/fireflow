@@ -45,7 +45,7 @@ import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.servicedef.OperationDef;
 import org.fireflow.model.servicedef.impl.JavaInterfaceDef;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -116,7 +116,7 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		//构造流程
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		PropertyImpl property = new PropertyImpl(subflow,"x");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
@@ -185,20 +185,21 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		//将service绑定到activity1
 		OperationDef operation = _interface.getOperation("add");
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(javaService);
 		serviceBinding.setServiceId(javaService.getId());
-		serviceBinding.setOperation(operation);
-		serviceBinding.setOperationName(operation.getOperationName());
+		serviceBinding.setOperationName("add");
 		
 		//aa 赋值
 		AssignmentImpl inputAssignment = new AssignmentImpl();
 		ExpressionImpl expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setBody("processVars.x");
+		expression.setName("x");
 		inputAssignment.setFrom(expression);
 		
 		expression = new ExpressionImpl();
 		expression.setLanguage("XPATH");
+		expression.setName("aa");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(0).getName());
 		inputAssignment.setTo(expression);
 		
@@ -213,6 +214,8 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		
 		expression = new ExpressionImpl();
 		expression.setLanguage("XPATH");
+		expression.setName("bb");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(1).getName());
 		inputAssignment.setTo(expression);
 		
@@ -225,11 +228,14 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setBody(ScriptContextVariableNames.OUTPUTS+"."+operation.getOutputs().get(0).getName());		
+		expression.setName(operation.getOutputs().get(0).getName());
 		outputAssignment.setFrom(expression);
 		
 		expression = new ExpressionImpl();
 		expression.setLanguage("XPATH");
 		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/z");	
+		expression.setName("z");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		outputAssignment.setTo(expression);
 
 		activity1.setServiceBinding(serviceBinding);
@@ -238,9 +244,9 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		//将service1绑定到activity2
 		operation = _interface.getOperation("multiply");
 		serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(javaService);
+//		serviceBinding.setService(javaService);
 		serviceBinding.setServiceId(javaService.getId());
-		serviceBinding.setOperation(operation);
+//		serviceBinding.setOperation(operation);
 		serviceBinding.setOperationName(operation.getOperationName());
 		
 		//aa赋值
@@ -252,6 +258,8 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		
 		expression = new ExpressionImpl();
 		expression.setLanguage("XPATH");
+		expression.setName("aa");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(0).getName());
 		inputAssignment.setTo(expression);
 		
@@ -261,10 +269,15 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		inputAssignment = new AssignmentImpl();
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
-		expression.setBody("processVars.z");		
+		expression.setBody("processVars.z");	
+		expression.setName("z");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		inputAssignment.setFrom(expression);
+		
 		expression = new ExpressionImpl();
 		expression.setLanguage("XPATH");
+		expression.setName("b");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		expression.setBody(ScriptContextVariableNames.INPUTS+"/"+operation.getInputs().get(1).getName());
 		inputAssignment.setTo(expression);
 		
@@ -277,10 +290,13 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setBody(ScriptContextVariableNames.OUTPUTS+"."+operation.getOutputs().get(0).getName());		
+		expression.setName(operation.getOutputs().get(0).getName());
 		outputAssignment.setFrom(expression);
 		
 		expression = new ExpressionImpl();
 		expression.setLanguage("XPATH");
+		expression.setName("m");
+		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"int"));
 		expression.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/m");	
 		outputAssignment.setTo(expression);
 
@@ -326,7 +342,7 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(8, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -349,7 +365,7 @@ public class TheSimplestJavaExecutorTest  extends FireWorkflowJunitEnviroment{
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 
 		Assert.assertNotNull(actInstList);

@@ -71,6 +71,7 @@ import org.fireflow.engine.modules.env.Environment;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
+import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ServiceBinding;
@@ -82,7 +83,7 @@ import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.WebserviceStartFeature;
@@ -199,17 +200,18 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 	}
 
 	protected void publishCallbackService(WorkflowProcess workflowProcess)throws WebservicePublishException {
-		List<Subflow> subflowList = workflowProcess.getLocalSubflows();
+		List<SubProcess> subflowList = workflowProcess.getLocalSubflows();
+
 		if (subflowList == null || subflowList.size() == 0)
 			return;
-		for (Subflow subflow : subflowList) {
+		for (SubProcess subflow : subflowList) {
 			// 首先检查Activity是否绑定了Callback service
 			List<Activity> activityList = subflow.getActivities();
 			if (activityList != null) {
 				for (Activity activity : activityList) {
 					ServiceBinding svcBinding = activity.getServiceBinding();
 					if (svcBinding != null) {
-						ServiceDef svcDef = svcBinding.getService();
+						ServiceDef svcDef = workflowProcess.getService(svcBinding.getServiceId());
 						if (svcDef != null && svcDef instanceof CallbackService) {
 							publishCallbackService(workflowProcess, subflow,
 									activity, (CallbackService) svcDef);
@@ -218,7 +220,7 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 				}
 			}
 			// 然后检查main subflow 的StartNode是否绑定了CallbackService
-			if (WorkflowProcess.MAIN_FLOW_NAME.equals(subflow.getName())) {
+			if (WorkflowProcess.MAIN_PROCESS_NAME.equals(subflow.getName())) {
 				List<StartNode> startNodeList = subflow.getStartNodes();
 				if (startNodeList != null) {
 					for (StartNode startNode : startNodeList) {
@@ -227,7 +229,7 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 							WebserviceStartFeature wsFt = (WebserviceStartFeature) ft;
 							ServiceBinding svcBinding = wsFt.getServiceBinding();
 							if (svcBinding != null) {
-								ServiceDef svcDef = svcBinding.getService();
+								ServiceDef svcDef = workflowProcess.getService(svcBinding.getServiceId());
 								if (svcDef != null && svcDef instanceof CallbackService) {
 									publishCallbackService(workflowProcess, subflow,
 											startNode, (CallbackService) svcDef);
@@ -241,7 +243,7 @@ public class CallbackManagerFpdl20Impl  extends AbsEngineModule implements Callb
 	}
 
 	protected void publishCallbackService(WorkflowProcess workflowProcess,
-			Subflow subflow, Node node, CallbackService callbackService) throws WebservicePublishException{
+			SubProcess subflow, Node node, CallbackService callbackService) throws WebservicePublishException{
 		CommonInterfaceDef commonInterfaceDef = (CommonInterfaceDef) callbackService
 				.getInterface();
 		String serviceName = callbackService.getName()+"_"+callbackService.getVersion();

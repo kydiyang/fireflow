@@ -47,7 +47,7 @@ import org.fireflow.model.data.impl.PropertyImpl;
 import org.fireflow.model.misc.Duration;
 import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.TimerStartFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
@@ -138,7 +138,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processName);
 		
 
-		Subflow mainFlow = process.getMainflow();
+		SubProcess mainFlow = process.getMainflow();
 		
 		PropertyImpl property = new PropertyImpl(mainFlow, "applicant");// 流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),
@@ -194,7 +194,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 
 		// 将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(humanService);
+//		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());
 
 		activity1.setServiceBinding(serviceBinding);
@@ -270,7 +270,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		Assert.assertEquals(7, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
+		Assert.assertEquals(processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -293,7 +293,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -319,7 +319,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".timerStart"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".timerStart"));
 		ActivityInstance timerStartActInst = q4ActInst.unique();
 		Assert.assertNotNull(timerStartActInst);
 		Assert.assertEquals(ActivityInstanceState.RUNNING, timerStartActInst.getState());//边上的时间节点由主ActivityInstance来终结
@@ -327,7 +327,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		q4ActInst.reset();
 		q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".timerHandler"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".timerHandler"));
 		ActivityInstance timerHandlerActInst = q4ActInst.unique();
 		Assert.assertNotNull(timerHandlerActInst);
 		Assert.assertEquals(ActivityInstanceState.COMPLETED, timerHandlerActInst.getState());

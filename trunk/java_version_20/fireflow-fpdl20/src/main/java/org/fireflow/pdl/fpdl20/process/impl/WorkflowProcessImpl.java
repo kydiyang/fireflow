@@ -29,7 +29,7 @@ import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.fpdl20.diagram.Diagram;
 import org.fireflow.pdl.fpdl20.process.Import;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 @SuppressWarnings("serial")
@@ -44,7 +44,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	
 	private Map<String,ServiceDef> localServices = new HashMap<String,ServiceDef>();
 	private Map<String,ResourceDef> localResources = new HashMap<String,ResourceDef>();
-	private Map<String,Subflow> localFlowsMap = new HashMap<String,Subflow>();
+	private Map<String,SubProcess> localFlowsMap = new HashMap<String,SubProcess>();
 	
 	private List<Import<ResourceDef>> importsForResource = new ArrayList<Import<ResourceDef>>();
 	private List<Import<ServiceDef>> importsForService = new ArrayList<Import<ServiceDef>>();
@@ -65,29 +65,29 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	public WorkflowProcessImpl(String name,String displayName) {
 		super(null, name,displayName);
 		//构造一个缺省的main flow
-		SubflowImpl flow = new SubflowImpl(this,WorkflowProcess.MAIN_FLOW_NAME,WorkflowProcess.MAIN_FLOW_NAME);
+		SubProcessImpl flow = new SubProcessImpl(this,WorkflowProcess.MAIN_PROCESS_NAME,WorkflowProcess.MAIN_PROCESS_NAME);
 		localFlowsMap.put(flow.getId(), flow);
 	}
 	
-	public Subflow getMainflow(){
-		String mainFlowId = this.getName()+"."+WorkflowProcess.MAIN_FLOW_NAME;
+	public SubProcess getMainflow(){
+		String mainFlowId = this.getName()+"."+WorkflowProcess.MAIN_PROCESS_NAME;
 		return this.localFlowsMap.get(mainFlowId);
 	}
 	
-	public Subflow getLocalSubflow(String flowId){
+	public SubProcess getLocalSubflow(String flowId){
 		return this.localFlowsMap.get(flowId);
 	}
 	
-	public void addSubflow(Subflow flow){
+	public void addSubflow(SubProcess flow){
 		this.localFlowsMap.put(flow.getId(), flow);
 	}
 
 	public WorkflowElement findWorkflowElementById(String workflowElementId){
-		Subflow subflow = this.getLocalSubflow(workflowElementId);
+		SubProcess subflow = this.getLocalSubflow(workflowElementId);
 		if (subflow!=null)return subflow;
 		
-		List<Subflow> subflowList = this.getLocalSubflows();
-		for (Subflow tmpSubflow : subflowList){
+		List<SubProcess> subflowList = this.getLocalSubflows();
+		for (SubProcess tmpSubflow : subflowList){
 			WorkflowElement we = tmpSubflow.findWFElementById(workflowElementId);
 			if (we!=null) return we;
 		}
@@ -99,7 +99,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getDuration()
 	 */
 	public Duration getDuration() {
-		Subflow mainflow = this.getMainflow();
+		SubProcess mainflow = this.getMainflow();
 		if (mainflow!=null){
 			return mainflow.getDuration();
 		}
@@ -247,8 +247,8 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getSubflows()
 	 */
-//	public List<Subflow> getSubflows() {
-//		PrivateList<Subflow> privateList = new PrivateList<Subflow>();
+//	public List<SubProcess> getSubflows() {
+//		PrivateList<SubProcess> privateList = new PrivateList<SubProcess>();
 //		privateList.privateAddAll(this.localFlowsMap.values());
 //		
 //		//将import进来的流程加入到Subflow List
@@ -267,8 +267,8 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.WorkflowProcess#getLocalSubflows()
 	 */
-	public List<Subflow> getLocalSubflows() {
-		PrivateList<Subflow> privateList = new PrivateList<Subflow>();
+	public List<SubProcess> getLocalSubflows() {
+		PrivateList<SubProcess> privateList = new PrivateList<SubProcess>();
 		privateList.privateAddAll(this.localFlowsMap.values());
 		return privateList;
 	}

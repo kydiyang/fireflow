@@ -19,7 +19,7 @@ package org.fireflow.pdl.fpdl20.process.impl;
 import java.util.List;
 
 import org.fireflow.pdl.fpdl20.process.EndNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.NormalEndFeatureImpl;
 
@@ -36,7 +36,7 @@ public class EndNodeImpl extends SynchronizerImpl implements EndNode{
     	this.setFeature(new NormalEndFeatureImpl());
     }
 
-    public EndNodeImpl(Subflow workflowProcess, String name) {
+    public EndNodeImpl(SubProcess workflowProcess, String name) {
         super(workflowProcess, name);
     	this.setFeature(new NormalEndFeatureImpl());
     }

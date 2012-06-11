@@ -705,7 +705,7 @@ public abstract class AbstractPObject implements PObject {
 				else{
 										
 					//抛出异常
-					throw new KernelException("No fault handler found for "+faultCode);
+					throw new KernelException("No fault handler found for FaultCode="+faultCode);
 				}
 			}
 		}

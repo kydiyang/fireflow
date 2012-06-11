@@ -27,6 +27,7 @@ import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.repository.ResourceRepository;
 import org.fireflow.engine.entity.repository.ServiceRepository;
 import org.fireflow.engine.entity.repository.impl.ProcessRepositoryImpl;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
@@ -47,7 +48,7 @@ import org.fireflow.pdl.fpdl20.io.ImportLoader;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.TimerStartFeature;
@@ -64,13 +65,13 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	RuntimeContext ctx = null;
 
 	public String getProcessEntryId(String workflowProcessId, int version,String processType){
-		return workflowProcessId+"."+WorkflowProcess.MAIN_FLOW_NAME;
+		return workflowProcessId+"."+WorkflowProcess.MAIN_PROCESS_NAME;
 	}
 	
     public ServiceBinding getServiceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	Subflow subflow = process.getLocalSubflow(subflowId);
+    	SubProcess subflow = process.getLocalSubflow(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	if (activity==null){
     		return null;
@@ -82,7 +83,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public ResourceBinding getResourceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	Subflow subflow = process.getLocalSubflow(subflowId);
+    	SubProcess subflow = process.getLocalSubflow(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	if (activity==null){
     		return null;
@@ -94,7 +95,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     public Object getActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
-    	Subflow subflow = process.getLocalSubflow(subflowId);
+    	SubProcess subflow = process.getLocalSubflow(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	return activity;
     }
@@ -191,17 +192,17 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	}
 	
 	private boolean hasCallbackService(WorkflowProcess workflowProcess){
-		List<Subflow> subflowList = workflowProcess.getLocalSubflows();
+		List<SubProcess> subflowList = workflowProcess.getLocalSubflows();
 		if (subflowList == null || subflowList.size() == 0)
 			return false;
-		for (Subflow subflow : subflowList) {
+		for (SubProcess subflow : subflowList) {
 			// 首先检查Activity是否绑定了Callback service
 			List<Activity> activityList = subflow.getActivities();
 			if (activityList != null) {
 				for (Activity activity : activityList) {
 					ServiceBinding svcBinding = activity.getServiceBinding();
 					if (svcBinding != null) {
-						ServiceDef svcDef = svcBinding.getService();
+						ServiceDef svcDef = workflowProcess.getService(svcBinding.getServiceId());
 						if (svcDef != null && svcDef instanceof CallbackService) {
 							return true;
 						}
@@ -209,7 +210,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 				}
 			}
 			// 然后检查Main subflow 的 StartNode是否绑定了CallbackService
-			if (WorkflowProcess.MAIN_FLOW_NAME.equals(subflow.getName())){
+			if (WorkflowProcess.MAIN_PROCESS_NAME.equals(subflow.getName())){
 				List<StartNode> startNodeList = subflow.getStartNodes();
 				if (startNodeList != null) {
 					for (StartNode startNode : startNodeList) {
@@ -218,7 +219,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 							WebserviceStartFeature wsFt = (WebserviceStartFeature) ft;
 							ServiceBinding svcBinding = wsFt.getServiceBinding();
 							if (svcBinding != null) {
-								ServiceDef svcDef = svcBinding.getService();
+								ServiceDef svcDef = workflowProcess.getService(svcBinding.getServiceId());
 								if (svcDef != null && svcDef instanceof CallbackService) {
 									return true;
 								}
@@ -233,7 +234,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	}
 	
 	private boolean isTimerStart(WorkflowProcess wfProcess){
-		Subflow subflow = wfProcess.getMainflow();
+		SubProcess subflow = wfProcess.getMainflow();
 		if (subflow==null) return false;
 		StartNode startNode = (StartNode)subflow.getEntry();
 		if (startNode==null) return false;
@@ -292,11 +293,22 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
     	WorkflowElement  workflowElement = process.findWorkflowElementById(processElementId);
-    	if (workflowElement instanceof Subflow){
-    		return ((Subflow)workflowElement).getProperty(propertyName);
+    	if (workflowElement instanceof SubProcess){
+    		return ((SubProcess)workflowElement).getProperty(propertyName);
     	}else if (workflowElement instanceof Activity){
     		return ((Activity)workflowElement).getProperty(propertyName);
     	}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getServiceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
+	 */
+	public ServiceDef getServiceDef(ActivityInstance activityInstance,
+			Object activity, String serviceId) {
+		Activity theActivity = (Activity)activity;
+		SubProcess subflow = (SubProcess)theActivity.getParent();
+		WorkflowProcess process = (WorkflowProcess)subflow.getParent();
+		return process.getService(serviceId);
 	}
 }

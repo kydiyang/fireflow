@@ -18,7 +18,7 @@ package org.fireflow.pdl.fpdl20.process.impl;
 
 import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
@@ -29,7 +29,7 @@ import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
  * @author 非也,nychen2000@163.com
  */
 @SuppressWarnings("serial")
-public class TransitionImpl extends ArcImpl implements Transition{
+public class TransitionImpl extends ConnectorImpl implements Transition{
 	private boolean isLoop = false;
 	private boolean isDefault = false;
 	private Expression condition = null;
@@ -37,11 +37,11 @@ public class TransitionImpl extends ArcImpl implements Transition{
     public TransitionImpl() {
     }
 
-    public TransitionImpl(Subflow subflow, String name) {
+    public TransitionImpl(SubProcess subflow, String name) {
         super(subflow, name);
     }
 
-    public TransitionImpl(Subflow subflow, String name, Node fromNode, Node toNode) {
+    public TransitionImpl(SubProcess subflow, String name, Node fromNode, Node toNode) {
         super(subflow, name);
         this.fromNode = fromNode;
         this.toNode = toNode;

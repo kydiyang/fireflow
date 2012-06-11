@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.fireflow.model.AbstractModelElement;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
 
@@ -52,7 +52,7 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
     public NodeImpl() {
     }
 
-    public NodeImpl(Subflow subflow, String name) {
+    public NodeImpl(SubProcess subflow, String name) {
         super(subflow, name);
     }
 

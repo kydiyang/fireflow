@@ -40,6 +40,7 @@ import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.WorkItemPersister;
+import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.engine.modules.workitem.event.WorkItemEventTrigger;
 import org.fireflow.engine.modules.workitem.impl.AbsWorkItemManager;
@@ -71,17 +72,20 @@ public class WorkItemManagerFpdl20Impl extends AbsWorkItemManager {
 			User user, Object theActivity,
 			Map<WorkItemProperty, Object> workitemPropertyValues)
 			throws EngineException {
+		RuntimeContext ctx = ((WorkflowSessionLocalImpl) currentSession)
+		.getRuntimeContext();
+		
 		Activity activity = (Activity) theActivity;
 		ServiceBinding serviceBinding = activity.getServiceBinding();
 		HumanService humanService = null;
 		if (serviceBinding != null) {
-			humanService = (HumanService) serviceBinding.getService();
+			ProcessUtil processUtil = ctx.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
+			humanService = (HumanService) processUtil.getServiceDef(activityInstance, activity, serviceBinding.getServiceId());
 		}
 
 		ResourceBinding resourceBinding = activity.getResourceBinding();
 
-		RuntimeContext ctx = ((WorkflowSessionLocalImpl) currentSession)
-				.getRuntimeContext();
+
 		CalendarService calendarService = ctx.getEngineModule(
 				CalendarService.class, activityInstance.getProcessType());
 		PersistenceService persistenceService = ctx.getEngineModule(

@@ -16,7 +16,7 @@
  */
 package org.fireflow.pdl.fpdl20.process.impl;
 
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 
 
 
@@ -30,7 +30,7 @@ public abstract class SynchronizerImpl extends NodeImpl {
 	public SynchronizerImpl(){
 		
 	}
-    public SynchronizerImpl(Subflow subflow, String name) {
+    public SynchronizerImpl(SubProcess subflow, String name) {
         super(subflow, name);
     }
 }

@@ -39,7 +39,7 @@ import org.fireflow.model.data.impl.PropertyImpl;
 import org.fireflow.model.misc.Duration;
 import org.fireflow.model.servicedef.OperationDef;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -112,7 +112,7 @@ public class EmailSendProcessTest   extends FireWorkflowJunitEnviroment{
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		process.setDescription(description);
 		
-		Subflow mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainflow();
 		
 		PropertyImpl property = new PropertyImpl(mainflow,"mailToList");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
@@ -171,10 +171,10 @@ public class EmailSendProcessTest   extends FireWorkflowJunitEnviroment{
 		//构造service binding
 		OperationDef operationDef = operations.get(0);
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(service);
+//		serviceBinding.setService(service);
 		serviceBinding.setServiceId(service.getId());
 		serviceBinding.setOperationName("sendEMail");
-		serviceBinding.setOperation(operationDef);					
+//		serviceBinding.setOperation(operationDef);					
 
 
 		return serviceBinding;

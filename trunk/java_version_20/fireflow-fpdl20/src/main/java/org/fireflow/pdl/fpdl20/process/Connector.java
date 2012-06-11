@@ -3,7 +3,7 @@ package org.fireflow.pdl.fpdl20.process;
 import org.fireflow.model.process.WorkflowElement;
 
 
-public interface Arc extends WorkflowElement{
+public interface Connector extends WorkflowElement{
     /**
      * 边所连接的源节点
      * @return

@@ -107,7 +107,7 @@ import org.fireflow.pdl.fpdl20.process.Import;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Router;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
@@ -132,7 +132,7 @@ import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ImportImpl;
 import org.fireflow.pdl.fpdl20.process.impl.RouterImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
-import org.fireflow.pdl.fpdl20.process.impl.SubflowImpl;
+import org.fireflow.pdl.fpdl20.process.impl.SubProcessImpl;
 import org.fireflow.pdl.fpdl20.process.impl.TransitionImpl;
 import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.firesoa.common.schema.NameSpaces;
@@ -932,7 +932,9 @@ public class FPDLDeserializer implements FPDLNames{
 	protected void loadSubflow(WorkflowProcess wp,Element subflowElement) throws DeserializerException{
 		String name = subflowElement.getAttribute(NAME);
 		String displayName = subflowElement.getAttribute(DISPLAY_NAME);
-		Subflow subflow = new SubflowImpl(wp,name,displayName);
+
+		SubProcess subflow = new SubProcessImpl(wp,name,displayName);
+		
 		//
 		// 解析datafields
 		this.loadProperties(subflow, subflow.getProperties(), Util4Deserializer.child(
@@ -966,7 +968,7 @@ public class FPDLDeserializer implements FPDLNames{
 		//设置entry
 		String entryNodeId = subflowElement.getAttribute(ENTRY);
 		WorkflowElement entryNode = subflow.findWFElementById(entryNodeId);
-		if (entryNode==null){
+		if (entryNode!=null){
 			
 			subflow.setEntry((Node)entryNode);
 		}
@@ -1154,7 +1156,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @param element
 	 * @throws DeserializerException
 	 */
-	protected void loadStartNodes(Subflow subflow,
+	protected void loadStartNodes(SubProcess subflow,
 			List<StartNode> startNodes, Element startNodesElem)
 			throws DeserializerException {
 		if (startNodesElem == null) {
@@ -1282,7 +1284,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @param element
 	 * @throws DeserializerException
 	 */
-	protected void loadEndNodes(Subflow subflow, List<EndNode> endNodes,
+	protected void loadEndNodes(SubProcess subflow, List<EndNode> endNodes,
 			Element endNodesElem) throws DeserializerException {
 
 		if (endNodesElem == null) {
@@ -1354,7 +1356,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @param element
 	 * @throws DeserializerException
 	 */
-	protected void loadRouters(Subflow wp,
+	protected void loadRouters(SubProcess wp,
 			List<Router> routers, Element element)
 			throws DeserializerException {
 
@@ -1408,7 +1410,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @param element
 	 * @throws DeserializerException
 	 */
-	protected void loadActivities(Subflow subflow,
+	protected void loadActivities(SubProcess subflow,
 			List<Activity> activities, Element element)
 			throws DeserializerException {
 
@@ -1457,7 +1459,7 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 	}
 	
-	protected void loadResourceBinding(Subflow subflow,Activity activity,Element resourceBindingElem)throws DeserializerException{
+	protected void loadResourceBinding(SubProcess subflow,Activity activity,Element resourceBindingElem)throws DeserializerException{
 		if (resourceBindingElem==null) return;
 		
 		WorkflowProcess workflowProcess = (WorkflowProcess)subflow.getParent();
@@ -1566,7 +1568,7 @@ public class FPDLDeserializer implements FPDLNames{
 		activity.setResourceBinding(resourceBinding);
 	}
 	
-	protected ServiceBinding loadServiceBinding(Subflow subflow,Element serviceBindingElem)throws DeserializerException{
+	protected ServiceBinding loadServiceBinding(SubProcess subflow,Element serviceBindingElem)throws DeserializerException{
 		if (serviceBindingElem==null) return null;
 		WorkflowProcess workflowProcess = (WorkflowProcess)subflow.getParent();
 		
@@ -1574,19 +1576,20 @@ public class FPDLDeserializer implements FPDLNames{
 		serviceBinding.setServiceId(serviceBindingElem.getAttribute(SERVICE_ID));
 		serviceBinding.setOperationName(serviceBindingElem.getAttribute(OPERATION_NAME));
 
-		ServiceDef service = workflowProcess.getService(serviceBinding.getServiceId());
-		if (service==null){
-			throw new DeserializerException("Service not found ,id=["+serviceBinding.getServiceId()+"]");
-		}
-		serviceBinding.setService(service);
+		//ServiceBinding无需保存Service以及Operation本身，只需要保存其id即可，2012-06-10
+//		ServiceDef service = workflowProcess.getService(serviceBinding.getServiceId());
+//		if (service==null){
+//			throw new DeserializerException("Service not found ,id=["+serviceBinding.getServiceId()+"]");
+//		}
+//		serviceBinding.setService(service);
 		
-		if (service.getInterface()==null) return serviceBinding;//人工活动无需定义interface，2012-02-03 
-		InterfaceDef interfaceDef = service.getInterface();
-		OperationDef op = interfaceDef.getOperation(serviceBinding.getOperationName());
-		if (op==null){
-			throw new DeserializerException("Operation not found ,service id=["+serviceBinding.getServiceId()+"],opreation name=["+serviceBinding.getOperationName()+"]");
-		}
-		serviceBinding.setOperation(op);
+//		if (service.getInterface()==null) return serviceBinding;//人工活动无需定义interface，2012-02-03 
+//		InterfaceDef interfaceDef = service.getInterface();
+//		OperationDef op = interfaceDef.getOperation(serviceBinding.getOperationName());
+//		if (op==null){
+//			throw new DeserializerException("Operation not found ,service id=["+serviceBinding.getServiceId()+"],opreation name=["+serviceBinding.getOperationName()+"]");
+//		}
+//		serviceBinding.setOperation(op);
 		
 		Element inputAssignmentsElem = Util4Deserializer.child(serviceBindingElem, INPUT_ASSIGNMENTS);
 		if (inputAssignmentsElem!=null){
@@ -1651,7 +1654,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @param transitionsElement
 	 * @throws DeserializerException
 	 */
-	protected void loadTransitions(Subflow subflow,List<Transition> transitions,
+	protected void loadTransitions(SubProcess subflow,List<Transition> transitions,
 			Element transitionsElement) throws DeserializerException {
 
 		if (transitionsElement == null) {
@@ -1687,7 +1690,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @return
 	 * @throws DeserializerException
 	 */
-	protected Transition createTransition(Subflow subflow, Element element)
+	protected Transition createTransition(SubProcess subflow, Element element)
 			throws DeserializerException {
 		String fromNodeId = element.getAttribute(FROM);
 		String toNodeId = element.getAttribute(TO);
@@ -1743,8 +1746,11 @@ public class FPDLDeserializer implements FPDLNames{
 			exp.setName(expressionElement.getAttribute(NAME));
 			exp.setDisplayName(expressionElement.getAttribute(DISPLAY_NAME));
 			String dataTypeStr = expressionElement.getAttribute(DATA_TYPE);
-			QName qname = QName.valueOf(dataTypeStr);
-			exp.setDataType(qname);
+			if (dataTypeStr!=null && !dataTypeStr.trim().equals("")){
+				QName qname = QName.valueOf(dataTypeStr);
+				exp.setDataType(qname);
+			}
+
 			Element bodyElement = Util4Deserializer.child(expressionElement, BODY);
 			NodeList nodeList = bodyElement.getChildNodes();
 			if(nodeList!=null && nodeList.getLength()>0){
