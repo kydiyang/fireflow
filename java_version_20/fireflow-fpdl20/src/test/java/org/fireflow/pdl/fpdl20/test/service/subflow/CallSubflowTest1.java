@@ -46,12 +46,12 @@ import org.fireflow.model.misc.Duration;
 import org.fireflow.model.servicedef.impl.CommonInterfaceDef;
 import org.fireflow.model.servicedef.impl.OperationDefImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
 import org.fireflow.pdl.fpdl20.process.impl.StartNodeImpl;
-import org.fireflow.pdl.fpdl20.process.impl.SubflowImpl;
+import org.fireflow.pdl.fpdl20.process.impl.SubProcessImpl;
 import org.fireflow.pdl.fpdl20.process.impl.TransitionImpl;
 import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.fireflow.service.subflow.SubflowService;
@@ -114,14 +114,14 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		
 		//主流程变量
 		WorkflowQuery<Variable> varQuery = session.createWorkflowQuery(Variable.class);
-		varQuery.add(Restrictions.eq(VariableProperty.PROCESS_ELEMENT_ID, processName+WorkflowProcess.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME))
+		varQuery.add(Restrictions.eq(VariableProperty.PROCESS_ELEMENT_ID, processName+WorkflowProcess.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME))
 			.add(Restrictions.eq(VariableProperty.NAME, "response1"));
 		Variable var = varQuery.unique();
 		Assert.assertNotNull(var);
 		Assert.assertEquals("It is OK", var.getPayload());
 		
 		varQuery.reset();
-		varQuery.add(Restrictions.eq(VariableProperty.PROCESS_ELEMENT_ID, processName+WorkflowProcess.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME))
+		varQuery.add(Restrictions.eq(VariableProperty.PROCESS_ELEMENT_ID, processName+WorkflowProcess.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME))
 		.add(Restrictions.eq(VariableProperty.NAME, "response2"));
 		var = varQuery.unique();
 		Assert.assertNotNull(var);
@@ -157,7 +157,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		process.setDescription(description);
 		
 		//一、创建主流程
-		Subflow mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainflow();
 		
 		PropertyImpl property = new PropertyImpl(mainflow,"id");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.String"));
@@ -208,7 +208,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		mainflow.getTransitions().add(transition2);
 		
 		//二、创建子流程
-		Subflow subflow2 = new SubflowImpl(process,"subflow2");
+		SubProcess subflow2 = new SubProcessImpl(process,"subflow2");
 		process.addSubflow(subflow2);
 		
 		PropertyImpl property4Subflow2 = new PropertyImpl(subflow2,"id");//流程变量x
@@ -300,9 +300,9 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		
 		//绑定
 		ServiceBindingImpl svcBinding = new ServiceBindingImpl();
-		svcBinding.setService(subflowService);
+//		svcBinding.setService(subflowService);
 		svcBinding.setServiceId(subflowService.getId());
-		svcBinding.setOperation(op);
+//		svcBinding.setOperation(op);
 		svcBinding.setOperationName(op.getOperationName());
 		
 		//io输入映射

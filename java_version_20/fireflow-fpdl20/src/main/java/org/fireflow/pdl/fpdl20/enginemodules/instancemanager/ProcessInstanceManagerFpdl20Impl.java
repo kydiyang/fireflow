@@ -43,7 +43,7 @@ import org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManage
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 import org.fireflow.pvm.kernel.KernelManager;
@@ -70,7 +70,7 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 //		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 //		KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);			
 //		//启动WorkflowProcess实际上是启动该WorkflowProcess的main_flow，
-//		kernelManager.startPObject(session, new PObjectKey(workflowProcessId,version,processType,workflowProcessId+"."+WorkflowProcess.MAIN_FLOW_NAME));
+//		kernelManager.startPObject(session, new PObjectKey(workflowProcessId,version,processType,workflowProcessId+"."+WorkflowProcess.MAIN_PROCESS_NAME));
 //		
 //		return session.getCurrentProcessInstance();
 //	}
@@ -82,7 +82,7 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 	public ProcessInstance createProcessInstance(WorkflowSession session,
 			Object workflowElement, String bizId,ProcessDescriptor descriptor,
 			ActivityInstance parentActivityInstance) {
-		Subflow subflow = (Subflow)workflowElement;
+		SubProcess subflow = (SubProcess)workflowElement;
 		WorkflowProcess process = (WorkflowProcess)subflow.getParent();
 		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
 		RuntimeContext context = sessionLocal.getRuntimeContext();

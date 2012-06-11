@@ -39,7 +39,7 @@ import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.EndNode;
 import org.fireflow.pdl.fpdl20.process.Router;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
@@ -64,17 +64,17 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 	 */
 	public List<PObject> translateProcess(ProcessKey processKey ,Object process) {
 		WorkflowProcess fpdl20Process = (WorkflowProcess)process;
-		List<Subflow> subflows = fpdl20Process.getLocalSubflows();
+		List<SubProcess> subflows = fpdl20Process.getLocalSubflows();
 
 		List<PObject> allPObject = new ArrayList<PObject>();
-		for (Subflow subflow:subflows){
+		for (SubProcess subflow:subflows){
 			List<PObject> pobjectList = translateSubflow(subflow,processKey);
 			if (pobjectList!=null)	allPObject.addAll(pobjectList);
 		}
 		return allPObject;
 	}
 	
-	private List<PObject> translateSubflow(Subflow subflow,ProcessKey processKey){
+	private List<PObject> translateSubflow(SubProcess subflow,ProcessKey processKey){
 		SubflowBehavior workflowProcessBehavior = new SubflowBehavior();
 		
 		PObjectKey key = new PObjectKey(processKey.getProcessId(),
@@ -235,7 +235,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 	 * @param subflow
 	 * @param pobjectList
 	 */
-	private void assemblePObject(Subflow subflow ,List<PObject> pobjectList,ProcessKey pk){
+	private void assemblePObject(SubProcess subflow ,List<PObject> pobjectList,ProcessKey pk){
 		List<Activity> activities = subflow.getActivities();
 		if (activities==null || activities.size()==0){
 			return;

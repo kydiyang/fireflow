@@ -19,7 +19,7 @@ import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.ModelElement;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
@@ -83,7 +83,7 @@ public class TheSimplestCompensationTest2 extends FireWorkflowJunitEnviroment{
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		
@@ -174,7 +174,7 @@ public class TheSimplestCompensationTest2 extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(9, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
+		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -202,7 +202,7 @@ public class TheSimplestCompensationTest2 extends FireWorkflowJunitEnviroment{
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());

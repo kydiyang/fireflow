@@ -35,7 +35,7 @@ import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.EndNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Import;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Router;
@@ -49,7 +49,7 @@ import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class SubflowImpl extends AbstractModelElement implements Subflow {
+public class SubProcessImpl extends AbstractModelElement implements SubProcess {
 	
 	private Duration duration = null;
 	/**
@@ -101,7 +101,7 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 	 * @param parentElement
 	 * @param name flow的name属性，必须符合java变量的命名规范
 	 */
-	public SubflowImpl(ModelElement parentElement, String name) {
+	public SubProcessImpl(ModelElement parentElement, String name) {
 		super(parentElement,name);
 	}
 	
@@ -111,7 +111,7 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 	 * @param name flow的name属性，必须符合java变量的命名规范
 	 * @param displayName flow的显示名称，可以是中文
 	 */
-	public SubflowImpl(ModelElement parentElement, String name,String displayName) {
+	public SubProcessImpl(ModelElement parentElement, String name,String displayName) {
 		super(parentElement,name,displayName);
 	}
 	
@@ -268,12 +268,12 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 	/**
 	 * 通过ID查找该流程中的任意元素
 	 * 
-	 * @param id
+	 * @param argId
 	 *            元素的Id
 	 * @return 流程元素，如：Activity,Task,Synchronizer等等
 	 */
-	public WorkflowElement findWFElementById(String id) {
-		if (this.getId().equals(id)) {
+	public WorkflowElement findWFElementById(String argId) {
+		if (this.getId().equals(argId)) {
 			return this;
 		}
 		int i = 0;
@@ -281,7 +281,7 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 		
 		List<StartNode> startNodes = this.getStartNodes();
 		for (StartNode startNode : startNodes){
-			if (id.equals(startNode.getId())){
+			if (argId.equals(startNode.getId())){
 				return startNode;
 			}
 		}
@@ -289,14 +289,14 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 		List<Activity> activityList = this.getActivities();
 		for (i = 0; i < activityList.size(); i++) {
 			Activity activity = activityList.get(i);
-			if (activity.getId().equals(id)) {
+			if (activity.getId().equals(argId)) {
 				return activity;
 			}
 		}
 
 		List<Router> routers = this.getRouters();
 		for (Router router : routers){
-			if (id.equals(router.getId())){
+			if (argId.equals(router.getId())){
 				return router;
 			}
 		}
@@ -304,7 +304,7 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 		List<EndNode> endNodeList = this.getEndNodes();
 		for (i = 0; i < endNodeList.size(); i++) {
 			EndNode endNode =endNodeList.get(i);
-			if (endNode.getId().equals(id)) {
+			if (endNode.getId().equals(argId)) {
 				return endNode;
 
 			}
@@ -313,7 +313,7 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 		List<Transition> transitionList = this.getTransitions();
 		for (i = 0; i < transitionList.size(); i++) {
 			Transition transition = transitionList.get(i);
-			if (transition.getId().equals(id)) {
+			if (transition.getId().equals(argId)) {
 				return transition;
 			}
 		}
@@ -565,7 +565,7 @@ public class SubflowImpl extends AbstractModelElement implements Subflow {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.process.Subflow#getProperty(java.lang.String)
+	 * @see org.fireflow.pdl.fpdl20.process.SubProcess#getProperty(java.lang.String)
 	 */
 	public Property getProperty(String name) {
 		if (StringUtils.isEmpty(name))return null;

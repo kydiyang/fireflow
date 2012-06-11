@@ -2,7 +2,7 @@ package org.fireflow.pdl.fpdl20.process;
 
 import org.fireflow.model.data.Expression;
 
-public interface Transition extends Arc{
+public interface Transition extends Connector{
 	
 	/**
 	 * 转移条件

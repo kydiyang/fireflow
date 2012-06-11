@@ -151,8 +151,8 @@ public interface FPDLNames extends ModelElementNames{
     String POTENTIAL_OWNERS = "potential-owners";
     String READERS = "readers";
     
-    String SUBFLOWS = "subflows";
-    String SUBFLOW = "subflow";
+    String SUBFLOWS = "sub-processes";
+    String SUBFLOW = "sub-process";
 
     String POOL = "pool";
     String IS_ABSTRACT = "is-abstract";

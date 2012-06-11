@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.modules.script;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.UnifiedJEXL;
@@ -43,6 +44,7 @@ import org.fireflow.engine.modules.script.functions.XPath;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.data.Expression;
 import org.firesoa.common.jxpath.model.dom.W3CDomFactory;
+import org.firesoa.common.schema.NameSpaces;
 import org.firesoa.common.util.JavaDataTypeConverter;
 
 /**
@@ -234,7 +236,7 @@ public class ScriptEngineHelper {
 
 			// TODO 所有的To 表达式都用JXpath处理器处理，不使用脚本 引擎
 			Expression toExpression = assignment.getTo();
-			/**** 2012-02-03 下面的逻辑有问题，应该是在toExpression计算完毕之后再进行类型转换。采用xpath不需要下面的类型转换逻辑。
+			
 			QName dataType = toExpression.getDataType();
 			if (dataType != null
 					&& dataType.getNamespaceURI().equals(
@@ -254,7 +256,7 @@ public class ScriptEngineHelper {
 					obj = df.format((java.util.Date)obj);
 				}
 			}
-			*********/
+			
 
 			JXPathContext jxpathContext = JXPathContext.newContext(jxpathRoot);
 			jxpathContext.setFactory(w3cDomFactory );

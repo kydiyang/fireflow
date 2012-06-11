@@ -36,7 +36,7 @@ import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.ModelElement;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowCompensationFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
@@ -108,7 +108,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		//*****************************************/
 		//*************** 开始节点          *************/
@@ -290,7 +290,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		Assert.assertEquals(18, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
+		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -318,7 +318,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -347,7 +347,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		//Activity2,Activity3应该是被补偿状态
 		q4ActInst.reset();
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity2"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity2"));
 		actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());
@@ -356,7 +356,7 @@ public class CompensationTestWithCompensationCode2 extends FireWorkflowJunitEnvi
 		
 		q4ActInst.reset();
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity3"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity3"));
 		actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());

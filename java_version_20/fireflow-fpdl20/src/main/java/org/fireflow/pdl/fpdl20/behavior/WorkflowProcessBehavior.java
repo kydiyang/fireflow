@@ -45,7 +45,7 @@ import org.fireflow.engine.modules.persistence.VariablePersister;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.data.Property;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pvm.kernel.KernelManager;

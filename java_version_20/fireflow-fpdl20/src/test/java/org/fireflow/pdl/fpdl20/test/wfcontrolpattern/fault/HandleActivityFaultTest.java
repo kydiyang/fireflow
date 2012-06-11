@@ -48,7 +48,7 @@ import org.fireflow.model.data.impl.PropertyImpl;
 import org.fireflow.model.servicedef.OperationDef;
 import org.fireflow.model.servicedef.impl.JavaInterfaceDef;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchFaultFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
@@ -122,7 +122,7 @@ public class HandleActivityFaultTest extends FireWorkflowJunitEnviroment {
 		//构造流程
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		PropertyImpl property = new PropertyImpl(subflow,"x");//流程变量x
 		property.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.lang.Integer"));
@@ -206,9 +206,9 @@ public class HandleActivityFaultTest extends FireWorkflowJunitEnviroment {
 		//将service绑定到activity1
 		OperationDef operation = _interface.getOperation("add");
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(javaService);
+//		serviceBinding.setService(javaService);
 		serviceBinding.setServiceId(javaService.getId());
-		serviceBinding.setOperation(operation);
+//		serviceBinding.setOperation(operation);
 		serviceBinding.setOperationName("add");
 		
 		//arg0
@@ -298,7 +298,7 @@ public class HandleActivityFaultTest extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(7, tokenList.size());
 		
 		Token procInstToken = tokenList.get(0);
-		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME,procInstToken.getElementId() );
+		Assert.assertEquals(processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
 		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
@@ -334,7 +334,7 @@ public class HandleActivityFaultTest extends FireWorkflowJunitEnviroment {
 		//验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_FLOW_NAME+".Activity1"));
+				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
 		Assert.assertNotNull(actInstList);
 		Assert.assertEquals(1, actInstList.size());

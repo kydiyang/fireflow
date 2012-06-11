@@ -27,7 +27,7 @@ import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowFaultFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
@@ -101,7 +101,7 @@ public class HandleFaultTest2 extends FireWorkflowJunitEnviroment {
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDiplayName);
 		
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		

@@ -18,14 +18,17 @@ package org.fireflow.engine.modules.process;
 
 import java.io.InputStream;
 
+import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.data.Property;
+import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * 流程定义服务。
@@ -58,6 +61,13 @@ public interface ProcessUtil extends RuntimeContextAware,EngineModule {
 	 */
     public ServiceBinding getServiceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException;
     
+    /**
+     * 根据serviceBinding.getServiceId()和activity，找到ServiceDef对象
+     * @param activity
+     * @param serviceBinding
+     * @return
+     */
+    public ServiceDef getServiceDef(ActivityInstance activityInstance,Object activity,String serviceId);
     /**
      * 获得resource binding对象
      * @param processKey processId,processType,version组成的processKey对象

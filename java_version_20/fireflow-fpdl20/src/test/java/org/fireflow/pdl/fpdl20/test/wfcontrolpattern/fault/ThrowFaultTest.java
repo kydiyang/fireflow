@@ -27,7 +27,7 @@ import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowFaultFeatureImpl;
 import org.fireflow.pdl.fpdl20.process.features.startnode.impl.CatchCompensationFeatureImpl;
@@ -103,7 +103,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 	public WorkflowProcess createWorkflowProcess(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 
-		Subflow subflow = process.getMainflow();
+		SubProcess subflow = process.getMainflow();
 		
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		
@@ -149,7 +149,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		
 		//将service绑定到activity
 		ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-		serviceBinding.setService(humanService);
+//		serviceBinding.setService(humanService);
 		serviceBinding.setServiceId(humanService.getId());	
 
 		activity2.setServiceBinding(serviceBinding);	

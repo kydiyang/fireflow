@@ -17,7 +17,6 @@
 package org.fireflow.pdl.fpdl20.enginemodules.instancemanager;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,19 +30,15 @@ import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
-import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.calendar.CalendarService;
-import org.fireflow.engine.modules.instancemanager.event.ActivityInstanceEvent;
-import org.fireflow.engine.modules.instancemanager.event.ActivityInstanceEventListener;
-import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.instancemanager.impl.AbsActivityInstanceManager;
-import org.fireflow.engine.modules.workitem.WorkItemManager;
+import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.servicedef.ServiceDef;
-import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
+import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 /**
  * @author 非也
@@ -62,6 +57,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 	public ActivityInstance createActivityInstance(WorkflowSession session,
 			ProcessInstance processInstance, Object workflowElement) {
 		CalendarService calendarService = this.runtimeContext.getDefaultEngineModule(CalendarService.class);
+		ProcessUtil processUtil = this.runtimeContext.getEngineModule(ProcessUtil.class, processInstance.getProcessType());
 		
 		
 		Node node = (Node)workflowElement;
@@ -90,7 +86,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 			ServiceBinding serviceBinding = activity.getServiceBinding();
 			if (serviceBinding!=null){
 				actInst.setServiceId(serviceBinding.getServiceId());
-				ServiceDef svcDef = serviceBinding.getService();
+				ServiceDef svcDef = processUtil.getServiceDef(actInst,activity,serviceBinding.getServiceId());
 				if (svcDef!=null){
 					actInst.setServiceVersion(svcDef.getVersion());
 				}
@@ -133,8 +129,11 @@ public class ActivityInstanceManagerFpdl20Impl extends
 		RuntimeContext runtimeContext = sessionLocalImpl.getRuntimeContext();
 
 		ServiceBinding serviceBinding = activity.getServiceBinding();
+		SubProcess subflow = (SubProcess)activity.getParent();
+		WorkflowProcess workflowProcess = (WorkflowProcess)subflow.getParent();
+		
 		if (serviceBinding!=null){
-			ServiceDef serviceDef = serviceBinding.getService();
+			ServiceDef serviceDef  = workflowProcess.getService(serviceBinding.getServiceId());
 			if (serviceDef==null){
 				return true;//没有绑定service，直接结束activity instance
 			}
@@ -145,7 +144,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 						"Can NOT find the service invoker for the "+serviceDef.toString());
 			}
 
-			boolean b = serviceExecutor.invoke(sessionLocalImpl, session.getCurrentActivityInstance(), serviceBinding, activity.getResourceBinding(), activity);
+			boolean b = serviceExecutor.invoke(sessionLocalImpl,activityInstance, serviceBinding, activity.getResourceBinding(), activity);
 				
 			return b;
 		}else{
@@ -157,12 +156,12 @@ public class ActivityInstanceManagerFpdl20Impl extends
 	public int tryCloseActivityInstance(WorkflowSession session,ActivityInstance activityInstance,Object workflowElement){
 		Activity activity = (Activity)workflowElement;		
 		//调用ServiceExecutor
-		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
-		RuntimeContext runtimeContext = sessionLocalImpl.getRuntimeContext();
-
+		ProcessUtil processUtil = this.runtimeContext.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
+		
 		ServiceBinding serviceBinding = activity.getServiceBinding();
 		if (serviceBinding!=null){
-			ServiceDef serviceDef = serviceBinding.getService();
+			
+			ServiceDef serviceDef = processUtil.getServiceDef(activityInstance, activity, serviceBinding.getServiceId());
 			if (serviceDef==null){
 				return ServiceInvoker.CLOSE_ACTIVITY;
 			}
@@ -172,7 +171,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 				throw new EngineException(session.getCurrentActivityInstance(),
 						"Can NOT find the service invoker for the  "+serviceDef.toString());
 			}
-			int b = serviceExecutor.determineActivityCloseStrategy(sessionLocalImpl, activityInstance, activity, serviceBinding);
+			int b = serviceExecutor.determineActivityCloseStrategy(session, activityInstance, activity, serviceBinding);
 			
 			return b;
 		}else{

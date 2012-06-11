@@ -49,7 +49,7 @@ import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
@@ -107,7 +107,7 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 		// 如果是流程入口，则直接执行后续节点
 		// 流程入口的TimerStartFeature，JmsMessageStartFeature，
 		// WebserviceStartFeature需要通过外部逻辑进行处理，其逻辑不是Startnode.execute(...)的职责
-		Subflow process = (Subflow) startNode.getParent();
+		SubProcess process = (SubProcess) startNode.getParent();
 		Node entry = process.getEntry();
 		if (entry != null && entry.getId().equals(startNode.getId())) {
 			ExecuteResult result = new ExecuteResult();
@@ -457,7 +457,7 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 			return direction;
 		} else {
 			// 只有依附在其他Activity上的timer才用ContinueDirection.startNextAndWaitingForClose();
-			Subflow subflow = (Subflow) ((ModelElement) startNode).getParent();
+			SubProcess subflow = (SubProcess) ((ModelElement) startNode).getParent();
 			Node entry = subflow.getEntry();
 			if (entry != null && entry.getId().equals(startNode.getId())) {
 				direction = ContinueDirection.closeMe();

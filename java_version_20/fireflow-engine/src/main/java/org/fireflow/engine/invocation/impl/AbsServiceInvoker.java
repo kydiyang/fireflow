@@ -35,14 +35,13 @@ import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
+import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
-import org.fireflow.model.data.Input;
-import org.fireflow.model.data.Output;
-import org.fireflow.model.servicedef.OperationDef;
+import org.fireflow.model.data.Expression;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.firesoa.common.schema.DOMInitializer;
 import org.firesoa.common.schema.NameSpaces;
@@ -92,11 +91,11 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 
 			ProcessInstance processInstance = session.getCurrentProcessInstance();
 			
-			
-			ServiceDef svc = serviceBinding.getService();
+			ProcessUtil processUtil = runtimeContext.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
+			ServiceDef svc = processUtil.getServiceDef(activityInstance,theActivity, serviceBinding.getServiceId());
 			// 1、首先获得Service Object
 			Object serviceObject = this.getServiceObject(runtimeContext,
-					session, activityInstance, serviceBinding);
+					session, activityInstance, serviceBinding,svc,theActivity);
 			
 			if (serviceObject==null)throw new ServiceInvocationException("Can't initialize the service object for serive[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
 
@@ -107,9 +106,11 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 			if (methodName==null || methodName.trim().equals(""))
 				throw new ServiceInvocationException("The operation name can not be null, the service is  serive[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
 
+			
+			
 			// 3、解析参数
 			Object[] params = resolveInputParams(runtimeContext, session,processInstance,
-					activityInstance, serviceBinding);
+					activityInstance, serviceBinding,svc);
 			
 			// 4、获得参数类型
 			Class[] parameterTypes = this.getParameterTypes(serviceObject.getClass(), methodName, params);
@@ -146,25 +147,29 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 
 	protected abstract Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding)throws ServiceInvocationException;
+			ServiceBinding serviceBinding,ServiceDef serviceDef,Object activity)throws ServiceInvocationException;
 
 	public static Map<String ,Object> resolveInputAssignments(RuntimeContext runtimeContext,
 			WorkflowSession session,ProcessInstance processInstance, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding)throws ScriptException{
-		OperationDef operation = serviceBinding.getOperation();
-		List<Input> inputs = operation.getInputs();
+			ServiceBinding serviceBinding,ServiceDef service)throws ScriptException{
+		List<Assignment> inputAssignmentList = serviceBinding.getInputAssignments();
+//		OperationDef operation = serviceBinding.getOperation();
+//		List<Input> inputs = operation.getInputs();
 
 		Map<String, Object> contextVars = ScriptEngineHelper.fulfillScriptContext(session,
 				runtimeContext, processInstance, activityInstance);
 		
 		//初始化xml类型的input输入，所有的xml类型输入用org.w3c.dom.Document表示
-		ServiceDef service = serviceBinding.getService();
 		Map<String,Object> inputsContext = new HashMap<String,Object>();
-		for (Input _input : inputs){
-			if (!NameSpaces.JAVA.getUri().equals(_input.getDataType().getNamespaceURI())
-					&& inputsContext.get(_input.getName())==null){
-				Document doc = initDocument(service.getXmlSchemaCollection(),_input.getDataType());
-				inputsContext.put(_input.getName(), doc);
+		for (Assignment assignment : inputAssignmentList){
+			Expression toExpression = assignment.getTo();
+			if (toExpression.getName()==null || toExpression.getName().trim().equals("")){
+				throw new ScriptException("The name of the assignment's To-Expression can NOT be empty. More information : the body of the To-Expression is '"+toExpression.getBody()+"';the activity id is "+activityInstance.getNodeId());
+			}
+			if (toExpression.getDataType()!=null && !NameSpaces.JAVA.getUri().equals(toExpression.getDataType().getNamespaceURI())
+					&& inputsContext.get(toExpression.getName())==null){
+				Document doc = initDocument(service.getXmlSchemaCollection(),toExpression.getDataType());
+				inputsContext.put(toExpression.getName(), doc);
 			}
 		}
 		contextVars.put(ScriptContextVariableNames.INPUTS, inputsContext);
@@ -180,18 +185,19 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 	
 	protected Object[] resolveInputParams(RuntimeContext runtimeContext,
 			WorkflowSession session,ProcessInstance processInstance, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding)throws ScriptException {
+			ServiceBinding serviceBinding,ServiceDef service)throws ScriptException {
 		
 		Map<String,Object> inputParamValues = resolveInputAssignments(runtimeContext,session,processInstance,
-				activityInstance,serviceBinding); 
-		
-		OperationDef operation = serviceBinding.getOperation();
-		List<Input> inputs = operation.getInputs();
+				activityInstance,serviceBinding,service); 
+		List<Assignment> inputAssignmentList = serviceBinding.getInputAssignments();
+//		OperationDef operation = null;
+//		List<Input> inputs = operation.getInputs();
 		
 		List<Object> args = new ArrayList<Object>();
-		for (Input _input : inputs) {
-			if (inputParamValues!=null && inputParamValues.containsKey(_input.getName())){
-				Object paramValue = inputParamValues.get(_input.getName());
+		for (Assignment assignment : inputAssignmentList) {
+			Expression toExpression = assignment.getTo();
+			if (inputParamValues!=null && inputParamValues.containsKey(toExpression.getName())){
+				Object paramValue = inputParamValues.get(toExpression.getName());
 				args.add(paramValue);
 			}else{
 				args.add(null);
@@ -213,20 +219,18 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 	protected void assignOutputToVariable(RuntimeContext runtimeContext,
 			WorkflowSession session, ProcessInstance processInstance,ActivityInstance activityInstance,
 			ServiceBinding serviceBinding, Object result) throws ScriptException{
-		OperationDef operation = serviceBinding.getOperation();
-
+//		OperationDef operation = serviceBinding.getOperation();
+		List<Assignment> outputAssignments = serviceBinding.getOutputAssignments();
+		if (outputAssignments==null || outputAssignments.size()==0)return ;//无赋值操作
+		
 		Map<String,Object> scriptContext = new HashMap<String,Object>();
 		Map<String, Object> outputsResults = new HashMap<String, Object>();
-		List<Output> outputs = operation.getOutputs();
-		if (outputs != null && outputs.size() > 0) {
-			Output output = outputs.get(0);
-			outputsResults.put(output.getName(), result);
-			scriptContext.put(ScriptContextVariableNames.OUTPUTS,
+
+		Assignment assignment = outputAssignments.get(0);
+		Expression fromExp = assignment.getFrom();
+		outputsResults.put(fromExp.getName(), result);
+		scriptContext.put(ScriptContextVariableNames.OUTPUTS,
 					outputsResults);
-		}
-		
-		List<Assignment> outputAssignments = serviceBinding
-		.getOutputAssignments();
 
 		ScriptEngineHelper.assignOutputToVariable(session,runtimeContext,
 				processInstance,activityInstance, outputAssignments,

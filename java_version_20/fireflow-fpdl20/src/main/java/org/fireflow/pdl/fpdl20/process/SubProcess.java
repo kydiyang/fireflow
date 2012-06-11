@@ -30,7 +30,7 @@ import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface Subflow extends WorkflowElement{
+public interface SubProcess extends WorkflowElement{
 	/**
 	 * 获得该子流程的预计的运行时间
 	 * @return

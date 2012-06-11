@@ -36,7 +36,7 @@ import org.fireflow.pdl.fpdl20.diagram.Diagram;
  */
 public interface WorkflowProcess extends ModelElement{
 	
-	public static final String MAIN_FLOW_NAME="main_flow";
+	public static final String MAIN_PROCESS_NAME="main";
 	
 	/**
 	 * 返回业务过程的运行时间，业务过程的duration等于main_flow的duration
@@ -74,33 +74,33 @@ public interface WorkflowProcess extends ModelElement{
 	 * 返回主流程的流程Id
 	 * @return
 	 */
-	public Subflow getMainflow();
+	public SubProcess getMainflow();
 	
 	/**
 	 * 根据subflowId 返回subflow
 	 * @param workflowId
 	 * @return
 	 */
-	public Subflow getLocalSubflow(String workflowId);
+	public SubProcess getLocalSubflow(String workflowId);
 	
 	/**
 	 * 向WorkflowProcess中增加一个subflow
 	 * @param flow
 	 */
-	public void addSubflow(Subflow flow);
+	public void addSubflow(SubProcess flow);
 	
 	/**
 	 * 获得流程所有的subflows，包括引入的外部流程的main_flow
 	 * 暂不启用对WorkflowProcess的引用，因为容易发生循环引用，导致死锁
 	 * @return
 	 */
-//	public List<Subflow> getSubflows();
+//	public List<SubProcess> getSubflows();
 	
 	/**
 	 * 获得本WorkflowProcess内部定义的所有subflow
 	 * @return
 	 */
-	public List<Subflow> getLocalSubflows();
+	public List<SubProcess> getLocalSubflows();
 	
 
 	

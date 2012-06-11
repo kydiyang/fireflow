@@ -48,7 +48,7 @@ import org.fireflow.engine.modules.persistence.VariablePersister;
 import org.fireflow.model.data.Property;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
@@ -88,7 +88,7 @@ public class SubflowBehavior implements WorkflowBehavior {
 	 */
 	public Boolean prepare(WorkflowSession session, Token token,
 			Object workflowElement) {
-		Subflow subflow = (Subflow)workflowElement;
+		SubProcess subflow = (SubProcess)workflowElement;
 		
 		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
 		RuntimeContext context = sessionLocal.getRuntimeContext();
@@ -231,7 +231,7 @@ public class SubflowBehavior implements WorkflowBehavior {
 	 */
 	public ExecuteResult execute(WorkflowSession session, Token processToken,
 			Object workflowElement) {
-		Subflow subflow = (Subflow)workflowElement;
+		SubProcess subflow = (SubProcess)workflowElement;
 		Node entry = subflow.getEntry();
 		
 		PObjectKey pobjectKey = new PObjectKey(processToken.getProcessId(),processToken.getVersion(),processToken.getProcessType(),entry.getId());

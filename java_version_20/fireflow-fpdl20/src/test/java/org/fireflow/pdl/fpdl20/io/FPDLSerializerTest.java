@@ -34,7 +34,7 @@ import org.fireflow.pdl.fpdl20.diagram.impl.MessageFlowShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.PoolShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.StartNodeShapeImpl;
 import org.fireflow.pdl.fpdl20.diagram.impl.TransitionShapeImpl;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.impl.ActivityImpl;
 import org.fireflow.pdl.fpdl20.process.impl.EndNodeImpl;
@@ -70,7 +70,7 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		WorkflowProcessImpl process = new WorkflowProcessImpl(processName,processDisplayName);
 		process.setDescription(description);
 		
-		Subflow mainflow = process.getMainflow();
+		SubProcess mainflow = process.getMainflow();
 		
 		mainflow.setDuration(new Duration(5,Duration.MINUTE));
 		

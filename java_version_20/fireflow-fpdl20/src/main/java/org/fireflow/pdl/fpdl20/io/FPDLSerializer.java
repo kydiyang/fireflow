@@ -80,7 +80,7 @@ import org.fireflow.pdl.fpdl20.process.EndNode;
 import org.fireflow.pdl.fpdl20.process.Import;
 import org.fireflow.pdl.fpdl20.process.Router;
 import org.fireflow.pdl.fpdl20.process.StartNode;
-import org.fireflow.pdl.fpdl20.process.Subflow;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
@@ -191,9 +191,9 @@ public class FPDLSerializer implements FPDLNames {
         ResourceSerializer.writeResources(workflowProcess.getLocalResources(),workflowProcessElement);
 
         Element subflowsElement = Util4Serializer.addElement(workflowProcessElement, SUBFLOWS);
-        List<Subflow> subflowList = workflowProcess.getLocalSubflows();
+        List<SubProcess> subflowList = workflowProcess.getLocalSubflows();
         if (subflowList!=null && subflowList.size()>0){
-        	for (Subflow subflow : subflowList){
+        	for (SubProcess subflow : subflowList){
         		writeSubflow(subflow, subflowsElement);
         	}
         	
@@ -623,7 +623,7 @@ public class FPDLSerializer implements FPDLNames {
 
     }
     
-    protected void writeSubflow(Subflow subflow ,Element subflowsElement)throws InvalidModelException,SerializerException{
+    protected void writeSubflow(SubProcess subflow ,Element subflowsElement)throws InvalidModelException,SerializerException{
         Element subflowElement = Util4Serializer.addElement(subflowsElement, SUBFLOW);
         subflowElement.setAttribute(ID, subflow.getId());
         subflowElement.setAttribute(NAME, subflow.getName());
@@ -1254,11 +1254,18 @@ public class FPDLSerializer implements FPDLNames {
         if (exp.getDisplayName()!=null && !exp.getDisplayName().trim().equals("")){
         	expressionElem.setAttribute(DISPLAY_NAME, exp.getDisplayName());
         }
+        if (exp.getDataType()!=null){
+        	expressionElem.setAttribute(DATA_TYPE, exp.getDataType().toString());
+        }
         expressionElem.setAttribute(LANGUAGE, exp.getLanguage());
         Document doc = parent.getOwnerDocument();
-        CDATASection cdata = doc.createCDATASection(exp.getBody());
+        
         Element bodyElem = Util4Serializer.addElement(expressionElem, BODY);
-        bodyElem.appendChild(cdata);
+        if (exp.getBody()!=null){
+            CDATASection cdata = doc.createCDATASection(exp.getBody());
+            bodyElem.appendChild(cdata);
+        }
+
         
         if(exp.getNamespaceMap()!=null && exp.getNamespaceMap().size()>0){
         	
