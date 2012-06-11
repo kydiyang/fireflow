@@ -7,6 +7,7 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.w3c.dom.Document;
 
 public class DBDeleteInvoker extends AbsServiceInvoker {
@@ -14,8 +15,8 @@ public class DBDeleteInvoker extends AbsServiceInvoker {
 	@Override
 	protected Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		DBDeleteServiceDef service = (DBDeleteServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svcDef,Object activity) throws ServiceInvocationException {
+		DBDeleteServiceDef service = (DBDeleteServiceDef)svcDef;
 		DBDeleteImpl deleteImpl = new DBDeleteImpl();
 		deleteImpl.setDBDeleteService(service);
 		return deleteImpl;

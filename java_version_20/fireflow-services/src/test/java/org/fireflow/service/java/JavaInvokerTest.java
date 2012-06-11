@@ -41,6 +41,7 @@ import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.binding.Assignment;
+import org.fireflow.model.binding.impl.AssignmentImpl;
 import org.fireflow.model.binding.impl.InputAssignmentImpl;
 import org.fireflow.model.binding.impl.OutputAssignmentImpl;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
@@ -54,6 +55,7 @@ import org.fireflow.model.servicedef.impl.JavaInterfaceDef;
 import org.fireflow.service.AbsTestContext;
 import org.fireflow.service.java.mock.Operand;
 import org.fireflow.service.java.mock.Result;
+import org.fireflow.service.mock.ActivityMock;
 import org.firesoa.common.schema.NameSpaces;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -130,27 +132,28 @@ public class JavaInvokerTest extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("calculate");
-					serviceBinding.setOperation(operations.get(0));
 
 					
 					//构造输入映射
 					List<Assignment> inputAssignments = new ArrayList<Assignment>();
 					
 					//arg0
-					InputAssignmentImpl inputAssignment = new InputAssignmentImpl();
+					AssignmentImpl inputAssignment = new AssignmentImpl();
 					String jsBody = "importClass(org.fireflow.service.java.mock.MathsAction);var action=org.fireflow.service.java.mock.MathsAction.MULTIPLY; action;";
 //					String jsBody = "processVars.get(\"action\");";
 					ExpressionImpl exp = new ExpressionImpl();
 					exp.setBody(jsBody);
 					exp.setLanguage("JavaScript");
+					exp.setName("from1");
 					inputAssignment.setFrom(exp);//
 					
 					ExpressionImpl toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/inputs/arg0");
+					toExpression.setName("arg0");
+					toExpression.setDisplayName("arg0");
 					toExpression.setDataType(operations.get(0).getInputs().get(0).getDataType());
 					inputAssignment.setTo(toExpression);
 					inputAssignments.add(inputAssignment);
@@ -160,12 +163,15 @@ public class JavaInvokerTest extends AbsTestContext {
 					jsBody = "processVars.get(\"operand\");";
 					exp = new ExpressionImpl();
 					exp.setBody(jsBody);
+					exp.setName("from1");
 					exp.setLanguage("JavaScript");
 					inputAssignment.setFrom(exp);//
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/inputs/arg1");
+					toExpression.setName("arg1");
+					toExpression.setDisplayName("arg1");
 					toExpression.setDataType(operations.get(0).getInputs().get(1).getDataType());
 					inputAssignment.setTo(toExpression);
 					inputAssignments.add(inputAssignment);
@@ -175,12 +181,14 @@ public class JavaInvokerTest extends AbsTestContext {
 					jsBody = "2";
 					exp = new ExpressionImpl();
 					exp.setBody(jsBody);
+					exp.setName("from2");
 					exp.setLanguage("JavaScript");
 					inputAssignment.setFrom(exp);//
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/inputs/arg2");
+					toExpression.setName("arg2");
 					toExpression.setDataType(operations.get(0).getInputs().get(2).getDataType());
 					inputAssignment.setTo(toExpression);
 					inputAssignments.add(inputAssignment);
@@ -191,15 +199,17 @@ public class JavaInvokerTest extends AbsTestContext {
 					List<Assignment> outputAssignments = new ArrayList<Assignment>();
 					
 					//  1、 输出到实例级别的流程变量
-					OutputAssignmentImpl outputAssignment = new OutputAssignmentImpl();
+					AssignmentImpl outputAssignment = new AssignmentImpl();
 					ExpressionImpl expression = new ExpressionImpl();
 					expression.setLanguage("JavaScript");
 					expression.setBody("outputs.get(\""+operations.get(0).getOutputs().get(0).getName()+"\");");
+					expression.setName(JavaInterfaceDef.OUTPUT_NAME_PREFIX+"calculate");
 					outputAssignment.setFrom(expression);
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/processVars/result");
+					toExpression.setName("result");
 					toExpression.setDataType(new QName(NameSpaces.JAVA.getUri(),"org.fireflow.service.java.mock.Result",NameSpaces.JAVA.getPrefix()));
 					
 					outputAssignment.setTo(toExpression);
@@ -211,11 +221,13 @@ public class JavaInvokerTest extends AbsTestContext {
 					expression = new ExpressionImpl();
 					expression.setLanguage("JavaScript");
 					expression.setBody("outputs.get(\""+operations.get(0).getOutputs().get(0).getName()+"\");");
+					expression.setName(JavaInterfaceDef.OUTPUT_NAME_PREFIX+"calculate");
 					outputAssignment.setFrom(expression);
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/activityVars/result1");
+					toExpression.setName("result1");
 					toExpression.setDataType(new QName(NameSpaces.JAVA.getUri(),"org.fireflow.service.java.mock.Result",NameSpaces.JAVA.getPrefix()));
 					
 					outputAssignment.setTo(toExpression);
@@ -227,11 +239,13 @@ public class JavaInvokerTest extends AbsTestContext {
 					expression = new ExpressionImpl();
 					expression.setLanguage("JavaScript");
 					expression.setBody("outputs.get(\""+operations.get(0).getOutputs().get(0).getName()+"\");");
+					expression.setName(JavaInterfaceDef.OUTPUT_NAME_PREFIX+"calculate");
 					outputAssignment.setFrom(expression);
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/sessionAttributes/result2");
+					toExpression.setName("result2");
 					toExpression.setDataType(new QName(NameSpaces.JAVA.getUri(),"org.fireflow.service.java.mock.Result",NameSpaces.JAVA.getPrefix()));
 					
 					outputAssignment.setTo(toExpression);
@@ -241,7 +255,7 @@ public class JavaInvokerTest extends AbsTestContext {
 					serviceBinding.setOutputAssignments(outputAssignments);
 					
 					//执行java 调用
-					boolean b = invoker.invoke(session, actInst, serviceBinding, null, null);
+					boolean b = invoker.invoke(session, actInst, serviceBinding, null, new ActivityMock(service));
 					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -384,10 +398,10 @@ public class JavaInvokerTest extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("calculate");
-					serviceBinding.setOperation(operations.get(0));
+//					serviceBinding.setOperation(operations.get(0));
 
 					
 					//构造输入映射
@@ -399,11 +413,13 @@ public class JavaInvokerTest extends AbsTestContext {
 					ExpressionImpl exp = new ExpressionImpl();
 					exp.setBody(jsBody);
 					exp.setLanguage("JavaScript");
+					exp.setName("from1");
 					inputAssignment.setFrom(exp);//
 					
 					ExpressionImpl toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/inputs/arg0");
+					toExpression.setName("arg0");
 					toExpression.setDataType(operations.get(0).getInputs().get(0).getDataType());
 					inputAssignment.setTo(toExpression);
 					inputAssignments.add(inputAssignment);
@@ -413,12 +429,14 @@ public class JavaInvokerTest extends AbsTestContext {
 					jsBody = "processVars.get(\"operand\");";
 					exp = new ExpressionImpl();
 					exp.setBody(jsBody);
+					exp.setName("from1");
 					exp.setLanguage("JavaScript");
 					inputAssignment.setFrom(exp);//
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/inputs/arg1");
+					toExpression.setName("arg1");
 					toExpression.setDataType(operations.get(0).getInputs().get(1).getDataType());
 					inputAssignment.setTo(toExpression);
 					inputAssignments.add(inputAssignment);
@@ -428,12 +446,14 @@ public class JavaInvokerTest extends AbsTestContext {
 					jsBody = "2";
 					exp = new ExpressionImpl();
 					exp.setBody(jsBody);
+					exp.setName("from2");
 					exp.setLanguage("JavaScript");
 					inputAssignment.setFrom(exp);//
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/inputs/arg2");
+					toExpression.setName("arg2");
 					toExpression.setDataType(operations.get(0).getInputs().get(2).getDataType());
 					inputAssignment.setTo(toExpression);
 					inputAssignments.add(inputAssignment);
@@ -448,11 +468,13 @@ public class JavaInvokerTest extends AbsTestContext {
 					ExpressionImpl expression = new ExpressionImpl();
 					expression.setLanguage("JavaScript");
 					expression.setBody("outputs.get(\""+operations.get(0).getOutputs().get(0).getName()+"\");");
+					expression.setName(JavaInterfaceDef.OUTPUT_NAME_PREFIX+"calculate");
 					outputAssignment.setFrom(expression);
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/processVars/result4");
+					toExpression.setName("result4");
 					toExpression.setDataType(new QName(NameSpaces.JAVA.getUri(),"org.fireflow.service.java.mock.Result",NameSpaces.JAVA.getPrefix()));
 					
 					outputAssignment.setTo(toExpression);
@@ -464,11 +486,13 @@ public class JavaInvokerTest extends AbsTestContext {
 					expression = new ExpressionImpl();
 					expression.setLanguage("JavaScript");
 					expression.setBody("outputs.get(\""+operations.get(0).getOutputs().get(0).getName()+"\");");
+					expression.setName(JavaInterfaceDef.OUTPUT_NAME_PREFIX+"calculate");
 					outputAssignment.setFrom(expression);
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/activityVars/result5");
+					toExpression.setName("result5");
 					toExpression.setDataType(new QName(NameSpaces.JAVA.getUri(),"org.fireflow.service.java.mock.Result",NameSpaces.JAVA.getPrefix()));
 					
 					outputAssignment.setTo(toExpression);
@@ -480,11 +504,13 @@ public class JavaInvokerTest extends AbsTestContext {
 					expression = new ExpressionImpl();
 					expression.setLanguage("JavaScript");
 					expression.setBody("outputs.get(\""+operations.get(0).getOutputs().get(0).getName()+"\");");
+					expression.setName(JavaInterfaceDef.OUTPUT_NAME_PREFIX+"calculate");
 					outputAssignment.setFrom(expression);
 					
 					toExpression = new ExpressionImpl();
 					toExpression.setLanguage("xpath");
 					toExpression.setBody("/sessionAttributes/result6");
+					toExpression.setName("result6");
 					toExpression.setDataType(new QName(NameSpaces.JAVA.getUri(),"org.fireflow.service.java.mock.Result",NameSpaces.JAVA.getPrefix()));
 					
 					outputAssignment.setTo(toExpression);
@@ -494,7 +520,7 @@ public class JavaInvokerTest extends AbsTestContext {
 					serviceBinding.setOutputAssignments(outputAssignments);
 					
 					//执行java 调用
-					boolean b = invoker.invoke(session, actInst, serviceBinding, null, null);
+					boolean b = invoker.invoke(session, actInst, serviceBinding, null, new ActivityMock(service));
 					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block

@@ -6,6 +6,7 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.w3c.dom.Document;
 
 
@@ -19,8 +20,8 @@ public class WebServiceCallerInvoker extends AbsServiceInvoker {
 	@Override
 	protected Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		WebServiceDef ws = (WebServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svc,Object activity) throws ServiceInvocationException {
+		WebServiceDef ws = (WebServiceDef)svc;
 		
 		WebServiceCallerImpl callerImpl = new WebServiceCallerImpl();
 		callerImpl.setWebService(ws);

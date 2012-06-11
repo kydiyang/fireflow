@@ -13,28 +13,28 @@ import org.fireflow.model.servicedef.ServiceDef;
 
 public class ServiceBindingImpl implements ServiceBinding{
 	protected String serviceId = null;
-	protected ServiceDef service = null;
+//	protected ServiceDef service = null;
 	protected String operationName = null;
-	protected OperationDef operation = null;
+//	protected OperationDef operation = null;
 	protected List<Assignment> inputAssignments = new ArrayList<Assignment>();
 	protected List<Assignment> outputAssignments = new ArrayList<Assignment>();
 	protected List<PropOverride> propOverrides = new ArrayList<PropOverride>();
 
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.model.process.binding.ServiceRef#getService()
-	 */
-	public ServiceDef getService() {
-		return service;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.model.process.binding.ServiceRef#setService(org.fireflow.model.service.impl.ServiceImpl)
-	 */
-	public void setService(ServiceDef svc) {
-		service = svc;
-		
-	}
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.model.process.binding.ServiceRef#getService()
+//	 */
+//	public ServiceDef getService() {
+//		return service;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.model.process.binding.ServiceRef#setService(org.fireflow.model.service.impl.ServiceImpl)
+//	 */
+//	public void setService(ServiceDef svc) {
+//		service = svc;
+//		
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.binding.ServiceBinding#getInputAssignments()
@@ -102,12 +102,12 @@ public class ServiceBindingImpl implements ServiceBinding{
 		this.operationName = opName;
 	}
 	
-	public OperationDef getOperation(){
-		return this.operation;
-	}
-	public void setOperation(OperationDef op){
-		this.operation = op;
-	}
+//	public OperationDef getOperation(){
+//		return this.operation;
+//	}
+//	public void setOperation(OperationDef op){
+//		this.operation = op;
+//	}
 
 	public String getServiceInputOutputHandler() {
 		// TODO Auto-generated method stub

@@ -31,10 +31,11 @@ import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
+import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.data.Expression;
 import org.fireflow.model.data.Input;
-import org.fireflow.model.servicedef.OperationDef;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.service.email.MailTemplate;
 import org.firesoa.common.util.JavaDataTypeConverter;
 
@@ -53,10 +54,9 @@ public class MailSenderInvoker extends AbsServiceInvoker {
 	@Override
 	protected Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		MailSendServiceDef svcdef = (MailSendServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef serviceDef,Object activity) throws ServiceInvocationException {
 		MailSenderImpl sender = new MailSenderImpl();
-		sender.setMailSentServiceDef(svcdef);
+		sender.setMailSentServiceDef((MailSendServiceDef)serviceDef);
 		CalendarService theCalendar = runtimeContext.getDefaultEngineModule(CalendarService.class);
 		if (theCalendar!=null){
 			sender.setSentDate(theCalendar.getSysDate());
@@ -88,33 +88,35 @@ public class MailSenderInvoker extends AbsServiceInvoker {
 	
 	protected Object[] resolveInputParams(RuntimeContext runtimeContext,
 			WorkflowSession session,ProcessInstance processInstance, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding)throws ScriptException {
+			ServiceBinding serviceBinding,ServiceDef service)throws ScriptException {
 		Map<String,Object> inputParamValues = resolveInputAssignments(runtimeContext,session,processInstance,
-				activityInstance,serviceBinding); 
+				activityInstance,serviceBinding,service); 
 		
-		MailSendServiceDef serviceDef = (MailSendServiceDef)serviceBinding.getService();
+		MailSendServiceDef serviceDef = (MailSendServiceDef)service;
 		MailTemplate mailTemplate = serviceDef.getMailTemplate();
 		
-		OperationDef operation = serviceBinding.getOperation();
-		List<Input> inputs = operation.getInputs();
+//		OperationDef operation = serviceBinding.getOperation();
+//		List<Input> inputs = operation.getInputs();
+		List<Assignment> inputAssignmentList = serviceBinding.getInputAssignments();
 		Map<String, Object> contextVars = null;
 
 		List<Object> args = new ArrayList<Object>();
-		for (Input _input : inputs) {
-			if (inputParamValues!=null && inputParamValues.containsKey(_input.getName())){
-				Object paramValue = inputParamValues.get(_input.getName());
+		for (Assignment assignment : inputAssignmentList) {
+			Expression toExpression = assignment.getTo();
+			if (inputParamValues!=null && inputParamValues.containsKey(toExpression.getName())){
+				Object paramValue = inputParamValues.get(toExpression.getName());
 				args.add(paramValue);
 			}else{
 				//如果没有绑定，则从MailTemplate中获取
 				if (mailTemplate!=null ){
-					Expression exp = mailTemplate.getMailField(_input.getName());
+					Expression exp = mailTemplate.getMailField(toExpression.getName());
 					if (contextVars==null){
 						contextVars = ScriptEngineHelper.fulfillScriptContext(session,
 								runtimeContext, processInstance, activityInstance);
 					}
 					Object obj = ScriptEngineHelper.evaluateExpression(runtimeContext, exp, contextVars);
 					try{
-						args.add(JavaDataTypeConverter.dataTypeConvert(_input.getDataType(),obj,null));
+						args.add(JavaDataTypeConverter.dataTypeConvert(toExpression.getDataType(),obj,null));
 					}catch(Exception e){
 						args.add(null);
 					}

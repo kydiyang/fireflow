@@ -6,6 +6,7 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.model.binding.ServiceBinding;
+import org.fireflow.model.servicedef.ServiceDef;
 
 public class FileWriterInvoker extends AbsServiceInvoker {
 
@@ -17,8 +18,8 @@ public class FileWriterInvoker extends AbsServiceInvoker {
 	@Override
 	public Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		FileWriteServiceDef service = (FileWriteServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svc,Object activity) throws ServiceInvocationException {
+		FileWriteServiceDef service = (FileWriteServiceDef)svc;
 		FileWriterImpl writer = new FileWriterImpl();
 		writer.setFileWriteService(service);
 		return writer;

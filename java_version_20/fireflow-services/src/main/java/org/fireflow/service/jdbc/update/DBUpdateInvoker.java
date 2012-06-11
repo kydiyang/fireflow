@@ -22,8 +22,7 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.model.binding.ServiceBinding;
-import org.fireflow.service.jdbc.delete.DBDeleteImpl;
-import org.fireflow.service.jdbc.delete.DBDeleteServiceDef;
+import org.fireflow.model.servicedef.ServiceDef;
 import org.w3c.dom.Document;
 
 /**
@@ -46,8 +45,8 @@ public class DBUpdateInvoker extends AbsServiceInvoker {
 	@Override
 	protected Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		DBUpdateServiceDef service = (DBUpdateServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svcDef,Object activity) throws ServiceInvocationException {
+		DBUpdateServiceDef service = (DBUpdateServiceDef)svcDef;
 		DBUpdateImpl deleteImpl = new DBUpdateImpl();
 		deleteImpl.setDBUpdateService(service);
 		return deleteImpl;

@@ -113,10 +113,10 @@ public class DBQueryServiceInvokerTest  extends AbsTestContext{
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("doQuery");
-					serviceBinding.setOperation(operations.get(0));
+//					serviceBinding.setOperation(operations.get(0));
 
 					
 					//构造输入映射

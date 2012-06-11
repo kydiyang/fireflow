@@ -227,10 +227,10 @@ public class FileWriteServiceInvokerTest extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(service);
+//					serviceBinding.setService(service);
 					serviceBinding.setServiceId(service.getId());
 					serviceBinding.setOperationName("writeStringToFile");
-					serviceBinding.setOperation(operations.get(0));
+//					serviceBinding.setOperation(operations.get(0));
 
 					
 					//构造输入映射
@@ -330,10 +330,10 @@ public class FileWriteServiceInvokerTest extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(readService);
+//					serviceBinding.setService(readService);
 					serviceBinding.setServiceId(readService.getId());
 					serviceBinding.setOperationName("readFile");
-					serviceBinding.setOperation(readFileOperation);
+//					serviceBinding.setOperation(readFileOperation);
 
 					
 					//构造输入映射
@@ -429,10 +429,10 @@ public class FileWriteServiceInvokerTest extends AbsTestContext {
 					
 					//构造service binding
 					ServiceBindingImpl serviceBinding = new ServiceBindingImpl();
-					serviceBinding.setService(writeService);
+//					serviceBinding.setService(writeService);
 					serviceBinding.setServiceId(writeService.getId());
 					serviceBinding.setOperationName("writeBytesToFile");
-					serviceBinding.setOperation(operation);
+//					serviceBinding.setOperation(operation);
 
 					
 					//构造输入映射

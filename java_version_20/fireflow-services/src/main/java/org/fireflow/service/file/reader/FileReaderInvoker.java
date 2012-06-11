@@ -28,8 +28,8 @@ public class FileReaderInvoker extends AbsServiceInvoker implements ServiceInvok
 	@Override
 	public Object getServiceObject(RuntimeContext runtimeContext,
 			WorkflowSession session, ActivityInstance activityInstance,
-			ServiceBinding serviceBinding) throws ServiceInvocationException {
-		FileReadServiceDef service = (FileReadServiceDef)serviceBinding.getService();
+			ServiceBinding serviceBinding,ServiceDef svc,Object activity) throws ServiceInvocationException {
+		FileReadServiceDef service = (FileReadServiceDef)svc;
 		FileReaderImpl reader = new FileReaderImpl();
 		reader.setFileReadService(service);
 		return reader;

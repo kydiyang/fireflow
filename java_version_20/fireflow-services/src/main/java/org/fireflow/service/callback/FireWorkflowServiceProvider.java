@@ -182,8 +182,7 @@ public class FireWorkflowServiceProvider implements Provider<Source>{
 	public Source invoke(Source request) {
 		Expression correlation = callbackService.getCorrelation();
 		
-		OperationDef operationDef = this.serviceBinding.getOperation();	
-		final QName responseRootElementQName = new QName(callbackService.getTargetNamespaceUri(),operationDef.getOperationName()+"Response");
+		final QName responseRootElementQName = new QName(callbackService.getTargetNamespaceUri(),this.serviceBinding.getOperationName()+"Response");
 		
 		//下面是测试代码
 		/*
