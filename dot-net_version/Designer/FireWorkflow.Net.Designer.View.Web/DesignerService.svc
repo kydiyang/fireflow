@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="FireWorkflow.Net.Designer.View.Web.DesignerService" CodeBehind="DesignerService.svc.cs" %>
