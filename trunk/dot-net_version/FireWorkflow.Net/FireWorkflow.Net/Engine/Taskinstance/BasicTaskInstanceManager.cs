@@ -755,7 +755,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             {
                 List<Synchronizer> allSynchronizersAndEnds = new List<Synchronizer>();
                 allSynchronizersAndEnds.AddRange(workflowProcess.Synchronizers);
-                allSynchronizersAndEnds.AddRange((IEnumerable<Synchronizer>)workflowProcess.EndNodes);
+                allSynchronizersAndEnds.AddRange((IEnumerable<Synchronizer>)workflowProcess.EndNodes.ToArray());
                 //allSynchronizersAndEnds.AddRange((List<Synchronizer>));
                 for (int i = 0; i < allSynchronizersAndEnds.Count; i++)
                 {
@@ -1179,7 +1179,7 @@ namespace FireWorkflow.Net.Engine.Taskinstance
             //调整token布局 
             List<Synchronizer> allSynchronizersAndEnds = new List<Synchronizer>();
             allSynchronizersAndEnds.AddRange(thisProcess.Synchronizers);
-            allSynchronizersAndEnds.AddRange((IEnumerable<Synchronizer>)thisProcess.EndNodes);
+            allSynchronizersAndEnds.AddRange((IEnumerable<Synchronizer>)thisProcess.EndNodes.ToArray());
             for (int i = 0; i < allSynchronizersAndEnds.Count; i++)
             {
                 Synchronizer synchronizer = allSynchronizersAndEnds[i];
