@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Designer.View", "FireWorkflow.Net.Designer.View\FireWorkflow.Net.Designer.View.csproj", "{B3B971E8-3527-4863-B96B-CE9EC0068014}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D7C4C182-D11E-442E-B54F-E312F8474CE4} = {D7C4C182-D11E-442E-B54F-E312F8474CE4}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Designer.View.Web", "FireWorkflow.Net.Designer.View.Web\FireWorkflow.Net.Designer.View.Web.csproj", "{D7C4C182-D11E-442E-B54F-E312F8474CE4}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3B971E8-3527-4863-B96B-CE9EC0068014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3B971E8-3527-4863-B96B-CE9EC0068014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3B971E8-3527-4863-B96B-CE9EC0068014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3B971E8-3527-4863-B96B-CE9EC0068014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7C4C182-D11E-442E-B54F-E312F8474CE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7C4C182-D11E-442E-B54F-E312F8474CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7C4C182-D11E-442E-B54F-E312F8474CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7C4C182-D11E-442E-B54F-E312F8474CE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
