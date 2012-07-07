@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="DesignerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:51851/DesignerService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:51851/DesignerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:51851/DesignerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/FireWorkflow.Net.Engine.Impl" />
+      <xsd:import schemaLocation="http://localhost:51851/DesignerService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/FireWorkflow.Net.Engine.Definition" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IDesignerService_GetWorkflowProcessXml_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkflowProcessXml" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetWorkflowProcessXml_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkflowProcessXmlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetWorkflowProcessXmlProcessIdOrVersion_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkflowProcessXmlProcessIdOrVersion" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetWorkflowProcessXmlProcessIdOrVersion_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkflowProcessXmlProcessIdOrVersionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetProcessInstanceTraceXml_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProcessInstanceTraceXml" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetProcessInstanceTraceXml_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetProcessInstanceTraceXmlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetAllLatestVersionsOfWorkflowDefinition_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllLatestVersionsOfWorkflowDefinition" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_GetAllLatestVersionsOfWorkflowDefinition_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllLatestVersionsOfWorkflowDefinitionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_SaveOrUpdateWorkflowProcess_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveOrUpdateWorkflowProcess" />
+  </wsdl:message>
+  <wsdl:message name="IDesignerService_SaveOrUpdateWorkflowProcess_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveOrUpdateWorkflowProcessResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IDesignerService">
+    <wsdl:operation name="GetWorkflowProcessXml">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDesignerService/GetWorkflowProcessXml" message="tns:IDesignerService_GetWorkflowProcessXml_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDesignerService/GetWorkflowProcessXmlResponse" message="tns:IDesignerService_GetWorkflowProcessXml_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetWorkflowProcessXmlProcessIdOrVersion">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDesignerService/GetWorkflowProcessXmlProcessIdOrVersion" message="tns:IDesignerService_GetWorkflowProcessXmlProcessIdOrVersion_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDesignerService/GetWorkflowProcessXmlProcessIdOrVersionResponse" message="tns:IDesignerService_GetWorkflowProcessXmlProcessIdOrVersion_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProcessInstanceTraceXml">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDesignerService/GetProcessInstanceTraceXml" message="tns:IDesignerService_GetProcessInstanceTraceXml_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDesignerService/GetProcessInstanceTraceXmlResponse" message="tns:IDesignerService_GetProcessInstanceTraceXml_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllLatestVersionsOfWorkflowDefinition">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDesignerService/GetAllLatestVersionsOfWorkflowDefinition" message="tns:IDesignerService_GetAllLatestVersionsOfWorkflowDefinition_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDesignerService/GetAllLatestVersionsOfWorkflowDefinitionResponse" message="tns:IDesignerService_GetAllLatestVersionsOfWorkflowDefinition_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveOrUpdateWorkflowProcess">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDesignerService/SaveOrUpdateWorkflowProcess" message="tns:IDesignerService_SaveOrUpdateWorkflowProcess_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IDesignerService/SaveOrUpdateWorkflowProcessResponse" message="tns:IDesignerService_SaveOrUpdateWorkflowProcess_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IDesignerService" type="tns:IDesignerService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetWorkflowProcessXml">
+      <soap:operation soapAction="http://tempuri.org/IDesignerService/GetWorkflowProcessXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetWorkflowProcessXmlProcessIdOrVersion">
+      <soap:operation soapAction="http://tempuri.org/IDesignerService/GetWorkflowProcessXmlProcessIdOrVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProcessInstanceTraceXml">
+      <soap:operation soapAction="http://tempuri.org/IDesignerService/GetProcessInstanceTraceXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllLatestVersionsOfWorkflowDefinition">
+      <soap:operation soapAction="http://tempuri.org/IDesignerService/GetAllLatestVersionsOfWorkflowDefinition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveOrUpdateWorkflowProcess">
+      <soap:operation soapAction="http://tempuri.org/IDesignerService/SaveOrUpdateWorkflowProcess" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DesignerService">
+    <wsdl:port name="BasicHttpBinding_IDesignerService" binding="tns:BasicHttpBinding_IDesignerService">
+      <soap:address location="http://localhost:51851/DesignerService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

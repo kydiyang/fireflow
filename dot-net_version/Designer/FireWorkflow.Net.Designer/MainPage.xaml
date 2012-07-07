@@ -1,0 +1,213 @@
+﻿<UserControl xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data.Input"  xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"  x:Class="FireWorkflow.Net.Designer.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480" xmlns:navigation="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Navigation" LostFocus="lostFocus" xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit" xmlns:my1="clr-namespace:FireWorkflow.Net.Designer.Model.Designer.Windows;assembly=FireWorkflow.Net.Designer.Model">
+    <toolkit:BusyIndicator x:Name="SampleIndicator" IsBusy="{Binding}">
+        <Grid x:Name="LayoutRoot" Background="White" KeyDown="keyDown" KeyUp="keyUP" MouseRightButtonDown="LayoutRoot_MouseRightButtonDown">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <StackPanel Orientation="Horizontal" Background="#FFaaaabb" Grid.Row="0" Margin="0 0 0 2" >
+                <StackPanel.Resources>
+                    <Style x:Key="Button" TargetType="Button">
+                        <Setter Property="Width" Value="20"/>
+                        <Setter Property="Height" Value="20"/>
+                        <Setter Property="Margin" Value="2 2 0 2"/>
+                        <Setter Property="Padding" Value="2 2 2 2"/>
+                    </Style>
+                </StackPanel.Resources>
+               
+                <Button x:Name="btnNew"  Click="btnNew_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="新建">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/NewDocumentHS.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnOpen" Click="btnOpen_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="打开">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/openHS.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnSave" Click="btnSave_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="保存">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/saveHS.png" />
+                    </Button.Content>
+                </Button>
+                <my:Label Content="|" Margin="3 2 3 2"/>
+                <Button x:Name="btnLocalOpen" Click="btnLocalOpen_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="本地打开">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/openHS.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnLocalSave" Click="btnLocalSave_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="本地保存">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/saveHS.png" />
+                    </Button.Content>
+                </Button>
+                <my:Label Content="|" Margin="3 2 3 2"/>
+                <Button x:Name="btnlayoutLeftAlign" Click="btnlayoutLeftAlign_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="左对齐">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutLeftAlign.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutVerticalCenterAlign" Click="btnlayoutVerticalCenterAlign_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="垂直居中对齐">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutVerticalCenterAlign.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutRightAlign" Click="btnlayoutRightAlign_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="右对齐">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutRightAlign.png" />
+                    </Button.Content>
+                </Button>
+                <my:Label Content="|" Margin="3 2 3 2"/>
+                <Button x:Name="btnlayoutTopAlign" Click="btnlayoutTopAlign_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="顶端对齐">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutTopAlign.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutLevelCenterAlign" Click="btnlayoutLevelCenterAlign_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="水平居中对齐">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutLevelCenterAlign.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutBottomAlign" Click="btnlayoutBottomAlign_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="底端对齐">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutBottomAlign.png" />
+                    </Button.Content>
+                </Button>
+                <my:Label Content="|" Margin="3 2 3 2"/>
+                <Button x:Name="btnlayoutLevelSpacingEqual" Click="btnlayoutLevelSpacingEqual_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="使水平间距相等">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutLevelSpacingEqual.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutLevelIncreaseSpacing" Click="btnlayoutLevelIncreaseSpacing_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="增加水平间距" IsEnabled="True">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutLevelIncreaseSpacing.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutLevelDecreaseSpacing" Click="btnlayoutLevelDecreaseSpacing_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="减小水平间距">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutLevelDecreaseSpacing.png" />
+                    </Button.Content>
+                </Button>
+                <my:Label Content="|" Margin="3 2 3 2"/>
+                <Button x:Name="btnlayoutVerticalSpacingEqual" Click="btnlayoutVerticalSpacingEqual_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="使垂直间距相等">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutVerticalSpacingEqual.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutVerticalIncreaseSpacing" Click="btnlayoutVerticalIncreaseSpacing_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="增加垂直间距">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutVerticalIncreaseSpacing.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="btnlayoutVerticalDecreaseSpacing" Click="btnlayoutVerticalDecreaseSpacing_Checked" Style="{StaticResource Button}" ToolTipService.ToolTip="减小垂直间距">
+                    <Button.Content>
+                        <Image Source="ButtonIcon/layoutVerticalDecreaseSpacing.png" />
+                    </Button.Content>
+                </Button>
+                <my1:CommonAttributeControl Name="commonAttributeControl1" />
+            </StackPanel>
+            <Grid x:Name="LayoutRootRL" Grid.Row="1" Background="White">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <controls:GridSplitter DataContext="{Binding}" />
+                <ListBox Name="listBox" Margin="0,0,12,0">
+                    <ListBoxItem IsSelected="True">
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/arrow16.png" />
+                                <TextBlock Text="选择" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/startNode16.png" />
+                                <TextBlock Text="StartNode" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/activity16.png" />
+                                <TextBlock Text="Activity" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/activity_manual_16.png" />
+                                <TextBlock Text="FormTask" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/activity_tool_16.png" />
+                                <TextBlock Text="Tool" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/activity_subflow_16.png" />
+                                <TextBlock Text="Subflow" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/synchronizer16.png" />
+                                <TextBlock Text="Synchronizer" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/endNode16.png" />
+                                <TextBlock Text="EndNode" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/transition16.png" />
+                                <TextBlock Text="Transition" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="16" Width="16" Source="Icon/loop16.png" />
+                                <TextBlock Text="Loop" Margin="2"/>
+                            </StackPanel>
+                        </ListBoxItem.Content>
+                    </ListBoxItem>
+                </ListBox>
+
+                <ScrollViewer x:Name="EventViewer" HorizontalScrollBarVisibility="Auto" Grid.Column="1" Margin="2 0 0 0">
+                    <Canvas Name="canvas" Background="#6EDED9F8"  Width="337" Height="313" HorizontalAlignment="Left" VerticalAlignment="Top" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" MouseMove="Canvas_MouseMove" MouseLeftButtonUp="Canvas_MouseLeftButtonUp">
+                        
+                    </Canvas>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </toolkit:BusyIndicator>
+</UserControl>

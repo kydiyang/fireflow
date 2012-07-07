@@ -1,0 +1,619 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1FAB28F4-D629-48EA-ACCC-D16170B3AC11}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FireWorkflow.Net.Designer</RootNamespace>
+    <AssemblyName>FireWorkflow.Net.Designer</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>zh-Hans</SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>FireWorkflow.Net.Designer.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>FireWorkflow.Net.Designer.App</SilverlightAppEntry>
+    <TestPageFileName>TestPage.html</TestPageFileName>
+    <CreateTestPage>true</CreateTestPage>
+    <ValidateXaml>true</ValidateXaml>
+    <EnableOutOfBrowser>false</EnableOutOfBrowser>
+    <OutOfBrowserSettingsFile>Properties\OutOfBrowserSettings.xml</OutOfBrowserSettingsFile>
+    <UsePlatformExtensions>false</UsePlatformExtensions>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <LinkedServerProject>
+    </LinkedServerProject>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FireWorkflow.Net.Designer.Model, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Navigation, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Toolkit, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Windows.Controls.Toolkit.Internals, Version=4.0.5.0, Culture=neutral, PublicKeyToken=2c5c654d367bf4a7" />
+    <Reference Include="System.Windows.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Xml.Linq, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OpenWindow.xaml.cs">
+      <DependentUpon>OpenWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaveWindow.xaml.cs">
+      <DependentUpon>SaveWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\DesignerServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Window\ActivityWindow.xaml.cs">
+      <DependentUpon>ActivityWindow.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="OpenWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SaveWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Window\ActivityWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AppManifest.xml" />
+    <None Include="Service References\DesignerServiceReference\DesignerService.wsdl" />
+    <None Include="Service References\DesignerServiceReference\DesignerService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DesignerServiceReference\DesignerService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DesignerServiceReference\DesignerService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DesignerServiceReference\DesignerService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DesignerServiceReference\FireWorkflow.Net.Designer.DesignerServiceReference.ProcessInstanceTrace.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\DesignerServiceReference\FireWorkflow.Net.Designer.DesignerServiceReference.WorkflowDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <Resource Include="Images\Accept.png" />
+    <Resource Include="Images\AcceptLarge.png" />
+    <Resource Include="Images\AddressBlockLarge.png" />
+    <Resource Include="Images\AddText.png" />
+    <Resource Include="Images\AlignLeft.PNG" />
+    <Resource Include="Images\Align\AlignBottom.png" />
+    <Resource Include="Images\Align\AlignCenter.png" />
+    <Resource Include="Images\Align\AlignLeft.PNG" />
+    <Resource Include="Images\Align\AlignMiddle.png" />
+    <Resource Include="Images\Align\AlignRight.png" />
+    <Resource Include="Images\Align\AlignTop.png" />
+    <Resource Include="Images\ArrangeWindows.png" />
+    <Resource Include="Images\ArrangeWindowsLarge.png" />
+    <Resource Include="Images\AutoCheck.PNG" />
+    <Resource Include="Images\BalloonsLarge.png" />
+    <Resource Include="Images\Bibliography.png" />
+    <Resource Include="Images\BlankPageLarge.png" />
+    <Resource Include="Images\Bold.png" />
+    <Resource Include="Images\Bookmark.png" />
+    <Resource Include="Images\BookmarkLarge.png" />
+    <Resource Include="Images\Borders\AllBorders.png" />
+    <Resource Include="Images\Borders\BottomBorder.png" />
+    <Resource Include="Images\Borders\DiagonalDownBorder.png" />
+    <Resource Include="Images\Borders\DiagonalUpBorder.png" />
+    <Resource Include="Images\Borders\InsideBorders.png" />
+    <Resource Include="Images\Borders\InsideHorizontalBorder.png" />
+    <Resource Include="Images\Borders\InsideVerticalBorder.png" />
+    <Resource Include="Images\Borders\LeftBorder.png" />
+    <Resource Include="Images\Borders\NoBorder.png" />
+    <Resource Include="Images\Borders\OutsideBorders.png" />
+    <Resource Include="Images\Borders\RightBorder.png" />
+    <Resource Include="Images\Borders\TopBorder.png" />
+    <Resource Include="Images\Breaks.PNG" />
+    <Resource Include="Images\BringForward.PNG" />
+    <Resource Include="Images\BringInFrontOfText.PNG" />
+    <Resource Include="Images\BringToFront.png" />
+    <Resource Include="Images\BuildingBlocksOrg.png" />
+    <Resource Include="Images\Bullets\Arrow.png" />
+    <Resource Include="Images\Bullets\Circle.png" />
+    <Resource Include="Images\Bullets\Colors.png" />
+    <Resource Include="Images\Bullets\None.png" />
+    <Resource Include="Images\Bullets\Point.png" />
+    <Resource Include="Images\Bullets\Rhombuses.png" />
+    <Resource Include="Images\Bullets\Square.png" />
+    <Resource Include="Images\Bullets\Tick.png" />
+    <Resource Include="Images\ButtonDownArrow.png" />
+    <Resource Include="Images\ButtonUpArrow.png" />
+    <Resource Include="Images\ChangeCase.png" />
+    <Resource Include="Images\ChangeListLevel.png" />
+    <Resource Include="Images\ChangeStylesLarge.png" />
+    <Resource Include="Images\ChartLarge.png" />
+    <Resource Include="Images\Clear.png" />
+    <Resource Include="Images\ClearFormatting.png" />
+    <Resource Include="Images\ClipArtLarge.png" />
+    <Resource Include="Images\Colors.png" />
+    <Resource Include="Images\Columns.PNG" />
+    <Resource Include="Images\ColumnsLarge.png" />
+    <Resource Include="Images\CompareLarge.png" />
+    <Resource Include="Images\Copy.png" />
+    <Resource Include="Images\CoverPageLarge.png" />
+    <Resource Include="Images\CrossReference.png" />
+    <Resource Include="Images\CrossReferenceLarge.png" />
+    <Resource Include="Images\Cut.png" />
+    <Resource Include="Images\DateAndTime.png" />
+    <Resource Include="Images\Delete.png" />
+    <Resource Include="Images\DeleteComment.png" />
+    <Resource Include="Images\Design.png" />
+    <Resource Include="Images\DialogButton.png" />
+    <Resource Include="Images\Directory.png" />
+    <Resource Include="Images\DistributeHorizontally.png" />
+    <Resource Include="Images\DistributeVertically.png" />
+    <Resource Include="Images\DocumentProperty.png" />
+    <Resource Include="Images\DownButtonArrow.png" />
+    <Resource Include="Images\DownButtonArrowHover.png" />
+    <Resource Include="Images\DraftLarge.png" />
+    <Resource Include="Images\DragBoth.png" />
+    <Resource Include="Images\DragVertical.png" />
+    <Resource Include="Images\DrawTable.png" />
+    <Resource Include="Images\DropCapLarge.png" />
+    <Resource Include="Images\EditIndividualDocs.png" />
+    <Resource Include="Images\EditRecipientsLarge.png" />
+    <Resource Include="Images\Effects.png" />
+    <Resource Include="Images\Email.png" />
+    <Resource Include="Images\Envelopes.png" />
+    <Resource Include="Images\EnvelopesLarge.png" />
+    <Resource Include="Images\EquationLarge.png" />
+    <Resource Include="Images\Field.png" />
+    <Resource Include="Images\Find.png" />
+    <Resource Include="Images\FindRecipient.png" />
+    <Resource Include="Images\FinishAndMergeLarge.png" />
+    <Resource Include="Images\FlipHorizontal.png" />
+    <Resource Include="Images\FlipVertical.png" />
+    <Resource Include="Images\FontColor.png" />
+    <Resource Include="Images\FontDialog.png" />
+    <Resource Include="Images\Fonts.png" />
+    <Resource Include="Images\FontScreenTip.png" />
+    <Resource Include="Images\FooterLarge.png" />
+    <Resource Include="Images\FormatPainter.png" />
+    <Resource Include="Images\FullScreenReadingLarge.png" />
+    <Resource Include="Images\GoTo.png" />
+    <Resource Include="Images\GreetingLineLarge.png" />
+    <Resource Include="Images\GridSettings.png" />
+    <Resource Include="Images\Group.png" />
+    <Resource Include="Images\GrowFont.png" />
+    <Resource Include="Images\HeaderLarge.png" />
+    <Resource Include="Images\Help.png" />
+    <Resource Include="Images\HighlightMergeFieldsLarge.png" />
+    <Resource Include="Images\HorizontalLine.png" />
+    <Resource Include="Images\Hyperlink.png" />
+    <Resource Include="Images\HyperlinkLarge.png" />
+    <Resource Include="Images\Hyphenation.PNG" />
+    <Resource Include="Images\Indent.png" />
+    <Resource Include="Images\IndentDecrease.PNG" />
+    <Resource Include="Images\IndentIncrease.PNG" />
+    <Resource Include="Images\IndentLeft.PNG" />
+    <Resource Include="Images\IndentRight.PNG" />
+    <Resource Include="Images\IndexLower.png" />
+    <Resource Include="Images\IndexUpper.png" />
+    <Resource Include="Images\InsertCaptionLarge.png" />
+    <Resource Include="Images\InsertCitationLarge.png" />
+    <Resource Include="Images\InsertEndnote.png" />
+    <Resource Include="Images\InsertFootnoteLarge.png" />
+    <Resource Include="Images\InsertIndex.png" />
+    <Resource Include="Images\InsertMergeFieldLarge.png" />
+    <Resource Include="Images\InsertTableOfAuthorities.png" />
+    <Resource Include="Images\InsertTableOfFigures.png" />
+    <Resource Include="Images\Italic.png" />
+    <Resource Include="Images\Labels.png" />
+    <Resource Include="Images\LabelsLarge.png" />
+    <Resource Include="Images\Letters.png" />
+    <Resource Include="Images\LineNumbers.PNG" />
+    <Resource Include="Images\LineSpacing.png" />
+    <Resource Include="Images\LineSpAfter.PNG" />
+    <Resource Include="Images\LineSpBefore.PNG" />
+    <Resource Include="Images\ListBullets.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel1.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel2.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel3.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel4.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel5.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel6.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel7.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel8.png" />
+    <Resource Include="Images\ListLevels\ChangeListLevel9.png" />
+    <Resource Include="Images\ListMultilevel.png" />
+    <Resource Include="Images\ListNumbered.png" />
+    <Resource Include="Images\Lists\List1.png" />
+    <Resource Include="Images\Lists\List1Big.png" />
+    <Resource Include="Images\Lists\List2.png" />
+    <Resource Include="Images\Lists\List2Big.png" />
+    <Resource Include="Images\Lists\List3.png" />
+    <Resource Include="Images\Lists\List3Big.png" />
+    <Resource Include="Images\Lists\List4.png" />
+    <Resource Include="Images\Lists\List4Big.png" />
+    <Resource Include="Images\Lists\List5.png" />
+    <Resource Include="Images\Lists\List5Big.png" />
+    <Resource Include="Images\Lists\List6.png" />
+    <Resource Include="Images\Lists\List6Big.png" />
+    <Resource Include="Images\Lists\List7.png" />
+    <Resource Include="Images\Lists\List7Big.png" />
+    <Resource Include="Images\Lists\None.png" />
+    <Resource Include="Images\Macros.png" />
+    <Resource Include="Images\MacrosLarge.png" />
+    <Resource Include="Images\ManageSources.png" />
+    <Resource Include="Images\MarginsLarge.png" />
+    <Resource Include="Images\MarkCitationLarge.png" />
+    <Resource Include="Images\MarkEntryLarge.png" />
+    <Resource Include="Images\MatchFields.png" />
+    <Resource Include="Images\MenuItemCheck.png" />
+    <Resource Include="Images\MoveFirst.png" />
+    <Resource Include="Images\MoveLast.png" />
+    <Resource Include="Images\MoveNext.png" />
+    <Resource Include="Images\MovePrevious.png" />
+    <Resource Include="Images\NewCommentLarge.png" />
+    <Resource Include="Images\NewWindow.png" />
+    <Resource Include="Images\NewWindowLarge.png" />
+    <Resource Include="Images\NextChange.png" />
+    <Resource Include="Images\NextComment.png" />
+    <Resource Include="Images\NextFootnote.png" />
+    <Resource Include="Images\Numbering\LetterBracket.png" />
+    <Resource Include="Images\Numbering\LetterPoint.png" />
+    <Resource Include="Images\Numbering\None.png" />
+    <Resource Include="Images\Numbering\NumberBracket.png" />
+    <Resource Include="Images\Numbering\NumberPoint.png" />
+    <Resource Include="Images\Numbering\RomanNumeralPoint.png" />
+    <Resource Include="Images\Numbering\SmallLetterPoint.png" />
+    <Resource Include="Images\Numbering\SmallRomanNumeralPoint.png" />
+    <Resource Include="Images\Object.png" />
+    <Resource Include="Images\OfficeLogo.png" />
+    <Resource Include="Images\OfficeOnline.png" />
+    <Resource Include="Images\OnePage.png" />
+    <Resource Include="Images\OrientationLarge.png" />
+    <Resource Include="Images\OutlineLarge.png" />
+    <Resource Include="Images\OutlookContact.png" />
+    <Resource Include="Images\PageBorders.PNG" />
+    <Resource Include="Images\PageBordersLarge.png" />
+    <Resource Include="Images\PageBreakLarge.png" />
+    <Resource Include="Images\PageColorLarge.png" />
+    <Resource Include="Images\PageNumberLarge.png" />
+    <Resource Include="Images\PageNumbersBottom.png" />
+    <Resource Include="Images\PageNumbersCurrent.png" />
+    <Resource Include="Images\PageNumbersFormat.png" />
+    <Resource Include="Images\PageNumbersMargin.png" />
+    <Resource Include="Images\PageNumbersRemove.png" />
+    <Resource Include="Images\PageNumbersTop.png" />
+    <Resource Include="Images\PageWidth.png" />
+    <Resource Include="Images\ParagraphAlignCentre.png" />
+    <Resource Include="Images\ParagraphAlignJustify.png" />
+    <Resource Include="Images\ParagraphAlignLeft.png" />
+    <Resource Include="Images\ParagraphAlignRight.png" />
+    <Resource Include="Images\ParagraphSort.png" />
+    <Resource Include="Images\Paste.png" />
+    <Resource Include="Images\PasteHyperlink.png" />
+    <Resource Include="Images\PasteLarge.png" />
+    <Resource Include="Images\PasteSpecial.png" />
+    <Resource Include="Images\PauseRecordMacro.png" />
+    <Resource Include="Images\PictureLarge.png" />
+    <Resource Include="Images\Pin.png" />
+    <Resource Include="Images\PositionLarge.png" />
+    <Resource Include="Images\PreviewResultsLarge.png" />
+    <Resource Include="Images\PreviousChange.png" />
+    <Resource Include="Images\PreviousComment.png" />
+    <Resource Include="Images\PrintDocs.png" />
+    <Resource Include="Images\PrintLayoutLarge.png" />
+    <Resource Include="Images\Proofing.png" />
+    <Resource Include="Images\ProtectDocumentLarge.png" />
+    <Resource Include="Images\QuickLaunchMenuArrow.png" />
+    <Resource Include="Images\QuickPartsLarge.png" />
+    <Resource Include="Images\RecordMacro.png" />
+    <Resource Include="Images\Redo.png" />
+    <Resource Include="Images\Refresh.png" />
+    <Resource Include="Images\Regroup.png" />
+    <Resource Include="Images\Reject.png" />
+    <Resource Include="Images\RejectLarge.png" />
+    <Resource Include="Images\Repeat.png" />
+    <Resource Include="Images\Replace.png" />
+    <Resource Include="Images\Research.png" />
+    <Resource Include="Images\ResetPosition.png" />
+    <Resource Include="Images\ReviewingPaneHorizontal.png" />
+    <Resource Include="Images\ReviewingPaneVertical.png" />
+    <Resource Include="Images\RibbonCheck.png" />
+    <Resource Include="Images\RightArrow.png" />
+    <Resource Include="Images\RotateLeft.png" />
+    <Resource Include="Images\RotateRight.PNG" />
+    <Resource Include="Images\Rules.png" />
+    <Resource Include="Images\Save.png" />
+    <Resource Include="Images\SaveSelection.png" />
+    <Resource Include="Images\Select.png" />
+    <Resource Include="Images\SelectAll.png" />
+    <Resource Include="Images\SelectRecipientsLarge.png" />
+    <Resource Include="Images\SendBackward.PNG" />
+    <Resource Include="Images\SendBehindText.PNG" />
+    <Resource Include="Images\SendEmailMessages.png" />
+    <Resource Include="Images\SendToBack.png" />
+    <Resource Include="Images\SetLanguage.png" />
+    <Resource Include="Images\SetNumberingValue.png" />
+    <Resource Include="Images\Shading.png" />
+    <Resource Include="Images\ShapesLarge.png" />
+    <Resource Include="Images\ShowMarkup.png" />
+    <Resource Include="Images\ShowNotes.png" />
+    <Resource Include="Images\ShowParagraphMarks.png" />
+    <Resource Include="Images\ShowSourceDocumentsLarge.png" />
+    <Resource Include="Images\ShrinkFont.png" />
+    <Resource Include="Images\SideBySide.png" />
+    <Resource Include="Images\SignatureLine.png" />
+    <Resource Include="Images\SizeLarge.png" />
+    <Resource Include="Images\SmartArtLarge.png" />
+    <Resource Include="Images\SpellingGrammarLarge.png" />
+    <Resource Include="Images\SplitWindow.png" />
+    <Resource Include="Images\SplitWindowLarge.png" />
+    <Resource Include="Images\StartMailMergeLarge.png" />
+    <Resource Include="Images\StepByStepMailMerge.png" />
+    <Resource Include="Images\StyleComboBox.png" />
+    <Resource Include="Images\StyleSet.png" />
+    <Resource Include="Images\SwitchWindow.png" />
+    <Resource Include="Images\SwitchWindowLarge.png" />
+    <Resource Include="Images\SymbolLarge.png" />
+    <Resource Include="Images\SynchronousScrolling.png" />
+    <Resource Include="Images\Table.png" />
+    <Resource Include="Images\TableLarge.png" />
+    <Resource Include="Images\TableOfContentsLarge.png" />
+    <Resource Include="Images\TextBox.png" />
+    <Resource Include="Images\TextBoxLarge.png" />
+    <Resource Include="Images\TextFromFile.png" />
+    <Resource Include="Images\TextHighlight.png" />
+    <Resource Include="Images\TextNormal.png" />
+    <Resource Include="Images\TextStrikethrough.png" />
+    <Resource Include="Images\TextWrapping.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingBehind.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingEditPoints.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingInFront.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingInline.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingMoreOptions.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingSquare.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingTight.png" />
+    <Resource Include="Images\TextWrapping\TextWrappingTopAndBottom.png" />
+    <Resource Include="Images\ThemesLarge.png" />
+    <Resource Include="Images\Thesaurus.png" />
+    <Resource Include="Images\TrackChanges.png" />
+    <Resource Include="Images\TrackChangesLarge.png" />
+    <Resource Include="Images\Translate.png" />
+    <Resource Include="Images\TranslationScreenTip.png" />
+    <Resource Include="Images\TwoPages.png" />
+    <Resource Include="Images\Underline.png" />
+    <Resource Include="Images\Undo.png" />
+    <Resource Include="Images\Ungroup.png" />
+    <Resource Include="Images\Unpin.png" />
+    <Resource Include="Images\Update.png" />
+    <Resource Include="Images\UseExisting.png" />
+    <Resource Include="Images\ViewGridlines.png" />
+    <Resource Include="Images\WatermarkLarge.png" />
+    <Resource Include="Images\WebLayoutLarge.png" />
+    <Resource Include="Images\WordArtLarge.png" />
+    <Resource Include="Images\WordCount.png" />
+    <Resource Include="Images\WordNormal.png" />
+    <Resource Include="Images\Zoom100Large.png" />
+    <Resource Include="Images\ZoomLarge.png" />
+    <Resource Include="Images\database_save.png" />
+    <Resource Include="Images\database_open.png" />
+    <Resource Include="Images\open.png" />
+    <Content Include="ServiceReferences.ClientConfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\arrow16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\activities16.png" />
+    <Resource Include="Icon\activity16-2.png" />
+    <Resource Include="Icon\activity16.png" />
+    <Resource Include="Icon\activity_manual_16.png" />
+    <Resource Include="Icon\activity_subflow_16.png" />
+    <Resource Include="Icon\activity_tool_16.png" />
+    <Resource Include="Icon\application16.png" />
+    <Resource Include="Icon\application16_new.png" />
+    <Resource Include="Icon\clear_16.png" />
+    <Resource Include="Icon\complete_workitem_16.png" />
+    <Resource Include="Icon\complete_workitem_as_16.png" />
+    <Resource Include="Icon\datafield16-2.png" />
+    <Resource Include="Icon\datafield16.png" />
+    <Resource Include="Icon\emptyactivity.png" />
+    <Resource Include="Icon\endNode16.png" />
+    <Resource Include="Icon\endNode9.png" />
+    <Resource Include="Icon\foldclose_16.png" />
+    <Resource Include="Icon\foldopen_16.png" />
+    <Resource Include="Icon\go16.png" />
+    <Resource Include="Icon\jumpTo_16.png" />
+    <Resource Include="Icon\jumpTo_as_16.png" />
+    <Resource Include="Icon\loop16-2.png" />
+    <Resource Include="Icon\loop16.png" />
+    <Resource Include="Icon\loopTo_16.png" />
+    <Resource Include="Icon\loopTo_as_16.png" />
+    <Resource Include="Icon\manual16.png" />
+    <Resource Include="Icon\manual_task_16.png" />
+    <Resource Include="Icon\reject16.png" />
+    <Resource Include="Icon\run_auto_16.png" />
+    <Resource Include="Icon\run_step_by_step_16.png" />
+    <Resource Include="Icon\sign_workitem_16.png" />
+    <Resource Include="Icon\sign_workitem_as_16.png" />
+    <Resource Include="Icon\startNode16-2.png" />
+    <Resource Include="Icon\startNode16.png" />
+    <Resource Include="Icon\stop_16.png" />
+    <Resource Include="Icon\subflow_task_16.png" />
+    <Resource Include="Icon\synchronizer16-3.png" />
+    <Resource Include="Icon\synchronizer16.png" />
+    <Resource Include="Icon\task16.png" />
+    <Resource Include="Icon\taskRef16-3.png" />
+    <Resource Include="Icon\taskRef16.png" />
+    <Resource Include="Icon\tool_task_16.png" />
+    <Resource Include="Icon\transition16-5.png" />
+    <Resource Include="Icon\transition16.png" />
+    <Resource Include="Icon\withdraw16.png" />
+    <Resource Include="Icon\workflowprocess16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ButtonIcon\control_play_blue.png" />
+    <Resource Include="ButtonIcon\layoutBottomAlign.png" />
+    <Resource Include="ButtonIcon\layoutLeftAlign.png" />
+    <Resource Include="ButtonIcon\layoutLevelCenterAlign.png" />
+    <Resource Include="ButtonIcon\layoutLevelDecreaseSpacing.png" />
+    <Resource Include="ButtonIcon\layoutLevelIncreaseSpacing.png" />
+    <Resource Include="ButtonIcon\layoutLevelSpacingEqual.png" />
+    <Resource Include="ButtonIcon\layoutRightAlign.png" />
+    <Resource Include="ButtonIcon\layoutTopAlign.png" />
+    <Resource Include="ButtonIcon\layoutVerticalCenterAlign.png" />
+    <Resource Include="ButtonIcon\layoutVerticalDecreaseSpacing.png" />
+    <Resource Include="ButtonIcon\layoutVerticalIncreaseSpacing.png" />
+    <Resource Include="ButtonIcon\layoutVerticalSpacingEqual.png" />
+    <Resource Include="ButtonIcon\NewDocumentHS.png" />
+    <Resource Include="ButtonIcon\openHS.png" />
+    <Resource Include="ButtonIcon\saveHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\DesignerServiceReference\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DesignerServiceReference\DesignerService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DesignerServiceReference\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DesignerServiceReference\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DesignerServiceReference\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
