@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Designer", "FireWorkflow.Net.Designer\FireWorkflow.Net.Designer.csproj", "{1FAB28F4-D629-48EA-ACCC-D16170B3AC11}"
+	ProjectSection(ProjectDependencies) = postProject
+		{89E7FD2F-05EA-47F9-A631-A4156F9A285A} = {89E7FD2F-05EA-47F9-A631-A4156F9A285A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireWorkflow.Net.Designer.WebText", "FireWorkflow.Net.Designer.WebText\FireWorkflow.Net.Designer.WebText.csproj", "{89E7FD2F-05EA-47F9-A631-A4156F9A285A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FAB28F4-D629-48EA-ACCC-D16170B3AC11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FAB28F4-D629-48EA-ACCC-D16170B3AC11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FAB28F4-D629-48EA-ACCC-D16170B3AC11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FAB28F4-D629-48EA-ACCC-D16170B3AC11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89E7FD2F-05EA-47F9-A631-A4156F9A285A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E7FD2F-05EA-47F9-A631-A4156F9A285A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E7FD2F-05EA-47F9-A631-A4156F9A285A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E7FD2F-05EA-47F9-A631-A4156F9A285A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
