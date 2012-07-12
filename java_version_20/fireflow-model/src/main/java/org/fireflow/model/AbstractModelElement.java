@@ -68,6 +68,18 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
 //     */
 //    private Map<String, String> extendedAttributes;
 
+    public static boolean isValidName(String name){
+        if (name == null) {
+            return false;
+        }
+        
+		Matcher m = p.matcher(name);
+		if (!m.matches()) {
+			return false;
+		}
+		return true;
+    }
+    
     /**
      * 构造方法
      */

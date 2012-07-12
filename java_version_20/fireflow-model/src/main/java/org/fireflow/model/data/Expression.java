@@ -8,6 +8,7 @@ import java.util.Map;
  *
  */
 public interface Expression extends DataElement{
+	public static final String EXPRESSION_DISPLAY_NAME_TIP = "请编辑该表达式...";
 	/**
 	 * 表达式的语言
 	 * @return
