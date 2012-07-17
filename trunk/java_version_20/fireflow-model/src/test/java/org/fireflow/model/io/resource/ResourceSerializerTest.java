@@ -56,14 +56,14 @@ public class ResourceSerializerTest {
 		resourceDef.setName("Applicant");
 		resourceDef.setDisplayName("申报人");
 		resourceDef.setResourceType(ResourceType.PROCESS_INSTANCE_CREATOR);
-		resourceDef.getExtendedAttributes().put(ResourceDef.EXT_ATTR_KEY_ACTIVITY_ID, "process1.main_flow.activity1");
+		resourceDef.setValue("process1.main_flow.activity1");
 		resourceList.add(resourceDef);
 		
 		resourceDef = new ResourceDefImpl();
 		resourceDef.setName("var_implement");
 		resourceDef.setDisplayName("流程变量");
 		resourceDef.setResourceType(ResourceType.VARIABLE_IMPLICATION);
-		resourceDef.getExtendedAttributes().put(ResourceDef.EXT_ATTR_KEY_VARIABLE_NAME, "var1");
+		resourceDef.setValue( "var1");
 		resourceList.add(resourceDef);
 		
 		resourceDef = new ResourceDefImpl();
@@ -95,7 +95,7 @@ public class ResourceSerializerTest {
 			Assert.assertNotNull(tmpResourceDef);
 			Assert.assertEquals(ResourceType.VARIABLE_IMPLICATION, tmpResourceDef.getResourceType());
 			Assert.assertEquals(1,tmpResourceDef.getExtendedAttributes().size());
-			Assert.assertEquals("var1", tmpResourceDef.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_VARIABLE_NAME));
+			Assert.assertEquals("var1", tmpResourceDef.getValue());
 		} catch (SerializerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

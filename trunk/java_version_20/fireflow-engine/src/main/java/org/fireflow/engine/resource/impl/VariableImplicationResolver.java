@@ -54,7 +54,7 @@ public class VariableImplicationResolver extends ResourceResolver {
 			return users;
 		}
 		
-		String variableName = resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_VARIABLE_NAME);
+		String variableName = resource.getValue();
 		
 		if (variableName==null || variableName.trim().equals("")){
 			log.error("The parameter value of 'variableName' is null,can NOT retrieve the actors");

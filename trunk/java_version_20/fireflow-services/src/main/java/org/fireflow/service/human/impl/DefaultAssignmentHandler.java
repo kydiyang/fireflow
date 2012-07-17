@@ -28,6 +28,7 @@ import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.ousystem.User;
+import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.resource.ResourceResolver;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.resourcedef.ResourceDef;
@@ -149,8 +150,17 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 	@Override
 	public List<User> getPotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
-		List<ResourceDef> potentialOwnersResourceRef = resourceBinding
-				.getPotentialOwners();
+		List<String> resourceIdList = resourceBinding.getPotentialOwnerRefs();
+		List<ResourceDef> potentialOwnersResourceRef = new ArrayList<ResourceDef>();
+		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		ProcessUtil processUtil = runtimeContext.getEngineModule(ProcessUtil.class, processInstance.getProcessType());
+
+		if (resourceIdList!=null && resourceIdList.size()>0){
+			for (String id : resourceIdList){
+				ResourceDef resourceDef = processUtil.getResourceDef(activityInstance, theActivity, id);
+				potentialOwnersResourceRef.add(resourceDef);
+			}
+		}
 		if (potentialOwnersResourceRef != null
 				&& potentialOwnersResourceRef.size() > 0) {
 			return this.resolveResources(session, processInstance,
@@ -163,8 +173,19 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 	@Override
 	public List<User> getReaders(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
-		List<ResourceDef> potentialOwnersResourceRef = resourceBinding
-				.getReaders();
+		List<String> resourceIdList = resourceBinding.getReaderRefs();
+		List<ResourceDef> potentialOwnersResourceRef = new ArrayList<ResourceDef>();
+		
+		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		ProcessUtil processUtil = runtimeContext.getEngineModule(ProcessUtil.class, processInstance.getProcessType());
+
+		if (resourceIdList!=null && resourceIdList.size()>0){
+			for (String id : resourceIdList){
+				ResourceDef resourceDef = processUtil.getResourceDef(activityInstance, theActivity, id);
+				potentialOwnersResourceRef.add(resourceDef);
+			}
+		}
+		
 		if (potentialOwnersResourceRef != null
 				&& potentialOwnersResourceRef.size() > 0) {
 			return this.resolveResources(session, processInstance,
@@ -177,8 +198,20 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 	@Override
 	public List<User> getAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
-		List<ResourceDef> potentialOwnersResourceRef = resourceBinding
-				.getAdministrators();
+		List<String> administratorIdList = resourceBinding.getAdministratorRefs();
+		List<ResourceDef> potentialOwnersResourceRef = new ArrayList<ResourceDef>();
+		
+		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		ProcessUtil processUtil = runtimeContext.getEngineModule(ProcessUtil.class, processInstance.getProcessType());
+
+		if (administratorIdList!=null && administratorIdList.size()>0){
+			for (String id : administratorIdList){
+				ResourceDef resourceDef = processUtil.getResourceDef(activityInstance, theActivity, id);
+				potentialOwnersResourceRef.add(resourceDef);
+			}
+		}
+		
+		
 		if (potentialOwnersResourceRef != null
 				&& potentialOwnersResourceRef.size() > 0) {
 			return this.resolveResources(session, processInstance,

@@ -31,6 +31,7 @@ import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.data.Property;
+import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.bpel.BpelProcess;
 
@@ -184,6 +185,15 @@ public class ProcessUtilBpelImpl implements
 	 */
 	public ServiceDef getServiceDef(ActivityInstance activityInstance,
 			Object activity, String serviceId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getResourceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
+	 */
+	public ResourceDef getResourceDef(ActivityInstance activityInstance,
+			Object activity, String resourceId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

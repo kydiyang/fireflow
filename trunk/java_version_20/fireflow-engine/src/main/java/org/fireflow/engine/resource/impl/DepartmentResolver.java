@@ -50,7 +50,7 @@ public class DepartmentResolver extends ResourceResolver {
 			log.warn("Current process instance is null,can NOT retrieve the actors");
 			return users;
 		}		
-		String deptId = resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_DEPARTMENT_ID);
+		String deptId = resource.getValue();
 		
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		OUSystemConnector ouSystemAdapter = rtCtx.getEngineModule(OUSystemConnector.class, processInstance.getProcessType());

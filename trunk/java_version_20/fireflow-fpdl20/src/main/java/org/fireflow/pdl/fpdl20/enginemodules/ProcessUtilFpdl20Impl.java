@@ -311,4 +311,14 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		WorkflowProcess process = (WorkflowProcess)subflow.getParent();
 		return process.getService(serviceId);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getResourceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
+	 */
+	public ResourceDef getResourceDef(ActivityInstance activityInstance,
+			Object activity, String resourceId) {
+		SubProcess subProcess = (SubProcess)((Activity)activity).getParent();
+		WorkflowProcess process = (WorkflowProcess)subProcess.getParent();
+		return process.getResource(resourceId);
+	}
 }

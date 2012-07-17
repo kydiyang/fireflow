@@ -46,7 +46,6 @@ import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.resourcedef.ResourceType;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.fireflow.model.resourcedef.impl.ResourceDefImpl;
-import org.fireflow.model.servicedef.impl.OperationDefImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
@@ -202,7 +201,7 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		resource.setResourceType(ResourceType.CUSTOM);
 		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
 		process.addResource(resource);
-		resourceBinding.getAdministrators().add(resource);
+		resourceBinding.addAdministratorRef(resource.getId());
 		
 		//操作者
 		resource = new ResourceDefImpl();
@@ -212,7 +211,7 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		resource.setResourceType(ResourceType.CUSTOM);
 		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
 		process.addResource(resource);
-		resourceBinding.getPotentialOwners().add(resource);
+		resourceBinding.addPotentialOwnerRef(resource.getId());
 		
 		//抄送人
 		resource = new ResourceDefImpl();
@@ -222,7 +221,7 @@ public class TheSimplestHumanProcessTest extends FireWorkflowJunitEnviroment{
 		resource.setResourceType(ResourceType.CUSTOM);
 		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
 		process.addResource(resource);
-		resourceBinding.getReaders().add(resource);
+		resourceBinding.addReaderRef(resource.getId());
 		
 		return process;
 	}

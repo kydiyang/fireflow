@@ -36,7 +36,15 @@ public class ResourceDefImpl extends AbstractModelElement implements ResourceDef
 	private String resolverBeanName = null;
 	private String resolverClassName = null;
 	private Map<String,String> extendedAttributes = new HashMap<String,String>();
-
+	private String value = null;
+	
+	public void setValue(String value){
+		this.value = value;
+	}
+	
+	public String getValue(){
+		return value;
+	}
 	// private String fileName = null;
 
 	public ResourceType getResourceType() {

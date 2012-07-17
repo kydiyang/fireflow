@@ -52,25 +52,30 @@ public interface ResourceBinding {
 	 * 业务领导
 	 * @return
 	 */
-	public List<ResourceDef> getAdministrators();
+	public List<String> getAdministratorRefs();
 	
-	public void setAdministrators(List<ResourceDef> admins);
+	/**
+	 * 增加一个资源引用作为“业务领导”
+	 * @param resourceDefId
+	 */
+	public void addAdministratorRef(String resourceDefId);
 	
 	/**
 	 * 潜在所有者，即参与者
 	 * @return
 	 */
-	public List<ResourceDef> getPotentialOwners();
+	public List<String> getPotentialOwnerRefs();
 	
-	public void setPotentialOwners(List<ResourceDef> potentialOwners);
+	public void addPotentialOwnerRef(String resourceId);
+//	public void setPotentialOwners(List<ResourceDef> potentialOwners);
 	
 	/**
 	 * 抄送人
 	 * @return
 	 */
-	public List<ResourceDef> getReaders();
+	public List<String> getReaderRefs();
 	
-	public void setReaders(List<ResourceDef> readers);
+	public void addReaderRef(String resourceId);
 	
 	/**
 	 * 返回自定义AssignmentHandler 的class name 

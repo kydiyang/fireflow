@@ -126,9 +126,16 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	public void addService(ServiceDef svc){
 		this.localServices.put(svc.getId(),svc);
 	}
+	public void deleteService(ServiceDef svc){
+		this.localServices.remove(svc.getId());
+	}
 	
 	public void addResource(ResourceDef resource){
 		this.localResources.put(resource.getId(),resource);
+	}
+	
+	public void deleteResource(ResourceDef resource){
+		this.localResources.remove(resource.getId());
 	}
 
 	/*
