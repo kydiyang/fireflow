@@ -153,7 +153,7 @@ public class ResourceSerializer implements ModelElementNames {
 
 			resourceElem
 					.setAttribute(RESOURCE_TYPE, r.getResourceType().getValue());
-
+			resourceElem.setAttribute(VALUE, r.getValue());
 			if (!StringUtils.isEmpty(r.getResolverBeanName()) 
 					|| !StringUtils.isEmpty(r.getResolverClassName())){
 				Element resolverElem = Util4Serializer.addElement(resourceElem,

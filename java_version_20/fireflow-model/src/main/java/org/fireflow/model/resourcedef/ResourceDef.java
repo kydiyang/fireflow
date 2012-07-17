@@ -46,16 +46,31 @@ import org.fireflow.model.data.Input;
  * @version 2.0
  */
 public interface ResourceDef extends ModelElement{
-	public static final String EXT_ATTR_KEY_ACTIVITY_ID = "ACTIVITY_ID";
-	public static final String EXT_ATTR_KEY_DEPARTMENT_ID = "DEPARTMENT_ID";
-	public static final String EXT_ATTR_KEY_ROLE_ID = "ROLE_ID";
-	public static final String EXT_ATTR_KEY_USER_ID = "USER_ID";
-	public static final String EXT_ATTR_KEY_GROUP_ID = "GROUP_ID";
-	public static final String EXT_ATTR_KEY_VARIABLE_NAME = "VARIABLE_NAME";
+//	public static final String EXT_ATTR_KEY_ACTIVITY_ID = "ACTIVITY_ID";
+//	public static final String EXT_ATTR_KEY_DEPARTMENT_ID = "DEPARTMENT_ID";
+//	public static final String EXT_ATTR_KEY_ROLE_ID = "ROLE_ID";
+//	public static final String EXT_ATTR_KEY_USER_ID = "USER_ID";
+//	public static final String EXT_ATTR_KEY_GROUP_ID = "GROUP_ID";
+//	public static final String EXT_ATTR_KEY_VARIABLE_NAME = "VARIABLE_NAME";
 	
 	public ResourceType getResourceType() ;
 	
 	public void setResourceType(ResourceType type);
+	
+	/**
+	 * resource的值，具体含义由ResourceType决定。<br/>
+	 * 当resourceType为USER时，表示用户Id;<br/>
+	 * 当resourceType为ROLE时，表示RoleId;<br/>
+	 * 当resourceType为Group时，表示GroupId;<br/>
+	 * 当resourceType为Department时，表示DepartmentId;<br/>
+	 * 当resourceType为PROCESS_INSTANCE_CREATOR时，表示processId;<br/>
+	 * 当resourceType为ACTIVITY_INSTANCE_PERFORMER时，表示activityId;<br/>
+	 * 当resourceType为VARIABLE_IMPLICATION时，表示变量的名字.
+	 * @return
+	 */
+	public String getValue();
+	
+	public void setValue(String value);
 
 	public String getResolverBeanName();
 	

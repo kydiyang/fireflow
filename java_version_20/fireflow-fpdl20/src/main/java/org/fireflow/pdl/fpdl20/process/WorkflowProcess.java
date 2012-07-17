@@ -124,6 +124,8 @@ public interface WorkflowProcess extends ModelElement{
 	 */
 	public void addService(ServiceDef svc);
 	
+	public void deleteService(ServiceDef svc);
+	
 	/**
 	 * 获得该流程所有的资源定义，包括import进来的。
 	 * @return
@@ -139,7 +141,7 @@ public interface WorkflowProcess extends ModelElement{
 	 */
 	public void addResource(ResourceDef resource);
 
-	
+	public void deleteResource(ResourceDef resource);
 	
 	/**
 	 * 根据location值获得Import对象

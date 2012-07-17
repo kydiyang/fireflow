@@ -47,7 +47,7 @@ public class ResourceDeserializerTest {
 		Assert.assertNotNull(tmpResourceDef);
 		Assert.assertEquals(ResourceType.VARIABLE_IMPLICATION, tmpResourceDef.getResourceType());
 		Assert.assertEquals(1,tmpResourceDef.getExtendedAttributes().size());
-		Assert.assertEquals("var1", tmpResourceDef.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_VARIABLE_NAME));
+		Assert.assertEquals("var1", tmpResourceDef.getValue());
 	}
 	private ResourceDef findResource(List<ResourceDef> resourceList,String resourceName){
 		if (resourceList==null){

@@ -33,23 +33,23 @@ public class ResourceBindingImpl implements ResourceBinding {
 	private static final String DEFAULT_ASSIGNMENT_HANDLER_CLASS_NAME= "org.fireflow.service.human.impl.DefaultAssignmentHandler";
 	private String name = null;
 	private WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
-	private List<ResourceDef> administrators = new ArrayList<ResourceDef>();
-	private List<ResourceDef> readers = new ArrayList<ResourceDef>();
-	private List<ResourceDef> potentialOwners = new ArrayList<ResourceDef>();
+	private List<String> administrators = new ArrayList<String>();
+	private List<String> readers = new ArrayList<String>();
+	private List<String> potentialOwners = new ArrayList<String>();
 	private String assignmentHandlerBeanName = null;
 	private String assignmentHandlerClassName = DEFAULT_ASSIGNMENT_HANDLER_CLASS_NAME;
 	
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.binding.ResourceBinding#getAdministrators()
 	 */
-	public List<ResourceDef> getAdministrators() {
+	public List<String> getAdministratorRefs() {
 		return administrators;
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.binding.ResourceBinding#setAdministrators(java.util.List)
 	 */
-	public void setAdministrators(List<ResourceDef> administrators){
-		this.administrators = administrators;
+	public void addAdministratorRef(String resourceDefId){
+		this.administrators.add(resourceDefId);
 	}
 
 	/* (non-Javadoc)
@@ -66,14 +66,14 @@ public class ResourceBindingImpl implements ResourceBinding {
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.binding.ResourceBinding#getPotentialOwners()
 	 */
-	public List<ResourceDef> getPotentialOwners() {
+	public List<String> getPotentialOwnerRefs() {
 		return this.potentialOwners;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.binding.ResourceBinding#getReaders()
 	 */
-	public List<ResourceDef> getReaders() {
+	public List<String> getReaderRefs() {
 		return this.readers;
 	}
 
@@ -81,16 +81,15 @@ public class ResourceBindingImpl implements ResourceBinding {
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.binding.ResourceBinding#setPotentialOwners(java.util.List)
 	 */
-	public void setPotentialOwners(List<ResourceDef> potentialOwners) {
-		this.potentialOwners = potentialOwners;
-
+	public void addPotentialOwnerRef(String resourceId) {
+		this.potentialOwners.add(resourceId);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.binding.ResourceBinding#setReaders(java.util.List)
 	 */
-	public void setReaders(List<ResourceDef> readers) {
-		this.readers = readers;
+	public void addReaderRef(String resourceId) {
+		this.readers.add(resourceId);
 
 	}
 	/**

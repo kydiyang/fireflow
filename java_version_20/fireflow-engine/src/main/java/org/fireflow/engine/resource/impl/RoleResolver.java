@@ -50,7 +50,7 @@ public class RoleResolver extends ResourceResolver {
 			log.warn("Current process instance is null,can NOT retrieve the actors");
 			return users;
 		}		
-		String roleId = resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_ROLE_ID);
+		String roleId = resource.getValue();
 		
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		OUSystemConnector ouSystemAdapter = rtCtx.getEngineModule(OUSystemConnector.class, processInstance.getProcessType());

@@ -1041,12 +1041,12 @@ public class FPDLSerializer implements FPDLNames {
     	resourceBindingElem.setAttribute(DISPLAY_NAME, resourceBinding.getDisplayName());
     	resourceBindingElem.setAttribute(ASSIGNMENT_STRATEGY, resourceBinding.getAssignmentStrategy().getValue());
     	
-    	List<ResourceDef> administrators = resourceBinding.getAdministrators();
+    	List<String> administrators = resourceBinding.getAdministratorRefs();
     	if (administrators!=null && administrators.size()>0){
     		Element administratorsElem = Util4Serializer.addElement(resourceBindingElem, ADMINISTRATORS);
-    		for (ResourceDef resourceRef : administrators){
+    		for (String resourceRefId : administrators){
     			Element resourceRefElem = Util4Serializer.addElement(administratorsElem, RESOURCE_REF);
-    			resourceRefElem.setAttribute(RESOURCE_ID, resourceRef.getId());
+    			resourceRefElem.setAttribute(RESOURCE_ID, resourceRefId);
     			
 //    			List<ParameterAssignment> paramAssignments = resourceRef.getParameterAssignments();
 //    			if (paramAssignments!=null && paramAssignments.size()>0){
@@ -1065,12 +1065,12 @@ public class FPDLSerializer implements FPDLNames {
     	}
     	
     	//潜在操作者
-    	List<ResourceDef> potentialOwners = resourceBinding.getPotentialOwners();
+    	List<String> potentialOwners = resourceBinding.getPotentialOwnerRefs();
     	if (potentialOwners!=null && potentialOwners.size()>0){
     		Element potentialOwnersElem = Util4Serializer.addElement(resourceBindingElem, POTENTIAL_OWNERS);
-    		for (ResourceDef resourceRef : potentialOwners){
+    		for (String resourceRef : potentialOwners){
     			Element resourceRefElem = Util4Serializer.addElement(potentialOwnersElem, RESOURCE_REF);
-    			resourceRefElem.setAttribute(RESOURCE_ID, resourceRef.getId());
+    			resourceRefElem.setAttribute(RESOURCE_ID, resourceRef);
     			
 //    			List<ParameterAssignment> paramAssignments = resourceRef.getParameterAssignments();
 //    			if (paramAssignments!=null && paramAssignments.size()>0){
@@ -1088,12 +1088,12 @@ public class FPDLSerializer implements FPDLNames {
     		}
     	}
     	
-    	List<ResourceDef> readers = resourceBinding.getReaders();
+    	List<String> readers = resourceBinding.getReaderRefs();
     	if (readers!=null && readers.size()>0){
     		Element potentialOwnersElem = Util4Serializer.addElement(resourceBindingElem, READERS);
-    		for (ResourceDef resourceRef : readers){
+    		for (String resourceRef : readers){
     			Element resourceRefElem = Util4Serializer.addElement(potentialOwnersElem, RESOURCE_REF);
-    			resourceRefElem.setAttribute(RESOURCE_ID, resourceRef.getId());
+    			resourceRefElem.setAttribute(RESOURCE_ID, resourceRef);
     			
 //    			List<ParameterAssignment> paramAssignments = resourceRef.getParameterAssignments();
 //    			if (paramAssignments!=null && paramAssignments.size()>0){

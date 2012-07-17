@@ -96,6 +96,8 @@ public class ResourceDeserializer implements ModelElementNames {
 
 			resource.setDescription(Util4Deserializer.elementAsString(rscElm,
 					DESCRIPTION));
+			
+			resource.setValue(rscElm.getAttribute(VALUE));
 
 			Element resolverElm = Util4Deserializer.child(rscElm, RESOLVER);
 			if (resolverElm != null) {

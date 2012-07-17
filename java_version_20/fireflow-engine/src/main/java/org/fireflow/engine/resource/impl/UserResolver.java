@@ -51,7 +51,7 @@ public class UserResolver extends ResourceResolver {
 			return users;
 		}		
 		
-		String userId = (String)resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_USER_ID);
+		String userId = (String)resource.getValue();
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		OUSystemConnector ouSystemAdapter = rtCtx.getEngineModule(OUSystemConnector.class, processInstance.getProcessType());
 		

@@ -61,7 +61,7 @@ public class ActivityInstancePerformerResolver extends ResourceResolver {
 			return users;
 		}
 		
-		String referencedActivityId = resource.getExtendedAttributes().get(ResourceDef.EXT_ATTR_KEY_ACTIVITY_ID);
+		String referencedActivityId = resource.getValue();
 		
 		if (referencedActivityId==null || referencedActivityId.trim().equals("")){
 			log.error("The parameter value of 'referencedActivityId' is null,can NOT retrieve the actors");

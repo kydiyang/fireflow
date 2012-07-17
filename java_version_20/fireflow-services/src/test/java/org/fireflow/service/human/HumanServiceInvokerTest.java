@@ -291,38 +291,38 @@ public class HumanServiceInvokerTest  extends AbsTestContext {
 					resource.setName("coder");//码农
 					resource.setDisplayName("码农");
 					resource.setResourceType(ResourceType.ROLE);
-					resourceBinding.getPotentialOwners().add(resource);
+					resourceBinding.addPotentialOwnerRef(resource.getId());
 					
 					resource = new ResourceDefImpl();					
 					resource.setName("TestDept");
 					resource.setDisplayName("测试部");
 					resource.setResourceType(ResourceType.DEPARTMENT);
-					resourceBinding.getPotentialOwners().add(resource);
+					resourceBinding.addPotentialOwnerRef(resource.getId());
 					
 					resource = new ResourceDefImpl();					
 					resource.setName("limou");
 					resource.setDisplayName("李某");
 					resource.setResourceType(ResourceType.USER);
-					resourceBinding.getPotentialOwners().add(resource);
+					resourceBinding.addPotentialOwnerRef(resource.getId());
 					
 					resource = new ResourceDefImpl();					
 					resource.setName("processCreator");
 					resource.setDisplayName("流程创建者");
 					resource.setResourceType(ResourceType.PROCESS_INSTANCE_CREATOR);
-					resourceBinding.getPotentialOwners().add(resource);
+					resourceBinding.addPotentialOwnerRef(resource.getId());
 					
 					resource = new ResourceDefImpl();					
 					resource.setName("thePotentialOwner");
 					resource.setDisplayName("流程变量所指用户");
 					resource.setResourceType(ResourceType.VARIABLE_IMPLICATION);
-					resourceBinding.getPotentialOwners().add(resource);
+					resourceBinding.addPotentialOwnerRef(resource.getId());
 					
 					//抄送
 					resource = new ResourceDefImpl();					
 					resource.setName("manager");
 					resource.setDisplayName("部门经理");
 					resource.setResourceType(ResourceType.ROLE);
-					resourceBinding.getReaders().add(resource);
+					resourceBinding.addReaderRef(resource.getId());
 					
 					resourceBinding.setName("指定的操作者");
 					

@@ -18,7 +18,6 @@ package org.fireflow.engine.modules.process;
 
 import java.io.InputStream;
 
-import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.entity.repository.ProcessKey;
@@ -28,6 +27,7 @@ import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.data.Property;
+import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 
 /**
@@ -68,6 +68,15 @@ public interface ProcessUtil extends RuntimeContextAware,EngineModule {
      * @return
      */
     public ServiceDef getServiceDef(ActivityInstance activityInstance,Object activity,String serviceId);
+    
+    /**
+     * 根据resourceId和Activity获得resourceDef对象
+     * @param activityInstance
+     * @param activity
+     * @param resourceId
+     * @return
+     */
+    public ResourceDef getResourceDef(ActivityInstance activityInstance,Object activity,String resourceId);
     /**
      * 获得resource binding对象
      * @param processKey processId,processType,version组成的processKey对象

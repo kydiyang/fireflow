@@ -1497,7 +1497,7 @@ public class FPDLDeserializer implements FPDLNames{
 //						}
 //					}
 					
-					resourceBinding.getAdministrators().add(resource);
+					resourceBinding.addAdministratorRef(resourceId);
 				}//for (Element elm : resourceRefElems)
 			}
 		}
@@ -1529,7 +1529,7 @@ public class FPDLDeserializer implements FPDLNames{
 //						}
 //					}
 					
-					resourceBinding.getPotentialOwners().add(resource);
+					resourceBinding.addPotentialOwnerRef(resource.getId());
 				}//for (Element elm : resourceRefElems)
 			}
 		}
@@ -1560,7 +1560,7 @@ public class FPDLDeserializer implements FPDLNames{
 //						}
 //					}
 					
-					resourceBinding.getReaders().add(resource);
+					resourceBinding.addReaderRef(resource.getId());
 				}//for (Element elm : resourceRefElems)
 			}
 		}	

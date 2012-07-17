@@ -247,7 +247,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 		resource.setResourceType(ResourceType.CUSTOM);
 		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
 		process.addResource(resource);
-		resourceBinding.getAdministrators().add(resource);
+		resourceBinding.addAdministratorRef(resource.getId());
 
 		// 操作者
 		resource = new ResourceDefImpl();
@@ -257,7 +257,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 		resource.setResourceType(ResourceType.CUSTOM);
 		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
 		process.addResource(resource);
-		resourceBinding.getPotentialOwners().add(resource);
+		resourceBinding.addPotentialOwnerRef(resource.getId());
 
 		// 抄送人
 		resource = new ResourceDefImpl();
@@ -267,7 +267,7 @@ public class TheSimplestHumanProcessTest2 extends FireWorkflowJunitEnviroment {
 		resource.setResourceType(ResourceType.CUSTOM);
 		resource.setResolverClassName("org.fireflow.pdl.fpdl20.test.service.human.CustomerResourceResolver");
 		process.addResource(resource);
-		resourceBinding.getReaders().add(resource);
+		resourceBinding.addReaderRef(resource.getId());
 
 		return process;
 	}
