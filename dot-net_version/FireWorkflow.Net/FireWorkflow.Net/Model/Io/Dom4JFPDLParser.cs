@@ -344,7 +344,7 @@ namespace FireWorkflow.Net.Model.Io
             String sAssignmentType = GetAttributeValue(xElement, ASSIGNMENT_TYPE);
             AssignmentTypeEnum assignmentType;
             if (String.IsNullOrEmpty(sAssignmentType)) { assignmentType = AssignmentTypeEnum.Handler; }
-            else assignmentType = (AssignmentTypeEnum)Enum.Parse(typeof(DataTypeEnum), sAssignmentType, true);
+            else assignmentType = (AssignmentTypeEnum)Enum.Parse(typeof(AssignmentTypeEnum), sAssignmentType, true);  //Handler
             part.AssignmentType = assignmentType;
 
             part.Description = GetElementValue(xElement, "{" + FPDL_URI + "}" + DESCRIPTION);
