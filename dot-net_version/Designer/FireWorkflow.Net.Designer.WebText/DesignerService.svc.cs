@@ -63,6 +63,15 @@ namespace FireWorkflow.Net.Designer.WebText
             return RuntimeContextFactory.getRuntimeContext().DefinitionService.GetAllLatestVersionsOfWorkflowDefinition();
         }
 
+        /// <summary>返回查询条件流程指定页和叶大小的最新版本</summary>
+        /// <param name="name">名称带通配符查询，空为不带此条件</param>
+        /// <param name="displayName">显示名称带通配符查询，空为不带此条件</param>
+        /// <returns></returns>
+        public List<WorkflowDefinition> GetPageLatestVersionsOfWorkflowDefinition(string name, string displayName)
+        {
+            return RuntimeContextFactory.getRuntimeContext().DefinitionService.GetAllLatestVersionsOfWorkflowDefinition();
+        }
+
         /// <summary>
         /// 保存流程定义，如果同一个ProcessId的流程定义已经存在，则版本号自动加1。
         /// </summary>
