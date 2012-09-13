@@ -9,7 +9,7 @@
             </basicHttpBinding>
         </bindings>
         <client>
-            <endpoint address="DesignerService.svc"
+            <endpoint address="http://localhost:2470/DesignerService.svc"
                 binding="basicHttpBinding" bindingConfiguration="BasicHttpBinding_IDesignerService"
                 contract="DesignerServiceReference.IDesignerService" name="BasicHttpBinding_IDesignerService" />
         </client>

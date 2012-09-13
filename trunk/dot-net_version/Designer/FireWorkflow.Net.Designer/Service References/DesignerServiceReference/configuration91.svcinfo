@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="OhvcNP6C9aqUcpJD1VuVR8Tb/eU=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="k1cMzN6yYJtSTID2+5VQVbkKd/Q=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IDesignerService">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_IDesignerService" contract="DesignerServiceReference.IDesignerService" bindingType="basicHttpBinding" address="http://localhost:51851/DesignerService.svc" bindingConfiguration="BasicHttpBinding_IDesignerService">
+    <endpoint name="BasicHttpBinding_IDesignerService" contract="DesignerServiceReference.IDesignerService" bindingType="basicHttpBinding" address="http://localhost:2470/DesignerService.svc" bindingConfiguration="BasicHttpBinding_IDesignerService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:51851/DesignerService.svc</serializedValue>
+          <serializedValue>http://localhost:2470/DesignerService.svc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

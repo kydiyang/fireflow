@@ -20,15 +20,15 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="http://localhost:51851/DesignerService.svc" Protocol="http" SourceId="1" />
+    <MetadataSource Address="http://localhost:2470/DesignerService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="DesignerService.xsd" MetadataType="Schema" ID="58edc5d5-6f95-4348-8e0d-4baa3d9378a4" SourceId="1" SourceUrl="http://localhost:51851/DesignerService.svc?xsd=xsd0" />
-    <MetadataFile FileName="DesignerService1.xsd" MetadataType="Schema" ID="c49c4c90-1afc-4791-98ee-ca1f02726bff" SourceId="1" SourceUrl="http://localhost:51851/DesignerService.svc?xsd=xsd1" />
-    <MetadataFile FileName="DesignerService2.xsd" MetadataType="Schema" ID="d426efad-ef45-40a9-847a-575e860fa4c4" SourceId="1" SourceUrl="http://localhost:51851/DesignerService.svc?xsd=xsd2" />
-    <MetadataFile FileName="DesignerService3.xsd" MetadataType="Schema" ID="38bdd958-71b5-4a2f-a499-edbc348adab8" SourceId="1" SourceUrl="http://localhost:51851/DesignerService.svc?xsd=xsd3" />
-    <MetadataFile FileName="DesignerService.wsdl" MetadataType="Wsdl" ID="85f60cd2-78cd-414f-a7ac-caa76b6b0ddb" SourceId="1" SourceUrl="http://localhost:51851/DesignerService.svc?wsdl" />
-    <MetadataFile FileName="DesignerService.disco" MetadataType="Disco" ID="248f1940-f0e3-4d60-9b6e-e3c5329475d8" SourceId="1" SourceUrl="http://localhost:51851/DesignerService.svc?disco" />
+    <MetadataFile FileName="DesignerService4.xsd" MetadataType="Schema" ID="6b730319-cbad-45ea-b786-cd5c587a7f2e" SourceId="1" SourceUrl="http://localhost:2470/DesignerService.svc?xsd=xsd2" />
+    <MetadataFile FileName="DesignerService1.disco" MetadataType="Disco" ID="b42ab846-56f2-4aa9-b618-c60d13c6f360" SourceId="1" SourceUrl="http://localhost:2470/DesignerService.svc?disco" />
+    <MetadataFile FileName="DesignerService1.wsdl" MetadataType="Wsdl" ID="5eac4f34-b18d-473f-b3a7-2820b3f04454" SourceId="1" SourceUrl="http://localhost:2470/DesignerService.svc?wsdl" />
+    <MetadataFile FileName="DesignerService41.xsd" MetadataType="Schema" ID="ef7241f3-f38b-4212-8409-1c555a4c1e02" SourceId="1" SourceUrl="http://localhost:2470/DesignerService.svc?xsd=xsd1" />
+    <MetadataFile FileName="DesignerService42.xsd" MetadataType="Schema" ID="db1ab9bc-e108-43f6-b7ba-f058cbf8261c" SourceId="1" SourceUrl="http://localhost:2470/DesignerService.svc?xsd=xsd0" />
+    <MetadataFile FileName="DesignerService43.xsd" MetadataType="Schema" ID="41fdbfc7-ef85-4433-85de-e3921722260d" SourceId="1" SourceUrl="http://localhost:2470/DesignerService.svc?xsd=xsd3" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
