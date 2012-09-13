@@ -153,17 +153,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
-    <None Include="Service References\DesignerServiceReference\DesignerService.wsdl" />
-    <None Include="Service References\DesignerServiceReference\DesignerService.xsd">
+    <None Include="Service References\DesignerServiceReference\DesignerService1.wsdl" />
+    <None Include="Service References\DesignerServiceReference\DesignerService4.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\DesignerServiceReference\DesignerService1.xsd">
+    <None Include="Service References\DesignerServiceReference\DesignerService41.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\DesignerServiceReference\DesignerService2.xsd">
+    <None Include="Service References\DesignerServiceReference\DesignerService42.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\DesignerServiceReference\DesignerService3.xsd">
+    <None Include="Service References\DesignerServiceReference\DesignerService43.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Service References\DesignerServiceReference\FireWorkflow.Net.Designer.DesignerServiceReference.ProcessInstanceTrace.datasource">
@@ -492,6 +492,7 @@
     <Resource Include="Images\database_save.png" />
     <Resource Include="Images\database_open.png" />
     <Resource Include="Images\open.png" />
+    <None Include="Service References\DesignerServiceReference\DesignerService1.disco" />
     <Content Include="ServiceReferences.ClientConfig" />
   </ItemGroup>
   <ItemGroup>
@@ -585,9 +586,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\DesignerServiceReference\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\DesignerServiceReference\DesignerService.disco" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\DesignerServiceReference\configuration91.svcinfo" />

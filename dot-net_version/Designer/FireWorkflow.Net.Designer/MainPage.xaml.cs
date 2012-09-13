@@ -106,8 +106,12 @@ namespace FireWorkflow.Net.Designer
             listBox.IsEnabled = false;
             //GetXMLWorkflowProcessWebClient();
 
+
+
             if (this.WorkflowProcessCurrent == null) this.WorkflowProcessCurrent = new WorkflowProcess("NewWorkflowProcess");
 
+            //btnOpen.IsEnabled = false;  //临时增加
+            //btnSave.IsEnabled = false;  //临时增加
         }
 
         /// <summary>更改控件集合Key</summary>
@@ -241,12 +245,16 @@ namespace FireWorkflow.Net.Designer
         /// <summary>返回所有流程的最新版本</summary>
         public void GetAllLatestVersionsOfWorkflowDefinition()
         {
-            BasicHttpBinding binding = new BasicHttpBinding();
-            binding.MaxBufferSize = 2147483647;
-            binding.MaxReceivedMessageSize = 2147483647;
-            DesignerServiceClient dsc = new DesignerServiceClient(binding, new EndpointAddress(address));
-            dsc.GetAllLatestVersionsOfWorkflowDefinitionCompleted += new EventHandler<GetAllLatestVersionsOfWorkflowDefinitionCompletedEventArgs>(dsc_GetAllLatestVersionsOfWorkflowDefinitionCompleted);
-            dsc.GetAllLatestVersionsOfWorkflowDefinitionAsync();
+            OpenWindow openWindow = new OpenWindow(this.address);
+            openWindow.Closed += new EventHandler(openWindow_Closed);
+            openWindow.Show();
+
+            //BasicHttpBinding binding = new BasicHttpBinding();
+            //binding.MaxBufferSize = 2147483647;
+            //binding.MaxReceivedMessageSize = 2147483647;
+            //DesignerServiceClient dsc = new DesignerServiceClient(binding, new EndpointAddress(address));
+            //dsc.GetAllLatestVersionsOfWorkflowDefinitionCompleted += new EventHandler<GetAllLatestVersionsOfWorkflowDefinitionCompletedEventArgs>(dsc_GetAllLatestVersionsOfWorkflowDefinitionCompleted);
+            //dsc.GetAllLatestVersionsOfWorkflowDefinitionAsync();
         }
 
         void dsc_GetAllLatestVersionsOfWorkflowDefinitionCompleted(object sender, GetAllLatestVersionsOfWorkflowDefinitionCompletedEventArgs e)
@@ -254,7 +262,8 @@ namespace FireWorkflow.Net.Designer
             ObservableCollection<WorkflowDefinition> WorkflowDefinitions = e.Result;
             if (WorkflowDefinitions!=null)
             {
-                OpenWindow openWindow = new OpenWindow(WorkflowDefinitions.ToArray());
+                //OpenWindow openWindow = new OpenWindow(WorkflowDefinitions.ToArray());
+                OpenWindow openWindow = new OpenWindow(this.address);
                 openWindow.Closed += new EventHandler(openWindow_Closed);
                 openWindow.Show();
             }
@@ -269,7 +278,7 @@ namespace FireWorkflow.Net.Designer
                 GetWorkflowProcessXml(this.SelectWorkflowDefinition.Id);
 
                 btnLocalSave.IsEnabled = true;
-                btnSave.IsEnabled = true;
+                btnSave.IsEnabled = true;  //临时屏蔽
                 listBox.IsEnabled = true;
             }
             DataContext = false;
@@ -1067,7 +1076,7 @@ namespace FireWorkflow.Net.Designer
             {
                 this.WorkflowProcessCurrent = wpw.WorkflowProcess;
                 btnLocalSave.IsEnabled = true;
-                btnSave.IsEnabled = true;
+                btnSave.IsEnabled = true;  //临时屏蔽
                 listBox.IsEnabled = true;
 
                 canvas.Width = EventViewer.ActualWidth - 28;
@@ -1101,7 +1110,7 @@ namespace FireWorkflow.Net.Designer
                         this.WorkflowProcessCurrent = djp.parse(msin);
 
                         btnLocalSave.IsEnabled = true;
-                        btnSave.IsEnabled = true;
+                        btnSave.IsEnabled = true; //临时屏蔽
                         listBox.IsEnabled = true;
 
                         canvas.Width = EventViewer.ActualWidth - 28;
