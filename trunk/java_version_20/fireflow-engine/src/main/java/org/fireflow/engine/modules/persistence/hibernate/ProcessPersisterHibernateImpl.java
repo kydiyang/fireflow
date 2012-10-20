@@ -299,17 +299,7 @@ public class ProcessPersisterHibernateImpl extends
 		processRepository.setProcessObject(process);
 		
 
-		//8.latestEditTime
-		//TODO 是否有DB系统自动生成？
-		Date d = (Date)descriptorKeyValues.get(ProcessDescriptorProperty.LAST_EDIT_TIME);
-		if (d==null){
-			processRepository.setLastEditTime(new Date());
-		}else{
-			processRepository.setLastEditTime(d);
-		}
-
-
-		//9.publishState
+		//8.publishState
 		Boolean publishState = null;	
 		if (existProcess!=null){
 			publishState = existProcess.getPublishState();
@@ -329,37 +319,12 @@ public class ProcessPersisterHibernateImpl extends
 		}		
 		processRepository.setPublishState(publishState);	
 		
-		//10.latestOperation
-		boolean publishStateChanged = false;//发布状态是否改变
-		if (existProcess!=null && stateFromArgs!=null){
-			boolean oldState = existProcess.getPublishState();
-			if (oldState!=stateFromArgs){
-				publishStateChanged = true;
-			}
-		}
-		String latestOperation = ProcessDescriptor.OPERATION_UPLOAD;
-		if (existProcess==null){
-			if (publishState){
-				latestOperation = ProcessDescriptor.OPERATION_UPLOAD_PUBLISH;
-			}
-		}else{
-			if (!publishStateChanged){
-				latestOperation = ProcessDescriptor.OPERATION_UPDATE;
-			}else{
-				if (publishState){
-					latestOperation = ProcessDescriptor.OPERATION_UPDATE_PUBLISH;
-				}else{
-					latestOperation = ProcessDescriptor.OPERATION_UPDATE_UNPUBLISH;
-				}
-			}
-		}
-		processRepository.setLastOperation(latestOperation);
 		
-		//11.latestEditor
+		//9.latestEditor
 		processRepository.setLastEditor((String) descriptorKeyValues
 				.get(ProcessDescriptorProperty.LAST_EDITOR));
 		
-		//12,filename
+		//10,filename
 		String fileName = (String) descriptorKeyValues
 		.get(ProcessDescriptorProperty.FILE_NAME);
 		if (fileName!=null && !fileName.trim().equals("")){
@@ -370,7 +335,7 @@ public class ProcessPersisterHibernateImpl extends
 		}
 
 
-		//12.other properties
+		//11.other properties
 		processRepository.setOwnerDeptId((String) descriptorKeyValues
 				.get(ProcessDescriptorProperty.OWNER_DEPT_ID));
 		processRepository.setOwnerDeptName((String) descriptorKeyValues
