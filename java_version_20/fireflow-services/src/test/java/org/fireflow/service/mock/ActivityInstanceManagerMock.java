@@ -28,7 +28,7 @@ public class ActivityInstanceManagerMock extends AbsActivityInstanceManager {
 		
 		actInst.setProcessName(processInstance.getProcessName());
 		actInst.setProcessDisplayName(processInstance.getProcessDisplayName());
-		actInst.setBizCategory(processInstance.getBizCategory());
+		actInst.setBizType(processInstance.getBizType());
 		
 		actInst.setProcessId(processInstance.getProcessId());
 		actInst.setVersion(processInstance.getVersion());

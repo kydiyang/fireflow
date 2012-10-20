@@ -20,10 +20,10 @@ package org.fireflow.service.email;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
-import org.fireflow.engine.modules.script.ScriptLanguages;
 import org.fireflow.model.data.Expression;
 import org.fireflow.model.data.impl.ExpressionImpl;
 import org.firesoa.common.schema.NameSpaces;
+import org.firesoa.common.util.ScriptLanguages;
 
 /**
  *

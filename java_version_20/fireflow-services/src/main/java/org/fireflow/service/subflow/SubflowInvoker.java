@@ -26,28 +26,27 @@ import javax.script.ScriptException;
 import org.fireflow.engine.WorkflowQuery;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
+import org.fireflow.engine.entity.repository.ProcessKey;
+import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceProperty;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.InternalSessionAttributeKeys;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
+import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
+import org.fireflow.engine.modules.loadstrategy.ProcessLoadStrategy;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
 import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.engine.query.Restrictions;
+import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
-import org.fireflow.model.data.Output;
-import org.fireflow.model.servicedef.OperationDef;
-import org.fireflow.pvm.kernel.KernelManager;
-import org.fireflow.pvm.kernel.PObjectKey;
-import org.fireflow.pvm.kernel.Token;
 
 /**
  *
@@ -65,9 +64,12 @@ public class SubflowInvoker implements ServiceInvoker {
 			ResourceBinding resourceBinding, Object theActivity)
 			throws ServiceInvocationException {
 		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		
+
 		ProcessInstance oldProcessInstance = session.getCurrentProcessInstance();
 		ActivityInstance oldActivityInstance = session.getCurrentActivityInstance();
+		
+		((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(null);
+		((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(null);
 		
 		ProcessUtil processUtil = context.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
 		try{
@@ -83,13 +85,15 @@ public class SubflowInvoker implements ServiceInvoker {
 			
 			if (version==SubflowService.THE_LATEST_VERSION){
 				//查找流程的最新版本号。
-				PersistenceService pesistenceService = context.getEngineModule(PersistenceService.class, oldActivityInstance.getProcessType());
-				ProcessPersister processPersister = pesistenceService.getProcessPersister();
-				version = processPersister.findTheLatestVersion(processId, oldActivityInstance.getProcessType());
+				ProcessLoadStrategy loadStrategy = context.getEngineModule(
+						ProcessLoadStrategy.class, activityInstance.getProcessType());
+				ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(session,
+						processId, oldActivityInstance.getProcessType());
+				
+				version = pk.getVersion();
 			}
 			
 			//2、构建输入参数
-			session.setAttribute(InternalSessionAttributeKeys.BIZ_ID, activityInstance.getBizId());
 			Map<String, Object> variables = null;
 			try {
 				variables = AbsServiceInvoker.resolveInputAssignments(context, session, oldProcessInstance, oldActivityInstance, serviceBinding,subflowService);
@@ -97,15 +101,28 @@ public class SubflowInvoker implements ServiceInvoker {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			session.setAttribute(InternalSessionAttributeKeys.VARIABLES, variables);//待研究。
-
 			
-			//3、启动子流程
-			KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);		
-			Token parentToken = kernelManager.getToken(activityInstance.getTokenId(), activityInstance.getProcessType());
-			kernelManager.fireChildPObject(session, new PObjectKey(processId,version,processType,subflowId),parentToken);
-			
+			ProcessInstanceManager processInstanceManager = context.getEngineModule(ProcessInstanceManager.class, processType);
+			PersistenceService persistenceService = context.getEngineModule(PersistenceService.class,processType);
+			ProcessPersister processPersister = persistenceService.getProcessPersister();
+			ProcessRepository repository = null;
+			try {
+				repository = processPersister.findProcessRepositoryByProcessKey(new ProcessKey(processId,version,processType));
+				if (repository==null){
+					throw new ServiceInvocationException("流程库中没有ProcessId="+processId+",version="+version+"的流程定义文件。");
+				}
+			} catch (InvalidModelException e) {
+				throw new ServiceInvocationException(e);
+			}
 
+			Object workflowProcess = repository.getProcessObject();
+			
+			//启动子流程
+//			Token parentToken = kernelManager.getToken(activityInstance.getTokenId(), activityInstance.getProcessType());
+			ProcessInstance childProcessInstance = processInstanceManager.createProcessInstance(session, workflowProcess, subflowId, repository, oldActivityInstance);
+			((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(childProcessInstance);
+			processInstanceManager.runProcessInstance(session, childProcessInstance.getId(), childProcessInstance.getProcessType(), oldActivityInstance.getBizId(), variables);
+			
 		}finally{
 			((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(oldProcessInstance);
 			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(oldActivityInstance);
