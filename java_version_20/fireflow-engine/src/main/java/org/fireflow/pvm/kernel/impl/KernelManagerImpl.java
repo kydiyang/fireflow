@@ -68,35 +68,35 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.kernel.KernelManager#executeProcessObject(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.ProcessObjectKey)
 	 */
-	public void startPObject(WorkflowSession session,
-			PObjectKey processObjectKey) {
-		this.loadProcess(processObjectKey);
-		
-		PObject processObject = this.getProcessObject(processObjectKey);
-		if (processObject==null){
-			throw new KernelException("No process object for "+processObjectKey.toString());
-		}
-		Token token = new TokenImpl();
-		token.setBusinessPermitted(true);
-		token.setState(TokenState.INITIALIZED);
-		token.setProcessId(processObjectKey.getProcessId());
-		token.setVersion(processObjectKey.getVersion());
-		token.setElementId(processObjectKey.getWorkflowElementId());
-		token.setProcessType(processObjectKey.getProcessType());
-		token.setStepNumber(0);
-		token.setProcessType( processObjectKey.getProcessType());
-
-		
-		BookMark bookMark = new BookMark();
-		bookMark.setToken(token);
-		bookMark.setExecutionEntrance(ExecutionEntrance.TAKE_TOKEN);
-		this.addBookMark(bookMark);
-		
-		this.execute(session);
-	}
+//	public void startPObject1(WorkflowSession session,
+//			PObjectKey processObjectKey) {
+//		this.loadProcess(ProcessKey.valueOf(processObjectKey));
+//		
+//		PObject processObject = this.getProcessObject(processObjectKey);
+//		if (processObject==null){
+//			throw new KernelException("No process object for "+processObjectKey.toString());
+//		}
+//		Token token = new TokenImpl();
+//		token.setBusinessPermitted(true);
+//		token.setState(TokenState.INITIALIZED);
+//		token.setProcessId(processObjectKey.getProcessId());
+//		token.setVersion(processObjectKey.getVersion());
+//		token.setElementId(processObjectKey.getWorkflowElementId());
+//		token.setProcessType(processObjectKey.getProcessType());
+//		token.setStepNumber(0);
+//		token.setProcessType( processObjectKey.getProcessType());
+//
+//		
+//		BookMark bookMark = new BookMark();
+//		bookMark.setToken(token);
+//		bookMark.setExecutionEntrance(ExecutionEntrance.TAKE_TOKEN);
+//		this.addBookMark(bookMark);
+//		
+//		this.execute(session);
+//	}
 	
-	public void fireChildPObject(WorkflowSession session,PObjectKey childPObjectKey,Token parentToken){
-		this.loadProcess(childPObjectKey);
+	public void startPObject(WorkflowSession session,PObjectKey childPObjectKey,Token parentToken){
+		this.loadProcess(ProcessKey.valueOf(childPObjectKey));
 		Token childToken = new TokenImpl(parentToken);
 		
 		childToken.setProcessId(childPObjectKey.getProcessId());
@@ -104,7 +104,10 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 		childToken.setVersion(childPObjectKey.getVersion());
 		
 		childToken.setElementId(childPObjectKey.getWorkflowElementId());
-		childToken.setParentTokenId(parentToken.getId());
+		if (parentToken!=null){
+			childToken.setParentTokenId(parentToken.getId());
+		}
+		
 		
 		BookMark bookMark = new BookMark();
 		bookMark.setToken(childToken);
@@ -113,13 +116,12 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 		this.addBookMark(bookMark);
 	}
 	
-	protected void loadProcess(PObjectKey poKey){
-		ProcessKey pk = ProcessKey.valueOf(poKey);
+	public void loadProcess(ProcessKey pk ){
 		if (this.loadedProcesses.get(pk)!=null && this.loadedProcesses.get(pk)){
 			return;//已经装载
 		}
 		else{
-			Process2PObjectTranslator translator = this.runtimeContext.getEngineModule(Process2PObjectTranslator.class, poKey.getProcessType());
+			Process2PObjectTranslator translator = this.runtimeContext.getEngineModule(Process2PObjectTranslator.class, pk.getProcessType());
 			
 			List<PObject> processObjectList = null;
 			try {
@@ -287,15 +289,28 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 	public PObject getProcessObject(PObjectKey key) {
 		return processObjectStorage.get(key);
 	}
+	
+	public Object getWorkflowElement(PObjectKey key){
+		PObject pobj = this.getProcessObject(key);
+		if (pobj==null)return null;
+		return pobj.getWorkflowElement();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.kernel.KernelManager#getToken(java.lang.String, java.lang.String)
 	 */
-	public Token getToken(String tokenId,String processType) {
+	public Token getTokenById(String tokenId,String processType) {
 		PersistenceService persistenceStrategy = this.runtimeContext.getEngineModule(PersistenceService.class, processType);
 		TokenPersister tokenPersistenceService = persistenceStrategy.getTokenPersister();
 
 		return tokenPersistenceService.find(Token.class, tokenId);
+	}
+	
+	public Token getTokenByElementInstanceId(String elementInstanceId,String processType){
+		PersistenceService persistenceStrategy = this.runtimeContext.getEngineModule(PersistenceService.class, processType);
+		TokenPersister tokenPersistenceService = persistenceStrategy.getTokenPersister();
+
+		return tokenPersistenceService.findTokenByElementInstanceId(elementInstanceId);
 	}
 
 	/* (non-Javadoc)

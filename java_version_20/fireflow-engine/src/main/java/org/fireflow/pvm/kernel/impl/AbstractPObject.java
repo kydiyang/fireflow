@@ -298,7 +298,7 @@ public abstract class AbstractPObject implements PObject {
 			}
 			Token callbackToken = null;
 			if (token.getCallbackTokenId() != null) {
-				callbackToken = kernelManager.getToken(token.getCallbackTokenId(),
+				callbackToken = kernelManager.getTokenById(token.getCallbackTokenId(),
 						token.getProcessType());
 			}
 			//不需要调用behavior.continueOn(session,	token, this.getWorkflowElement());
@@ -338,7 +338,7 @@ public abstract class AbstractPObject implements PObject {
 			}
 			Token callbackToken = null;
 			if (token.getCallbackTokenId() != null) {
-				callbackToken = kernelManager.getToken(token.getCallbackTokenId(),
+				callbackToken = kernelManager.getTokenById(token.getCallbackTokenId(),
 						token.getProcessType());
 			}
 			if (callbackToken != null) {
@@ -381,7 +381,7 @@ public abstract class AbstractPObject implements PObject {
 	
 		Token callbackToken = null;
 		if (thisToken.getCallbackTokenId() != null) {
-			callbackToken = kernelManager.getToken(thisToken.getCallbackTokenId(),
+			callbackToken = kernelManager.getTokenById(thisToken.getCallbackTokenId(),
 					thisToken.getProcessType());
 		}
 		
@@ -472,7 +472,7 @@ public abstract class AbstractPObject implements PObject {
 		//首先检查本流程的（本节点的）compensationChain是否为空，
 		if (thisToken.getNextCompensationToken()!=null){
 			
-			Token nextCompensationToken = kernelManager.getToken(thisToken.getNextCompensationToken(), thisToken.getProcessType());
+			Token nextCompensationToken = kernelManager.getTokenById(thisToken.getNextCompensationToken(), thisToken.getProcessType());
 			BookMark bookMark = new BookMark();
 			bookMark.setToken(nextCompensationToken);
 			bookMark
@@ -488,7 +488,7 @@ public abstract class AbstractPObject implements PObject {
 			
 			Token callbackToken = null;
 			if (thisToken.getCallbackTokenId() != null) {
-				callbackToken = kernelManager.getToken(thisToken.getCallbackTokenId(),
+				callbackToken = kernelManager.getTokenById(thisToken.getCallbackTokenId(),
 						thisToken.getProcessType());
 			}
 			

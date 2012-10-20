@@ -26,8 +26,8 @@ import junit.framework.Assert;
 import org.apache.commons.jexl2.Expression;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
-import org.fireflow.engine.modules.script.ScriptLanguages;
 import org.fireflow.model.data.impl.ExpressionImpl;
+import org.firesoa.common.util.ScriptLanguages;
 import org.junit.Test;
 
 

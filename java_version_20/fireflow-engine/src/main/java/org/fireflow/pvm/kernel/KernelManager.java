@@ -20,15 +20,17 @@ import java.util.List;
 
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
+import org.fireflow.engine.entity.repository.ProcessKey;
 
 /**
  * @author 非也
  * @version 2.0
  */
 public interface KernelManager extends EngineModule{
-	public void startPObject(WorkflowSession session,PObjectKey pObjectKey);
+	public void loadProcess(ProcessKey pk );
+
 	
-	public void fireChildPObject(WorkflowSession session,PObjectKey childPOjbectKey,Token parentToken);
+	public void startPObject(WorkflowSession session,PObjectKey childPOjbectKey,Token parentToken);
 	
 	
 	/**
@@ -80,7 +82,9 @@ public interface KernelManager extends EngineModule{
 	 * @param processType FPDL ,BPMN,BPEL等
 	 * @return
 	 */
-	public Token getToken(String tokenId,String processType);
+	public Token getTokenById(String tokenId,String processType);
+	
+	public Token getTokenByElementInstanceId(String elementInstanceId,String processType);
 	
 	/**
 	 * 获得父Token
@@ -95,6 +99,8 @@ public interface KernelManager extends EngineModule{
 	 * @return
 	 */
 	public PObject getProcessObject(Token token);
+	
+	public Object getWorkflowElement(PObjectKey key);
 	
 	/**
 	 * 获得子token列表。
