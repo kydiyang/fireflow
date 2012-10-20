@@ -23,6 +23,7 @@ package org.fireflow.engine.exception;
  * @version 2.0
  */
 public class ServiceInvocationException extends Exception {
+	
 	String errorCode = null;
 	
 	/**
