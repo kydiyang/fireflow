@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.entity.repository;
 
+import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 
@@ -28,11 +29,18 @@ public class ProcessKey {
 	Integer version = null;
 	String processType = null;
 	public static ProcessKey valueOf(PObjectKey poKey){
+		assert(poKey!=null);
 		return new ProcessKey(poKey.getProcessId(),poKey.getVersion(),poKey.getProcessType());
 	}
 	
 	public static ProcessKey valueOf(Token token){
+		assert(token!=null);
 		return new ProcessKey(token.getProcessId(),token.getVersion(),token.getProcessType());
+	}
+	
+	public static ProcessKey valueOf(ProcessInstance processInstance){
+		assert(processInstance!=null);
+		return new ProcessKey(processInstance.getProcessId(),processInstance.getVersion(),processInstance.getProcessType());
 	}
 	public ProcessKey(String processId,Integer v,String processType){
 		this.processId = processId;

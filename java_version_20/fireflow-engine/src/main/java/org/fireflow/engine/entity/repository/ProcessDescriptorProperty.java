@@ -32,18 +32,20 @@ public enum ProcessDescriptorProperty 	implements EntityProperty{
 		DESCRIPTION("description"),
 		FILE_NAME("fileName"),
 
-		BIZ_CATEGORY("bizCategory"),
+		BIZ_TYPE("bizType"),
 		
 		PUBLISH_STATE("publishState"),
-		LAST_EDITOR("lastEditor"),
-		LAST_EDIT_TIME("lastEditTime"),
-		LAST_OPERATION("lastOperation"),
+//		LAST_EDIT_TIME("lastEditTime"),
+//		LAST_OPERATION("lastOperation"),
 		
 		OWNER_DEPT_ID("ownerDeptId"),
 		OWNER_DEPT_NAME("ownerDeptName"),
 		APPROVER("approver"),
 		APPROVED_TIME("approvedTime"),
 
+		LAST_UPDATE_TIME("lastUpdateTime"),
+		LAST_EDITOR("lastEditor"),
+		
 		//流程特定的属性
 		IS_TIMER_START("isTimerStart"),
 		HAS_CALLBACK_SERVICE("hasCallbackService"),
