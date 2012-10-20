@@ -34,7 +34,7 @@ public enum ResourceDescriptorProperty implements EntityProperty {
 	DESCRIPTION("description"),
 	FILE_NAME("fileName"),
 
-	BIZ_CATEGORY("bizCategory"),
+	BIZ_TYPE("bizType"),
 	
 	PUBLISH_STATE("publishState"),
 	LAST_EDITOR("lastEditor"),

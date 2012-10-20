@@ -28,14 +28,6 @@ import org.fireflow.engine.entity.WorkflowEntity;
  *
  */
 public interface RepositoryDescriptor extends WorkflowEntity{
-	public static final String OPERATION_UPLOAD = "UPLOAD";
-	public static final String OPERATION_UPDATE = "UPDATE";
-	public static final String OPERATION_PUBLISH = "PUBLISH";
-	public static final String OPERATION_UNPUBLISH = "UNPUBLISH";
-	public static final String OPERATION_UPLOAD_PUBLISH = "UPLOAD_PUBLISH";
-	public static final String OPERATION_UPDATE_PUBLISH = "UPDATE_PUBLISH";
-	public static final String OPERATION_UPDATE_UNPUBLISH = "UPDATE_UNPUBLISH";
-
     /**
      * 流程名称
      * @return
@@ -58,7 +50,7 @@ public interface RepositoryDescriptor extends WorkflowEntity{
      * 获得业务流程业务类别
      * @return
      */
-    public String getBizCategory();
+    public String getBizType();
 
     /**
      * 流程发布状态
@@ -67,11 +59,6 @@ public interface RepositoryDescriptor extends WorkflowEntity{
     public Boolean getPublishState();
 
     
-	/**
-	 * 最后一次修改操作的内容，可以是UPLOAD,UPDATE,PUBLISH
-	 * @return
-	 */
-	public String getLastOperation();
 	
     
     /**
@@ -113,9 +100,4 @@ public interface RepositoryDescriptor extends WorkflowEntity{
      */
 	public String getLastEditor() ;
 
-	/**
-	 * 最后修改时间
-	 * @return
-	 */
-	public Date getLastEditTime();
 }
