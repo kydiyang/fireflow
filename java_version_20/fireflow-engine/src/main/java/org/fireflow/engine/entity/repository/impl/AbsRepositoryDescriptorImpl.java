@@ -33,19 +33,17 @@ public abstract class AbsRepositoryDescriptorImpl implements
     protected String name; //流程英文名称
     protected String displayName;//流程显示名称
     protected String description;//流程业务说明
-    protected String bizCategory = null;//业务类别
+    protected String bizType = null;//业务类别
     protected String fileName = null;//流程文件在classpath中的全路径名
 
     protected Boolean publishState;//是否发布，1=已经发布,0未发布
-    protected String latestOperation = null;
-    protected Date latestEditTime = null;
-    protected String latestEditor = null;//最后编辑流程的操作者姓名
 
     protected String ownerDeptName = null;//流程所属的部门名称
     protected String ownerDeptId = null;//流程所属的部门Id    
     protected String approver = null;//批准发布人
     protected Date approvedTime = null;//批准发布时间
     
+    protected String latestEditor = null;//最后编辑流程的操作者姓名
     protected Date lastUpdateTime = null;
     
     public String getId() {
@@ -100,13 +98,6 @@ public abstract class AbsRepositoryDescriptorImpl implements
 		this.approver = approver;
 	}
 
-	public Date getLastEditTime() {
-		return this.latestEditTime;
-	}
-	
-	public void setLastEditTime(Date time){
-		this.latestEditTime = time;
-	}
 
 	public String getLastEditor() {
 		return this.latestEditor;
@@ -116,15 +107,6 @@ public abstract class AbsRepositoryDescriptorImpl implements
 		this.latestEditor = editorName;
 	}
 
-	public String getLastOperation() {
-		// TODO Auto-generated method stub
-		return this.latestOperation;
-	}
-	
-	public void setLastOperation(String latestOperation){
-		this.latestOperation = latestOperation;
-	}
-	
 	
 	public String getOwnerDeptId() {
 		return this.ownerDeptId;
@@ -156,12 +138,12 @@ public abstract class AbsRepositoryDescriptorImpl implements
 		this.fileName = fileName;
 	}
     
-	public String getBizCategory(){
-		return this.bizCategory;
+	public String getBizType(){
+		return this.bizType;
 	}
 	
-	public void setBizCategory(String bizCategory){
-		this.bizCategory = bizCategory;
+	public void setBizType(String bizCategory){
+		this.bizType = bizCategory;
 	}
 
 	public Boolean getPublishState() {
