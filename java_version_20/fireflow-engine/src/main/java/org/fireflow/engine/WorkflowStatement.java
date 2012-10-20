@@ -160,6 +160,12 @@ public interface WorkflowStatement {
 	 */
 	public ProcessInstance startProcess(Object process,String bizId,Map<String,Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException,InvalidOperationException;
+	
+	public ProcessInstance createProcessInstance(String workflowProcessId) throws InvalidModelException ,WorkflowProcessNotFoundException;
+	public ProcessInstance createProcessInstance(Object process)throws InvalidModelException ;
+	public ProcessInstance createProcessInstance(String workflowProcessId,int version) throws InvalidModelException ,WorkflowProcessNotFoundException;
+	
+	public ProcessInstance runProcessInstance(String processInstanceId,String bizId,Map<String,Object> variables) ;
 
     /**
      * 撤销流程实例。将流程实例、活动的TaskInstance、活动的WorkItem的状态设置为ABORTED。
