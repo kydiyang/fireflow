@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
+import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.event.Event;
@@ -29,6 +30,7 @@ import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEvent;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventListener;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
+import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 
 /**
@@ -43,8 +45,10 @@ public class ProcessInstanceEventBroadcaster implements EventBroadcaster {
 	 * @see org.fireflow.engine.modules.event.EventBroadcaster#fireEvent(org.fireflow.engine.WorkflowSession, org.fireflow.engine.modules.event.Event)
 	 */
 	public void fireEvent(WorkflowSession session, Event event) {
-		SubProcess subflow = (SubProcess)event.getWorkflowElement();
-		List<EventListenerDef> eventListeners = subflow.getEventListeners();
+		
+		SubProcess subProcess = (SubProcess)event.getWorkflowElement();
+		
+		List<EventListenerDef> eventListeners = subProcess.getEventListeners();
 		if (eventListeners != null) {
 			for (EventListenerDef eventListenerDef : eventListeners) {
 				fireEvent(session, eventListenerDef, (ProcessInstanceEvent)event);

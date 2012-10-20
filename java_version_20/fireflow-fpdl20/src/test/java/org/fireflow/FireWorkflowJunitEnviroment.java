@@ -205,13 +205,13 @@ public abstract class FireWorkflowJunitEnviroment {
 		for (ProcessInstance procInst : processInstanceList) {
 			System.out.print(procInst.getId());
 			System.out.print("\t\t");
-			System.out.println(procInst.getSubflowId());
+			System.out.println(procInst.getSubProcessId());
 			System.out.print("\t\t");
 			System.out.print(procInst.getState().getDisplayName());
 			System.out.print("\t\t");
-			System.out.print(procInst.getSubflowName());
+			System.out.print(procInst.getSubProcessName());
 			System.out.print("\t\t");
-			System.out.print(procInst.getSubflowDisplayName());
+			System.out.print(procInst.getSubProcessDisplayName());
 
 			System.out.println("\n");
 		}

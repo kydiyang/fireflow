@@ -407,10 +407,10 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 						value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
 					} catch (ClassCastException e) {
 						//TODO 记录流程日志
-						log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubflowId()+", variableName="+property.getName(), e);
+						log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubProcessId()+", variableName="+property.getName(), e);
 					} catch (ClassNotFoundException e) {
 						//TODO 记录流程日志
-						log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubflowId()+", variableName="+property.getName(), e);
+						log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubProcessId()+", variableName="+property.getName(), e);
 					}
 				}
 				//从initVariables中获取value
@@ -421,10 +421,10 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 							value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
 						} catch (ClassCastException e) {
 							//TODO 记录流程日志
-							log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubflowId()+", variableName="+property.getName(), e);
+							log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubProcessId()+", variableName="+property.getName(), e);
 						} catch (ClassNotFoundException e) {
 							//TODO 记录流程日志
-							log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubflowId()+", variableName="+property.getName(), e);
+							log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubProcessId()+", variableName="+property.getName(), e);
 						}
 					}
 				}

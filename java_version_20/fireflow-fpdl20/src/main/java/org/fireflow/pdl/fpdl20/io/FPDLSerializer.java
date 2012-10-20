@@ -1262,7 +1262,7 @@ public class FPDLSerializer implements FPDLNames {
         
         Element bodyElem = Util4Serializer.addElement(expressionElem, BODY);
         if (exp.getBody()!=null){
-            CDATASection cdata = doc.createCDATASection(exp.getBody());
+            CDATASection cdata = doc.createCDATASection(exp.getBody()==null?"":exp.getBody());
             bodyElem.appendChild(cdata);
         }
 

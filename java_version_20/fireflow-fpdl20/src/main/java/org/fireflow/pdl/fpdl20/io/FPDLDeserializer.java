@@ -136,6 +136,7 @@ import org.fireflow.pdl.fpdl20.process.impl.SubProcessImpl;
 import org.fireflow.pdl.fpdl20.process.impl.TransitionImpl;
 import org.fireflow.pdl.fpdl20.process.impl.WorkflowProcessImpl;
 import org.firesoa.common.schema.NameSpaces;
+import org.firesoa.common.util.ScriptLanguages;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1752,18 +1753,23 @@ public class FPDLDeserializer implements FPDLNames{
 			}
 
 			Element bodyElement = Util4Deserializer.child(expressionElement, BODY);
-			NodeList nodeList = bodyElement.getChildNodes();
-			if(nodeList!=null && nodeList.getLength()>0){
-				int length = nodeList.getLength();
-				for (int i=0;i<length;i++){
-					org.w3c.dom.Node node = nodeList.item(i);
-					if(node.getNodeType()==org.w3c.dom.Node.CDATA_SECTION_NODE){
-						CDATASection cdataSection = (CDATASection)node;
-						exp.setBody(cdataSection.getData());
-						break;
+			if (bodyElement==null){
+				exp.setBody("");
+			}else{
+				NodeList nodeList = bodyElement.getChildNodes();
+				if(nodeList!=null && nodeList.getLength()>0){
+					int length = nodeList.getLength();
+					for (int i=0;i<length;i++){
+						org.w3c.dom.Node node = nodeList.item(i);
+						if(node.getNodeType()==org.w3c.dom.Node.CDATA_SECTION_NODE){
+							CDATASection cdataSection = (CDATASection)node;
+							exp.setBody(cdataSection.getData());
+							break;
+						}
 					}
 				}
 			}
+
 			
 			Element namespacePrefixUriMapElem = Util4Deserializer.child(expressionElement, this.NAMESPACE_PREFIX_URI_MAP);
 	        
@@ -1779,8 +1785,16 @@ public class FPDLDeserializer implements FPDLNames{
 			}
 
 			return exp;
+		}else{
+			ExpressionImpl exp = new ExpressionImpl();
+			exp.setLanguage(ScriptLanguages.UNIFIEDJEXL.name());
+			exp.setDataType(new QName(NameSpaces.JAVA.getUri(), String.class
+					.getName(), NameSpaces.JAVA.getPrefix()));
+			exp.setName("WorkItemSubject");
+			exp.setDisplayName("工作项主题");// 需国际化
+			exp.setBody("");
+			return exp;
 		}
-		return null;
 	}
 
 	/**

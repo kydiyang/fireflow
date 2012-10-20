@@ -64,6 +64,14 @@
 			</bean>
 		</property>	
 		
+		<property name="fireflowConfigPersister">
+			<bean class="org.fireflow.engine.modules.persistence.hibernate.FireflowConfigPersisterHibernateImpl">
+				<property name="sessionFactory">
+					<ref bean="hibernateSessionFactory"/>
+				</property>				
+			</bean>
+		</property>			
+		
 		<!-- Resource Persister and Service Persister -->	
 		<!-- 
 		<property name="resourcePersister">

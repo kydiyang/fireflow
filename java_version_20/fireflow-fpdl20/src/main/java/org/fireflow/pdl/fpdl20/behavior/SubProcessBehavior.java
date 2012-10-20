@@ -88,37 +88,21 @@ public class SubProcessBehavior implements WorkflowBehavior {
 	 */
 	public Boolean prepare(WorkflowSession session, Token token,
 			Object workflowElement) {
-		SubProcess subflow = (SubProcess)workflowElement;
 		
 		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
 		RuntimeContext context = sessionLocal.getRuntimeContext();
-		ProcessInstanceManager processInstanceManager = context.getEngineModule(ProcessInstanceManager.class,FpdlConstants.PROCESS_TYPE);
+		
 		PersistenceService persistenceService = context.getEngineModule(PersistenceService.class, token.getProcessType());
-		ProcessPersister processRepositoryPersister = persistenceService.getProcessPersister();
-		ProcessKey pk = ProcessKey.valueOf(token);
-		
-		////不需要从数据库查找，
-//		ProcessDescriptor processDescriptor = processRepositoryPersister.findProcessDescriptorByProcessKey(pk);
-		ProcessDescriptorImpl processDescriptor = new ProcessDescriptorImpl();
-		processDescriptor.setProcessId(token.getProcessId());
-		processDescriptor.setVersion(token.getVersion());
-		processDescriptor.setProcessType(token.getProcessType());
 
-		
-		VariablePersister variableService = persistenceService.getVariablePersister();
 		ProcessInstancePersister procInstPersistSvc = persistenceService.getProcessInstancePersister();
+		ProcessInstance newProcessInstance = (ProcessInstance)session.getCurrentProcessInstance();
 		
-		//1、创建流程实例，设置初始化参数
-		String bizId = (String)session.getAttribute(InternalSessionAttributeKeys.BIZ_ID);
-		Map<String,Object> variables = (Map<String,Object>)session.getAttribute(InternalSessionAttributeKeys.VARIABLES);
-		ActivityInstance parentActivityInstance = session
-				.getCurrentActivityInstance();
-		ProcessInstance parentProcessInstance = session
-				.getCurrentProcessInstance();
+		//发布事件
+		ProcessInstanceManager procInstManager = context.getEngineModule(ProcessInstanceManager.class, token.getProcessType());
+		procInstManager.fireProcessInstanceEvent(session, newProcessInstance, workflowElement, ProcessInstanceEventTrigger.BEFORE_PROCESS_INSTANCE_RUN);
+		
+		
 
-		ProcessInstance newProcessInstance = processInstanceManager
-				.createProcessInstance(sessionLocal, workflowElement, bizId,
-						processDescriptor,parentActivityInstance);
 		((ProcessInstanceImpl)newProcessInstance).setTokenId(token.getId());
 		procInstPersistSvc.saveOrUpdate(newProcessInstance);
 		
@@ -126,103 +110,10 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		token.setElementInstanceId(newProcessInstance.getId());
 		TokenPersister tokenPersister = persistenceService.getTokenPersister();
 		tokenPersister.saveOrUpdate(token);
-		
-		//2、初始化流程变量
-		List<Property> processProperties = subflow.getProperties();
-		this.initProcessInstanceVariables(variableService, newProcessInstance, processProperties,variables);
-		
-		//3、发布事件
-		processInstanceManager.fireProcessInstanceEvent(session, newProcessInstance, workflowElement, ProcessInstanceEventTrigger.ON_PROCESS_INSTANCE_CREATED);
-		
-		//4、设置session和token
-		token.setProcessInstanceId(newProcessInstance.getId());
-		token.setElementInstanceId(newProcessInstance.getId());
-		
-		sessionLocal.setCurrentProcessInstance(newProcessInstance);
 
 		return true;//true表示告诉虚拟机，“我”已经准备妥当了。
 	}
 	
-	private void initProcessInstanceVariables(VariablePersister variablePersister,
-			ProcessInstance processInstance,List<Property> processProperties,Map<String,Object> initVariables){
-		if (processProperties!=null){
-			for (Property property:processProperties){
-				String valueAsStr = property.getInitialValueAsString();
-				Object value = null;
-				if (valueAsStr!=null && valueAsStr.trim()!=null){
-					try {
-						value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
-					} catch (ClassCastException e) {
-						//TODO 记录流程日志
-						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubflowId()+", variableName="+property.getName(), e);
-					} catch (ClassNotFoundException e) {
-						//TODO 记录流程日志
-						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubflowId()+", variableName="+property.getName(), e);
-					}
-				}
-				//从initVariables中获取value
-				if (initVariables!=null){
-					Object tmpValue = initVariables.remove(property.getName());
-					if (tmpValue!=null){
-						try {
-							value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
-						} catch (ClassCastException e) {
-							//TODO 记录流程日志
-							log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubflowId()+", variableName="+property.getName(), e);
-						} catch (ClassNotFoundException e) {
-							//TODO 记录流程日志
-							log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubflowId()+", variableName="+property.getName(), e);
-						}
-					}
-				}
-				
-				createVariable(variablePersister,processInstance,property.getName(),value,property.getDataType());
-			}
-		}
-		
-		if (initVariables!=null && !initVariables.isEmpty()){
-			Iterator<String> keySet = initVariables.keySet().iterator();
-			while (keySet.hasNext()){
-				String key = keySet.next();
-				Object value = initVariables.get(key);
-				createVariable(variablePersister,processInstance,key,value,null);
-			}
-		}
-
-	}
-	
-	private void createVariable(VariablePersister variablePersister,
-			ProcessInstance processInstance,String name ,Object value,QName dataType){
-		VariableImpl v = new VariableImpl();
-		((AbsVariable)v).setScopeId(processInstance.getScopeId());
-		((AbsVariable)v).setName(name);
-		((AbsVariable)v).setProcessElementId(processInstance.getProcessElementId());
-		((AbsVariable)v).setPayload(value);
-		
-		if (value!=null){
-			if (value instanceof org.w3c.dom.Document){
-				if (dataType != null ){
-					((AbsVariable)v).setDataType(dataType);
-				}
-				v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.w3c.dom.Document");
-			}else if (value instanceof org.dom4j.Document){
-				if (dataType != null ){
-					((AbsVariable)v).setDataType(dataType);
-				}
-				v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.dom4j.Document");
-			}else{
-				((AbsVariable)v).setDataType(new QName(NameSpaces.JAVA.getUri(),value.getClass().getName()));
-			}
-			
-		}
-		((AbsVariable)v).setProcessId(processInstance.getProcessId());
-		((AbsVariable)v).setVersion(processInstance.getVersion());
-		((AbsVariable)v).setProcessType(processInstance.getProcessType());
-		
-
-		variablePersister.saveOrUpdate(v);
-	}
-
 	
 
 
@@ -238,7 +129,7 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
-		kernelManager.fireChildPObject(session, pobjectKey, processToken);
+		kernelManager.startPObject(session, pobjectKey, processToken);
 		
 		ExecuteResult result = new ExecuteResult();
 		result.setStatus(BusinessStatus.RUNNING);
@@ -291,5 +182,6 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		}
 		return ContinueDirection.closeMe();
 	}
+
 
 }
