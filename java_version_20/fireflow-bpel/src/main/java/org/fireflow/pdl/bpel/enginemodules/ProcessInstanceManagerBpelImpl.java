@@ -16,18 +16,33 @@
  */
 package org.fireflow.pdl.bpel.enginemodules;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.namespace.QName;
+
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
+import org.fireflow.engine.entity.runtime.Variable;
+import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
+import org.fireflow.engine.entity.runtime.impl.VariableImpl;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManager;
 import org.fireflow.engine.modules.ousystem.User;
+import org.fireflow.engine.modules.persistence.PersistenceService;
+import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
+import org.fireflow.engine.modules.persistence.ProcessPersister;
+import org.fireflow.engine.modules.persistence.VariablePersister;
+import org.fireflow.pdl.bpel.BpelConstants;
+import org.firesoa.common.schema.NameSpaces;
 
 /**
  * @author 非也
@@ -39,7 +54,7 @@ public class ProcessInstanceManagerBpelImpl extends AbsProcessInstanceManager {
 	 * @see org.fireflow.engine.instancemanager.ProcessInstanceManager#createProcessInstance(org.fireflow.engine.WorkflowSession, java.lang.Object, java.lang.String, java.util.Map, org.fireflow.engine.entity.repository.ProcessDescriptor, org.fireflow.engine.entity.runtime.ActivityInstance)
 	 */
 	public ProcessInstance createProcessInstance(WorkflowSession session,
-			Object workflowProcess, String bizId,ProcessDescriptor descriptor,
+			Object workflowProcess,String processEntryId, ProcessDescriptor descriptor,
 			ActivityInstance parentActivityInstance) {
 		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
 		RuntimeContext context = sessionLocal.getRuntimeContext();
@@ -52,11 +67,11 @@ public class ProcessInstanceManagerBpelImpl extends AbsProcessInstanceManager {
 		processInstance.setVersion(descriptor.getVersion());
 		processInstance.setProcessType(descriptor.getProcessType());
 		
-		processInstance.setSubflowId(descriptor.getProcessId());
-		processInstance.setSubflowName(descriptor.getName());
-		processInstance.setSubflowDisplayName(descriptor.getDisplayName());
+		processInstance.setSubProcessId(descriptor.getProcessId());
+		processInstance.setSubProcessName(descriptor.getName());
+		processInstance.setSubProcessDisplayName(descriptor.getDisplayName());
 		
-		processInstance.setBizId(bizId);
+//		processInstance.setBizId(bizId);
 		processInstance.setProcessName(descriptor.getName());
 		processInstance.setProcessDisplayName(descriptor.getDisplayName());
 		processInstance.setState(ProcessInstanceState.INITIALIZED);
@@ -71,7 +86,10 @@ public class ProcessInstanceManagerBpelImpl extends AbsProcessInstanceManager {
 //		processInstance.setExpiredTime(time);
 		
 		
-
+		PersistenceService persistenceService = this.getRuntimeContext().getEngineModule(PersistenceService.class, descriptor.getProcessType());
+		ProcessInstancePersister processInstancePersister = persistenceService.getProcessInstancePersister();
+		
+		processInstancePersister.saveOrUpdate(processInstance);
 		
 		
 		return processInstance;
@@ -81,9 +99,52 @@ public class ProcessInstanceManagerBpelImpl extends AbsProcessInstanceManager {
 	 * @see org.fireflow.engine.instancemanager.ProcessInstanceManager#fireProcessInstanceEvent(org.fireflow.engine.WorkflowSession, org.fireflow.engine.entity.runtime.ProcessInstance, java.lang.Object, int)
 	 */
 	public void fireProcessInstanceEvent(WorkflowSession session,
-			ProcessInstance processInstance, Object workflowElement,
+			ProcessInstance processInstance, Object workflowProcess,
 			ProcessInstanceEventTrigger eventType) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManager#initProcessInstanceVariables(org.fireflow.engine.entity.runtime.ProcessInstance, java.lang.Object, java.util.Map)
+	 */
+	@Override
+	protected void initProcessInstanceVariables(
+			ProcessInstance newProcessInstance, Object subflow,
+			Map<String, Object> variables) {
+		PersistenceService persistenceStrategy = this.runtimeContext.getEngineModule(PersistenceService.class, BpelConstants.PROCESS_TYPE);
+		VariablePersister variableService = persistenceStrategy.getVariablePersister();
+
+		//初始化流程变量
+		if (variables != null && variables.size() > 0) {
+			Iterator<Entry<String, Object>> it = variables.entrySet()
+					.iterator();
+			while (it.hasNext()) {
+				Entry<String, Object> entry = it.next();
+				
+				VariableImpl v = new VariableImpl();
+				((AbsVariable)v).setScopeId(newProcessInstance.getScopeId());
+				((AbsVariable)v).setName(entry.getKey());
+				((AbsVariable)v).setProcessElementId(newProcessInstance.getProcessElementId());
+				((AbsVariable)v).setPayload(entry.getValue());
+				((AbsVariable)v).setProcessId(newProcessInstance.getProcessId());
+				((AbsVariable)v).setVersion(newProcessInstance.getVersion());
+				((AbsVariable)v).setProcessType(newProcessInstance.getProcessType());
+				Object value = entry.getValue();
+				if (value!=null){
+					if (value instanceof org.w3c.dom.Document){
+						v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.w3c.dom.Document");
+					}else if (value instanceof org.dom4j.Document){
+						v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.dom4j.Document");
+					}else{
+						((AbsVariable)v).setDataType(new QName(NameSpaces.JAVA.getUri(),value.getClass().getName()));
+					}
+					
+				}
+				variableService.saveOrUpdate(v);
+			}
+		}
+		
 		
 	}
 
