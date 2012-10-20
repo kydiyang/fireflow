@@ -207,7 +207,7 @@ public class BoundaryTimerTriggerOnlyOnceTest1 extends FireWorkflowJunitEnvirome
 		ExpressionImpl expression = new ExpressionImpl();
 		expression.setLanguage("JEXL");
 		expression.setDataType(new QName(NameSpaces.JAVA.getUri(),"java.util.Date"));
-		expression.setBody("DateUtil:dateAfter(currentActivityInstance.startedTime,1,'mi')");
+		expression.setBody("DateUtil:dateAfter(currentActivityInstance.startedTime,10,'s')");
 		
 		timerStartDecorator.setStartTimeExpression(expression);
 		timerStartDecorator.setAttachedToActivity(activity1);

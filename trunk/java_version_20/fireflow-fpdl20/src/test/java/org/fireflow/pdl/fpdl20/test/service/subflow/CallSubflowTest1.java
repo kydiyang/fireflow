@@ -317,6 +317,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		ExpressionImpl to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.INPUTS+"/"+"id");
 		to.setLanguage("XPATH");
+		to.setName("id");
 		assignment.setTo(to);
 		svcBinding.getInputAssignments().add(assignment);
 		
@@ -331,6 +332,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.INPUTS+"/result");
 		to.setLanguage("XPATH");
+		to.setName("result");
 		assignment.setTo(to);
 		svcBinding.getInputAssignments().add(assignment);
 		
@@ -344,6 +346,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		
 		to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/response1");
+		to.setName("response1");
 		to.setLanguage("XPATH");
 		to.getNamespaceMap().put("ns0", subflowService.getTargetNamespaceUri());
 		assignment.setTo(to);
@@ -359,6 +362,7 @@ public class CallSubflowTest1 extends FireWorkflowJunitEnviroment{
 		to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/response2");
 		to.setLanguage("XPATH");
+		to.setName("response2");
 		to.getNamespaceMap().put("ns0", subflowService.getTargetNamespaceUri());
 		assignment.setTo(to);
 		svcBinding.getOutputAssignments().add(assignment);

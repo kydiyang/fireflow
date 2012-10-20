@@ -11,7 +11,7 @@
 	</f20:import>
 	<s:services>
 		<s:service biz-category="" display-name="" executor=""
-			file-name="" id="" name="" service-type="">
+			id="" name="" service-type="">
 			<s:operations>
 				<s:operation>
 					<s:operation-name></s:operation-name>
@@ -36,8 +36,7 @@
 		</s:service>
 	</s:services>
 	<r:resources>
-		<r:resource displayName="" file-name="" id="" name=""
-			resource-type="ProcessInstanceCreator">
+		<r:resource id="" name="" >
 			<r:resolver bean-name="">
 				<r:parameters>
 					<r:parameter data-pattern="" data-type=""

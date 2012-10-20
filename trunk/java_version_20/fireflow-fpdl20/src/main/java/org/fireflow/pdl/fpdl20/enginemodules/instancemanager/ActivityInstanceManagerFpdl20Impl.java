@@ -69,9 +69,9 @@ public class ActivityInstanceManagerFpdl20Impl extends
 		
 		actInst.setProcessName(processInstance.getProcessName());
 		actInst.setProcessDisplayName(processInstance.getProcessDisplayName());
-		actInst.setSubflowName(processInstance.getSubflowName());
-		actInst.setSubflowDisplayName(processInstance.getSubflowDisplayName());
-		actInst.setBizCategory(processInstance.getBizCategory());
+		actInst.setSubProcessName(processInstance.getSubProcessName());
+		actInst.setSubProcessDisplayName(processInstance.getSubProcessDisplayName());
+		actInst.setBizType(processInstance.getBizType());
 		
 		actInst.setProcessId(processInstance.getProcessId());
 		actInst.setVersion(processInstance.getVersion());
@@ -79,7 +79,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 		actInst.setProcessInstanceId(processInstance.getId());
 		actInst.setNodeId(node.getId());		
 		actInst.setBizId(processInstance.getBizId());
-		actInst.setSubflowId(processInstance.getSubflowId());
+		actInst.setSubProcessId(processInstance.getSubProcessId());
 		
 		if (node instanceof Activity){
 			Activity activity = (Activity) node;

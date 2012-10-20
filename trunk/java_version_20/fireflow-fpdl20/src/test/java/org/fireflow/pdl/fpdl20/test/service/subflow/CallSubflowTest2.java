@@ -68,6 +68,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 	protected static final String processDisplayName = "调用外部流程的subflow";
 	protected static final String description = "调用外部流程的subflow";
 	protected static final String bizId = "biz_123";
+	protected WorkflowProcess process2 = null;
 	
 	@Test
 	public void testStartProcess(){
@@ -228,8 +229,8 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 		SubflowService subflowService = new SubflowService();
 		subflowService.setName("call_subflow2");
 		subflowService.setTargetNamespaceUri("http://CallSubflowTest1");
-		subflowService.setProcessId("Process2");
-		subflowService.setSubflowId("Process2.main_flow");
+		subflowService.setProcessId(process2.getId());
+		subflowService.setSubflowId(process2.getMainSubProcess().getId());
 		
 		CommonInterfaceDef commonInterface = new CommonInterfaceDef();
 		commonInterface.setName("call_subflow2_interface");
@@ -279,6 +280,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 		ExpressionImpl to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.INPUTS+"/"+"id");
 		to.setLanguage("XPATH");
+		to.setName("id");
 		assignment.setTo(to);
 		svcBinding.getInputAssignments().add(assignment);
 		
@@ -293,6 +295,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 		to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.INPUTS+"/result");
 		to.setLanguage("XPATH");
+		to.setName("result");
 		assignment.setTo(to);
 		svcBinding.getInputAssignments().add(assignment);
 		
@@ -307,6 +310,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 		to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/response1");
 		to.setLanguage("XPATH");
+		to.setName("response1");
 		to.getNamespaceMap().put("ns0", subflowService.getTargetNamespaceUri());
 		assignment.setTo(to);
 		svcBinding.getOutputAssignments().add(assignment);
@@ -321,6 +325,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 		to = new ExpressionImpl();
 		to.setBody(ScriptContextVariableNames.PROCESS_VARIABLES+"/response2");
 		to.setLanguage("XPATH");
+		to.setName("response2");
 		to.getNamespaceMap().put("ns0", subflowService.getTargetNamespaceUri());
 		assignment.setTo(to);
 		svcBinding.getOutputAssignments().add(assignment);
@@ -334,6 +339,7 @@ public class CallSubflowTest2  extends FireWorkflowJunitEnviroment{
 	
 	public WorkflowProcess createWorkflowProcess2(){
 		WorkflowProcessImpl process = new WorkflowProcessImpl("Process2","Process2");
+		process2 = process;
 		
 		SubProcess subflow2 = process.getMainSubProcess();
 		
