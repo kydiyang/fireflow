@@ -59,5 +59,7 @@ public interface TokenPersister extends Persister {
 	public List<Token> findSiblings(Token token);
 	
 	public List<Token> findAttachedTokens(Token token);
+	
+	public Token findTokenByElementInstanceId(String elementInstanceId);
 
 }

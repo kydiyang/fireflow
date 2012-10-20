@@ -44,4 +44,5 @@ public interface PersistenceService extends EngineModule,RuntimeContextAware{
 	
 	public ProcessUtil getProcessUtil(String processType);
 
+	public FireflowConfigPersister getFireflowConfigPersister();
 }

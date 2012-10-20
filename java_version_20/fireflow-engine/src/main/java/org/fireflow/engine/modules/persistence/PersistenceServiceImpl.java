@@ -40,6 +40,8 @@ public class PersistenceServiceImpl  extends AbsEngineModule implements Persiste
 	
 	ResourcePersister resourcePersister = null;
 	
+	FireflowConfigPersister fireflowConfigPersister = null;
+	
 	RuntimeContext ctx = null;
 	
 	/**
@@ -175,6 +177,15 @@ public class PersistenceServiceImpl  extends AbsEngineModule implements Persiste
 	public void setResourcePersister(ResourcePersister resourcePersister) {
 		this.resourcePersister = resourcePersister;
 		this.resourcePersister.setPersistenceService(this);
+	}
+	
+	public FireflowConfigPersister getFireflowConfigPersister(){
+		return fireflowConfigPersister;
+	}
+	
+	public void setFireflowConfigPersister(FireflowConfigPersister fireflowConfigPersister){
+		this.fireflowConfigPersister = fireflowConfigPersister;
+		this.fireflowConfigPersister.setPersistenceService(this);
 	}
 	
 	public ProcessUtil getProcessUtil(String processType){
