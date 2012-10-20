@@ -57,6 +57,8 @@ import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.model.servicedef.impl.AbstractServiceDef;
 import org.fireflow.model.servicedef.impl.CommonInterfaceDef;
 import org.fireflow.model.servicedef.impl.OperationDefImpl;
+import org.firesoa.common.schema.NameSpaces;
+import org.firesoa.common.util.ScriptLanguages;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -527,18 +529,24 @@ public abstract class ServiceParser implements ModelElementNames {
 			QName qname = QName.valueOf(dataTypeStr);
 			exp.setDataType(qname);
 			Element bodyElement = Util4Deserializer.child(expressionElement, BODY);
-			NodeList nodeList = bodyElement.getChildNodes();
-			if(nodeList!=null && nodeList.getLength()>0){
-				int length = nodeList.getLength();
-				for (int i=0;i<length;i++){
-					org.w3c.dom.Node node = nodeList.item(i);
-					if(node.getNodeType()==org.w3c.dom.Node.CDATA_SECTION_NODE){
-						CDATASection cdataSection = (CDATASection)node;
-						exp.setBody(cdataSection.getData());
-						break;
+
+			if (bodyElement==null){
+				exp.setBody("");
+			}else{
+				NodeList nodeList = bodyElement.getChildNodes();
+				if(nodeList!=null && nodeList.getLength()>0){
+					int length = nodeList.getLength();
+					for (int i=0;i<length;i++){
+						org.w3c.dom.Node node = nodeList.item(i);
+						if(node.getNodeType()==org.w3c.dom.Node.CDATA_SECTION_NODE){
+							CDATASection cdataSection = (CDATASection)node;
+							exp.setBody(cdataSection.getData());
+							break;
+						}
 					}
 				}
 			}
+
 			
 			Element namespacePrefixUriMapElem = Util4Deserializer.child(expressionElement, NAMESPACE_PREFIX_URI_MAP);
 	        
@@ -553,8 +561,16 @@ public abstract class ServiceParser implements ModelElementNames {
 				}
 			}
 			return exp;
+		}else{
+			ExpressionImpl exp = new ExpressionImpl();
+			exp.setLanguage(ScriptLanguages.UNIFIEDJEXL.name());
+			exp.setDataType(new QName(NameSpaces.JAVA.getUri(), String.class
+					.getName(), NameSpaces.JAVA.getPrefix()));
+			exp.setName("WorkItemSubject");
+			exp.setDisplayName("工作项主题");// 需国际化
+			exp.setBody("");
+			return exp;
 		}
-		return null;
 	}
 	
     protected void writeExpression(Expression exp,Element parent){
@@ -568,7 +584,7 @@ public abstract class ServiceParser implements ModelElementNames {
         }
         expressionElem.setAttribute(LANGUAGE, exp.getLanguage());
         Document doc = parent.getOwnerDocument();
-        CDATASection cdata = doc.createCDATASection(exp.getBody());
+        CDATASection cdata = doc.createCDATASection(exp.getBody()==null?"":exp.getBody());
         Element bodyElem = Util4Serializer.addElement(expressionElem, BODY);
         bodyElem.appendChild(cdata);
         

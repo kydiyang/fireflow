@@ -10,7 +10,9 @@ import java.util.Map;
 public interface Expression extends DataElement{
 	public static final String EXPRESSION_DISPLAY_NAME_TIP = "请编辑该表达式...";
 	/**
-	 * 表达式的语言
+	 * 表达式的语言，目前支持 org.fireflow.engine.modules.script.ScriptLanguages.JEXL;
+	 * org.fireflow.engine.modules.script.ScriptLanguages.XPATH;
+	 * org.fireflow.engine.modules.script.ScriptLanguages.UNIFIEDJEXL
 	 * @return
 	 */
 	public String getLanguage();
