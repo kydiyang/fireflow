@@ -82,7 +82,7 @@ public abstract class AbsActivityInstanceManager  extends AbsEngineModule implem
 		
 		KernelManager kernelManager = runtimeContext.getDefaultEngineModule(KernelManager.class);
 		
-		Token token = kernelManager.getToken(activityInstance.getTokenId(), activityInstance.getProcessType());
+		Token token = kernelManager.getTokenById(activityInstance.getTokenId(), activityInstance.getProcessType());
 		BookMark bookMark = new BookMark();
 		bookMark.setToken(token);
 		bookMark.setExtraArg(BookMark.SOURCE_TOKEN, token);

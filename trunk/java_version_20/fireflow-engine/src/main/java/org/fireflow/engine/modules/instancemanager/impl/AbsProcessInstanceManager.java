@@ -25,12 +25,15 @@ import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.repository.ProcessKey;
+import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceProperty;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.impl.InternalSessionAttributeKeys;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
@@ -38,12 +41,17 @@ import org.fireflow.engine.modules.event.EventBroadcaster;
 import org.fireflow.engine.modules.event.EventBroadcasterManager;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
-import org.fireflow.engine.modules.instancemanager.event.ActivityInstanceEvent;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEvent;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
+import org.fireflow.engine.modules.persistence.ProcessPersister;
+import org.fireflow.engine.modules.process.ProcessUtil;
+import org.fireflow.model.InvalidModelException;
+import org.fireflow.pvm.kernel.KernelManager;
+import org.fireflow.pvm.kernel.PObjectKey;
+import org.fireflow.pvm.kernel.Token;
 
 /**
  * @author 非也
@@ -51,7 +59,57 @@ import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
  */
 public abstract class AbsProcessInstanceManager  extends AbsEngineModule implements ProcessInstanceManager,RuntimeContextAware{
 	protected RuntimeContext runtimeContext = null;
+	public ProcessInstance runProcessInstance(WorkflowSession session,String processInstanceId,String processType,
+			String bizId, Map<String, Object> variables) {
+		KernelManager kernelManager = runtimeContext.getDefaultEngineModule(KernelManager.class);
+		PersistenceService persistenceStrategy = runtimeContext.getEngineModule(PersistenceService.class,processType);
+		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();
+		ProcessPersister processPersister = persistenceStrategy.getProcessPersister();
 
+		ProcessInstance processInstance = (ProcessInstance)session.getCurrentProcessInstance();
+		if (processInstance==null || !processInstanceId.equals(processInstance.getId())){
+			processInstance = procInstPersistenceService.find(ProcessInstance.class, processInstanceId);
+			((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(processInstance);
+		}
+		
+		if (processInstance==null || !ProcessInstanceState.INITIALIZED.equals(processInstance.getState())){
+			return processInstance;//说明已经是运行状态，无需再次运行。
+		}
+		if (bizId!=null&& !bizId.trim().equals("")){
+			((ProcessInstanceImpl)processInstance).setBizId(bizId);
+			procInstPersistenceService.saveOrUpdate(processInstance);
+		}
+
+
+		ProcessRepository repository = null;
+		try {
+			repository = processPersister.findProcessRepositoryByProcessKey( ProcessKey.valueOf(processInstance));
+		} catch (InvalidModelException e) {
+			throw new EngineException(processInstance,e.getMessage());
+		}
+		
+		initProcessInstanceVariables(processInstance,repository==null?null:repository.getProcessObject(),variables);
+		
+
+		//提取到parentToken
+		Token parentToken = null;
+		if (processInstance.getParentActivityInstanceId()!=null && 
+				!processInstance.getParentActivityInstanceId().equals("")){
+			parentToken = kernelManager.getTokenByElementInstanceId(processInstance.getParentActivityInstanceId(), processType);
+		}
+		
+		//启动流程实例
+		kernelManager.startPObject(session, new PObjectKey(processInstance.getProcessId(),
+				processInstance.getVersion(),processInstance.getProcessType(),processInstance.getSubProcessId()), parentToken);
+		
+		if (parentToken==null){//当parentToken不为空时，kernelManager已经处于执行状态；否则需要调用kernelManager.execute(session)启动一下
+			kernelManager.execute(session);
+		}
+		
+		return processInstance;
+	}
+	
+	protected abstract void initProcessInstanceVariables(ProcessInstance processInstance,Object subflow,Map<String,Object> initVariables);
 	
 	public void changeProcessInstanceSate(WorkflowSession session,ProcessInstance procInst,ProcessInstanceState state,Object workflowElement){
 		CalendarService calendarService = runtimeContext.getEngineModule(CalendarService.class,procInst.getProcessType());
