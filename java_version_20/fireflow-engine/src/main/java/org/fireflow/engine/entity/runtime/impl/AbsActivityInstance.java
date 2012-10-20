@@ -214,11 +214,11 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		this.processId = processId;
 	}
 	
-	public String getSubflowId(){
+	public String getSubProcessId(){
 		return this.subflowId;
 	}
 	
-	public void setSubflowId(String subflowId){
+	public void setSubProcessId(String subflowId){
 		this.subflowId = subflowId;
 	}
 
@@ -444,19 +444,19 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		this.processDisplayName = processDisplayName;
 	}
 	
-	public String getSubflowName(){
+	public String getSubProcessName(){
 		return this.subflowName;
 	}
 	
-	public void setSubflowName(String subflowName){
+	public void setSubProcessName(String subflowName){
 		this.subflowName = subflowName;
 	}
 	
-	public String getSubflowDisplayName(){
+	public String getSubProcessDisplayName(){
 		return this.subflowDisplayName;
 	}
 	
-	public void setSubflowDisplayName(String subflowDisplayName){
+	public void setSubProcessDisplayName(String subflowDisplayName){
 		this.subflowDisplayName = subflowDisplayName;
 	}
 
@@ -474,11 +474,11 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		this.canBeWithdrawn = canBeWithdrawn;
 	}
 
-	public String getBizCategory() {
+	public String getBizType() {
 		return bizCategory;
 	}
 
-	public void setBizCategory(String bizCategory) {
+	public void setBizType(String bizCategory) {
 		this.bizCategory = bizCategory;
 	}
 	

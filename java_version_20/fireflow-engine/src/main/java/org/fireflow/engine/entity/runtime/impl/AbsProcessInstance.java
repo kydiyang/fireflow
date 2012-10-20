@@ -195,19 +195,19 @@ public abstract class AbsProcessInstance implements ProcessInstance {
 		this.processName = name;
 	}
 
-	public String getSubflowName(){
+	public String getSubProcessName(){
 		return this.subflowName;
 	}
 	
-	public void setSubflowName(String subflowName){
+	public void setSubProcessName(String subflowName){
 		this.subflowName = subflowName;
 	}
 	
-	public String getSubflowDisplayName(){
+	public String getSubProcessDisplayName(){
 		return this.subflowDisplayName;
 	}
 	
-	public void setSubflowDisplayName(String subflowDisplayName){
+	public void setSubProcessDisplayName(String subflowDisplayName){
 		this.subflowDisplayName = subflowDisplayName;
 	}
 	/* (non-Javadoc)
@@ -275,11 +275,11 @@ public abstract class AbsProcessInstance implements ProcessInstance {
 		this.processType = processType;
 	}
 	
-    public String getSubflowId(){
+    public String getSubProcessId(){
     	return this.subflowId;
     }
     
-    public void setSubflowId(String subflowId){
+    public void setSubProcessId(String subflowId){
     	this.subflowId = subflowId;
     }
 	/* (non-Javadoc)
@@ -317,11 +317,11 @@ public abstract class AbsProcessInstance implements ProcessInstance {
 
 
 
-	public String getBizCategory() {
+	public String getBizType() {
 		return bizCategory;
 	}
 
-	public void setBizCategory(String bizCategory) {
+	public void setBizType(String bizCategory) {
 		this.bizCategory = bizCategory;
 	}
 
