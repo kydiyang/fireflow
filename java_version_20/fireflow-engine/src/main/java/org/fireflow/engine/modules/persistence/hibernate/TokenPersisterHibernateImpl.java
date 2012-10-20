@@ -104,6 +104,25 @@ public class TokenPersisterHibernateImpl extends AbsPersisterHibernateImpl
 		});
 		return (List<Token>)result;
 	}
+	
+	public Token findTokenByElementInstanceId(final String elementInstanceId){
+		Object result = this.getHibernateTemplate().execute(new HibernateCallback(){
+
+			@Override
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Criteria c = session.createCriteria(TokenImpl.class);
+				c.add(Restrictions.eq("elementInstanceId", elementInstanceId));
+				return c.uniqueResult();
+			}
+
+
+			
+		});
+		return (Token)result;
+	}
+	
+	
 	public int countAliveToken(final String processInstanceId,final String nodeId,final OperationContextName operationContextName){
 		Object result = this.getHibernateTemplate().execute(new HibernateCallback(){
 

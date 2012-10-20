@@ -142,11 +142,6 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 				
 				desc.setFileName(fileName);
 				desc.setLastEditor(lastEditor);
-				if (lastEditTime!=null){
-					desc.setLastEditTime(lastEditTime);
-				}else{
-					desc.setLastEditTime(new Date());
-				}
 				
 				Object obj = properties.get(ResourceDescriptorProperty.PUBLISH_STATE);
 				Boolean publishState = Boolean.TRUE;
@@ -155,11 +150,6 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 				}
 				desc.setPublishState(publishState);
 				
-				if (publishState){
-					desc.setLastOperation(ResourceDescriptor.OPERATION_PUBLISH);
-				}else{
-					desc.setLastOperation(ResourceDescriptor.OPERATION_UPLOAD);
-				}
 				
 				this.saveOrUpdate(desc);
 				descriptors.add(desc);

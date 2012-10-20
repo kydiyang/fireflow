@@ -137,18 +137,14 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 				ServiceDescriptorImpl desc = new ServiceDescriptorImpl();
 				
 				desc.setServiceId(svc.getId());
-				desc.setBizCategory(svc.getBizCategory());
+				desc.setBizType(svc.getBizCategory());
 				desc.setName(svc.getName());
 				desc.setDisplayName(svc.getDisplayName());
 				desc.setDescription(svc.getDescription());
 				
 				desc.setFileName(fileName);
 				desc.setLastEditor(lastEditor);
-				if (lastEditTime!=null){
-					desc.setLastEditTime(lastEditTime);
-				}else{
-					desc.setLastEditTime(new Date());
-				}
+
 				
 				Object obj = properties.get(ServiceDescriptorProperty.PUBLISH_STATE);
 				Boolean publishState = Boolean.TRUE;
@@ -156,12 +152,6 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 					publishState = (Boolean) obj;
 				}
 				desc.setPublishState(publishState);
-				
-				if (publishState){
-					desc.setLastOperation(ServiceDescriptor.OPERATION_PUBLISH);
-				}else{
-					desc.setLastOperation(ServiceDescriptor.OPERATION_UPLOAD);
-				}
 				
 				
 				this.saveOrUpdate(desc);
