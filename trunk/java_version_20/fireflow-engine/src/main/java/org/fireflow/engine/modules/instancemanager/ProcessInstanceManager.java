@@ -16,6 +16,8 @@
  */
 package org.fireflow.engine.modules.instancemanager;
 
+import java.util.Map;
+
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
@@ -51,8 +53,11 @@ public interface ProcessInstanceManager extends EngineModule{
 //			WorkflowProcessNotFoundException, InvalidOperationException;	
 
 	public ProcessInstance createProcessInstance(WorkflowSession session,
-			Object workflowProcess, String bizId, ProcessDescriptor descriptor,
+			Object workflowProcess,String processEntryId,ProcessDescriptor descriptor,
 			ActivityInstance parentActivityInstance);
+	
+	public ProcessInstance runProcessInstance(WorkflowSession session,String processInstanceId,String processType,
+			String bizId, Map<String, Object> variables);
 	
 	/**
 	 * 响应SubflowBehavior的onTokenStateChanged();
@@ -62,6 +67,13 @@ public interface ProcessInstanceManager extends EngineModule{
 	 */
 	public void changeProcessInstanceSate(WorkflowSession session,ProcessInstance processInstance,ProcessInstanceState newState,Object workflowElement);
 
+	/**
+	 * 发布流程实例事件
+	 * @param session
+	 * @param processInstance 流程实例
+	 * @param workflowElement 流程，FPDL20语言中，该对象为对应的SubProcess
+	 * @param eventType 事件类型
+	 */
 	public void fireProcessInstanceEvent(WorkflowSession session,ProcessInstance processInstance,Object workflowElement,ProcessInstanceEventTrigger eventType);
 	
 	//2012-02-14 被changeProcessInstanceState代替。
