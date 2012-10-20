@@ -47,9 +47,9 @@ public class ActivityInstanceManagerBpelImpl extends AbsActivityInstanceManager 
 		actInst.setVersion(processInstance.getVersion());
 		actInst.setProcessType(processInstance.getProcessType());
 		
-		actInst.setSubflowId(processInstance.getSubflowId());
-		actInst.setSubflowName(processInstance.getSubflowName());
-		actInst.setSubflowDisplayName(processInstance.getSubflowDisplayName());
+		actInst.setSubProcessId(processInstance.getSubProcessId());
+		actInst.setSubProcessName(processInstance.getSubProcessName());
+		actInst.setSubProcessDisplayName(processInstance.getSubProcessDisplayName());
 		
 		actInst.setProcessInstanceId(processInstance.getId());
 		actInst.setBizId(processInstance.getBizId());
