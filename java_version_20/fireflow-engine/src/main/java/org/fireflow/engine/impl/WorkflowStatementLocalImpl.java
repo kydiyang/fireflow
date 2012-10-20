@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,6 +38,7 @@ import org.fireflow.engine.WorkflowStatement;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.EntityProperty;
 import org.fireflow.engine.entity.WorkflowEntity;
+import org.fireflow.engine.entity.config.FireflowConfig;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ProcessKey;
@@ -72,6 +72,7 @@ import org.fireflow.engine.modules.loadstrategy.ProcessLoadStrategy;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.Persister;
+import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
 import org.fireflow.engine.modules.persistence.ServicePersister;
@@ -101,6 +102,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		return processType;
 	}
 
+	
 	public void setProcessType(String processType) {
 		this.processType = processType;
 	}
@@ -182,50 +184,49 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 			String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
 			InvalidOperationException {
-		RuntimeContext ctx = this.session.getRuntimeContext();
-//		ProcessInstanceManager procInstMgr = ctx.getEngineModule(
-//				ProcessInstanceManager.class, this.processType);
+		ProcessInstance processInstance = this.createProcessInstance(workflowProcessId, version);
+		return this.runProcessInstance(processInstance.getId(), bizId, variables);
+//		RuntimeContext ctx = this.session.getRuntimeContext();
 //
-//		ProcessInstance processInstance = procInstMgr.startProcess(session, workflowProcessId, version,
-//				this.processType, bizId, variables);
-
-		ProcessUtil processUtil = ctx.getEngineModule(ProcessUtil.class, processType);
-		
-		session.setAttribute(InternalSessionAttributeKeys.BIZ_ID, bizId);
-		session.setAttribute(InternalSessionAttributeKeys.VARIABLES, variables);
-		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);			
-		//启动WorkflowProcess实际上是启动该WorkflowProcess的main_flow，
-		kernelManager.startPObject(session, new PObjectKey(workflowProcessId,version,processType,
-				processUtil.getProcessEntryId(workflowProcessId, version, workflowProcessId)));
-		
-		return session.getCurrentProcessInstance();
 //
+//		ProcessUtil processUtil = ctx.getEngineModule(ProcessUtil.class, processType);
+//
+//		session.setAttribute(InternalSessionAttributeKeys.BIZ_ID, bizId);
+//		session.setAttribute(InternalSessionAttributeKeys.VARIABLES, variables);
+//		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+//		KernelManager kernelManager = context.getDefaultEngineModule(KernelManager.class);			
+//		//启动WorkflowProcess实际上是启动该WorkflowProcess的main_flow，
+//		kernelManager.startPObject(session, new PObjectKey(workflowProcessId,version,processType,
+//				processUtil.getProcessEntryId(workflowProcessId, version, workflowProcessId)));
 //		
-//		return processInstance;
+//		return session.getCurrentProcessInstance();
+
 	}
 
 	public ProcessInstance startProcess(String workflowProcessId, String bizId,
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
 		// 首先需要根据workflowProcessId找到待启动的流程，查找策略有多种，可能根据流程族来查找，也可能直接找到当前最新版本的流程。
-		RuntimeContext runtimeContext = this.session.getRuntimeContext();
-		ProcessLoadStrategy loadStrategy = runtimeContext.getEngineModule(
-				ProcessLoadStrategy.class, this.getProcessType());
-
-		ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(session,
-				workflowProcessId, this.getProcessType());
-		return this.startProcess(workflowProcessId, pk.getVersion(), bizId,
-				variables);
+//		RuntimeContext runtimeContext = this.session.getRuntimeContext();
+//		ProcessLoadStrategy loadStrategy = runtimeContext.getEngineModule(
+//				ProcessLoadStrategy.class, this.getProcessType());
+//
+//		ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(session,
+//				workflowProcessId, this.getProcessType());
+//		return this.startProcess(workflowProcessId, pk.getVersion(), bizId,
+//				variables);
+		ProcessInstance processInstance = this.createProcessInstance(workflowProcessId);
+		return this.runProcessInstance(processInstance.getId(), bizId, variables);
 	}
 
 	public ProcessInstance startProcess(Object process, String bizId,
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
-
-		ProcessDescriptor repository = this.uploadProcessObject(process, Boolean.TRUE, null);
-		return this.startProcess(repository.getProcessId(),
-				repository.getVersion(), bizId, variables);
+		ProcessInstance processInstance = this.createProcessInstance(process);
+		return this.runProcessInstance(processInstance.getId(), bizId, variables);
+//		ProcessDescriptor repository = this.uploadProcessObject(process, Boolean.TRUE, null);
+//		return this.startProcess(repository.getProcessId(),
+//				repository.getVersion(), bizId, variables);
 	}
 
 	/*
@@ -261,7 +262,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		session.setCurrentProcessInstance(processInstance);	
 		
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);		
-		Token token = kernelManager.getToken(processInstance.getTokenId(), processInstance.getProcessType());
+		Token token = kernelManager.getTokenById(processInstance.getTokenId(), processInstance.getProcessType());
 
 		kernelManager.fireTerminationEvent(session, token, null);
 		kernelManager.execute(session);
@@ -437,7 +438,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 
 		
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);		
-		Token token = kernelManager.getToken(activityInstance.getTokenId(), activityInstance.getProcessType());
+		Token token = kernelManager.getTokenById(activityInstance.getTokenId(), activityInstance.getProcessType());
 
 		kernelManager.fireTerminationEvent(session, token, null);
 		kernelManager.execute(session);
@@ -733,7 +734,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 
 		Object theActivity = null;
 		try {
-			theActivity = processUtil.getActivity(pKey, activityInstance.getSubflowId(), activityInstance.getNodeId());
+			theActivity = processUtil.getActivity(pKey, activityInstance.getSubProcessId(), activityInstance.getNodeId());
 		} catch (InvalidModelException e) {
 			throw new InvalidOperationException(e);
 		}
@@ -762,9 +763,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 
 		props.put(ProcessDescriptorProperty.PUBLISH_STATE, publishState);
 		props.put(ProcessDescriptorProperty.PROCESS_TYPE, processType);
-		//TODO LATEST_EDIT_TIME应该让数据库系统自动生成？
-		props.put(ProcessDescriptorProperty.LAST_EDIT_TIME,
-				calendarService.getSysDate());
+
 		props.put(ProcessDescriptorProperty.LAST_EDITOR, this.session
 				.getCurrentUser().getId()
 				+ "["
@@ -1136,6 +1135,8 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 			persister = persistenceService.getProcessPersister();
 		} else if (entityClass.isAssignableFrom(ScheduleJob.class)) {
 			persister = persistenceService.getScheduleJobPersister();
+		} else if (entityClass.isAssignableFrom(FireflowConfig.class)){
+			persister = persistenceService.getFireflowConfigPersister();
 		}
 		return persister;
 	}
@@ -1150,5 +1151,74 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement {
 		session.setCurrentActivityInstance(null);
 		session.setCurrentProcessInstance(null);
 		session.setLatestCreatedWorkItems(null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String)
+	 */
+	@Override
+	public ProcessInstance createProcessInstance(String workflowProcessId)
+	 throws InvalidModelException ,WorkflowProcessNotFoundException{
+		RuntimeContext runtimeContext = this.session.getRuntimeContext();
+		ProcessLoadStrategy loadStrategy = runtimeContext.getEngineModule(
+				ProcessLoadStrategy.class, this.getProcessType());
+
+		ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(session,
+				workflowProcessId, this.getProcessType());
+		if (pk==null){
+			throw new WorkflowProcessNotFoundException("流程库中没有processId="+workflowProcessId+"的流程。");
+		}
+		return this.createProcessInstance(workflowProcessId, pk.getVersion());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.Object)
+	 */
+	@Override
+	public ProcessInstance createProcessInstance(Object process)throws InvalidModelException {
+		ProcessDescriptor repository = this.uploadProcessObject(process, Boolean.TRUE, null);
+		return _createProcessInstance(process,repository);
+	}
+	
+	private ProcessInstance _createProcessInstance(Object workflowProcess,ProcessDescriptor processDescriptor){
+		RuntimeContext ctx = this.session.getRuntimeContext();
+		
+		ProcessUtil processUtil = ctx.getEngineModule(ProcessUtil.class, processType);
+		String processEntryId = processUtil.getProcessEntryId(processDescriptor.getProcessId(), processDescriptor.getVersion(), processDescriptor.getProcessType());
+
+		ProcessInstanceManager procInstMgr = ctx.getEngineModule(ProcessInstanceManager.class, this.processType);
+
+		ProcessInstance processInstance = procInstMgr.createProcessInstance(session, workflowProcess,processEntryId, processDescriptor, null);
+		
+		((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(processInstance);
+		return processInstance;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String, int)
+	 */
+	@Override
+	public ProcessInstance createProcessInstance(String workflowProcessId,
+			int version)throws InvalidModelException,WorkflowProcessNotFoundException  {
+		RuntimeContext runtimeContext = this.session.getRuntimeContext();
+		PersistenceService persistenceService = runtimeContext.getEngineModule(PersistenceService.class, this.getProcessType());
+		ProcessPersister processPersister = persistenceService.getProcessPersister();
+		ProcessRepository repository = processPersister.findProcessRepositoryByProcessKey(new ProcessKey(workflowProcessId,version,this.getProcessType()));
+		if (repository==null){
+			throw new WorkflowProcessNotFoundException("流程库中没有ProcessId="+workflowProcessId+",version="+version+"的流程定义文件。");
+		}
+		Object workflowProcess = repository.getProcessObject();
+		return _createProcessInstance(workflowProcess,repository);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.WorkflowStatement#runProcessInstance(java.lang.String, java.lang.String, java.util.Map)
+	 */
+	@Override
+	public ProcessInstance runProcessInstance(String processInstanceId,
+			String bizId, Map<String, Object> variables) {
+		RuntimeContext runtimeContext = this.session.getRuntimeContext();
+		ProcessInstanceManager procInstMgr = runtimeContext.getEngineModule(ProcessInstanceManager.class, this.getProcessType());
+		return procInstMgr.runProcessInstance(session, processInstanceId, processType, bizId, variables);
 	}
 }
