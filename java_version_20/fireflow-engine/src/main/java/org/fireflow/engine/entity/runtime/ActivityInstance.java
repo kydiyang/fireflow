@@ -141,7 +141,7 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
      * 获得当前实例对应的subflow，对于没有subflow的模型，该值等于processId。
      * @return
      */
-    public String getSubflowId();
+    public String getSubProcessId();
 	
     
     /**
@@ -157,15 +157,15 @@ public interface ActivityInstance extends Scope,WorkflowEntity{
 	public String getProcessDisplayName();
 	
 	
-	public String getSubflowName();
+	public String getSubProcessName();
 	
-	public String getSubflowDisplayName();
+	public String getSubProcessDisplayName();
 	
 	/**
 	 * 增加业务类别字段，便于查询。2011-04-02
 	 * @return
 	 */
-	public String getBizCategory();
+	public String getBizType();
 	/**
 	 * 对应的流程节点的Id
 	 * 

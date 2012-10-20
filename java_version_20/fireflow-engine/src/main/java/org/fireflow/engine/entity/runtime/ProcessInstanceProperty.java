@@ -34,14 +34,14 @@ public enum ProcessInstanceProperty implements EntityProperty {
 	PROCESS_ID("processId"),
 	VERSION("version"),
 	PROCESS_TYPE("processsType"),
-	SUBFLOW_ID("subflowId"),
+	SUBPROCESS_ID("subProcessId"),
 	
 	PROCESS_NAME("processName"),
 	PROCESS_DISPLAY_NAME("processDisplayName"),
-	BIZ_CATEGORY("bizCategory"),
+	BIZ_TYPE("bizType"),
 	
-	SUBFLOW_NAME("subflowName"),
-	SUBFLOW_DISPLAY_NAME("subflowDisplayName"),
+	SUBPROCESS_NAME("subProcessName"),
+	SUBPROCESS_DISPLAY_NAME("subProcessDisplayName"),
 	
 	STATE("state"),
 	IS_SUSPENDED("isSuspended"),
