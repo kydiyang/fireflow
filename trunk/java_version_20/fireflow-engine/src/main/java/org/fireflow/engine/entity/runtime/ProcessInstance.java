@@ -52,15 +52,15 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
      */
     public String getProcessDisplayName();
     
-    public String getSubflowName();
+    public String getSubProcessName();
     
-    public String getSubflowDisplayName();
+    public String getSubProcessDisplayName();
     
     /**
      * 增加一个bizcategory字段，以方便查询
      * @return
      */
-    public String getBizCategory();
+    public String getBizType();
 
     /**
      * 流程定义的id
@@ -86,7 +86,7 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
      * 获得当前实例对应的subflow，对于没有subflow的模型，该值等于processId。
      * @return
      */
-    public String getSubflowId();
+    public String getSubProcessId();
 
     /**
      * 流程实例创建者ID
