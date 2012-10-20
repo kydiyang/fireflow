@@ -86,7 +86,7 @@ public class ServicePersisterClassPathImpl implements ServicePersister {
 				for (ServiceDef svc : services){
 					ServiceDescriptorImpl desc = new ServiceDescriptorImpl();
 					desc.setServiceId(svc.getId());
-					desc.setBizCategory(svc.getBizCategory());
+					desc.setBizType(svc.getBizCategory());
 					desc.setName(svc.getName());
 					desc.setDisplayName(svc.getDisplayName());
 					desc.setDescription(svc.getDescription());
