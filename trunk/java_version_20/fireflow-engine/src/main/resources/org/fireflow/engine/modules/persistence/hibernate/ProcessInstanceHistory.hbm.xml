@@ -6,7 +6,7 @@
 			<column length="50" name="ID" />
 			<generator class="uuid" />
 		</id>
-		<property name="bizId" type="java.lang.String" update="false">
+		<property name="bizId" type="java.lang.String">
 			<column length="100" name="BIZ_ID" >
 				<comment>业务表单Id</comment>
 			</column>
@@ -26,8 +26,8 @@
 				<comment>流程类型</comment>
 			</column>
 		</property>		
-		<property name="subflowId" type="java.lang.String" update="false">
-			<column length="100" name="SUBFLOW_ID" not-null="true">
+		<property name="subProcessId" type="java.lang.String" update="false">
+			<column length="100" name="SUBPROCESS_ID" not-null="true">
 				<comment>子流程Id</comment>
 			</column>
 		</property>				
@@ -41,18 +41,18 @@
 				<comment>流程显示名称</comment>
 			</column>
 		</property>
-		<property name="subflowName" type="java.lang.String" update="false">
-			<column length="128" name="SUBFLOW_NAME" >
+		<property name="subProcessName" type="java.lang.String" update="false">
+			<column length="128" name="SUBPROCESS_NAME" >
 				<comment>子流程名称</comment>
 			</column>
 		</property>	
-		<property name="subflowDisplayName" type="java.lang.String" update="false">
-			<column length="128" name="SUBFLOW_DISPLAY_NAME" >
+		<property name="subProcessDisplayName" type="java.lang.String" update="false">
+			<column length="128" name="SUBPROCESS_DISPLAY_NAME" >
 				<comment>子流程显示名称</comment>
 			</column>
 		</property>	
-		<property name="bizCategory" type="java.lang.String">
-			<column length="200" name="BIZ_CATEGORY">
+		<property name="bizType" type="java.lang.String">
+			<column length="200" name="BIZ_TYPE">
 				<comment>业务类别名称</comment>
 			</column>
 		</property>			
@@ -126,8 +126,7 @@
 				<comment>父Scope Id</comment>
 			</column>
 		</property>
-		<property name="tokenId" type="java.lang.String"
-			update="false">
+		<property name="tokenId" type="java.lang.String" >
 			<column length="50" name="TOKEN_ID">
 				<comment>Token Id</comment>
 			</column>

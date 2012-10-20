@@ -233,14 +233,14 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		
 		ServiceBinding serviceBinding = null;
 		try{
-			serviceBinding = processService.getServiceBinding(pKey, thisActivityInstance.getSubflowId(), thisActivityInstance.getNodeId());
+			serviceBinding = processService.getServiceBinding(pKey, thisActivityInstance.getSubProcessId(), thisActivityInstance.getNodeId());
 		}catch(InvalidModelException e){
 			log.error(e);
 			throw new InvalidOperationException(e);
 		}
 		ResourceBinding resourceBinding = null;
 		try{
-			resourceBinding = processService.getResourceBinding(pKey, thisActivityInstance.getSubflowId(), thisActivityInstance.getNodeId());
+			resourceBinding = processService.getResourceBinding(pKey, thisActivityInstance.getSubProcessId(), thisActivityInstance.getNodeId());
 		}catch(InvalidModelException e){
 			log.error(e);
 			throw new InvalidOperationException(e);
@@ -248,7 +248,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		
 		Object theActivity = null;
 		try{
-			theActivity = processService.getActivity(pKey, thisActivityInstance.getSubflowId(), thisActivityInstance.getNodeId());
+			theActivity = processService.getActivity(pKey, thisActivityInstance.getSubProcessId(), thisActivityInstance.getNodeId());
 		}catch(InvalidModelException e){
 			log.error(e);
 			throw new InvalidOperationException(e);
