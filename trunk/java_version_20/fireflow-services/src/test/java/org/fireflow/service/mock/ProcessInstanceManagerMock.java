@@ -22,7 +22,8 @@ import org.fireflow.model.InvalidModelException;
 public class ProcessInstanceManagerMock extends AbsProcessInstanceManager {
 
 	public ProcessInstance createProcessInstance(WorkflowSession session,
-			Object workflowProcess, String bizId, ProcessDescriptor descriptor,
+			Object workflowProcess, String processEntryId,
+			ProcessDescriptor descriptor,
 			ActivityInstance parentActivityInstance) {
 //		WorkflowProcess fpdl20Process = (WorkflowProcess)workflowProcess;
 		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
@@ -34,7 +35,7 @@ public class ProcessInstanceManagerMock extends AbsProcessInstanceManager {
 		processInstance.setProcessId(descriptor.getProcessId());
 		processInstance.setVersion(descriptor.getVersion());
 		processInstance.setProcessType(descriptor.getProcessType());
-		processInstance.setBizId(bizId);
+//		processInstance.setBizId(bizId);
 		processInstance.setProcessName(descriptor.getName());
 		String displayName = descriptor.getDisplayName();
 		processInstance.setProcessDisplayName((displayName==null||displayName.trim().equals(""))?descriptor.getName():displayName);
@@ -71,16 +72,19 @@ public class ProcessInstanceManagerMock extends AbsProcessInstanceManager {
 
 	}
 
+
+
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.instancemanager.ProcessInstanceManager#startProcess(org.fireflow.engine.WorkflowSession, java.lang.String, int, java.lang.String, java.lang.String, java.util.Map)
+	 * @see org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManager#initProcessInstanceVariables(org.fireflow.engine.entity.runtime.ProcessInstance, java.lang.Object, java.util.Map)
 	 */
-	public ProcessInstance startProcess(WorkflowSession session,
-			String workflowProcessId, int version, String processType,
-			String bizId, Map<String, Object> variables)
-			throws InvalidModelException, WorkflowProcessNotFoundException,
-			InvalidOperationException {
+	@Override
+	protected void initProcessInstanceVariables(
+			ProcessInstance processInstance, Object subflow,
+			Map<String, Object> initVariables) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
+
+
 
 }

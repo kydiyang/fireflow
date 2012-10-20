@@ -26,11 +26,11 @@ public class AbsTestContext extends AbstractJUnit4SpringContextTests {
 		processInstance.setProcessId("processId-123456");
 		processInstance.setVersion(1);
 		processInstance.setProcessType("FPDL20");
-		processInstance.setSubflowId("processId-123456.main_flow");
+		processInstance.setSubProcessId("processId-123456.main_flow");
 		processInstance.setBizId("bizId-123456");
 		processInstance.setProcessName("TestProcess");
 		processInstance.setProcessDisplayName("TestProcess");
-		processInstance.setBizCategory("test");
+		processInstance.setBizType("test");
 		processInstance.setState(ProcessInstanceState.INITIALIZED);
 
 		Date now = calendarService.getSysDate();
@@ -62,7 +62,7 @@ public class AbsTestContext extends AbstractJUnit4SpringContextTests {
 		
 		actInst.setProcessName(processInstance.getProcessName());
 		actInst.setProcessDisplayName(processInstance.getProcessDisplayName());
-		actInst.setBizCategory(processInstance.getBizCategory());
+		actInst.setBizType(processInstance.getBizType());
 		
 		actInst.setProcessId(processInstance.getProcessId());
 		actInst.setVersion(processInstance.getVersion());
@@ -72,7 +72,7 @@ public class AbsTestContext extends AbstractJUnit4SpringContextTests {
 		actInst.setBizId(processInstance.getBizId());
 		actInst.setTokenId("tokenId-456");
 		actInst.setStepNumber(1);
-		actInst.setSubflowId("subflow_123");
+		actInst.setSubProcessId("subflow_123");
 		
 		actInst.setParentScopeId(processInstance.getScopeId());
 		

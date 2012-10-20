@@ -1,21 +1,13 @@
 package org.fireflow.service.human;
 
-import javax.xml.namespace.QName;
-
-import org.fireflow.model.data.Expression;
-import org.fireflow.model.data.impl.ExpressionImpl;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.Util4Deserializer;
 import org.fireflow.model.io.Util4Serializer;
 import org.fireflow.model.io.service.ServiceParser;
 import org.fireflow.model.servicedef.InterfaceDef;
 import org.fireflow.model.servicedef.ServiceDef;
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import com.sun.mail.imap.protocol.Namespaces.Namespace;
 
 public class HumanServiceParser extends ServiceParser {
 	public static final String SERVICE_NAME = "service.human";
@@ -44,6 +36,11 @@ public class HumanServiceParser extends ServiceParser {
 			humanService.setWorkItemSubject(this.createExpression(Util4Deserializer.child(workItemSubjectElement,EXPRESSION)));
 		}
 		
+		Element interfaceElement = Util4Deserializer.child(element, INTERFACE_COMMON);
+		if (interfaceElement!=null){
+			InterfaceDef _interface = this.loadCommonInterface(humanService, interfaceElement);
+			humanService.setInterface(_interface);
+		}
 		
 		this.loadExtendedAttributes(humanService.getExtendedAttributes(), Util4Deserializer.child(element, EXTENDED_ATTRIBUTES));
 		
@@ -68,6 +65,11 @@ public class HumanServiceParser extends ServiceParser {
 		
 		Element workItemSubject = Util4Serializer.addElement(svcElem, WORKITEM_SUBJECT);
 		this.writeExpression(humanSvc.getWorkItemSubject(), workItemSubject);
+		
+		InterfaceDef _interface = humanSvc.getInterface();
+		if (_interface!=null){
+			this.writeCommonInterface(_interface, svcElem);
+		}
 		
 		this.writeExtendedAttributes(humanSvc.getExtendedAttributes(), svcElem);
 	}
