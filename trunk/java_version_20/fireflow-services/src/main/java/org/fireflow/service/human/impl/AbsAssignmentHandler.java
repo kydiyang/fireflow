@@ -34,14 +34,16 @@ public abstract class AbsAssignmentHandler implements AssignmentHandler{
 	private static final long serialVersionUID = 433878253467183907L;
 	
 
-	public abstract List<User> getPotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
+	public abstract List<User> resolvePotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance);
-	public abstract List<User> getReaders(WorkflowSession session, ResourceBinding resourceBinding,
+	public abstract List<User> resolveReaders(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance);
-	public abstract List<User> getAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
+	public abstract List<User> resolveAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance);
-	public abstract WorkItemAssignmentStrategy getAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
+	public abstract WorkItemAssignmentStrategy resolveAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity);
+	public abstract Map<WorkItemProperty,Object> resolveWorkItemPropertyValues();
+	
 	
 	public List<WorkItem> assign(WorkflowSession session,
 			ActivityInstance activityInstance,WorkItemManager workItemManager,Object theActivity,
@@ -53,12 +55,15 @@ public abstract class AbsAssignmentHandler implements AssignmentHandler{
 
 		List<WorkItem> result = new ArrayList<WorkItem>();
 		
-		Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
+		Map<WorkItemProperty,Object> values = this.resolveWorkItemPropertyValues();
+		if(values==null){
+			values = new HashMap<WorkItemProperty,Object>();
+		}		
 
-		List<User> potentialOwners =  this.getPotentialOwners(session,resourceBinding,theActivity,processInstance,activityInstance);		
+		List<User> potentialOwners =  this.resolvePotentialOwners(session,resourceBinding,theActivity,processInstance,activityInstance);		
 		if (potentialOwners==null || potentialOwners.size()==0){
 			//通知业务领导进行处理
-			List<User> administrators = this.getAdministrators(session,resourceBinding,theActivity,processInstance,activityInstance);	
+			List<User> administrators = this.resolveAdministrators(session,resourceBinding,theActivity,processInstance,activityInstance);	
 			if (administrators==null || administrators.size()==0){
 				//TODO 赋值给Fireflow内置用户，并记录警告信息
 				WorkItem wi = workItemManager.createWorkItem(session, processInstance, activityInstance, FireWorkflowSystem.getInstance(),theActivity, null);
@@ -77,11 +82,25 @@ public abstract class AbsAssignmentHandler implements AssignmentHandler{
 							.getProcessId(), activityInstance.getProcessType(),
 							activityInstance.getNodeId(), user.getId());
 					if (agents != null && agents.size() != 0) {
-
+						ReassignmentHandler dynamicAssignmentHandler = new ReassignmentHandler();
+						dynamicAssignmentHandler.setPotentialOwners(agents);
+						dynamicAssignmentHandler.setReassignType(WorkItem.REASSIGN_AFTER_ME);
+						dynamicAssignmentHandler.setParentWorkItemId(wi.getId());
+						
+						StringBuffer sbuf= new StringBuffer("工作项被自动委派给：");
+						for (int i = 0;i<agents.size();i++){
+							User u = agents.get(i);
+							sbuf.append(u.getName());
+							if (i<agents.size()-1)sbuf.append("、");
+						}
+						wi.setNote(sbuf.toString());
+						
 						List<WorkItem> agentWorkItems = workItemManager
-								.reassignWorkItemTo(session, wi, agents,
-										WorkItem.REASSIGN_AFTER_ME,
-										WorkItemAssignmentStrategy.ASSIGN_TO_ANY,theActivity);
+								.reassignWorkItemTo(session, wi,
+										dynamicAssignmentHandler,
+										theActivity,
+										serviceBinding,
+										resourceBinding);
 						
 						result.addAll(agentWorkItems);
 					}
@@ -89,8 +108,9 @@ public abstract class AbsAssignmentHandler implements AssignmentHandler{
 				}
 			}
 		}else{
-			if (this.getAssignmentStrategy(session,resourceBinding,theActivity)!=null){
-				values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, this.getAssignmentStrategy(session,resourceBinding,theActivity));
+			WorkItemAssignmentStrategy strategy = this.resolveAssignmentStrategy(session,resourceBinding,theActivity);
+			if (strategy!=null){
+				values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, strategy);
 			}else{
 				values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, WorkItemAssignmentStrategy.ASSIGN_TO_ANY);
 			}
@@ -100,15 +120,30 @@ public abstract class AbsAssignmentHandler implements AssignmentHandler{
 						processInstance, activityInstance, user,theActivity, values);
 				result.add(wi);
 				
+				//设置note
+				
+				
 				List<User> agents = findReassignTo(runtimeContext, activityInstance
 						.getProcessId(), activityInstance.getProcessType(),
 						activityInstance.getNodeId(), user.getId());
 				if (agents != null && agents.size() != 0) {
-
+					ReassignmentHandler dynamicAssignmentHandler = new ReassignmentHandler();
+					dynamicAssignmentHandler.setPotentialOwners(agents);
+					dynamicAssignmentHandler.setReassignType(WorkItem.REASSIGN_AFTER_ME);
+					dynamicAssignmentHandler.setParentWorkItemId(wi.getId());
+					
+					StringBuffer sbuf= new StringBuffer("工作项被自动委派给：");
+					for (int i = 0;i<agents.size();i++){
+						User u = agents.get(i);
+						sbuf.append(u.getName());
+						if (i<agents.size()-1)sbuf.append("、");
+					}
+					wi.setNote(sbuf.toString());
+					
 					List<WorkItem> agentWorkItems = workItemManager
-							.reassignWorkItemTo(session, wi, agents,
-									WorkItem.REASSIGN_AFTER_ME,
-									WorkItemAssignmentStrategy.ASSIGN_TO_ANY,theActivity);
+							.reassignWorkItemTo(session, wi,
+									dynamicAssignmentHandler,theActivity,
+									serviceBinding,resourceBinding);
 					
 					result.addAll(agentWorkItems);
 				}				
@@ -116,7 +151,7 @@ public abstract class AbsAssignmentHandler implements AssignmentHandler{
 		}
 		
 
-		List<User> readers = this.getReaders(session,resourceBinding,theActivity,processInstance,activityInstance);
+		List<User> readers = this.resolveReaders(session,resourceBinding,theActivity,processInstance,activityInstance);
 		if (readers != null && readers.size() > 0) {
 			values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, WorkItemAssignmentStrategy.ASSIGN_TO_ANY);
 			values.put(WorkItemProperty.STATE, WorkItemState.READONLY);
