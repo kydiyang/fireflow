@@ -2,10 +2,12 @@ package org.fireflow.service.human.mock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.UserImpl;
 import org.fireflow.model.binding.ResourceBinding;
@@ -20,7 +22,7 @@ public class MyAssignmentHandler extends AbsAssignmentHandler {
 	private static final long serialVersionUID = 8611837283286947711L;
 
 	@Override
-	public List<User> getPotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolvePotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		List<User> list = new ArrayList<User>();
 		UserImpl u = new UserImpl();
@@ -42,7 +44,7 @@ public class MyAssignmentHandler extends AbsAssignmentHandler {
 	}
 
 	@Override
-	public List<User> getReaders(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolveReaders(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		List<User> list = new ArrayList<User>();
 		UserImpl u = new UserImpl();
@@ -64,15 +66,24 @@ public class MyAssignmentHandler extends AbsAssignmentHandler {
 	}
 
 	@Override
-	public List<User> getAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolveAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public WorkItemAssignmentStrategy getAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
+	public WorkItemAssignmentStrategy resolveAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.service.human.impl.AbsAssignmentHandler#resolveWorkItemPropertyValues()
+	 */
+	@Override
+	public Map<WorkItemProperty, Object> resolveWorkItemPropertyValues() {
 		// TODO Auto-generated method stub
 		return null;
 	}

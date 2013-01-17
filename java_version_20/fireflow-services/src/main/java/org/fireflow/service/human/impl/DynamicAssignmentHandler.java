@@ -16,11 +16,14 @@
  */
 package org.fireflow.service.human.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.model.binding.ResourceBinding;
@@ -49,7 +52,7 @@ public class DynamicAssignmentHandler extends AbsAssignmentHandler implements As
 	 * 获得潜在的工作参与者列表
 	 * @return
 	 */
-	public List<User> getPotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolvePotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance){
 		return this.potentialOwners;
 	}
@@ -62,7 +65,7 @@ public class DynamicAssignmentHandler extends AbsAssignmentHandler implements As
 	 * 获得抄送人列表
 	 * @return
 	 */
-	public List<User> getReaders(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolveReaders(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance){
 		return this.readers;
 	}
@@ -74,7 +77,7 @@ public class DynamicAssignmentHandler extends AbsAssignmentHandler implements As
 	/**
 	 * @return the assignmentStrategy
 	 */
-	public WorkItemAssignmentStrategy getAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
+	public WorkItemAssignmentStrategy resolveAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity) {
 		return assignmentStrategy;
 	}
@@ -87,11 +90,14 @@ public class DynamicAssignmentHandler extends AbsAssignmentHandler implements As
 	}
 
 	@Override
-	public List<User> getAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolveAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	public Map<WorkItemProperty,Object> resolveWorkItemPropertyValues(){
+		return new HashMap<WorkItemProperty,Object>();
+	}
 	
 }

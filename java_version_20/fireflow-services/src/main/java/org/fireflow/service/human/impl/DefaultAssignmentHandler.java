@@ -17,13 +17,16 @@
 package org.fireflow.service.human.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.fireflow.engine.WorkflowSession;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
@@ -148,7 +151,7 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 	}
 
 	@Override
-	public List<User> getPotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolvePotentialOwners(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		List<String> resourceIdList = resourceBinding.getPotentialOwnerRefs();
 		List<ResourceDef> potentialOwnersResourceRef = new ArrayList<ResourceDef>();
@@ -171,7 +174,7 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 	}
 
 	@Override
-	public List<User> getReaders(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolveReaders(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		List<String> resourceIdList = resourceBinding.getReaderRefs();
 		List<ResourceDef> potentialOwnersResourceRef = new ArrayList<ResourceDef>();
@@ -196,7 +199,7 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 	}
 
 	@Override
-	public List<User> getAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
+	public List<User> resolveAdministrators(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity,ProcessInstance processInstance,ActivityInstance activityInstance) {
 		List<String> administratorIdList = resourceBinding.getAdministratorRefs();
 		List<ResourceDef> potentialOwnersResourceRef = new ArrayList<ResourceDef>();
@@ -220,9 +223,13 @@ public class DefaultAssignmentHandler extends AbsAssignmentHandler implements
 			return null;
 		}
 	}
+	
+	public Map<WorkItemProperty,Object> resolveWorkItemPropertyValues(){
+		return new HashMap<WorkItemProperty,Object>();
+	}
 
 	@Override
-	public WorkItemAssignmentStrategy getAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
+	public WorkItemAssignmentStrategy resolveAssignmentStrategy(WorkflowSession session, ResourceBinding resourceBinding,
 			Object theActivity) {
 
 		return resourceBinding.getAssignmentStrategy();

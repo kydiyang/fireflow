@@ -156,7 +156,7 @@ public class HumanServiceInvokerTest  extends AbsTestContext {
 			public Object doInTransaction(TransactionStatus arg0) {
 				try {
 					WorkflowStatement statement = session.createWorkflowStatement();
-					statement.completeWorkItem(wi.getId());
+					statement.completeWorkItem(wi.getId(),null);
 				} catch (InvalidOperationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
