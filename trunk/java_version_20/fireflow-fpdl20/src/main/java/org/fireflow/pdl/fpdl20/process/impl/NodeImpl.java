@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.fireflow.model.AbstractModelElement;
+import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
@@ -75,5 +76,35 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
 
 	public Map<String, String> getExtendedAttributes() {
 		return extendAttributes;
+	}
+	
+	public List<Node> getNextNodes(){
+		List<Transition> leavingTransitions = this.getLeavingTransitions();
+		if (leavingTransitions==null || leavingTransitions.size()==0){
+			return null;
+		}
+		List<Node> result = new ArrayList<Node>();
+		for (Transition trans : leavingTransitions){
+			result.add(trans.getToNode());
+		}
+		return result;
+	}
+	
+	
+	public List<Activity> getNextActivities(){
+		List<Node> nextNodes = this.getNextNodes();
+		if (nextNodes==null || nextNodes.size()==0)return null;
+		List<Activity> result = new ArrayList<Activity>();
+		for (Node node : nextNodes){
+			if (node instanceof Activity){
+				result.add((Activity)node);
+			}else {
+				List<Activity> temp = node.getNextActivities();
+				if (temp!=null){
+					result.addAll(temp);
+				}
+			}
+		}
+		return result;
 	}
 }

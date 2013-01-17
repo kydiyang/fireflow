@@ -80,6 +80,9 @@ public class ActivityInstanceManagerFpdl20Impl extends
 		actInst.setNodeId(node.getId());		
 		actInst.setBizId(processInstance.getBizId());
 		actInst.setSubProcessId(processInstance.getSubProcessId());
+		actInst.setProcInstCreatorId(processInstance.getCreatorId());
+		actInst.setProcInstCreatorName(processInstance.getCreatorName());
+		actInst.setProcInstCreatedTime(processInstance.getCreatedTime());
 		
 		if (node instanceof Activity){
 			Activity activity = (Activity) node;

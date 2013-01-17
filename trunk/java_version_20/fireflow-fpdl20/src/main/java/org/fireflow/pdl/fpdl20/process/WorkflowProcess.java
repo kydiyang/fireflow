@@ -71,6 +71,14 @@ public interface WorkflowProcess extends ModelElement{
 	public WorkflowElement findWorkflowElementById(String workflowElementId);
 	
 	/**
+	 * 找到指定元素的后继Activity列表
+	 * @param elementId
+	 * @return
+	 */
+	public List<Activity> findNextActivities(String elementId);
+	
+	
+	/**
 	 * 返回主流程的流程Id
 	 * @return
 	 */

@@ -121,7 +121,9 @@ public class BoundaryTimerTriggerOnlyOnceTest2 extends FireWorkflowJunitEnvirome
 				actInstQuery.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID,processName+WorkflowElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 				ActivityInstance actInst = actInstQuery.unique();
 				try {
-					actInst.abort(session);
+					WorkflowStatement stmt = session.createWorkflowStatement();
+					stmt.abortActivityInstance(actInst.getId(), "Junit Test");
+					
 				} catch (InvalidOperationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -1,5 +1,7 @@
 package org.fireflow.pdl.fpdl20.process;
 
+import java.util.List;
+
 import org.fireflow.model.data.Expression;
 
 public interface Transition extends Connector{
@@ -15,6 +17,8 @@ public interface Transition extends Connector{
      * @param condition
      */
     public void setCondition(Expression condition) ;
+    
+    public List<Activity> getNextActivities();
     
 //    /**
 //     * 返回一个规则，如果conditions的值为空，则检查是否存在一个规则，如果规则不为空，则应用该规则。
