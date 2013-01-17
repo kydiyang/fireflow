@@ -26,8 +26,10 @@ import org.fireflow.model.data.Property;
 import org.fireflow.model.misc.Duration;
 import org.fireflow.pdl.fpdl20.misc.LoopStrategy;
 import org.fireflow.pdl.fpdl20.process.Activity;
+import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.StartNode;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
+import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 
 

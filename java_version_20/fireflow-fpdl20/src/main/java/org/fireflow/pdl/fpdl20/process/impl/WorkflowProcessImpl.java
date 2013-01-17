@@ -28,8 +28,11 @@ import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.fpdl20.diagram.Diagram;
+import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Import;
+import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
+import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 @SuppressWarnings("serial")
@@ -82,6 +85,19 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 		this.localFlowsMap.put(flow.getId(), flow);
 	}
 
+	public List<Activity> findNextActivities(String elementId){
+		WorkflowElement element = this.findWorkflowElementById(elementId);
+		if (element==null)return null;
+		else if (element instanceof Transition){
+			return ((Transition)element).getNextActivities();
+		}else if (element instanceof Node){
+			return ((Node)element).getNextActivities();
+		}
+		else {
+			return null;
+		}
+	}
+	
 	public WorkflowElement findWorkflowElementById(String workflowElementId){
 		SubProcess subflow = this.getLocalSubProcess(workflowElementId);
 		if (subflow!=null)return subflow;
@@ -328,6 +344,9 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	public void addProcessImport(Import<WorkflowProcess> processImport) {
 		this.importsForProcess.add(processImport);
 	}
+	
+
+
 }
 
 class PrivateList<T> extends ArrayList<T> {
@@ -431,6 +450,5 @@ class PrivateList<T> extends ArrayList<T> {
 		throw new UnsupportedOperationException(
 				"Can not add element  to this List.");
 	}
-
 
 }

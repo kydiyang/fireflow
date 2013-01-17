@@ -16,7 +16,13 @@ public interface Node extends WorkflowElement{
 
 	public List<Transition> getLeavingTransitions() ;
 
-
+	/**
+	 * 获得后续节点，后续节点可能是Activity,Router,StartNode或者EndNode
+	 * @return
+	 */
+	public List<Node> getNextNodes();
+	
+	public List<Activity> getNextActivities();
 	/**
 	 * 获得Feature，Feature会影响节点的在设计器中的外观和运行时行为
 	 * @return

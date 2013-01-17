@@ -136,9 +136,11 @@ public class BoundaryTimerTriggerOnlyOnceTest3 extends FireWorkflowJunitEnvirome
 				WorkflowQuery<WorkItem> workItemQuery = session.createWorkflowQuery(WorkItem.class);
 				workItemQuery.add(Restrictions.eq(WorkItemProperty.BIZ_ID, bizId));
 				WorkItem workItem = workItemQuery.unique();
+				
+				WorkflowStatement stmt = session.createWorkflowStatement();
 				try {
-					workItem.claim(session);
-					workItem.complete(session);
+					stmt.claimWorkItem(workItem.getId());
+					stmt.completeWorkItem(workItem.getId(),null);
 				} catch (InvalidOperationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -111,5 +111,11 @@ public interface Activity extends Node{
 	 */
 	public List<EventListenerDef> getEventListeners();
 	
+	/**
+	 * 获得本节点的后继Activity，如果直接后继节点是网关(Router)，则继续寻找网关的后继节点。
+	 * @return
+	 */
+	public List<Activity> getNextActivities();
 	
+
 }

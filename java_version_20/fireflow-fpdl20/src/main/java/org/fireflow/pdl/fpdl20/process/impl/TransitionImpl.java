@@ -16,11 +16,14 @@
  */
 package org.fireflow.pdl.fpdl20.process.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.fireflow.model.data.Expression;
+import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
-import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 
 
 
@@ -85,4 +88,17 @@ public class TransitionImpl extends ConnectorImpl implements Transition{
 	public void setDefault(boolean isDefault){
 		this.isDefault = isDefault;
 	}
+	
+    public List<Activity> getNextActivities(){
+    	List<Activity> result = new ArrayList<Activity>();
+    	
+    	Node node = this.getToNode();
+    	if (node instanceof Activity){
+    		result.add((Activity)node);
+    		return result;
+    	}
+    	else {
+    		return node.getNextActivities();
+    	}
+    }
 }
