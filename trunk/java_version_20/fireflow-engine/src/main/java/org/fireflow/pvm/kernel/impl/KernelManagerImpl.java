@@ -279,6 +279,8 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 	 */
 	public PObject getProcessObject(Token token) {
 		if (token==null )return null;
+		ProcessKey processKey = new ProcessKey(token.getProcessId(),token.getVersion(),token.getProcessType());
+		this.loadProcess(processKey);
 		PObjectKey pObjectKey = new PObjectKey(token.getProcessId(),token.getVersion(),token.getProcessType(),token.getElementId());
 		return this.processObjectStorage.get(pObjectKey);
 	}
@@ -287,6 +289,8 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 	 * @see org.fireflow.pvm.kernel.KernelManager#getProcessObject(org.fireflow.pvm.kernel.ProcessObjectKey)
 	 */
 	public PObject getProcessObject(PObjectKey key) {
+		ProcessKey processKey = new ProcessKey(key.getProcessId(),key.getVersion(),key.getProcessType());
+		this.loadProcess(processKey);
 		return processObjectStorage.get(key);
 	}
 	

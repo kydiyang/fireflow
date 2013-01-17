@@ -112,19 +112,15 @@
 		</property>	
 		
 		<!--  -->
-		<property name="commentId" type="java.lang.String">
-			<column length="50" name="COMMENT_ID">
-				<comment>批注、备注信息表id</comment>
+		<property name="approvalId" type="java.lang.String">
+			<column length="50" name="APPROVAL_ID">
+				<comment>审批信息表id</comment>
 			</column>
 		</property>	
-		<property name="commentSummary" type="java.lang.String">
-			<column length="100" name="COMMENT_SUMMARY">
-				<comment>批注、备注摘要</comment>
-			</column>
-		</property>	
-		<property name="commentDetail" type="java.lang.String">
-			<column length="300" name="COMMENT_DETAIL">
-				<comment>批注、备注详细信息</comment>
+
+		<property name="note" type="java.lang.String">
+			<column length="300" name="NOTE">
+				<comment>审批详细意见或者备注信息</comment>
 			</column>
 		</property>	
 		<!--  -->	
@@ -169,6 +165,44 @@
 			</column>
 		</property>		
 		
+		<!-- 
+		<property name="processId" type="java.lang.String"  update="false">
+			<column length="50" name="PROCESS_ID">
+				<comment>流程Id</comment>
+			</column>
+		</property>	
+		<property name="version" type="java.lang.Integer"  update="false">
+			<column  name="VERSION">
+				<comment>流程版本</comment>
+			</column>
+		</property>	
+		<property name="processType" type="java.lang.String"  update="false">
+			<column length="50" name="PROCESS_TYPE">
+				<comment>流程类型</comment>
+			</column>
+		</property>							
+		<property name="subProcessId" type="java.lang.String"  update="false">
+			<column length="50" name="SUB_PROCESS_ID">
+				<comment>子流程Id</comment>
+			</column>
+		</property>	
+		<property name="activityId" type="java.lang.String"  update="false">
+			<column length="50" name="ACTIVITY_ID">
+				<comment>活动Id</comment>
+			</column>
+		</property>	
+		<property name="processInstanceId" type="java.lang.String"  update="false">
+			<column length="50" name="PROCESS_INSTANCE_ID">
+				<comment>流程实例Id</comment>
+			</column>
+		</property>	
+		<property name="stepNumber" type="java.lang.Integer"  update="false">
+			<column  name="STEP_NUMBER">
+				<comment>步骤号</comment>
+			</column>
+		</property>	
+		 -->
+										
 		<property name="lastUpdateTime" type="java.util.Date"  generated="always" >
 			<column name="LAST_UPDATE_TIME"  sql-type="timestamp"  default="CURRENT_TIMESTAMP">
 				<comment>最后更新时间</comment>

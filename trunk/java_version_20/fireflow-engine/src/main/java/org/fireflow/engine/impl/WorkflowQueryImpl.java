@@ -44,12 +44,12 @@ public class WorkflowQueryImpl<T extends WorkflowEntity> implements WorkflowQuer
 	
 	WorkflowSession session = null;
 	Class<T> interfaceClass = null;
-	WorkflowStatement statement = null;
+	WorkflowStatementLocalImpl statement = null;
 	
 	public WorkflowQueryImpl(WorkflowSession session,Class<T> interfaceClass,String processType){
 		this.session = session;
 		this.interfaceClass = interfaceClass;
-		statement = this.session.createWorkflowStatement(processType);
+		statement = (WorkflowStatementLocalImpl)this.session.createWorkflowStatement(processType);
 		
 	}
 	

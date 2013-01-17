@@ -224,6 +224,8 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 			WorkItem workItem)throws InvalidOperationException{
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 		ActivityInstance thisActivityInstance = workItem.getActivityInstance();	
+		ProcessInstance thisProcessInstance = thisActivityInstance.getProcessInstance(currentSession);
+		((WorkflowSessionLocalImpl)currentSession).setCurrentProcessInstance(thisProcessInstance);
 		
 		ProcessKey pKey = new ProcessKey(thisActivityInstance.getProcessId(),thisActivityInstance.getVersion(),thisActivityInstance.getProcessType());
 
@@ -337,11 +339,10 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	 * @see org.fireflow.engine.service.form.WorkItemManager#reassignWorkItemTo(org.fireflow.engine.entity.runtime.WorkItem, java.lang.String, java.lang.String)
 	 */
     public List<WorkItem> reassignWorkItemTo(WorkflowSession currentSession,
-			WorkItem workItem, List<User> users,String reassignType,
-			WorkItemAssignmentStrategy assignmentStrategy,Object theActivity){
-		if (users==null || users.size()==0)return null;
-		
-
+			WorkItem workItem, AssignmentHandler assignmentHandler,
+			Object theActivity,ServiceBinding serviceBinding,
+			ResourceBinding resourceBinding){
+    	
 		ActivityInstance thisActivityInstance = workItem.getActivityInstance();
 		ProcessInstance thisProcessInstance = thisActivityInstance.getProcessInstance(currentSession);
 
@@ -351,21 +352,25 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 		PersistenceService persistenceService = rtCtx.getEngineModule(PersistenceService.class, thisActivityInstance.getProcessType());
 		WorkItemPersister workItemPersister = persistenceService.getWorkItemPersister();
+
+		List<WorkItem> result = assignmentHandler.assign(currentSession, thisActivityInstance, this, 
+				theActivity, serviceBinding, resourceBinding);
+		
+//		转移到assignmentHandler里面进行工作项处理
+//		List<WorkItem> result = new ArrayList<WorkItem>();
+//		for (User user : users){
+//			Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
+//			values.put(WorkItemProperty.REASSIGN_TYPE, reassignType);
+//			values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, assignmentStrategy);
+//			values.put(WorkItemProperty.PARENT_WORKITEM_ID,workItem.getId());
+//			
+//			WorkItem wi = this.createWorkItem(currentSession, thisProcessInstance, thisActivityInstance, user,theActivity, values);
+//			
+//			result .add(wi);
+//		}
 		
 		CalendarService calendarService = rtCtx.getEngineModule(CalendarService.class, thisActivityInstance.getProcessType());
-		
-		List<WorkItem> result = new ArrayList<WorkItem>();
-		for (User user : users){
-			Map<WorkItemProperty,Object> values = new HashMap<WorkItemProperty,Object>();
-			values.put(WorkItemProperty.REASSIGN_TYPE, reassignType);
-			values.put(WorkItemProperty.ASSIGNMENT_STRATEGY, assignmentStrategy);
-			values.put(WorkItemProperty.PARENT_WORKITEM_ID,workItem.getId());
-			
-			WorkItem wi = this.createWorkItem(currentSession, thisProcessInstance, thisActivityInstance, user,theActivity, values);
-			
-			result .add(wi);
-		}
-		
+
 		((AbsWorkItem)workItem).setState(WorkItemState.REASSIGNED);
 		((AbsWorkItem)workItem).setEndTime(calendarService.getSysDate());
 		workItemPersister.saveOrUpdate(workItem);
@@ -484,9 +489,8 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		tmp.setState(WorkItemState.RUNNING);
 		tmp.setClaimedTime(calendarService.getSysDate());
 		tmp.setEndTime(null);
-		tmp.setCommentDetail(null);
-		tmp.setCommentId(null);
-		tmp.setCommentSummary(null);
+		tmp.setNote(null);
+		tmp.setApprovalId(null);
 		tmp.setCreatedTime(calendarService.getSysDate());
 		return tmp;
 	}
@@ -496,8 +500,8 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 //	 */
 //	@Override
 //	public void completeWorkItem(WorkflowSession currentSession,
-//			String workItemId, String commentSummary, String commentDetail,
-//			String commentId,String processType) throws InvalidOperationException {
+//			String workItemId, String commentSummary, String note,
+//			String approvalId,String processType) throws InvalidOperationException {
 //		
 //		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 //		
@@ -506,7 +510,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 //
 //		WorkItem wi = workItemPersister.find(WorkItem.class, workItemId);
 //		
-//		this.completeWorkItem(currentSession, wi, commentSummary, commentDetail, commentId);
+//		this.completeWorkItem(currentSession, wi, commentSummary, note, approvalId);
 //		
 //	}
 

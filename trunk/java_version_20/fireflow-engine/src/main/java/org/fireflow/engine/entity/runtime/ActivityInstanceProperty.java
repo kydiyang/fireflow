@@ -48,6 +48,9 @@ public enum ActivityInstanceProperty implements EntityProperty{
 	
 	BIZ_ID("bizId"),
 	SUB_BIZ_ID("subBizId"),
+	PROCINST_CREATOR_ID("procInstCreatorId"),
+	PROCINST_CREATOR_NAME("procInstCreatorName"),
+	PROCINST_CREATED_TIME("procInstCreatedTime"),
 
 
 	STATE("state"),

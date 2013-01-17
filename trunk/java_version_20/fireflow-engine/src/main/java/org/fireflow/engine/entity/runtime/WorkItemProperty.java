@@ -37,9 +37,8 @@ public enum WorkItemProperty implements EntityProperty {
 	CREATED_TIME("claimedTime"),
 	CLAIMED_TIME("startedTime"),
 	END_TIME("endTime"),
-	COMMENT_ID("commentId"),
-	COMMENT_SUMMARY("commentSummary"),
-	COMMENT_DETAIL("commentDetail"),
+	APPROVAL_ID("approvalId"),
+	NOTE("note"),
 	RESPONSIBLE_PERSON_ID("responsiblePersonId"),
 	RESPONSIBLE_PERSON_NAME("responsiblePersonName"),
 	RESPONSIBLE_PERSON_DEPT_ID("responsiblePersonDeptId"),
@@ -61,8 +60,10 @@ public enum WorkItemProperty implements EntityProperty {
 	ACTIVITY_INSTANCE_$_PROCESSS_ID("activityInstance.processId"),
 	ACTIVITY_INSTANCE_$_PROCESS_NAME("activityInstance.processName"),
 	ACTIVITY_INSTANCE_$_PROCESS_DISPLAY_NAME("activityInstance.processDisplayName"),
-	ACTIVITY_INSTANCE_$_STEP_NUMBER("activityInstance.stepNumber");
-	
+	ACTIVITY_INSTANCE_$_STEP_NUMBER("activityInstance.stepNumber"),
+	ACTIVITY_INSTANCE_$_PROCINST_CREATOR_ID("activityInstance.procInstCreatorId"),
+	ACTIVITY_INSTANCE_$_PROCINST_CREATOR_NAME("activityInstance.procInstCreatorName"),
+	ACTIVITY_INSTANCE_$_PROCINST_CREATED_TIME("activityInstance.procInstCreatedTime");
 	;
 	
 	

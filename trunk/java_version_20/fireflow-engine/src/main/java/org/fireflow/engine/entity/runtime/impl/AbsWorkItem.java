@@ -81,9 +81,8 @@ public abstract class AbsWorkItem implements WorkItem{
 	protected String responsiblePersonOrgId;
 	protected String responsiblePersonOrgName;
 	
-	protected String commentId;
-	protected String commentSummary;
-	protected String commentDetail;
+	protected String approvalId;
+	protected String note;
 	
 	/**
 	 * 表单Url
@@ -108,6 +107,20 @@ public abstract class AbsWorkItem implements WorkItem{
     protected WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
 	
     protected Date lastUpdateTime = null;
+    
+    
+    //////////////////////////////////////
+    ///////////  冗余字段 便于查询 /////////
+    /////////////////////////////////////
+    protected String processId = null;
+    protected int version = 0;
+    protected String processType = null;
+    protected String subProcessId = null;
+    protected String processInstanceId = null;
+    protected String activityId = null;
+    protected int stepNumber = -1;
+    
+    
     /**
 	 * @return the id
 	 */
@@ -299,45 +312,31 @@ public abstract class AbsWorkItem implements WorkItem{
 	}
 
 	/**
-	 * @return the commentId
+	 * @return the approvalId
 	 */
-	public String getCommentId() {
-		return commentId;
+	public String getApprovalId() {
+		return approvalId;
 	}
 
 	/**
-	 * @param commentId the commentId to set
+	 * @param approvalId the approvalId to set
 	 */
-	public void setCommentId(String commentId) {
-		this.commentId = commentId;
+	public void setApprovalId(String commentId) {
+		this.approvalId = commentId;
 	}
 
 	/**
-	 * @return the commentSummary
+	 * @return the note
 	 */
-	public String getCommentSummary() {
-		return commentSummary;
+	public String getNote() {
+		return note;
 	}
 
 	/**
-	 * @param commentSummary the commentSummary to set
+	 * @param note the note to set
 	 */
-	public void setCommentSummary(String commentSummary) {
-		this.commentSummary = commentSummary;
-	}
-
-	/**
-	 * @return the commentDetail
-	 */
-	public String getCommentDetail() {
-		return commentDetail;
-	}
-
-	/**
-	 * @param commentDetail the commentDetail to set
-	 */
-	public void setCommentDetail(String commentDetail) {
-		this.commentDetail = commentDetail;
+	public void setNote(String commentDetail) {
+		this.note = commentDetail;
 	}
 
 	/**
@@ -497,6 +496,66 @@ public abstract class AbsWorkItem implements WorkItem{
 	public void setLastUpdateTime(Date lastUpdateTime){
 		this.lastUpdateTime = lastUpdateTime;
 	}
+	
+	
+
+	public String getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(String processId) {
+		this.processId = processId;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public String getProcessType() {
+		return processType;
+	}
+
+	public void setProcessType(String processType) {
+		this.processType = processType;
+	}
+
+	public String getSubProcessId() {
+		return subProcessId;
+	}
+
+	public void setSubProcessId(String subProcessId) {
+		this.subProcessId = subProcessId;
+	}
+
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
+	}
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+	
+	
+
+	public int getStepNumber() {
+		return stepNumber;
+	}
+
+	public void setStepNumber(int stepNumber) {
+		this.stepNumber = stepNumber;
+	}
 
 	public WorkItem clone(){
 		AbsWorkItem wi = null;
@@ -520,9 +579,8 @@ public abstract class AbsWorkItem implements WorkItem{
 		wi.setActivityInstance(activityInstance);
 		wi.setAssignmentStrategy(assignmentStrategy);
 		wi.setClaimedTime(claimedTime);
-		wi.setCommentDetail(commentDetail);
-		wi.setCommentId(commentId);
-		wi.setCommentSummary(commentSummary);
+		wi.setNote(note);
+		wi.setApprovalId(approvalId);
 		wi.setCreatedTime(createdTime);
 		wi.setEndTime(endTime);
 		wi.setParentWorkItemId(parentWorkItemId);
@@ -537,6 +595,15 @@ public abstract class AbsWorkItem implements WorkItem{
 		wi.setOwnerId(ownerId);
 		wi.setOwnerName(ownerName);
 		wi.setFormUrl(formUrl);
+		
+		wi.setStepNumber(this.stepNumber);
+		wi.setProcessId(this.processId);
+		wi.setSubProcessId(subProcessId);
+		wi.setActivityId(activityId);
+		wi.setVersion(version);
+		wi.setProcessType(processType);
+		wi.setProcessInstanceId(processInstanceId);
+		
 		return wi;
 	}
 }

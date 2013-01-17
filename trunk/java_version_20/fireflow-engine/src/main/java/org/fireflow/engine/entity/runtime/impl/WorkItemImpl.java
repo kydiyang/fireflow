@@ -33,19 +33,19 @@ public class WorkItemImpl extends AbsWorkItem implements WorkItem, java.io.Seria
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#claim()
 	 */
-	public WorkItem claim(WorkflowSession session) throws InvalidOperationException {
-		WorkflowStatement stmt = session.createWorkflowStatement();
-		return stmt.claimWorkItem(this.getId());
-	}
+//	public WorkItem claim(WorkflowSession session) throws InvalidOperationException {
+//		WorkflowStatement stmt = session.createWorkflowStatement();
+//		return stmt.claimWorkItem(this.getId());
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#complete()
 	 */
-	public void complete(WorkflowSession session) throws InvalidOperationException {
-		WorkflowStatement stmt = session.createWorkflowStatement();
-		stmt.completeWorkItem(this.getId());
-		
-	}
+//	public void complete(WorkflowSession session) throws InvalidOperationException {
+//		WorkflowStatement stmt = session.createWorkflowStatement();
+//		stmt.completeWorkItem(this.getId());
+//		
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#complete(java.lang.String)
@@ -59,21 +59,21 @@ public class WorkItemImpl extends AbsWorkItem implements WorkItem, java.io.Seria
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#disclaim(java.lang.String)
 	 */
-	public void disclaim(WorkflowSession session,String commentDetail) throws InvalidOperationException {
-		WorkflowStatement stmt = session.createWorkflowStatement();
-		stmt.disclaimWorkItem(this.getId());
-		
-	}
+//	public void disclaim(WorkflowSession session,String note) throws InvalidOperationException {
+//		WorkflowStatement stmt = session.createWorkflowStatement();
+//		stmt.disclaimWorkItem(this.getId());
+//		
+//	}
 
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#jumpTo(java.lang.String)
 	 */
-	public void jumpTo(WorkflowSession session,String targetActivityId) throws InvalidOperationException {
-		WorkflowStatement stmt = session.createWorkflowStatement();
-		stmt.completeWorkItemAndJumpTo(this.getId(), targetActivityId);
-		
-	}
+//	public void jumpTo(WorkflowSession session,String targetActivityId) throws InvalidOperationException {
+//		WorkflowStatement stmt = session.createWorkflowStatement();
+//		stmt.completeWorkItemAndJumpTo(this.getId(), targetActivityId);
+//		
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.WorkItem#jumpTo(java.lang.String, java.lang.String)

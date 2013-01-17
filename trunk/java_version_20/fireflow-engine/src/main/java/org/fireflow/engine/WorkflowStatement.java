@@ -34,13 +34,12 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.Scope;
 import org.fireflow.engine.entity.runtime.WorkItem;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.invocation.AssignmentHandler;
-import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.model.InvalidModelException;
-import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 import org.fireflow.pvm.kernel.KernelException;
 
 /**
@@ -245,7 +244,7 @@ public interface WorkflowStatement {
 	public WorkItem claimWorkItem(String workItemId) throws InvalidOperationException ;
 
 	
-	public List<WorkItem> disclaimWorkItem(String workItemId) throws InvalidOperationException ;
+	public List<WorkItem> disclaimWorkItem(String workItemId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException ;
 	/**
 	 * 对已经结束的工作项执行取回操作。<br/>
 	 * 只有满足如下约束才能正确执行取回操作：<br/>
@@ -298,7 +297,9 @@ public interface WorkflowStatement {
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void completeWorkItem(String workItemId) throws InvalidOperationException;
+    public void completeWorkItem(String workItemId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
+    
+    public void completeWorkItem(String workItemId,Map<String,AssignmentHandler> assignmentStrategy,Map<WorkItemProperty,Object> changedProperties)throws InvalidOperationException;
 
 //    
     /**
@@ -314,16 +315,17 @@ public interface WorkflowStatement {
      * @throws org.fireflow.engine.exception.EngineException 
      * @throws org.fireflow.kenel.KenelException
      */
-    public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId) throws InvalidOperationException;
+    public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
 
+    public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<String,AssignmentHandler> assignmentStrategy,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
 //
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态
      * @param workItemId 工作项Id
-     * @param actorId 接受任务的操作员Id
+     * @param reassignHandler ReassignmentHandler实例
      * @return 新创建的工作项
      */    
-    public List<WorkItem> reassignWorkItemTo(String workItemId,List<User> users,String reassignType,WorkItemAssignmentStrategy assignmentStrategy) throws InvalidOperationException;
+    public List<WorkItem> reassignWorkItemTo(String workItemId, AssignmentHandler reassignHandler,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
 //    
 //    /**
 //     * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -337,7 +339,7 @@ public interface WorkflowStatement {
     /**
      * TODO 该方法需研究，斟酌。
      */
-	public void updateWorkItem(WorkItem workItem)throws InvalidOperationException;
+	//public void updateWorkItem(WorkItem workItem)throws InvalidOperationException;
     
 
 	/*****************************************************************/
@@ -391,6 +393,15 @@ public interface WorkflowStatement {
 	 * @throws InvalidOperationException
 	 */
 	public void setVariableValue(Scope scope,String name,Object value)throws InvalidOperationException;
+	
+	/**
+	 * TODO 该函数是否有必要？
+	 * @param scope
+	 * @param name
+	 * @param value
+	 * @param headers
+	 * @throws InvalidOperationException
+	 */
 	public void setVariableValue(Scope scope,String name,Object value,Map<String,String> headers)throws InvalidOperationException;
 	public Map<String ,Object> getVariableValues(Scope scope);
 	
@@ -399,8 +410,8 @@ public interface WorkflowStatement {
 	/*****************************************************************/
 	/***************   查询相关的api ******************************/
 	/*****************************************************************/
-	public <T extends WorkflowEntity> List<T> executeQueryList(WorkflowQuery<T> q);
-	public <T extends WorkflowEntity> int executeQueryCount(WorkflowQuery<T> q);
+//	public <T extends WorkflowEntity> List<T> executeQueryList(WorkflowQuery<T> q);
+//	public <T extends WorkflowEntity> int executeQueryCount(WorkflowQuery<T> q);
 	/**
 	 * 根据实体的Id返回实体对象，如果运行时表没有发现该对象，则从历史表中查询。
 	 * @param <T>
@@ -408,7 +419,8 @@ public interface WorkflowStatement {
 	 * @param entityClass 实体接口类
 	 * @return
 	 */
-	public <T extends WorkflowEntity> T getEntity(String entityId,Class<T> entityClass);
+//	public <T extends WorkflowEntity> T getEntity(String entityId,Class<T> entityClass);
+	
 	public Object getWorkflowProcess(ProcessKey key) throws InvalidModelException;
 
 }

@@ -136,25 +136,26 @@ public interface WorkItem extends WorkflowEntity{
      * 返回审批意见信息Id，用于关联到外部的审批意见表
      * @return
      */
-    public String getCommentId();
+    public String getApprovalId();
     
-    public void setCommentId(String commentId);
-    
-    /**
-     * 返回审批意见的结论信息
-     * @return
-     */
-    public String getCommentSummary();
-    
-    public void setCommentSummary(String commentSummary);
+    public void setApprovalId(String approvalId);
     
     /**
-     * 返回详细的审批意见信息
+     * 返回审批意见的结论信息，结论信息不必在workItem中体现，只要有审批意见的详细信息即可。
+     * 因为此处只用于阅读。2012-11-10
      * @return
      */
-    public String getCommentDetail();
+//    public String getApprovalConclusion();
     
-    public void setCommentDetail(String commentDetail);
+//    public void setApprovalConclusion(String approvalConclusion);
+    
+    /**
+     * 返回详细的审批意见信息或者备注信息
+     * @return
+     */
+    public String getNote();
+    
+    public void setNote(String note);
     
     
     
@@ -203,10 +204,6 @@ public interface WorkItem extends WorkflowEntity{
 
 	public String getOriginalSystemName() ;
 
-	public String getProcInstCreatorName();
-
-	public String getBizId();
-
 	public Date getExpiredTime() ;
 
 	public String getResponsiblePersonOrgId() ;
@@ -216,6 +213,34 @@ public interface WorkItem extends WorkflowEntity{
 	public String getWorkflowEngineLocation() ;
 
 	public String getWorkItemType();
+	
+	
+	/////////////////////////////////////////////////////////////////////
+	/////////////  下面是冗余数据，为查询方便 /////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	public String getProcInstCreatorName();
+
+	public String getBizId();
+	
+	/**
+	 * 执行步骤号，便于查询排序，等于对应的activityInstance的stepNumber
+	 * @return
+	 */
+	/*
+	public int getStepNumber();
+	
+	public String getProcessId();
+	
+	public int getVersion();
+	
+	public String getProcessType();
+	
+	public String getSubProcessId();
+	
+	public String getActivityId();
+	
+	public String getProcessInstanceId();
+	*/
     
 	//////////////////////////////////////////////////////////
 	///////////////// 工作项业务操作              /////////////////////////
@@ -232,14 +257,14 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.kenel.KenelException
      * @return 如果签收成功，则返回一个新的IWorkItem对象；否则返回null
      */
-    public WorkItem claim(WorkflowSession session) throws InvalidOperationException;
+//    public WorkItem claim(WorkflowSession session) throws InvalidOperationException;
     
     /**
      * 退签收，将工单放回到工单池中
-     * @param commentDetail 备注信息
+     * @param note 备注信息
      * @throws InvalidOperationException
      */
-    public void disclaim(WorkflowSession session,String commentDetail) throws InvalidOperationException;
+//    public void disclaim(WorkflowSession session,String note) throws InvalidOperationException;
     /**
      * 对已经结束的工作项执行取回操作<br/>
      * 只有满足如下约束才能正确执行取回操作：<br/>
@@ -252,7 +277,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public WorkItem withdraw(WorkflowSession session)throws EngineException, KernelException;
+//    public WorkItem withdraw(WorkflowSession session)throws EngineException, KernelException;
 
     /**
      * 执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。<br/>
@@ -264,7 +289,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws EngineException
      * @throws KernelException
      */
-    public void reject(WorkflowSession session)throws EngineException, KernelException;
+//    public void reject(WorkflowSession session)throws EngineException, KernelException;
 
     /**
      * 执行“拒收”操作，可以对已经签收的或者未签收的WorkItem拒收。<br/>
@@ -276,7 +301,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws EngineException
      * @throws KernelException
      */
-    public void reject(WorkflowSession session,String comments)throws EngineException, KernelException;
+//    public void reject(WorkflowSession session,String comments)throws EngineException, KernelException;
     
     
     /**
@@ -290,7 +315,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void complete(WorkflowSession session) throws InvalidOperationException;
+//    public void complete(WorkflowSession session) throws InvalidOperationException;
 
     /**
      * 结束当前WorkItem；并由工作流引擎根据流程定义决定下一步操作。引擎的执行规则如下<br/>
@@ -334,7 +359,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws org.fireflow.engine.exception.EngineException 
      * @throws org.fireflow.kenel.KenelException
      */
-    public void jumpTo(WorkflowSession session,String targetActivityId) throws InvalidOperationException;
+//    public void jumpTo(WorkflowSession session,String targetActivityId) throws InvalidOperationException;
 
     /**
      * 结束当前WorkItem，跳转到指定的Activity<br/>
@@ -349,7 +374,7 @@ public interface WorkItem extends WorkflowEntity{
      * @throws EngineException
      * @throws KernelException
      */
-    public void jumpTo(WorkflowSession session,String targetActivityId,String comments) throws InvalidOperationException;
+//    public void jumpTo(WorkflowSession session,String targetActivityId,String comments) throws InvalidOperationException;
 
 
     /**
@@ -376,7 +401,7 @@ public interface WorkItem extends WorkflowEntity{
      * @param actorId 接受任务的操作员Id
      * @return 新创建的工作项
      */    
-    public WorkItem reassignTo(WorkflowSession session,String actorId) throws EngineException;
+//    public WorkItem reassignTo(WorkflowSession session,String actorId) throws EngineException;
     
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -384,7 +409,7 @@ public interface WorkItem extends WorkflowEntity{
      * @param comments 相关的备注信息
      * @return 新创建的工作项
      */    
-    public WorkItem reassignTo(WorkflowSession session,String actorId,String comments) throws EngineException;
+//    public WorkItem reassignTo(WorkflowSession session,String actorId,String comments) throws EngineException;
 
 
 }
