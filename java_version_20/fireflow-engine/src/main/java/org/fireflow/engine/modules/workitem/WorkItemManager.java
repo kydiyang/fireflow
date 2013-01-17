@@ -27,9 +27,11 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
+import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.workitem.event.WorkItemEventTrigger;
-import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+import org.fireflow.model.binding.ResourceBinding;
+import org.fireflow.model.binding.ServiceBinding;
 
 
 /**
@@ -108,12 +110,12 @@ public interface WorkItemManager extends EngineModule{
 //	 * @param currentSession
 //	 * @param workItemId
 //	 * @param commentSummary
-//	 * @param commentDetail
-//	 * @param commentId
+//	 * @param note
+//	 * @param approvalId
 //	 * @throws InvalidOperationException
 //	 */
 //	public void completeWorkItem(WorkflowSession currentSession,
-//			String workItemId, String commentSummary, String commentDetail,String commentId,String processType)
+//			String workItemId, String commentSummary, String note,String approvalId,String processType)
 //			throws InvalidOperationException;	
 
     /**
@@ -149,7 +151,7 @@ public interface WorkItemManager extends EngineModule{
      * @return 新创建的工作项
      */
     public List<WorkItem> reassignWorkItemTo(WorkflowSession currentSession,
-			WorkItem workItem, List<User> users,String reassignType,WorkItemAssignmentStrategy assignmentStrategy,Object theActivity) ;
+			WorkItem workItem, AssignmentHandler assignmentHandler,Object theActivity,ServiceBinding serviceBinding,ResourceBinding resourceBinding) ;
     
     
 	public void fireWorkItemEvent(WorkflowSession session,WorkItem workItem,Object activity,WorkItemEventTrigger eventType);

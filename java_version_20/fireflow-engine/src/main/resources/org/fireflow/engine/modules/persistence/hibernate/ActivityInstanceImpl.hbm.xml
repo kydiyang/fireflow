@@ -88,12 +88,27 @@
 				<comment>业务主键</comment>
 			</column>
 		</property>
+		
 		<property name="subBizId" type="java.lang.String" update="false">
 			<column length="50" name="SUB_BIZ_ID" >
 				<comment>子业务主键（备用）</comment>
 			</column>
 		</property>
-						
+		<property name="procInstCreatorId" type="java.lang.String" update="false">
+			<column length="50" name="PROCINST_CREATOR_ID" >
+				<comment>发起者Id</comment>
+			</column>
+		</property>		
+		<property name="procInstCreatorName" type="java.lang.String" update="false">
+			<column length="100" name="PROCINST_CREATOR_NAME" >
+				<comment>发起者姓名</comment>
+			</column>
+		</property>	
+		<property name="procInstCreatedTime" type="java.util.Date" update="false">
+			<column name="PROCINST_CREATED_TIME" >
+				<comment>流程发起时间</comment>
+			</column>
+		</property>										
 		<!--  -->
 		
 		

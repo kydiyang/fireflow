@@ -46,8 +46,8 @@ public enum ProcessInstanceProperty implements EntityProperty {
 	STATE("state"),
 	IS_SUSPENDED("isSuspended"),
 	
-	CREATOR_ID("creatorId"),
-	CREATOR_NAME("creatorName"),
+	CREATOR_ID("procInstCreatorId"),
+	CREATOR_NAME("procInstCreatorName"),
 	CREATOR_ORG_ID("creatorOrgId"),
 	CREATOR_ORG_NAME("creatorOrgName"),
 	

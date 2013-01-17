@@ -187,17 +187,17 @@ public interface ProcessInstance  extends Scope,WorkflowEntity{
      * 强行中止流程实例，不管是否达到终态。
      * @throws RuntimeException
      */
-    public void abort(WorkflowSession session) throws EngineException;
+//    public void abort(WorkflowSession session) throws EngineException;
 
     /**
      * 挂起
      * @throws org.fireflow.engine.exception.EngineException
      */
-    public void suspend(WorkflowSession session) throws EngineException;
+//    public void suspend(WorkflowSession session) throws EngineException;
 
     /**
      * 从挂起状态恢复到挂起前的状态
      * @throws org.fireflow.engine.exception.EngineException
      */
-    public void restore(WorkflowSession session) throws EngineException;
+//    public void restore(WorkflowSession session) throws EngineException;
 }

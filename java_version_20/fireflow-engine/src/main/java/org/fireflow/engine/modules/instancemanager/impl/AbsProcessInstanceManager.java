@@ -61,6 +61,9 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 	protected RuntimeContext runtimeContext = null;
 	public ProcessInstance runProcessInstance(WorkflowSession session,String processInstanceId,String processType,
 			String bizId, Map<String, Object> variables) {
+		if (processInstanceId==null || processInstanceId.trim().equals("")){
+			throw new EngineException("流程实例Id不能为空");
+		}
 		KernelManager kernelManager = runtimeContext.getDefaultEngineModule(KernelManager.class);
 		PersistenceService persistenceStrategy = runtimeContext.getEngineModule(PersistenceService.class,processType);
 		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();

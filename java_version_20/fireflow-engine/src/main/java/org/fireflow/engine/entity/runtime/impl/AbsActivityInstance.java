@@ -26,6 +26,7 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.InvalidOperationException;
+import org.fireflow.engine.impl.WorkflowStatementLocalImpl;
 import org.fireflow.model.InvalidModelException;
 
 
@@ -36,6 +37,9 @@ import org.fireflow.model.InvalidModelException;
 public abstract class AbsActivityInstance implements ActivityInstance {
 
 	protected String id = null;
+	protected String procInstCreatorId = null;
+	protected String procInstCreatorName = null;
+	protected Date procInstCreatedTime = null;
 	protected String name = null;
 	protected String displayName = null;
 	protected String nodeId = null;
@@ -226,7 +230,7 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	 * @see org.fireflow.engine.entity.runtime.ActivityInstance#getProcessInstance(org.fireflow.engine.WorkflowSession)
 	 */
 	public ProcessInstance getProcessInstance(WorkflowSession session) {
-		WorkflowStatement statement = session.createWorkflowStatement(this.getProcessType());
+		WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement(this.getProcessType());
 		return statement.getEntity(this.getProcessInstanceId(), ProcessInstance.class);
 	}
 
@@ -480,6 +484,30 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 
 	public void setBizType(String bizCategory) {
 		this.bizCategory = bizCategory;
+	}
+
+	public String getProcInstCreatorId() {
+		return procInstCreatorId;
+	}
+
+	public void setProcInstCreatorId(String creatorId) {
+		this.procInstCreatorId = creatorId;
+	}
+
+	public String getProcInstCreatorName() {
+		return procInstCreatorName;
+	}
+
+	public void setProcInstCreatorName(String creatorName) {
+		this.procInstCreatorName = creatorName;
+	}
+
+	public Date getProcInstCreatedTime() {
+		return procInstCreatedTime;
+	}
+
+	public void setProcInstCreatedTime(Date processInstanceCreatedTime) {
+		this.procInstCreatedTime = processInstanceCreatedTime;
 	}
 	
 	
