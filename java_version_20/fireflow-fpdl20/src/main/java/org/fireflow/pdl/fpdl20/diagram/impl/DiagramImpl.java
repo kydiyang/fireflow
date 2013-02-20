@@ -28,7 +28,7 @@ import org.fireflow.pdl.fpdl20.diagram.GroupShape;
 import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
 import org.fireflow.pdl.fpdl20.diagram.PoolShape;
 import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
-import org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape;
+import org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape;
 
 /**
  *
@@ -40,7 +40,7 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	private String direction = Diagram.HORIZONAL;
 	
 	private List<TransitionShape> transitions = new ArrayList<TransitionShape>();
-	private List<WorkflowNodeShape> workflowNodes = new ArrayList<WorkflowNodeShape>();
+	private List<ProcessNodeShape> workflowNodes = new ArrayList<ProcessNodeShape>();
 
 	private List<GroupShape> groups = new ArrayList<GroupShape>();
 	private List<PoolShape> pools = new ArrayList<PoolShape>();
@@ -163,12 +163,12 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	}
 
 
-	public List<WorkflowNodeShape> getWorkflowNodeShapes() {		
+	public List<ProcessNodeShape> getProcessNodeShapes() {		
 		return workflowNodes;
 	}
 
 
-	public void addWorkflowNodeShape(WorkflowNodeShape shape) {
+	public void addProcessNodeShape(ProcessNodeShape shape) {
 		workflowNodes.add(shape);		
 	}
 

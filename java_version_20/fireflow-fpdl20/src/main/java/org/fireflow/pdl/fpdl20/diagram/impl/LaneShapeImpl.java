@@ -24,9 +24,9 @@ import org.fireflow.pdl.fpdl20.diagram.CommentShape;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.GroupShape;
 import org.fireflow.pdl.fpdl20.diagram.LaneShape;
-import org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
+import org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape;
+import org.fireflow.pdl.fpdl20.diagram.figure.Rectangle;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.RectangleImpl;
 
 /**
  *
@@ -34,8 +34,8 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class LaneShapeImpl extends AbsDiagramElement implements LaneShape {
-	private List<WorkflowNodeShape> workflowNodes = new ArrayList<WorkflowNodeShape>();
+public class LaneShapeImpl extends AbsNodeShapeImpl implements LaneShape {
+	private List<ProcessNodeShape> workflowNodes = new ArrayList<ProcessNodeShape>();
 	private List<CommentShape> comments = new ArrayList<CommentShape>();
 	private List<GroupShape> groups = new ArrayList<GroupShape>();
 	
@@ -47,16 +47,16 @@ public class LaneShapeImpl extends AbsDiagramElement implements LaneShape {
 		plane.getBounds().setWidth(560);
 		plane.getBounds().setHeight(400);
 		
-		this.shape = plane;
+		this.figure = plane;
 	}
 	
 
-	public List<WorkflowNodeShape> getWorkflowNodeShapes() {
+	public List<ProcessNodeShape> getProcessNodeShapes() {
 		return workflowNodes;
 	}
 
 
-	public void addWorkflowNodeShape(WorkflowNodeShape shape) {
+	public void addProcessNodeShape(ProcessNodeShape shape) {
 		workflowNodes.add(shape);
 	}
 

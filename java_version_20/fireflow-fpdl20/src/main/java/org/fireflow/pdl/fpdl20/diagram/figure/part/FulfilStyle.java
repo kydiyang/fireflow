@@ -15,21 +15,22 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.pdl.fpdl20.diagram.impl;
+package org.fireflow.pdl.fpdl20.diagram.figure.part;
 
-import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
 
 /**
- *
+ * 填充样式
  * @author 非也 nychen2000@163.com
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class MessageFlowShapeImpl extends AbsConnectorShapeImpl implements
-		MessageFlowShape {
-
-	public MessageFlowShapeImpl(String id){
-		super(id);
-	}
+public interface FulfilStyle{
+	public static final String GRADIENT_STYLE_NONE = "NONE";
+	public static final String GRADIENT_STYLE_LEFT2RIGHT = "LEFT2RIGHT";
 	
+	public String getColor();
+	public void setColor(String color);
+	
+	public String getGradientStyle();
+	public void setGradientStyle(String style);
 }

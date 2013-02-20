@@ -23,9 +23,9 @@ import java.util.List;
 import org.fireflow.pdl.fpdl20.diagram.CommentShape;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.GroupShape;
-import org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
+import org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape;
+import org.fireflow.pdl.fpdl20.diagram.figure.Rectangle;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.RectangleImpl;
 
 /**
  *
@@ -33,9 +33,9 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class GroupShapeImpl extends AbsDiagramElement implements GroupShape {
+public class GroupShapeImpl extends AbsNodeShapeImpl implements GroupShape {
 //	private List<TransitionShape> transitions = new ArrayList<TransitionShape>();
-	private List<WorkflowNodeShape> workflowNodes = new ArrayList<WorkflowNodeShape>();
+	private List<ProcessNodeShape> workflowNodes = new ArrayList<ProcessNodeShape>();
 	private List<CommentShape> comments = new ArrayList<CommentShape>();
 //	private List<AssociationShape> associations = new ArrayList<AssociationShape>();
 	
@@ -47,7 +47,7 @@ public class GroupShapeImpl extends AbsDiagramElement implements GroupShape {
 		
 		plane.getBounds().setWidth(200);
 		plane.getBounds().setHeight(100);
-		this.shape= plane;
+		this.figure= plane;
 	}
 	
 	public DiagramElement findChild(String diagramElementId){
@@ -93,14 +93,14 @@ public class GroupShapeImpl extends AbsDiagramElement implements GroupShape {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.GroupShape#getWorkflowNodeShapes()
 	 */
-	public List<WorkflowNodeShape> getWorkflowNodeShapes() {
+	public List<ProcessNodeShape> getProcessNodeShapes() {
 		return workflowNodes;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.diagram.GroupShape#addWorkflowNodeShape(org.fireflow.pdl.fpdl20.diagram.WorkflowNodeShape)
+	 * @see org.fireflow.pdl.fpdl20.diagram.GroupShape#addWorkflowNodeShape(org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape)
 	 */
-	public void addWorkflowNodeShape(WorkflowNodeShape shape) {
+	public void addProcessNodeShape(ProcessNodeShape shape) {
 		workflowNodes.add(shape);
 	}
 

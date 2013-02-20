@@ -15,9 +15,12 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.pdl.fpdl20.diagram.impl;
+package org.fireflow.pdl.fpdl20.diagram.figure;
 
-import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
+import org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds;
+import org.fireflow.pdl.fpdl20.diagram.figure.part.Label;
+
+
 
 /**
  *
@@ -25,11 +28,19 @@ import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class MessageFlowShapeImpl extends AbsConnectorShapeImpl implements
-		MessageFlowShape {
-
-	public MessageFlowShapeImpl(String id){
-		super(id);
-	}
+public interface Figure {
+	public String getTitle();
+	public void setTitle(String title);
+	
+	public String getContent();
+	public void setContent(String content);
+	
+	public Label getTitleLabel();
+	
+	/**
+	 * 边框
+	 * @return
+	 */
+	public Bounds getBounds();
 	
 }

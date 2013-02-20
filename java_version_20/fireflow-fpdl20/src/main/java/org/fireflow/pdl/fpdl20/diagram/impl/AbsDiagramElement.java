@@ -17,10 +17,9 @@
  */
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
-import java.util.UUID;
-
+import org.apache.commons.lang.StringUtils;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
-import org.fireflow.pdl.fpdl20.diagram.basic.Shape;
+import org.fireflow.pdl.fpdl20.diagram.figure.Figure;
 
 /**
  *
@@ -32,7 +31,7 @@ public abstract class AbsDiagramElement implements DiagramElement {
 //	protected String sn = UUID.randomUUID().toString();
 	protected String id = null;
 	protected String workflowElementId = null;
-	protected Shape shape = null;
+	protected Figure figure = null;
 
 //	public String getSn(){
 //		return sn;
@@ -64,18 +63,43 @@ public abstract class AbsDiagramElement implements DiagramElement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.DiagramElement#getShape()
 	 */
-	public Shape getShape() {
-		return this.shape;
+	public Figure getFigure() {
+		return this.figure;
 	}
 	
-	public void setShape(Shape sp){
-		this.shape = sp;
-	}
+//	public void setFigure(Figure sp){
+//		this.figure = sp;
+//	}
 	
 	public DiagramElement findChild(String id){
 		return null;
 	}
 	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
 		return null;
+	}
+	
+	public boolean equals(Object obj){
+		if (obj==null || !(obj instanceof DiagramElement)){
+			return false;
+		}
+		String id = ((DiagramElement)obj).getId();
+		if (StringUtils.isEmpty(id)){
+			return false;
+		}
+		if (id.equals(this.getId())){
+			return true;
+		}
+
+		return false;
+	}
+	
+	public int hashCode(){
+		
+		String id = this.getId();
+		if (id!=null){
+			return id.hashCode();
+		}else{
+			return 0;
+		}
 	}
 }

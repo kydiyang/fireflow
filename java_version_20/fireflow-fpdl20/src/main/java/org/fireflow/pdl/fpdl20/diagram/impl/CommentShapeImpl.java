@@ -18,7 +18,7 @@
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
 import org.fireflow.pdl.fpdl20.diagram.CommentShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.RectangleImpl;
 
 /**
  *
@@ -26,26 +26,26 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class CommentShapeImpl extends AbsDiagramElement implements CommentShape {
+public class CommentShapeImpl extends AbsNodeShapeImpl implements CommentShape {
 	public CommentShapeImpl(String id){
 		this.id = id;
 		
 		RectangleImpl rect = new RectangleImpl();
-		this.shape = rect;
+		this.figure = rect;
 	}
 	
 	public void setContent(String comment){
-		((RectangleImpl)this.shape).setContent(comment);
+		((RectangleImpl)this.figure).setContent(comment);
 	}
 	
 	public String getContent(){
-		return ((RectangleImpl)this.shape).getContent();
+		return ((RectangleImpl)this.figure).getContent();
 	}
 	
 	public void setTitle(String title){
-		this.shape.setTitle(title);
+		this.figure.setTitle(title);
 	}
 	public String getTitle(){
-		return this.shape.getTitle();
+		return this.figure.getTitle();
 	}
 }
