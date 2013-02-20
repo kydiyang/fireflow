@@ -22,10 +22,12 @@ import java.util.List;
 
 import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
+import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.repository.ResourceRepository;
 import org.fireflow.engine.entity.repository.ServiceRepository;
+import org.fireflow.engine.entity.repository.impl.ProcessDescriptorImpl;
 import org.fireflow.engine.entity.repository.impl.ProcessRepositoryImpl;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.modules.persistence.PersistenceService;
@@ -119,7 +121,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	 * @see org.fireflow.engine.repository.ProcessRepositoryService#getWorkflowProcess(org.fireflow.engine.entity.repository.ProcessKey)
 	 */
 	protected Object getWorkflowProcess(ProcessKey processKey) throws InvalidModelException{
-		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ProcessPersister processPersister = persistenceService.getProcessPersister();
 		ProcessRepository repository = processPersister.findProcessRepositoryByProcessKey(processKey);
 		return repository.getProcessObject();
@@ -166,25 +168,31 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		}
 	}
 
+	public ProcessDescriptor generateProcessDescriptor(Object process){
+		WorkflowProcess wfProcess = (WorkflowProcess)process;
+		ProcessDescriptorImpl descriptor = new ProcessDescriptorImpl();
+
+		descriptor.setProcessId(wfProcess.getId());
+		descriptor.setTimerStart(isTimerStart(wfProcess));
+		descriptor.setHasCallbackService(hasCallbackService(wfProcess));
+		descriptor.setProcessType(FpdlConstants.PROCESS_TYPE_FPDL20);
+		descriptor.setName(wfProcess.getName());
+		String displayName = wfProcess.getDisplayName();
+		descriptor.setDisplayName((displayName==null || displayName.trim().equals(""))?wfProcess.getName():displayName);
+		descriptor.setDescription(wfProcess.getDescription());
+		
+		//设置缺省的FileName 为 <processId>.f20.xml
+		descriptor.setFileName(wfProcess.getId()+"."+FpdlConstants.PROCESS_FILE_SUFFIX);
+	
+		return descriptor;
+	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.process.ProcessUtil#serializeProcess2ProcessRepository(java.lang.Object)
 	 */
 	public ProcessRepository serializeProcess2ProcessRepository(Object process) throws InvalidModelException{
-		WorkflowProcess wfProcess = (WorkflowProcess)process;
-		ProcessRepositoryImpl repository = new ProcessRepositoryImpl();
+		ProcessDescriptor descriptor = 	generateProcessDescriptor(process);
+		ProcessRepositoryImpl repository = (ProcessRepositoryImpl)descriptor.toProcessRepository();
 
-		repository.setProcessId(wfProcess.getId());
-		repository.setTimerStart(isTimerStart(wfProcess));
-		repository.setHasCallbackService(hasCallbackService(wfProcess));
-		repository.setProcessType(FpdlConstants.PROCESS_TYPE);
-		repository.setName(wfProcess.getName());
-		String displayName = wfProcess.getDisplayName();
-		repository.setDisplayName((displayName==null || displayName.trim().equals(""))?wfProcess.getName():displayName);
-		repository.setDescription(wfProcess.getDescription());
-		
-		//设置缺省的FileName 为 <processId>.f20.xml
-		repository.setFileName(wfProcess.getId()+"."+FpdlConstants.PROCESS_FILE_SUFFIX);
-		
 		repository.setProcessObject(process);
 		repository.setProcessContent(this.serializeProcess2Xml(process));	
 
@@ -253,7 +261,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		 */
 		public List<ResourceDef> loadResources(String resourceLocation)
 				throws DeserializerException, IOException {
-			PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+			PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 			ResourcePersister resourcePersister = persistenceService.getResourcePersister();
 			
 			ResourceRepository repository = resourcePersister.findResourceRepositoryByFileName(resourceLocation);
@@ -265,7 +273,7 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		 */
 		public List<ServiceDef> loadServices(String serviceLocation)
 				throws DeserializerException, IOException {
-			PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+			PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 			ServicePersister servicePersister = persistenceService.getServicePersister();
 			
 			ServiceRepository repository = servicePersister.findServiceRepositoryByFileName(serviceLocation);
