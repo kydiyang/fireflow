@@ -21,6 +21,5 @@ public interface WorkflowElement extends ModelElement{
 //	public void setInstanceCreatorDef(InstanceCreatorDef instanceCreator);
 //	public void setInstanceExecutorDef(InstanceExecutorDef instanceExecutor);
 //	public void setInstanceTerminatorDef(InstanceTerminatorDef instanceTerminator);	
-	
-	public Map<String,String> getExtendedAttributes();
+
 }

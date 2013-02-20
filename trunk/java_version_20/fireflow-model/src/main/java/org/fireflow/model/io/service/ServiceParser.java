@@ -292,8 +292,8 @@ public abstract class ServiceParser implements ModelElementNames {
 		}
 
 		svcElem.setAttribute(PARSER_CLASS_NAME, service.getParserClassName());
-		Util4Serializer.addElement(svcElem, DESCRIPTION,
-				service.getDescription());
+		this.writeDescription(svcElem, service.getDescription());
+
 	}
 
 	protected void loadCommonServiceAttribute(AbstractServiceDef absService,
@@ -301,8 +301,8 @@ public abstract class ServiceParser implements ModelElementNames {
 		absService.setName(svcElem.getAttribute(NAME));
 		absService.setDisplayName(svcElem.getAttribute(DISPLAY_NAME));
 		absService.setBizCategory(svcElem.getAttribute(BIZ_CATEGORY));
-		absService.setDescription(Util4Deserializer.elementAsString(svcElem,
-				DESCRIPTION));
+		absService.setDescription(this.loadCDATA(Util4Deserializer.child(svcElem,
+				DESCRIPTION)));
 		String beanName = svcElem.getAttribute(INVOKER_BEAN_NAME);
 		if (!StringUtils.isEmpty(beanName)) {
 			absService.setInvokerBeanName(beanName);
@@ -533,18 +533,7 @@ public abstract class ServiceParser implements ModelElementNames {
 			if (bodyElement==null){
 				exp.setBody("");
 			}else{
-				NodeList nodeList = bodyElement.getChildNodes();
-				if(nodeList!=null && nodeList.getLength()>0){
-					int length = nodeList.getLength();
-					for (int i=0;i<length;i++){
-						org.w3c.dom.Node node = nodeList.item(i);
-						if(node.getNodeType()==org.w3c.dom.Node.CDATA_SECTION_NODE){
-							CDATASection cdataSection = (CDATASection)node;
-							exp.setBody(cdataSection.getData());
-							break;
-						}
-					}
-				}
+				exp.setBody(this.loadCDATA(bodyElement));
 			}
 
 			
@@ -608,5 +597,22 @@ public abstract class ServiceParser implements ModelElementNames {
 		s1 = s1 == null ? "" : s1.trim();
 		s2 = s2 == null ? "" : s2.trim();
 		return s1.equals(s2);
+	}
+	
+	protected String loadCDATA(Element cdataElement){
+		if (cdataElement==null){
+			return "";
+		}else{
+			return cdataElement.getTextContent();
+		}
+	}
+	
+	protected void writeDescription(Element parent, String desc) {
+		if(desc==null || desc.trim().equals(""))return;
+		Document doc = parent.getOwnerDocument();
+		Element descElem = Util4Serializer.addElement(parent, DESCRIPTION);
+
+		CDATASection cdata = doc.createCDATASection(desc);
+		descElem.appendChild(cdata);
 	}
 }

@@ -33,7 +33,7 @@ public class Util4Deserializer {
      * @return The child element
      */
     public static Element child(Element element, String name) {
-    	
+    	if (element==null)return null;
     	Element child = child(element,new QName(element.getNamespaceURI(),name));
         return child;
     }

@@ -39,6 +39,7 @@ import org.fireflow.model.io.ModelElementNames;
 import org.fireflow.model.io.SerializerException;
 import org.fireflow.model.io.Util4Serializer;
 import org.fireflow.model.resourcedef.ResourceDef;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -150,7 +151,7 @@ public class ResourceSerializer implements ModelElementNames {
 			if (r.getDisplayName() != null && !r.getDisplayName().trim().equals("")) {
 				resourceElem.setAttribute(DISPLAY_NAME, r.getDisplayName());
 			}
-
+			writeDescription(resourceElem,r.getDescription());
 			resourceElem
 					.setAttribute(RESOURCE_TYPE, r.getResourceType().getValue());
 			resourceElem.setAttribute(VALUE, r.getValue());
@@ -198,4 +199,12 @@ public class ResourceSerializer implements ModelElementNames {
         return extendedAttributesElement;
 
     }
+	protected static void writeDescription(Element parent, String desc) {
+		if(desc==null || desc.trim().equals(""))return;
+		Document doc = parent.getOwnerDocument();
+		Element descElem = Util4Serializer.addElement(parent, DESCRIPTION);
+
+		CDATASection cdata = doc.createCDATASection(desc);
+		descElem.appendChild(cdata);
+	}
 }

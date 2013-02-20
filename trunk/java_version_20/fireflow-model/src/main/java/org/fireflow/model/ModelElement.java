@@ -31,6 +31,7 @@ import java.util.Map;
  * 
  */
 public interface ModelElement {
+
 	public static final String ID_SEPARATOR = ".";
     /**
      * 返回元素的序列号，
@@ -87,9 +88,11 @@ public interface ModelElement {
 //     */
 //    public List<EventListener> getEventListeners();
 //
-//    /**
-//     * 返回扩展属性Map
-//     * @return
-//     */
-//    public Map<String, String> getExtendedAttributes();
+    
+    public String getExtendedAttribute(String propName);
+    /**
+     * 返回扩展属性Map
+     * @return
+     */
+    public Map<String, String> getExtendedAttributes();
 }

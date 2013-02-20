@@ -24,7 +24,6 @@ public abstract class AbstractServiceDef extends AbstractModelElement implements
 	protected String targetNamespaceUri = null;
 	protected XmlSchemaCollection schemaCollection = null;
 	protected InterfaceDef _interface = null;
-	protected Map<String,String> properties = new HashMap<String,String>();
 	protected Types typeDeclarations = null;
 	
 	public AbstractServiceDef(){
@@ -87,12 +86,8 @@ public abstract class AbstractServiceDef extends AbstractModelElement implements
 		this._interface = _interface;
 		
 	}
-	public Map<String,String> getExtendedAttributes() {		
-		return properties;
-	}
-	public String getExtendedAttribute(String propName) {
-		return properties.get(propName);
-	}
+
+
 	
 
 	

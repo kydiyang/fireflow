@@ -94,8 +94,8 @@ public class ResourceDeserializer implements ModelElementNames {
 			String resourceType = rscElm.getAttribute(RESOURCE_TYPE);
 			resource.setResourceType(ResourceType.fromValue(resourceType));
 
-			resource.setDescription(Util4Deserializer.elementAsString(rscElm,
-					DESCRIPTION));
+			resource.setDescription(loadCDATA(Util4Deserializer.child(rscElm,
+					DESCRIPTION)));
 			
 			resource.setValue(rscElm.getAttribute(VALUE));
 
@@ -136,4 +136,14 @@ public class ResourceDeserializer implements ModelElementNames {
 
 		}
 	}
+	
+	protected static String loadCDATA(Element cdataElement){
+		if (cdataElement==null){
+			return "";
+		}else{
+			return cdataElement.getTextContent();
+		}
+	}
+	
+
 }

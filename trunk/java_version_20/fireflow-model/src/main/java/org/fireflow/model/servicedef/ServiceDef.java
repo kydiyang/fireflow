@@ -57,14 +57,6 @@ public interface ServiceDef extends ModelElement{
 	 * @return
 	 */
 	public InterfaceDef getInterface();
-
-	/**
-	 * 获得扩展属性列表，
-	 * @return
-	 */
-	public Map<String,String> getExtendedAttributes();
-	
-	public String getExtendedAttribute(String propName);
 	
 	/**
 	 * 类型定义

@@ -17,7 +17,8 @@
 package org.fireflow.model;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,10 +64,10 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
 //     */
 //    private List<EventListener> eventListeners = new ArrayList<EventListener>();   
 //    
-//    /**
-//     * 扩展属性
-//     */
-//    private Map<String, String> extendedAttributes;
+    /**
+     * 扩展属性
+     */
+    private Map<String, String> extendedAttributes;
 
     public static boolean isValidName(String name){
         if (name == null) {
@@ -138,12 +139,17 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
         this.description = description;
     }
 
-//    public Map<String, String> getExtendedAttributes() {
-//        if (extendedAttributes == null) {
-//            extendedAttributes = new HashMap<String, String>();
-//        }
-//        return extendedAttributes;
-//    }
+    public Map<String, String> getExtendedAttributes() {
+        if (extendedAttributes == null) {
+            extendedAttributes = new HashMap<String, String>();
+        }
+        return extendedAttributes;
+    }
+    
+	public String getExtendedAttribute(String propName) {
+		Map<String,String> extendAttribute = this.getExtendedAttributes();
+		return extendAttribute.get(propName);
+	}
 //    public List<EventListener> getEventListeners(){
 //        return this.eventListeners;
 //    }
@@ -155,6 +161,7 @@ public abstract class AbstractModelElement implements ModelElement, Serializable
 
     @Override
     public int hashCode() {
+    	if (this.getId()==null)return 0;
         return this.getId().hashCode();
     }
 
