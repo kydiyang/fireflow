@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.query.Order;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
@@ -23,7 +24,6 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.schedule.Scheduler;
-import org.fireflow.engine.query.Order;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenProperty;
 import org.junit.AfterClass;
@@ -144,31 +144,28 @@ public class BaseEnviroment4Junit {
 				runtimeContext, FireWorkflowSystem.getInstance());
 
 		WorkflowQuery<ProcessInstance> q4ProcInst = session
-				.createWorkflowQuery(ProcessInstance.class,
-						PROCESS_TYPE);
+				.createWorkflowQuery(ProcessInstance.class);
 		List<ProcessInstance> processInstanceList = q4ProcInst.list();
 
 		WorkflowQuery<ActivityInstance> q4ActInst = session
-				.createWorkflowQuery(ActivityInstance.class,
-						PROCESS_TYPE);
+				.createWorkflowQuery(ActivityInstance.class);
 		q4ActInst.addOrder(
 				Order.asc(ActivityInstanceProperty.PROCESS_INSTANCE_ID))
 				.addOrder(Order.asc(ActivityInstanceProperty.STEP_NUMBER));
 		List<ActivityInstance> activityInstanceList = q4ActInst.list();
 
-		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class,
-				PROCESS_TYPE);
+		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class);
 		q4Token.addOrder(Order.asc(TokenProperty.PROCESS_INSTANCE_ID))
 				.addOrder(Order.asc(TokenProperty.STEP_NUMBER));
 		List<Token> tokenList = q4Token.list();
 
 		WorkflowQuery<Variable> q4Variable = session.createWorkflowQuery(
-				Variable.class, PROCESS_TYPE);
+				Variable.class);
 		q4Variable.addOrder(Order.asc(VariableProperty.SCOPE_ID));
 		List<Variable> variableList = q4Variable.list();
 
 		WorkflowQuery<WorkItem> q4WorkItem = session.createWorkflowQuery(
-				WorkItem.class, PROCESS_TYPE);
+				WorkItem.class);
 		q4WorkItem
 				.addOrder(
 						Order
@@ -180,7 +177,7 @@ public class BaseEnviroment4Junit {
 		List<WorkItem> workItemList = q4WorkItem.list();
 
 		WorkflowQuery<ScheduleJob> q4ScheduleJob = session.createWorkflowQuery(
-				ScheduleJob.class, PROCESS_TYPE);
+				ScheduleJob.class);
 		q4ScheduleJob
 				.addOrder(Order.asc(ScheduleJobProperty.PROCESS_ID))
 				.addOrder(

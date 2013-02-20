@@ -2,13 +2,13 @@ package org.fireflow.pdl.bpel.basic;
 
 import javax.xml.namespace.QName;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.Variable;
 import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.VariablePersister;
 import org.fireflow.pvm.kernel.Token;

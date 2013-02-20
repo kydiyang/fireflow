@@ -22,7 +22,8 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
@@ -32,7 +33,6 @@ import org.fireflow.engine.entity.runtime.Variable;
 import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManager;
