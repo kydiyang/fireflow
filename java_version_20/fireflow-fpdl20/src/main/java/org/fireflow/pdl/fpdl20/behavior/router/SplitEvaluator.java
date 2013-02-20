@@ -19,7 +19,7 @@ package org.fireflow.pdl.fpdl20.behavior.router;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pvm.kernel.Token;
 
@@ -30,6 +30,12 @@ import org.fireflow.pvm.kernel.Token;
  *
  */
 public interface SplitEvaluator {
+	/**
+	 * 分支逻辑描述信息
+	 * @return
+	 */
+	public String getSplitDescription();
+	
 	public List<String> determineNextTransitions(
 			WorkflowSession session, Token token4Node, Node node); 
 }

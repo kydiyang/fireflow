@@ -17,7 +17,7 @@
  */
 package org.fireflow.pdl.fpdl20.behavior.router.impl;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pvm.kernel.Token;
@@ -29,7 +29,10 @@ import org.fireflow.pvm.kernel.Token;
  *
  */
 public class OrJoinEvaluator implements JoinEvaluator {
-
+	public static final String JOIN_DESCRIPTION = "汇聚逻辑：任意输入Transition到达后立即执行后续分支。如果有N条输入Transition到达，则后续分支被执行N次";
+	public String getJoinDescription(){
+		return JOIN_DESCRIPTION;
+	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator#canBeFired(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, org.fireflow.pdl.fpdl20.process.Synchronizer)
 	 */

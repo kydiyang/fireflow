@@ -17,7 +17,7 @@
  */
 package org.fireflow.pdl.fpdl20.behavior.router;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pvm.kernel.Token;
 
@@ -28,6 +28,11 @@ import org.fireflow.pvm.kernel.Token;
  *
  */
 public interface JoinEvaluator {
+	/**
+	 * 汇聚逻辑描述信息
+	 * @return
+	 */
+	public String getJoinDescription();
 	/**
 	 * 判断汇聚是否完成，如果完成则返回true，否则返回false
 	 * @param session

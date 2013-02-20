@@ -17,6 +17,7 @@
  */
 package org.fireflow.pdl.fpdl20.diagram;
 
+import java.util.List;
 
 /**
  *
@@ -24,11 +25,34 @@ package org.fireflow.pdl.fpdl20.diagram;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface CommentShape extends NodeShape {
-	public void setContent(String comment);
-	public String getContent();
+public interface NodeShape extends DiagramElement {
+	/**
+	 * 所有从本节点输出的关联线
+	 * @return
+	 */
+	public List<AssociationShape> getLeavingAssociationShapes();
 	
-	public void setTitle(String title);
+	/**
+	 * 所有输入到本节点的关联线
+	 * @return
+	 */
+	public List<AssociationShape> getEnteringAssociationShapes();	
+	
+	/**
+	 * 所有从本节点输出的消息连线
+	 * @return
+	 */
+	public List<MessageFlowShape> getLeavingMessageFlowShapes();
+	
+	/**
+	 * 所有到达本节点的消息连线
+	 * @return
+	 */
+	public List<MessageFlowShape> getEnteringMessageFlowShapes();
+	
 	public String getTitle();
+	public void setTitle(String title);
 	
+	public String getContent();
+	public void setContent(String content);
 }

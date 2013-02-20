@@ -17,12 +17,13 @@
  */
 package org.fireflow.pdl.fpdl20.diagram;
 
+
 /**
  *
  * @author 非也 nychen2000@163.com
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface StartNodeShape extends WorkflowNodeShape {
+public interface StartNodeShape extends ProcessNodeShape {
 
 }

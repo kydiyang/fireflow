@@ -39,9 +39,9 @@ public interface Diagram extends DiagramElement{
 	 * 所有的流程节点
 	 * @return
 	 */
-	public List<WorkflowNodeShape> getWorkflowNodeShapes();
+	public List<ProcessNodeShape> getProcessNodeShapes();
 	
-	public void addWorkflowNodeShape(WorkflowNodeShape shape);
+	public void addProcessNodeShape(ProcessNodeShape shape);
 	
 	/**
 	 * 返回所有的Transition

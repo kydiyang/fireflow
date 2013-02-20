@@ -23,13 +23,12 @@ package org.fireflow.pdl.fpdl20.diagram;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface TransitionShape extends DiagramElement {
-	public WorkflowNodeShape getFromWorkflowNodeShape();
-	
-	public void setFromWorkflowNodeShape(WorkflowNodeShape fromNode);
-	
-	public WorkflowNodeShape getToWorkflowNodeShape();
-
-	
-	public void setToWorkflowNodeShape(WorkflowNodeShape toNode);
+public interface TransitionShape extends ConnectorShape  {
+//	public ProcessNodeShape getFromProcessNodeShape();
+//	
+//	public void setFromProcessNodeShape(ProcessNodeShape fromNode);
+//	
+//	public ProcessNodeShape getToProcessNodeShape();
+//
+//	public void setToProcessNodeShape(ProcessNodeShape toNode);
 }

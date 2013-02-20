@@ -24,7 +24,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
@@ -34,7 +35,6 @@ import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.instancemanager.event.ActivityInstanceEventTrigger;
@@ -84,7 +84,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 	public Boolean prepare(WorkflowSession session, Token token,
 			Object workflowElement) {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE);
+		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, token.getProcessType());
 		ActivityInstancePersister actInstPersistSvc = persistenceStrategy.getActivityInstancePersister();
 		
@@ -125,7 +125,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
 		ActivityInstance oldActInst = session.getCurrentActivityInstance();
 
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 		ProcessInstancePersister processInstancePersister = persistenceStrategy.getProcessInstancePersister();
 		
@@ -139,7 +139,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		}
 		
 		//2、执行业务操作
-		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE);
+		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstance currentActivityInstance = session.getCurrentActivityInstance();
 		
 		try {
@@ -210,7 +210,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		ActivityInstance oldActInst = session.getCurrentActivityInstance();
 
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 		ProcessInstancePersister processInstancePersister = persistenceStrategy.getProcessInstancePersister();
 		
@@ -225,7 +225,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		
 		//2、执行业务操作
 		try{
-			ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE);
+			ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 			ActivityInstance currentActivityInstance = session.getCurrentActivityInstance();
 			int direction = activityInstanceMgr.tryCloseActivityInstance(session, currentActivityInstance,workflowElement);
 			if (direction == ContinueDirection.WAITING_FOR_CLOSE) {
@@ -278,7 +278,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 			Object workflowElement) {
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 		
@@ -348,7 +348,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		ActivityInstance oldActInst = session.getCurrentActivityInstance();
 
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceService.getActivityInstancePersister();
 		ProcessInstancePersister processInstancePersister = persistenceService.getProcessInstancePersister();
 		
@@ -479,7 +479,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 	protected List<String> determineNextTransitions(
 			WorkflowSession session, Token token4Node, Node node){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String className = DynamicSplitEvaluator.class.getName();
 		

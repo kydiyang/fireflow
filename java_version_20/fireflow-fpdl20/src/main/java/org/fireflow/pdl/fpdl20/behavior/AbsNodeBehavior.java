@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.engine.modules.workitem.WorkItemManager;
 import org.fireflow.model.data.Expression;
@@ -64,7 +64,8 @@ public abstract class AbsNodeBehavior implements WorkflowBehavior {
 
 	protected List<PObjectKey> determineNextPObjectKeys(
 			WorkflowSession session, Token token, Object workflowElement) {
-		String targetActivityId = (String) session
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
+		String targetActivityId = (String) localSession
 				.removeAttribute(WorkItemManager.TARGET_ACTIVITY_ID);
 		if (targetActivityId != null && !targetActivityId.trim().equals("")) {
 			List<PObjectKey> nextPObjectKeys = new ArrayList<PObjectKey>();

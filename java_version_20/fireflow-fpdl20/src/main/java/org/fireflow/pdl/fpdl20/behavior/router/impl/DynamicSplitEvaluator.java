@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
@@ -40,7 +40,11 @@ import org.fireflow.pvm.kernel.Token;
  * 
  */
 public class DynamicSplitEvaluator implements SplitEvaluator {
-
+	public static final String SPLIT_DESCRIPTION = "分支逻辑：所有符合条件分支都会被执行。";
+	public String getSplitDescription(){
+		return SPLIT_DESCRIPTION;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

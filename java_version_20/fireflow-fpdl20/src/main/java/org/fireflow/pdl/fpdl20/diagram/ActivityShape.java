@@ -25,7 +25,8 @@ import java.util.List;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface ActivityShape extends WorkflowNodeShape {
+public interface ActivityShape extends ProcessNodeShape {
 	public List<StartNodeShape> getAttachedStartNodeShapes();
 	public void addAttachedStartNodeShape(StartNodeShape startNodeShape);
+
 }

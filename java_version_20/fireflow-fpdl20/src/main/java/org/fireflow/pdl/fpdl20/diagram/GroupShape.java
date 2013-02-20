@@ -26,20 +26,21 @@ import java.util.List;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface GroupShape extends DiagramElement {
+public interface GroupShape extends NodeShape {
 	/**
 	 * Group 是否展开
 	 * @return
 	 */
 	public boolean isExpand();
 	
-	public List<WorkflowNodeShape> getWorkflowNodeShapes();
+	public List<ProcessNodeShape> getProcessNodeShapes();
 	
-	public void addWorkflowNodeShape(WorkflowNodeShape shape);
+	public void addProcessNodeShape(ProcessNodeShape shape);
 	
 	
 	public List<CommentShape> getComments();
 	public void addComment(CommentShape commentShape);
+	
 	
 	//所有的链接线放在Diagram这一层
 //	/**

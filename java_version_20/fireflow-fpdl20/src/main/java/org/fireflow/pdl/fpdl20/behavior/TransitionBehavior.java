@@ -19,7 +19,7 @@ package org.fireflow.pdl.fpdl20.behavior;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pvm.kernel.PObjectKey;

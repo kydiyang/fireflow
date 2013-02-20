@@ -19,9 +19,9 @@ package org.fireflow.pdl.fpdl20.behavior.router.impl;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.TokenPersister;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
@@ -37,7 +37,10 @@ import org.fireflow.pvm.kernel.Token;
  * 
  */
 public class AndJoinEvaluator implements JoinEvaluator {
-
+	public static final String JOIN_DESCRIPTION = "汇聚逻辑：当所有输入Transition都到达后才执行后续分支。";
+	public String getJoinDescription(){
+		return JOIN_DESCRIPTION;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,7 +63,7 @@ public class AndJoinEvaluator implements JoinEvaluator {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(
-				PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+				PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 		
 		List<Token> siblings = tokenPersister.findSiblings(token);
