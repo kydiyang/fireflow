@@ -33,7 +33,6 @@ import org.fireflow.pdl.fpdl20.behavior.RouterBehavior;
 import org.fireflow.pdl.fpdl20.behavior.StartNodeBehavior;
 import org.fireflow.pdl.fpdl20.behavior.SubProcessBehavior;
 import org.fireflow.pdl.fpdl20.behavior.TransitionBehavior;
-import org.fireflow.pdl.fpdl20.behavior.WorkflowProcessBehavior;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.EndNode;
@@ -53,6 +52,7 @@ import org.fireflow.pvm.kernel.impl.NodeInstanceImpl;
 import org.fireflow.pvm.translate.Process2PObjectTranslator;
 
 /**
+ * 
  * @author 非也
  * @version 2.0
  */
@@ -230,6 +230,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 		return result;
 	}
 	
+	
 	/**
 	 * 组装异常处理器，补偿处理器等
 	 * @param subflow
@@ -256,9 +257,9 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 						if (po!=null){
 							String compensationCode = compensationDecorator.getCompensationCode();
 							if (compensationCode==null || compensationCode.trim().equals("")){
-								compensationCode = FpdlConstants.DEFAULT_COMPENSATION_CODE;
+								compensationCode = CatchCompensationFeature.CATCH_ALL_COMPENSATION;
 							}
-							if (compensationCode.equals(FpdlConstants.DEFAULT_COMPENSATION_CODE)){
+							if (compensationCode.equals(CatchCompensationFeature.CATCH_ALL_COMPENSATION)){
 								((NodeInstanceImpl)pobject4Activity).setCompensationHandler(compensationCode,  po,true);
 							}else{
 								((NodeInstanceImpl)pobject4Activity).setCompensationHandler(compensationCode,  po);
@@ -322,10 +323,10 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 								.getCompensationCode();
 						if (compensationCode == null
 								|| compensationCode.trim().equals("")) {
-							compensationCode = FpdlConstants.DEFAULT_COMPENSATION_CODE;
+							compensationCode = CatchCompensationFeature.CATCH_ALL_COMPENSATION;
 						}
 						if (compensationCode
-								.equals(FpdlConstants.DEFAULT_COMPENSATION_CODE)) {
+								.equals(CatchCompensationFeature.CATCH_ALL_COMPENSATION)) {
 							pobject4Process.setCompensationHandler(
 									compensationCode, pobject4Start, true);
 						} else {
@@ -354,7 +355,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 	 * @see org.fireflow.pvm.translate.Process2PObjectTranslator#translateProcess(org.fireflow.engine.entity.repository.ProcessKey)
 	 */
 	public List<PObject> translateProcess(ProcessKey processKey) throws InvalidModelException,WorkflowProcessNotFoundException{
-		PersistenceService persistenceService = runtimeContext.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceService = runtimeContext.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ProcessPersister processPersister = persistenceService.getProcessPersister();
 		ProcessRepository repository = processPersister.findProcessRepositoryByProcessKey(processKey);
 		if (repository==null){
