@@ -16,6 +16,10 @@
  */
 package org.fireflow.model.resourcedef;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
 
 /**
  * 
@@ -23,8 +27,13 @@ package org.fireflow.model.resourcedef;
  * @author 非也
  * @version 2.0
  */
+@XmlType(name="workItemAssignmentStrategyType")
+@XmlEnum
 public enum WorkItemAssignmentStrategy {
+	@XmlEnumValue("org.fireflow.constants.ASSIGN_TO_ALL")
 	ASSIGN_TO_ALL("org.fireflow.constants.ASSIGN_TO_ALL"),
+	
+	@XmlEnumValue("org.fireflow.constants.ASSIGN_TO_ANY")
 	ASSIGN_TO_ANY("org.fireflow.constants.ASSIGN_TO_ANY");
 	
 	private String value = null;
@@ -35,6 +44,11 @@ public enum WorkItemAssignmentStrategy {
 	public String getValue(){
 		return value;
 	}
+	
+	public String value(){
+		return this.value;
+	}
+	
 	
 	public static WorkItemAssignmentStrategy fromValue(String v){
 		WorkItemAssignmentStrategy[] values =  WorkItemAssignmentStrategy.values();
