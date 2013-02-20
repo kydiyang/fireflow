@@ -31,7 +31,7 @@ import org.fireflow.engine.modules.env.Environment;
  *
  */
 public class Enviroment4J2SE  extends AbsEngineModule implements Environment {
-	String webserviceContextPath = "http://127.0.0.1:6666/FireWorkflowServices/";
+	String webserviceContextPath = "http://127.0.0.1:3069/FireWorkflowServices/";
 	String workspaceDirName = null;
 	public void init(RuntimeContext runtimeContext){
 		String userDir = System.getProperty("user.dir");

@@ -17,7 +17,7 @@
  */
 package org.fireflow.engine.modules.event;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 
 /**
  *

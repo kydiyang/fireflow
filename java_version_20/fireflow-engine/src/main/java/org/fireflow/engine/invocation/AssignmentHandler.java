@@ -19,7 +19,7 @@ package org.fireflow.engine.invocation;
 import java.io.Serializable;
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.exception.EngineException;

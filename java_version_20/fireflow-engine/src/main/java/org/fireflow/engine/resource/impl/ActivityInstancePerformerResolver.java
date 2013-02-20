@@ -22,13 +22,13 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.ousystem.OUSystemConnector;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.UserImpl;
@@ -98,10 +98,10 @@ public class ActivityInstancePerformerResolver extends ResourceResolver {
 //				User u = ouSystemAdapter.findUserById(wi.getUserId());
 				UserImpl u = new UserImpl();
 				Properties props = new Properties();
-				props.put(User.ID, processInstance.getCreatorId());
-				props.put(User.NAME, processInstance.getCreatorName());
-				props.put(User.DEPT_ID, processInstance.getCreatorDeptId());
-				props.put(User.DEPT_NAME, processInstance.getCreatorDeptName());
+				u.setId(processInstance.getCreatorId());
+				u.setName(processInstance.getCreatorName());
+				u.setDeptId(processInstance.getCreatorDeptId());
+				u.setDeptName(processInstance.getCreatorDeptName());
 				u.setProperties(props);
 				users.add(u);
 			}

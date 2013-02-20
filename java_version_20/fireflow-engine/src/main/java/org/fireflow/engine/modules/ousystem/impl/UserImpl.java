@@ -16,9 +16,12 @@
  */
 package org.fireflow.engine.modules.ousystem.impl;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-import org.fireflow.engine.modules.ousystem.Actor;
 import org.fireflow.engine.modules.ousystem.User;
 
 /**
@@ -27,27 +30,40 @@ import org.fireflow.engine.modules.ousystem.User;
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="userElm")
+@XmlType(name="userType",propOrder={"deptId","deptName"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class UserImpl extends AbsActor implements User {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8220516987293658799L;
+
+	@XmlElement(name="deptId")
+	private String deptId = null;
+	
+	@XmlElement(name="deptName")
+	private String deptName = null;
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.ousystem.User#getDeptId()
 	 */
 	public String getDeptId() {
-		return properties==null?null:(String)properties.get(User.DEPT_ID);
+		return deptId;
 	}
 	
-	public void setDeptId(String deptId){
-		properties.put(User.DEPT_ID, deptId);
+	public void setDeptId(String argDeptId){
+		this.deptId = argDeptId;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.ousystem.User#getDeptName()
 	 */
 	public String getDeptName() {
-		return properties==null?null:(String)properties.get(User.DEPT_NAME);
+		return deptName;
 	}
 	
-	public void setDeptName(String deptName){
-		properties.put(User.DEPT_NAME, deptName);
+	public void setDeptName(String argDeptName){
+		this.deptName = argDeptName;
 	}
 }

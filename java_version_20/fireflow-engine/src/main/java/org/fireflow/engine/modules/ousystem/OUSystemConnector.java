@@ -29,6 +29,7 @@ import org.fireflow.engine.context.EngineModule;
  * @version 2.0
  */
 public interface OUSystemConnector extends EngineModule{
+	public User login(String userId,String password);
 	public User findUserById(String userId);
 	public List<User> findUsersInDepartment(String deptId);
 	public List<User> findUsersInRole(String roleId);

@@ -233,6 +233,7 @@ public class ProcessPersisterHibernateImpl extends
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.ProcessPersister#persistProcessToRepository(java.lang.Object, java.util.Map)
 	 */
+	/*
 	public ProcessRepository persistProcessToRepository(Object process,
 			Map<ProcessDescriptorProperty, Object> descriptorKeyValues)throws InvalidModelException {	
 		
@@ -356,6 +357,7 @@ public class ProcessPersisterHibernateImpl extends
 		return processRepository;
 
 	}
+	*/
 
 	
 //	/* (non-Javadoc)
@@ -389,5 +391,23 @@ public class ProcessPersisterHibernateImpl extends
 			return this.cache.get(key);
 		}
 		return null;
+	}
+	
+	public ProcessRepository persistProcessToRepository(String processXml,ProcessDescriptor descriptor) {
+		ProcessRepositoryImpl repository = (ProcessRepositoryImpl)descriptor.toProcessRepository();
+		repository.setProcessContent(processXml);
+		
+		//表示插入操作，需要重新生成version字段
+		if (repository.getId()==null || repository.getId().trim().equals("")){
+			int v = this.findTheLatestVersion(repository.getProcessId(), repository.getProcessType());
+			repository.setVersion(v+1);
+		}
+		
+		this.saveOrUpdate(repository);
+		//缓存
+		if (useProcessCache){
+			this.cache(repository);
+		}
+		return repository;
 	}
 }

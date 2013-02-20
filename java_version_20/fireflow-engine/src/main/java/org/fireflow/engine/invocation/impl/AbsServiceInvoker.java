@@ -28,12 +28,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;

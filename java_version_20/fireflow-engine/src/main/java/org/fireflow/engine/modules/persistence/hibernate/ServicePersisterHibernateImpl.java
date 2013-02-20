@@ -34,8 +34,8 @@ import org.fireflow.engine.entity.repository.ServiceRepository;
 import org.fireflow.engine.entity.repository.impl.ServiceDescriptorImpl;
 import org.fireflow.engine.entity.repository.impl.ServiceRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.ServicePersister;
+import org.fireflow.misc.Utils;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.service.ServiceParser;
@@ -170,7 +170,7 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 		}
 		
 		try {
-			byte[] bytes = Utils.getBytes(inStream);
+			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
 			List<ServiceDef> services = ServiceParser.deserialize(bytesIn);
 			

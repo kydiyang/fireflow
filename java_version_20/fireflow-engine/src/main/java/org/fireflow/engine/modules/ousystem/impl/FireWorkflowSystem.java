@@ -18,7 +18,6 @@ package org.fireflow.engine.modules.ousystem.impl;
 
 import java.util.Properties;
 
-import org.fireflow.engine.modules.ousystem.Actor;
 import org.fireflow.engine.modules.ousystem.User;
 
 
@@ -27,6 +26,10 @@ import org.fireflow.engine.modules.ousystem.User;
  * @version 2.0
  */
 public class FireWorkflowSystem extends UserImpl implements User {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8538361679262211542L;
 	private static FireWorkflowSystem fireWorkflowSystem = null;
 	public static synchronized FireWorkflowSystem getInstance(){
 		if (fireWorkflowSystem==null){
@@ -36,8 +39,8 @@ public class FireWorkflowSystem extends UserImpl implements User {
 	}
 	
 	private FireWorkflowSystem(){
-		this.properties = new Properties();
-		this.properties.setProperty(Actor.ID, "FireWorkflowSystem");
-		this.properties.setProperty(Actor.NAME, "Fire Workflow System");
+		this.setProperties(new Properties());
+		this.setId("FireWorkflowSystem");
+		this.setName("Fire Workflow System");
 	}
 }

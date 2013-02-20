@@ -18,41 +18,56 @@ package org.fireflow.engine.modules.ousystem.impl;
 
 import java.util.Properties;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.engine.modules.ousystem.Actor;
+import org.fireflow.misc.XmlPropertiesAdapter;
 
 
 /**
  * @author 非也
  * @version 2.0
  */
+@XmlType(name="absActorType",propOrder={"id","name","properties"})
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({UserImpl.class,RoleImpl.class,GroupImpl.class,DepartmentImpl.class})
 public abstract class AbsActor implements Actor {
-	Properties properties = new Properties(); 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.resource.Participant#getId()
+	/**
+	 * 
 	 */
+	private static final long serialVersionUID = -5454575926553679668L;
+
+	@XmlElement(name="properties")
+	@XmlJavaTypeAdapter(value=XmlPropertiesAdapter.class)
+	private Properties properties = new Properties(); 
+	
+	@XmlElement(name="id")
+	private String id = null;
+	
+	@XmlElement(name="name")
+	private String name = null;
+	
 	public String getId() {
-		
-		return properties==null?null:(String)properties.get(Actor.ID);
-	}
-	
-	public void setId(String id){
-		properties.put(Actor.ID, id);
+		return id;
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.resource.Participant#getName()
-	 */
 	public String getName() {
+		return name;
+	}
 
-		return properties==null?null:(String)properties.get(Actor.NAME);
+	public void setName(String name) {
+		this.name = name;
 	}
-	
-	public void setName(String name){
-		properties.put(Actor.NAME, name);
-	}
-	
-	
+
 	public String getProperty(String key){
 		return properties==null?null:(String)properties.get(key);
 	}
@@ -62,6 +77,6 @@ public abstract class AbsActor implements Actor {
 	}
 
 	public void setProperties(Properties properties){
-		this.properties = properties;
+		this.properties.putAll( properties);
 	}
 }

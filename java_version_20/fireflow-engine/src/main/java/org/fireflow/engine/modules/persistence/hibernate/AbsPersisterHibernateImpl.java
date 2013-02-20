@@ -19,7 +19,7 @@ package org.fireflow.engine.modules.persistence.hibernate;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.fireflow.engine.WorkflowQuery;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.Persister;
@@ -61,19 +61,19 @@ public abstract class AbsPersisterHibernateImpl extends HibernateDaoSupport
 							criteria.createAlias("activityInstance", "activityInstance");
 						}
 
-						List<org.fireflow.engine.query.Criterion> fireCriterions = q
+						List<org.fireflow.client.query.Criterion> fireCriterions = q
 								.getAllCriterions();
 						if (fireCriterions != null && fireCriterions.size() > 0) {
-							for (org.fireflow.engine.query.Criterion fireCriterion : fireCriterions) {
+							for (org.fireflow.client.query.Criterion fireCriterion : fireCriterions) {
 								org.hibernate.criterion.Criterion hibernateCriterion = PersisterUtils
 										.fireCriterion2HibernateCriterion(fireCriterion);
 								criteria.add(hibernateCriterion);
 							}
 						}
-						List<org.fireflow.engine.query.Order> fireOrders = q
+						List<org.fireflow.client.query.Order> fireOrders = q
 								.getAllOrders();
 						if (fireOrders != null && fireOrders.size() > 0) {
-							for (org.fireflow.engine.query.Order fireOrder : fireOrders) {
+							for (org.fireflow.client.query.Order fireOrder : fireOrders) {
 								org.hibernate.criterion.Order hibernateOrder = PersisterUtils
 										.fireOrder2HibernateOrder(fireOrder);
 								criteria.addOrder(hibernateOrder);
@@ -115,10 +115,10 @@ public abstract class AbsPersisterHibernateImpl extends HibernateDaoSupport
 						if (isConnectToActivityInstance(q)){
 							criteria.createAlias("activityInstance", "activityInstance");
 						}
-						List<org.fireflow.engine.query.Criterion> fireCriterions = q
+						List<org.fireflow.client.query.Criterion> fireCriterions = q
 								.getAllCriterions();
 						if (fireCriterions != null && fireCriterions.size() > 0) {
-							for (org.fireflow.engine.query.Criterion fireCriterion : fireCriterions) {
+							for (org.fireflow.client.query.Criterion fireCriterion : fireCriterions) {
 								org.hibernate.criterion.Criterion hibernateCriterion = PersisterUtils
 										.fireCriterion2HibernateCriterion(fireCriterion);
 								criteria.add(hibernateCriterion);
@@ -181,17 +181,17 @@ public abstract class AbsPersisterHibernateImpl extends HibernateDaoSupport
 	}
 	
 	private boolean isConnectToActivityInstance(WorkflowQuery q){
-		List<org.fireflow.engine.query.Criterion> criterionList = q.getAllCriterions();
+		List<org.fireflow.client.query.Criterion> criterionList = q.getAllCriterions();
 		if (criterionList!=null){
-			for (org.fireflow.engine.query.Criterion c : criterionList){
+			for (org.fireflow.client.query.Criterion c : criterionList){
 				if (c.getEntityProperty().getColumnName().startsWith("ACTIVITY_INSTANCE_$_")){
 					return true;
 				}
 			}
 		}
-		List<org.fireflow.engine.query.Order> fireOrders = q.getAllOrders();
+		List<org.fireflow.client.query.Order> fireOrders = q.getAllOrders();
 		if (fireOrders!=null){
-			for (org.fireflow.engine.query.Order order : fireOrders){
+			for (org.fireflow.client.query.Order order : fireOrders){
 				if(order.getEntityProperty().getColumnName().startsWith("ACTIVITY_INSTANCE_$_")){
 					return true;
 				}

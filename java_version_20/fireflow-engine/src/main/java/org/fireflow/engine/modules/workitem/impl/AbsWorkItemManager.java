@@ -24,8 +24,10 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
@@ -40,7 +42,6 @@ import org.fireflow.engine.entity.runtime.impl.WorkItemImpl;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
@@ -58,7 +59,6 @@ import org.fireflow.engine.modules.workitem.WorkItemCenter;
 import org.fireflow.engine.modules.workitem.WorkItemManager;
 import org.fireflow.engine.modules.workitem.event.WorkItemEvent;
 import org.fireflow.engine.modules.workitem.event.WorkItemEventTrigger;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
@@ -274,7 +274,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	 */
 	public void completeWorkItemAndJumpTo(WorkflowSession currentSession,
 			WorkItem workItem, String targetActivityId) throws InvalidOperationException{
-		
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)currentSession;
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 		ActivityInstance thisActivityInstance = workItem.getActivityInstance();
 
@@ -327,7 +327,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 				|| workItem.getParentWorkItemId().trim().equals(
 						WorkItem.NO_PARENT_WORKITEM)) {
 
-			currentSession.setAttribute(WorkItemManager.TARGET_ACTIVITY_ID, targetActivityId);
+			localSession.setAttribute(WorkItemManager.TARGET_ACTIVITY_ID, targetActivityId);
 			activityInstanceManager.onServiceCompleted(currentSession, thisActivityInstance);
 		}
 

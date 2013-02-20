@@ -32,7 +32,8 @@ import javax.xml.namespace.QName;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.UnifiedJEXL;
 import org.apache.commons.jxpath.JXPathContext;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -163,7 +164,8 @@ public class ScriptEngineHelper {
 	public static Map<String, Object> fulfillScriptContext(
 			WorkflowSession session, RuntimeContext runtimeContext,
 			ProcessInstance processInstance, ActivityInstance activityInstance) {
-
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
+		
 		Map<String, Object> engineScope = new HashMap<String, Object>();
 
 		engineScope.put(ScriptContextVariableNames.CURRENT_PROCESS_INSTANCE,
@@ -183,7 +185,7 @@ public class ScriptEngineHelper {
 		}
 
 		engineScope.put(ScriptContextVariableNames.SESSION_ATTRIBUTES,
-				session.getAllAttributes());
+				localSession.getAllAttributes());
 		return engineScope;
 	}
 
@@ -304,6 +306,8 @@ public class ScriptEngineHelper {
 			List<Assignment> assignmentsList, Map<String, Object> contextVars)
 			throws ScriptException {
 
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
+		
 		if (assignmentsList == null || assignmentsList.size()==0)
 			return;
 
@@ -355,7 +359,7 @@ public class ScriptEngineHelper {
 			Iterator<String> keys = sessionAttrs.keySet().iterator();
 			while(keys.hasNext()){
 				String key = keys.next();
-				session.setAttribute(key, sessionAttrs.get(key)); 
+				localSession.setAttribute(key, sessionAttrs.get(key)); 
 			}
 		}
 

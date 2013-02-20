@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.context.RuntimeContextAware;
+import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
@@ -50,7 +51,9 @@ public interface ProcessUtil extends RuntimeContextAware,EngineModule {
 	public Object deserializeXml2Process(InputStream inStream)throws InvalidModelException;
 	
 	public ProcessRepository serializeProcess2ProcessRepository(Object process)throws InvalidModelException;
-
+	
+	public ProcessDescriptor generateProcessDescriptor(Object process);
+	
 	/**
 	 * 获得ServiceBinding对象
 	 * @param processKey processId,processType,version组成的processKey对象

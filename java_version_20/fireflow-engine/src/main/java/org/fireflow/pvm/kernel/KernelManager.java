@@ -18,7 +18,7 @@ package org.fireflow.pvm.kernel;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.repository.ProcessKey;
 

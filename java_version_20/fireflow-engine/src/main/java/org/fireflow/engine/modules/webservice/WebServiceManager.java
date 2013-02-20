@@ -15,15 +15,11 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.engine.modules.persistence.hibernate;
+package org.fireflow.engine.modules.webservice;
 
-import java.util.List;
-
-import org.fireflow.client.WorkflowQuery;
-import org.fireflow.engine.entity.WorkflowEntity;
-import org.fireflow.engine.entity.config.impl.FireflowConfigImpl;
-import org.fireflow.engine.modules.persistence.FireflowConfigPersister;
-import org.fireflow.engine.modules.persistence.PersistenceService;
+import org.fireflow.engine.context.EngineModule;
+import org.fireflow.engine.context.RuntimeContextAware;
+import org.fireflow.engine.exception.WebservicePublishException;
 
 /**
  *
@@ -31,16 +27,15 @@ import org.fireflow.engine.modules.persistence.PersistenceService;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class FireflowConfigPersisterHibernateImpl  extends AbsPersisterHibernateImpl implements
-		FireflowConfigPersister {
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.persistence.hibernate.AbsPersisterHibernateImpl#getEntityClass4Runtime(java.lang.Class)
+public interface WebServiceManager extends EngineModule,RuntimeContextAware{
+	/**
+	 * 将所有的回调发布成WebService
 	 */
-	@Override
-	public Class getEntityClass4Runtime(Class interfaceClz) {
-		
-		return FireflowConfigImpl.class;
-	}
-
+	public void publishAllCallbackServices()throws WebservicePublishException;
+	
+	/**
+	 * 将WorkflowServer发布成WebService
+	 * @throws WebservicePublishException
+	 */
+	public void publishFireWorkflowServer()throws WebservicePublishException;
 }
