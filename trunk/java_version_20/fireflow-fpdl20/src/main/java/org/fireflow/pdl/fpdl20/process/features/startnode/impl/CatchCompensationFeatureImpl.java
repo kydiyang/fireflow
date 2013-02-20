@@ -16,7 +16,6 @@
  */
 package org.fireflow.pdl.fpdl20.process.features.startnode.impl;
 
-import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
 
@@ -27,7 +26,7 @@ import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeatu
 public class CatchCompensationFeatureImpl implements
 		CatchCompensationFeature {
 
-	String compensationCode = FpdlConstants.DEFAULT_COMPENSATION_CODE;
+	String compensationCode = CATCH_ALL_COMPENSATION;
 	Activity referencedActivity = null;
 	
 	/* (non-Javadoc)

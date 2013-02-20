@@ -89,6 +89,7 @@ public interface FPDLNames extends ModelElementNames{
 
     String FEATURES = "features";
     
+    String DEFAULT_ROUTER_FEATURE = "default-router-feature";
     String ANDJOIN_ANDSPLIT_FEATURE = "andjoin-andsplit-feature";
     String ORJOIN_ORSPLIT_FEATURE = "orjoin-orsplit-feature";
     String DYNAMIC_JOIN_SPLIT_FEATURE = "dynamic-join-split-feature";
@@ -168,7 +169,8 @@ public interface FPDLNames extends ModelElementNames{
     /////////////////////////////////////////////////////////
     ////    图形元素名称                                            /////////////////////
     /////////////////////////////////////////////////////////
-    String CHILD = "child";
+    String NODE = "node";
+    String FIGURE = "figure";
     
     String CONNECTOR = "connector";
     
@@ -182,7 +184,9 @@ public interface FPDLNames extends ModelElementNames{
     String CONTENT = "content";
     
     String BOUNDS = "bounds";
-    String UPPER_LEFT_CORNER = "upper-left-corner";
+    String X = "x";
+    String Y = "y";
+//    String UPPER_LEFT_CORNER = "upper-left-corner";
     String WIDTH = "width";
     String HEIGHT = "height";
     String BOUNDS_STYLE = "bounds-style";
@@ -190,9 +194,9 @@ public interface FPDLNames extends ModelElementNames{
     String LINE_TYPE = "line-type";
     String THICK = "thick";
     String SPACE = "space";
-    String CORNER_TYPE = "corner-type";
+//    String CORNER_TYPE = "corner-type";
     String LABEL_POSITION = "label-position";
-    String LABEL_DIRECTION = "label-direction";
+    String TEXT_DIRECTION = "text-direction";
     
     String RADIUS = "radius";
     
@@ -212,6 +216,7 @@ public interface FPDLNames extends ModelElementNames{
     String COLOR = "color";
     String SIZE = "size";
     String WEIGHT = "weight";
+    String FONT_NAME = "font-name";
     String GRADIENT_STYLE = "gradient-style";
     
     

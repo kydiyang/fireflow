@@ -27,10 +27,10 @@ import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class DynamicRouterFeature implements RouterFeature {
+public class DefaultRouterFeature implements RouterFeature {
 	private static final String joinEvaluatorName = DynamicJoinEvaluator.class.getName();
 	private static final String splitEvaluatorName = DynamicSplitEvaluator.class.getName();
-	
+
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
@@ -46,6 +46,7 @@ public class DynamicRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getJoinEvaluatorClass()
 	 */
+	@Override
 	public String getJoinEvaluatorClass() {
 		return joinEvaluatorName;
 	}
@@ -53,6 +54,7 @@ public class DynamicRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getSplitEvalutorClass()
 	 */
+	@Override
 	public String getSplitEvaluatorClass() {
 		return splitEvaluatorName;
 	}

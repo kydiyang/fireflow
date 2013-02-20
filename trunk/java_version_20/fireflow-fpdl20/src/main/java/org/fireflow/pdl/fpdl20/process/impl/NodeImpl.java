@@ -17,9 +17,7 @@
 package org.fireflow.pdl.fpdl20.process.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.fireflow.model.AbstractModelElement;
 import org.fireflow.pdl.fpdl20.process.Activity;
@@ -46,8 +44,6 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
     protected List<Transition> leavingTransitions = new ArrayList<Transition>();//输出弧
     
     protected Feature decorator = null;
-    
-    protected Map<String,String> extendAttributes = new HashMap<String,String>();
 	
 	
     public NodeImpl() {
@@ -72,10 +68,6 @@ public abstract class NodeImpl extends AbstractModelElement implements Node{
 
 	public void setFeature(Feature dec) {
 		this.decorator = dec;
-	}
-
-	public Map<String, String> getExtendedAttributes() {
-		return extendAttributes;
 	}
 	
 	public List<Node> getNextNodes(){

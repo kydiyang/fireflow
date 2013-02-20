@@ -37,8 +37,7 @@ public class ConnectorImpl extends AbstractModelElement implements Connector{
      */
     protected Node toNode = null;
 
-    protected Map<String,String> extendAttributes = new HashMap<String,String>();
-	
+
     protected InstanceCreatorDef instanceCreatorDef = null;
     protected InstanceExecutorDef instanceExecutorDef = null;
     protected InstanceTerminatorDef instanceTerminatorDef = null;
@@ -76,9 +75,6 @@ public class ConnectorImpl extends AbstractModelElement implements Connector{
         this.toNode = toNode;
     }
 
-	public Map<String, String> getExtendedAttributes() {
-		return extendAttributes;
-	}
 
 //	@Override
 	public InstanceCreatorDef getInstanceCreatorDef() {		

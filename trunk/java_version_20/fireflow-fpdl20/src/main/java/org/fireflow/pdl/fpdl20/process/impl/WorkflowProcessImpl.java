@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.fireflow.model.AbstractModelElement;
 import org.fireflow.model.misc.Duration;
@@ -28,6 +29,7 @@ import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.fpdl20.diagram.Diagram;
+import org.fireflow.pdl.fpdl20.diagram.impl.DiagramImpl;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Import;
 import org.fireflow.pdl.fpdl20.process.Node;
@@ -53,7 +55,9 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	private List<Import<ServiceDef>> importsForService = new ArrayList<Import<ServiceDef>>();
 	private List<Import<WorkflowProcess>> importsForProcess = new ArrayList<Import<WorkflowProcess>>();
 	
-	
+	/**
+	 * Diagram表，key是subprocess的id
+	 */
 	private Map<String,Diagram> diagramsMap = new HashMap<String,Diagram>();
 	
 	// ********************************************************************
@@ -83,6 +87,26 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	
 	public void addSubProcess(SubProcess flow){
 		this.localFlowsMap.put(flow.getId(), flow);
+	}
+	
+	public void deleteDiagram(String subprocessId){
+		this.diagramsMap.remove(subprocessId);
+	}
+	public void deleteSubProcess(String subProcessId){
+		SubProcess subProcess = this.localFlowsMap.get(subProcessId);
+		//1、首先删除SubProcess和对应的diagram
+		this.localFlowsMap.remove(subProcessId);
+		deleteDiagram(subProcessId);
+		
+		//如果是main subprocess，则创建一个空的
+		if (WorkflowProcess.MAIN_PROCESS_NAME.equals(subProcess.getName())){
+			SubProcessImpl newSubProcess = new SubProcessImpl(this,WorkflowProcess.MAIN_PROCESS_NAME);
+			this.addSubProcess(newSubProcess);
+			
+			String diagramId = UUID.randomUUID().toString();
+			Diagram subflowDiagram = new DiagramImpl(diagramId,newSubProcess.getId());
+			this.addDiagram(subflowDiagram);
+		}
 	}
 
 	public List<Activity> findNextActivities(String elementId){

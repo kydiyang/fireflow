@@ -32,10 +32,12 @@ import javax.xml.ws.Dispatch;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.query.Order;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
@@ -46,12 +48,10 @@ import org.fireflow.engine.entity.runtime.VariableProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WebservicePublishException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.modules.callback.CallbackManager;
 import org.fireflow.engine.modules.env.Environment;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;
-import org.fireflow.engine.query.Order;
-import org.fireflow.engine.query.Restrictions;
+import org.fireflow.engine.modules.webservice.WebServiceManager;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.impl.AssignmentImpl;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
@@ -106,7 +106,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 	@Test
 	public void testCallbackService(){
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());
-		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
+		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		
 		//0、构建流程定义
@@ -120,7 +120,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 				//发布
 				try {
 
-					stmt.uploadProcessObject(process, true, null);
+					stmt.uploadProcessObject(process, true, null, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -130,7 +130,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		});
 		
 		//2、调用CallbackManager的init方法发布Webservice
-		CallbackManager callbackManager = this.runtimeContext.getEngineModule(CallbackManager.class, FpdlConstants.PROCESS_TYPE);
+		WebServiceManager callbackManager = this.runtimeContext.getEngineModule(WebServiceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		try {
 			callbackManager.publishAllCallbackServices();
 		} catch (WebservicePublishException e1) {
@@ -166,7 +166,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		});
 		
 		//用Jaxws客户端调用Webservice		
-		Environment env = runtimeContext.getEngineModule(Environment.class, FpdlConstants.PROCESS_TYPE);
+		Environment env = runtimeContext.getEngineModule(Environment.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		URL url = null;
 		try{
 			url = new URL(env.getWebserviceContextPath()+serviceQName.getLocalPart()+"?wsdl");
@@ -218,14 +218,13 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		
 		// 验证ProcessInstance信息
 		WorkflowQuery<ProcessInstance> q4ProcInst = session
-				.createWorkflowQuery(ProcessInstance.class,
-						FpdlConstants.PROCESS_TYPE);
+				.createWorkflowQuery(ProcessInstance.class);
 		ProcessInstance procInst = q4ProcInst.get(processInstanceId);
 		Assert.assertNotNull(procInst);
 
 		Assert.assertEquals(bizId, procInst.getBizId());
 		Assert.assertEquals(processName, procInst.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20,
 				procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
 		Assert.assertEquals(processName, procInst.getProcessName());// name
@@ -249,8 +248,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		Assert.assertNull(procInst.getNote());
 
 		// 验证Token信息
-		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class,
-				FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class);
 		q4Token.add(
 				Restrictions.eq(TokenProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).addOrder(
@@ -265,7 +263,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		Assert.assertEquals(processInstanceId,
 				procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName, procInstToken.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20,
 				procInstToken.getProcessType());
 		Assert.assertEquals(new Integer(1), procInstToken.getVersion());
 		Assert.assertEquals(TokenState.COMPLETED, procInstToken.getState());
@@ -276,7 +274,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		Token startNodeToken = tokenList.get(1);
 		Assert.assertEquals(processName, startNodeToken.getProcessId());
 		Assert.assertEquals(new Integer(1), startNodeToken.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20,
 				startNodeToken.getProcessType());
 		Assert.assertEquals(procInstToken.getId(),
 				startNodeToken.getParentTokenId());
@@ -286,8 +284,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 
 		// 验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session
-				.createWorkflowQuery(ActivityInstance.class,
-						FpdlConstants.PROCESS_TYPE);
+				.createWorkflowQuery(ActivityInstance.class);
 		q4ActInst.add(
 				Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).add(
@@ -316,7 +313,7 @@ public class TheCallbackServiceProcessTest1 extends FireWorkflowJunitEnviroment{
 		Assert.assertNotNull(activityInstance.getScopeId());
 
 		Assert.assertEquals(new Integer(1), activityInstance.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20,
 				activityInstance.getProcessType());
 		Assert.assertEquals(procInst.getProcessName(),
 				activityInstance.getProcessName());

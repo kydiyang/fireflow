@@ -11,13 +11,17 @@
 	<import resource="modules/FireflowContext-OUSystemConnector.xml"/>
 	<import resource="modules/FireflowContext-EventBroadcaster.xml"/>
 	<import resource="modules/FireflowContext-Environment.xml"/>
-	                         
+	<import resource="modules/FireflowContext-FireflowServer.xml"/>	                         
 	
 	<import resource="pdlextensions/FireflowContext-fpdl20-extension.xml"/>
 	
-	<bean id="runtimeContext" class="org.fireflow.engine.context.RuntimeContext"
+	<bean id="fireflowRuntimeContext" class="org.fireflow.engine.context.RuntimeContext"
 		init-method="initialize">
-
+		<!-- true表示系统启动时，将WorkflowServer类发布成WebService，供远程调用FireWorkflow Engine。（不推荐Webservice方式调用Fire Workflow Engine） -->
+		<property name="publishWorkflowServer">
+			<value>true</value>
+		</property>
+		
 		<!-- 装载缺省的引擎模块 -->
 		<property name="defaultEngineModules">
 			<map>
@@ -53,11 +57,9 @@
 				
 				
 				<!-- 组织机构链接器 -->
-				<!-- 
 				<entry key="org.fireflow.engine.modules.ousystem.OUSystemConnector">
-					<ref bean="ouSystemConnector"/>
-				</entry>
-				 -->		
+					<bean class="org.fireflow.engine.modules.ousystem.OUSystemConnectorMock"></bean>
+				</entry>		
 				 
 				<!-- 流程事件广播 -->		
 				<entry key="org.fireflow.engine.modules.event.EventBroadcasterManager">
@@ -68,6 +70,11 @@
 				<entry key="org.fireflow.engine.modules.env.Environment">
 					<ref bean="environment"/>
 				</entry>	
+				
+				<!-- Fireflow Server模块 -->
+				<entry key="org.fireflow.server.WorkflowServer">
+					<ref bean="fireflowServer"/>
+				</entry>
 			</map>
 		</property>
 		

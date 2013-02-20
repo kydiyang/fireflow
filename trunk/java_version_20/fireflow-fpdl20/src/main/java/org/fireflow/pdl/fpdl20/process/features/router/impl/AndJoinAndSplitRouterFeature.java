@@ -30,7 +30,19 @@ import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
 public class AndJoinAndSplitRouterFeature implements RouterFeature {
 	private static final String joinEvaluatorName = AndJoinEvaluator.class.getName();
 	private static final String splitEvaluatorName = AndSplitEvaluator.class.getName();
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
+	 */
+	@Override
+	public String getJoinDescription() {
+		return AndJoinEvaluator.JOIN_DESCRIPTION;
+	}
 	
+	public String getSplitDescription(){
+		return AndSplitEvaluator.SPLIT_DESCRIPTION;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getJoinEvaluatorClass()
 	 */
@@ -41,7 +53,7 @@ public class AndJoinAndSplitRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getSplitEvalutorClass()
 	 */
-	public String getSplitEvalutorClass() {
+	public String getSplitEvaluatorClass() {
 		return splitEvaluatorName;
 	}
 

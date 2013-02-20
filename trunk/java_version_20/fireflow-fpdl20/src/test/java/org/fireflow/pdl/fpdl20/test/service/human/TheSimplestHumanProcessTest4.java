@@ -23,10 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.query.Order;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
@@ -39,8 +41,6 @@ import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.query.Order;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pdl.fpdl20.io.FPDLDeserializer;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
@@ -72,7 +72,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 				.createWorkflowSession(runtimeContext, FireWorkflowSystem
 						.getInstance());
 		final WorkflowStatement stmt = session
-				.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
+				.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 
 		// 1 首先上传流程定义和服务定义
 		transactionTemplate.execute(new TransactionCallback() {
@@ -106,7 +106,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 				// 1.2发布一条流程
 				WorkflowProcess process = createWorkflowProcess();
 				try {
-					stmt.uploadProcessObject(process, true, null);
+					stmt.uploadProcessObject(process, true, null, null);
 				} catch (InvalidModelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -174,14 +174,13 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 
 		// 验证ProcessInstance信息
 		WorkflowQuery<ProcessInstance> q4ProcInst = session
-				.createWorkflowQuery(ProcessInstance.class,
-						FpdlConstants.PROCESS_TYPE);
+				.createWorkflowQuery(ProcessInstance.class);
 		ProcessInstance procInst = q4ProcInst.get(processInstanceId);
 		Assert.assertNotNull(procInst);
 
 		Assert.assertEquals(bizId, procInst.getBizId());
 		Assert.assertEquals(processName, procInst.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, procInst
 				.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
 		Assert.assertEquals(processName, procInst.getProcessName());// name
@@ -206,8 +205,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 		Assert.assertNull(procInst.getNote());
 
 		// 验证Token信息
-		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class,
-				FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class);
 		q4Token.add(
 				Restrictions.eq(TokenProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).addOrder(
@@ -222,7 +220,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(processInstanceId, procInstToken
 				.getElementInstanceId());
 		Assert.assertEquals(processName, procInstToken.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, procInstToken
 				.getProcessType());
 		Assert.assertEquals(new Integer(1), procInstToken.getVersion());
 		Assert.assertEquals(TokenState.RUNNING, procInstToken.getState());
@@ -233,7 +231,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 		Token startNodeToken = tokenList.get(1);
 		Assert.assertEquals(processName, startNodeToken.getProcessId());
 		Assert.assertEquals(new Integer(1), startNodeToken.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, startNodeToken
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, startNodeToken
 				.getProcessType());
 		Assert.assertEquals(procInstToken.getId(), startNodeToken
 				.getParentTokenId());
@@ -243,8 +241,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 
 		// 验证ActivityInstance信息
 		WorkflowQuery<ActivityInstance> q4ActInst = session
-				.createWorkflowQuery(ActivityInstance.class,
-						FpdlConstants.PROCESS_TYPE);
+				.createWorkflowQuery(ActivityInstance.class);
 		q4ActInst.add(
 				Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID,
 						processInstanceId)).add(
@@ -273,7 +270,7 @@ public class TheSimplestHumanProcessTest4 extends FireWorkflowJunitEnviroment {
 		Assert.assertNotNull(activityInstance.getScopeId());
 
 		Assert.assertEquals(new Integer(1), activityInstance.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, activityInstance
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, activityInstance
 				.getProcessType());
 		Assert.assertEquals(procInst.getProcessName(), activityInstance
 				.getProcessName());

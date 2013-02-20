@@ -24,7 +24,7 @@ import org.fireflow.pdl.fpdl20.process.features.startnode.CatchFaultFeature;
  * @version 2.0
  */
 public class CatchFaultFeatureImpl implements CatchFaultFeature {
-	String errorCode = null;
+	String errorCode = CATCH_ALL_FAULT;
 	Activity referencedActivity = null;
 	/* (non-Javadoc)
 	 * @see org.fireflow.model.process.decorator.startnode.CatchExceptionDecorator#getActivityRef()

@@ -19,7 +19,7 @@ package org.fireflow.pdl.fpdl20.test.service.human;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.modules.ousystem.User;

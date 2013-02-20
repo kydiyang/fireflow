@@ -20,7 +20,8 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
@@ -28,7 +29,6 @@ import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.impl.AbsActivityInstanceManager;

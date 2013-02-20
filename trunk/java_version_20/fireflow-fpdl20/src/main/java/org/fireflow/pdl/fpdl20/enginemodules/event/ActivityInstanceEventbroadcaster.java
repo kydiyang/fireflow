@@ -19,9 +19,9 @@ package org.fireflow.pdl.fpdl20.enginemodules.event;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.event.Event;
 import org.fireflow.engine.modules.event.EventBroadcaster;
@@ -72,7 +72,7 @@ public class ActivityInstanceEventbroadcaster implements EventBroadcaster {
 	
 	private void fireEvent(WorkflowSession session,EventListenerDef eventListenerDef,ActivityInstanceEvent event){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String referencedBeanId = eventListenerDef.getBeanName();
 		if (referencedBeanId!=null){
