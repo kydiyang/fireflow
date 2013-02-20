@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.query.Order;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -34,8 +36,6 @@ import org.fireflow.engine.entity.runtime.VariableProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.query.Order;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.ModelElement;
 import org.fireflow.model.data.impl.ExpressionImpl;
@@ -71,7 +71,7 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 	@Test
 	public void testStartProcess(){
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());
-		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
+		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 		transactionTemplate.execute(new TransactionCallback(){
 			public Object doInTransaction(TransactionStatus arg0) {
 				
@@ -177,13 +177,13 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 		super.assertResult(session);
 		
 		//验证ProcessInstance信息
-		WorkflowQuery<ProcessInstance> q4ProcInst = session.createWorkflowQuery(ProcessInstance.class, FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<ProcessInstance> q4ProcInst = session.createWorkflowQuery(ProcessInstance.class);
 		ProcessInstance procInst = q4ProcInst.get(processInstanceId);
 		Assert.assertNotNull(procInst);
 		
 		Assert.assertEquals(bizId,procInst.getBizId());
 		Assert.assertEquals(processName, procInst.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
 		Assert.assertEquals(processName, procInst.getProcessName());//name 为空的情况下默认等于processId,
 		Assert.assertEquals(processDisplayName, procInst.getProcessDisplayName());//displayName为空的情况下默认等于name
@@ -202,7 +202,7 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 		Assert.assertNull(procInst.getNote());
 		
 		//验证Token信息
-		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class, FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class);
 		q4Token.add(Restrictions.eq(TokenProperty.PROCESS_INSTANCE_ID, processInstanceId))
 				.addOrder(Order.asc(TokenProperty.STEP_NUMBER));
 		
@@ -214,7 +214,7 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(processName+"."+WorkflowProcess.MAIN_PROCESS_NAME,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, procInstToken.getProcessType());
 		Assert.assertEquals(new Integer(1), procInstToken.getVersion());
 		Assert.assertEquals(TokenState.COMPLETED, procInstToken.getState());
 		Assert.assertNull(procInstToken.getParentTokenId());
@@ -224,13 +224,13 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 		Token startNodeToken = tokenList.get(1);
 		Assert.assertEquals(processName, startNodeToken.getProcessId());
 		Assert.assertEquals(new Integer(1), startNodeToken.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, startNodeToken.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, startNodeToken.getProcessType());
 		Assert.assertEquals(procInstToken.getId(), startNodeToken.getParentTokenId());
 		Assert.assertTrue(startNodeToken.isBusinessPermitted());
 		
 		
 		//验证ActivityInstance信息
-		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
 				.add(Restrictions.eq(ActivityInstanceProperty.NODE_ID, processName+ModelElement.ID_SEPARATOR+WorkflowProcess.MAIN_PROCESS_NAME+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
@@ -250,7 +250,7 @@ public class TheConditionSplitRouter extends FireWorkflowJunitEnviroment {
 		Assert.assertNotNull(activityInstance.getScopeId());
 		
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20,activityInstance.getProcessType());
 		Assert.assertEquals(procInst.getProcessName(), activityInstance.getProcessName());
 		Assert.assertEquals(procInst.getProcessDisplayName(), activityInstance.getProcessDisplayName());
 		

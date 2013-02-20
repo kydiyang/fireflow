@@ -17,9 +17,9 @@
 package org.fireflow.pdl.fpdl20.test.wfcontrolpattern.fault;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
@@ -58,7 +58,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 	@Test
 	public void testStartProcess(){
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());
-		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
+		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 		String result = (String)transactionTemplate.execute(new TransactionCallback(){
 			public Object doInTransaction(TransactionStatus arg0) {
 				//构建流程定义
@@ -217,13 +217,13 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		super.assertResult(session);
 		
 		//验证ProcessInstance信息
-		WorkflowQuery<ProcessInstance> q4ProcInst = session.createWorkflowQuery(ProcessInstance.class, FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<ProcessInstance> q4ProcInst = session.createWorkflowQuery(ProcessInstance.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ProcessInstance procInst = q4ProcInst.get(processInstanceId);
 		Assert.assertNotNull(procInst);
 		
 		Assert.assertEquals(bizId,procInst.getBizId());
 		Assert.assertEquals(processName, procInst.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInst.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, procInst.getProcessType());
 		Assert.assertEquals(new Integer(1), procInst.getVersion());
 		Assert.assertEquals(processName, procInst.getName());//name 为空的情况下默认等于processId,
 		Assert.assertEquals(processName, procInst.getDisplayName());//displayName为空的情况下默认等于name
@@ -242,7 +242,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		Assert.assertNull(procInst.getNote());
 		
 		//验证Token信息
-		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class, FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<Token> q4Token = session.createWorkflowQuery(Token.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		q4Token.add(Restrictions.eq(TokenProperty.PROCESS_INSTANCE_ID, processInstanceId))
 				.addOrder(Order.asc(TokenProperty.STEP_NUMBER));
 		
@@ -254,7 +254,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(processName,procInstToken.getElementId() );
 		Assert.assertEquals(processInstanceId,procInstToken.getElementInstanceId());
 		Assert.assertEquals(processName,procInstToken.getProcessId());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, procInstToken.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, procInstToken.getProcessType());
 		Assert.assertEquals(new Integer(1), procInstToken.getVersion());
 		Assert.assertEquals(TokenState.ABORTED, procInstToken.getState());
 		Assert.assertNull(procInstToken.getParentTokenId());
@@ -264,7 +264,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		Token startNodeToken = tokenList.get(1);
 		Assert.assertEquals(processName, startNodeToken.getProcessId());
 		Assert.assertEquals(new Integer(1), startNodeToken.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE, startNodeToken.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20, startNodeToken.getProcessType());
 		Assert.assertEquals(procInstToken.getId(), startNodeToken.getParentTokenId());
 		Assert.assertTrue(startNodeToken.isBusinessPermitted());
 		
@@ -277,7 +277,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		}
 		
 		//验证ActivityInstance信息
-		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE);
+		WorkflowQuery<ActivityInstance> q4ActInst = session.createWorkflowQuery(ActivityInstance.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		q4ActInst.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
 				.add(Restrictions.eq(ActivityInstanceProperty.ACTIVITY_ID, processName+".Activity1"));
 		List<ActivityInstance> actInstList = q4ActInst.list();
@@ -298,7 +298,7 @@ public class ThrowFaultTest  extends FireWorkflowJunitEnviroment {
 		Assert.assertEquals(ActivityInstanceState.COMPLETED, activityInstance.getState());
 		
 		Assert.assertEquals(new Integer(1),activityInstance.getVersion());
-		Assert.assertEquals(FpdlConstants.PROCESS_TYPE,activityInstance.getProcessType());
+		Assert.assertEquals(FpdlConstants.PROCESS_TYPE_FPDL20,activityInstance.getProcessType());
 		Assert.assertEquals(procInst.getName(), activityInstance.getProcessName());
 		Assert.assertEquals(procInst.getDisplayName(), activityInstance.getProcessDisplayName());
 		
