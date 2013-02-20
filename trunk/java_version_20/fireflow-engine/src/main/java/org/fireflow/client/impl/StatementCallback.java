@@ -14,17 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine.context;
+package org.fireflow.client.impl;
 
-import javax.jws.WebMethod;
+import org.fireflow.client.WorkflowSession;
 
-import org.fireflow.engine.exception.EngineException;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public interface EngineModule {
-	@WebMethod(exclude=true)
-	public void init(RuntimeContext runtimeContext)throws EngineException;
+public interface StatementCallback {
+	public Object doInStatement(WorkflowSession session);
 }

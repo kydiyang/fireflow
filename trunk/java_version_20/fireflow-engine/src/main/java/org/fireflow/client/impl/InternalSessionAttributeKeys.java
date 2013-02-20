@@ -14,17 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine.context;
-
-import javax.jws.WebMethod;
-
-import org.fireflow.engine.exception.EngineException;
+package org.fireflow.client.impl;
 
 /**
+ * 用于系统内部传递属性的key常量，外部系统不应该使用本类。
  * @author 非也
  * @version 2.0
  */
-public interface EngineModule {
-	@WebMethod(exclude=true)
-	public void init(RuntimeContext runtimeContext)throws EngineException;
+public interface InternalSessionAttributeKeys {
+	public static final String BIZ_ID = "org.fireflow.engine.impl.InternalSessionAttributeKeys.BIZ_ID";
+	public static final String VARIABLES = "org.fireflow.engine.impl.InternalSessionAttributeKeys.VARIABLES";
+	public static final String FIELDS_VALUES = "org.fireflow.engine.impl.InternalSessionAttributeKeys.FIELDS_VALUES";
 }

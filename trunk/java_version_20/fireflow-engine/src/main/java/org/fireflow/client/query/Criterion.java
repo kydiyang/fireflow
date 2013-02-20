@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine.context;
+package org.fireflow.client.query;
 
-import javax.jws.WebMethod;
-
-import org.fireflow.engine.exception.EngineException;
+import org.fireflow.engine.entity.EntityProperty;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public interface EngineModule {
-	@WebMethod(exclude=true)
-	public void init(RuntimeContext runtimeContext)throws EngineException;
+public interface Criterion {
+	public String toSqlString();
+	public String getOperation();
+	public EntityProperty getEntityProperty();
+	public Object[] getValues();
 }

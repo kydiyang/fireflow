@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.entity.repository.impl;
 
+import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessRepository;
 
 /**
@@ -112,5 +113,36 @@ public class ProcessRepositoryImpl extends ProcessDescriptorImpl implements Proc
 //            throw new RuntimeException(ex.toString());
 //        }
 //    }
+    
 
+    
+    /**
+     * 转换为ProcessDescriptorImpl对象，主要为了webservice调用参数传递方便
+     * @return
+     */
+    public ProcessDescriptor toProcessDescriptor(){
+    	ProcessDescriptorImpl descriptor = new ProcessDescriptorImpl();
+    	
+    	descriptor.setId(this.getId());//如果Id不为空，表示覆盖；否则表示插入；插入时需要重新计算version字段
+    	descriptor.setName(this.getName());
+    	descriptor.setDisplayName(this.getDisplayName());
+    	descriptor.setProcessId(this.getProcessId());
+    	descriptor.setProcessType(this.getProcessType());
+    	descriptor.setVersion(this.getVersion());
+    	descriptor.setDescription(this.getDescription());
+    	descriptor.setFileName(this.getFileName());
+    	descriptor.setOwnerDeptId(this.getOwnerDeptId());
+    	descriptor.setOwnerDeptName(this.getOwnerDeptName());
+    	descriptor.setPublishState(this.getPublishState());
+    	
+    	descriptor.setApprovedTime(this.getApprovedTime());
+    	descriptor.setApprover(this.getApprover());
+    	descriptor.setBizType(this.getBizType());
+    	descriptor.setHasCallbackService(this.getHasCallbackService());
+    	descriptor.setLastEditor(this.getLastEditor());
+    	descriptor.setLastUpdateTime(this.getLastUpdateTime());
+    	descriptor.setTimerStart(this.getTimerStart());
+    	
+    	return descriptor;
+    }
 }

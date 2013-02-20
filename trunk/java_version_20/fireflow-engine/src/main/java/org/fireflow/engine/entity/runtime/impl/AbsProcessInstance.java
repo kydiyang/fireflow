@@ -19,20 +19,30 @@ package org.fireflow.engine.entity.runtime.impl;
 import java.util.Date;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowStatement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.exception.InvalidOperationException;
+import org.fireflow.misc.DateTimeXmlAdapter;
 import org.fireflow.model.InvalidModelException;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public abstract class AbsProcessInstance implements ProcessInstance {
-	protected String id = null;
+@XmlType(name="absProcessInstanceType")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({ProcessInstanceImpl.class,ProcessInstanceHistory.class})
+public abstract class AbsProcessInstance extends AbsWorkflowEntity implements ProcessInstance {
     protected String bizId = null;
 
     protected String processId = null;
@@ -55,9 +65,16 @@ public abstract class AbsProcessInstance implements ProcessInstance {
     protected String creatorOrgId = null;
     protected String creatorOrgName = null;
     
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
     protected Date createdTime = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
     protected Date startedTime = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
     protected Date endTime = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
     protected Date expiredTime = null;
     
     protected String parentProcessInstanceId = null;
@@ -69,18 +86,6 @@ public abstract class AbsProcessInstance implements ProcessInstance {
     
     protected String note;
     
-    protected Date lastUpdateTime = null;
-    
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.entity.runtime.ProcessInstance#getId()
-	 */
-	public String getId() {
-		return this.id;
-	}
-	
-	public void setId(String id){
-		this.id = id;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ProcessInstance#bizId()
@@ -221,13 +226,6 @@ public abstract class AbsProcessInstance implements ProcessInstance {
 		this.note = note;
 	}
 	
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date time){
-		this.lastUpdateTime = time;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ProcessInstance#getParentActivityInstanceId()

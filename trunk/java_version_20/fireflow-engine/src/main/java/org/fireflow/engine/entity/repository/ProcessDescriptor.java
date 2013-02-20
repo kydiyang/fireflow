@@ -54,5 +54,10 @@ public interface ProcessDescriptor extends RepositoryDescriptor{
      */
     public Boolean getHasCallbackService();
 
-
+    /**
+     * 转换成ProcessRepository对象（实际是ProcessRepositoryImpl对象）
+     * @param descriptor
+     * @return
+     */
+    public ProcessRepository toProcessRepository();
 }

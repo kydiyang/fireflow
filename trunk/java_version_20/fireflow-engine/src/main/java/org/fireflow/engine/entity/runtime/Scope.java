@@ -18,7 +18,7 @@ package org.fireflow.engine.entity.runtime;
 
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.exception.InvalidOperationException;
 
 /**

@@ -19,14 +19,22 @@ package org.fireflow.engine.entity.runtime.impl;
 import java.util.Date;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowStatement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.impl.WorkflowStatementLocalImpl;
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.InvalidOperationException;
-import org.fireflow.engine.impl.WorkflowStatementLocalImpl;
+import org.fireflow.misc.DateTimeXmlAdapter;
 import org.fireflow.model.InvalidModelException;
 
 
@@ -34,11 +42,15 @@ import org.fireflow.model.InvalidModelException;
  * @author 非也
  * @version 2.0
  */
-public abstract class AbsActivityInstance implements ActivityInstance {
+@XmlType(name="absActivityInstanceType")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({ActivityInstanceImpl.class,ActivityInstanceHistory.class})
+public abstract class AbsActivityInstance extends AbsWorkflowEntity implements ActivityInstance {
 
-	protected String id = null;
 	protected String procInstCreatorId = null;
 	protected String procInstCreatorName = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date procInstCreatedTime = null;
 	protected String name = null;
 	protected String displayName = null;
@@ -62,9 +74,17 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 
 	protected ActivityInstanceState state = ActivityInstanceState.INITIALIZED;
 	protected Boolean suspended = Boolean.FALSE;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date createdTime = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date startedTime = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date expiredTime = null;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date endTime = null;
 
 	protected String processInstanceId = null;
@@ -78,8 +98,6 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	protected Boolean canBeWithdrawn = true;
 
 	protected String note = null;
-    
-	protected Date lastUpdateTime = null;
 
 
 //	/* (non-Javadoc)
@@ -163,16 +181,6 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 		this.expiredTime = expiredTime;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.entity.runtime.ActivityInstance#getId()
-	 */
-	public String getId() {
-		
-		return this.id;
-	}
-	public void setId(String id){
-		this.id = id;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.ActivityInstance#getName()
@@ -196,14 +204,6 @@ public abstract class AbsActivityInstance implements ActivityInstance {
 	
 	public void setNote(String note){
 		this.note = note;
-	}
-
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date time){
-		this.lastUpdateTime = time;
 	}
 	
 	/* (non-Javadoc)

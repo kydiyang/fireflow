@@ -19,7 +19,15 @@ package org.fireflow.engine.entity.repository.impl;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.engine.entity.repository.RepositoryDescriptor;
+import org.fireflow.misc.DateTimeXmlAdapter;
 
 /**
  *
@@ -27,12 +35,20 @@ import org.fireflow.engine.entity.repository.RepositoryDescriptor;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
+@XmlRootElement(name="absRepositoryDescriptor")
+@XmlType(name="absRepositoryDescriptorType",
+		propOrder={"id","name","displayName","description","bizType",
+		"fileName","publishState","ownerDeptId","ownerDeptName",
+		"approver","approvedTime","latestEditor","lastUpdateTime"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbsRepositoryDescriptorImpl implements
 		RepositoryDescriptor {
     protected String id; //主键
     protected String name; //流程英文名称
     protected String displayName;//流程显示名称
     protected String description;//流程业务说明
+    
+    @XmlElement(name="bizType")
     protected String bizType = null;//业务类别
     protected String fileName = null;//流程文件在classpath中的全路径名
 
@@ -41,9 +57,13 @@ public abstract class AbsRepositoryDescriptorImpl implements
     protected String ownerDeptName = null;//流程所属的部门名称
     protected String ownerDeptId = null;//流程所属的部门Id    
     protected String approver = null;//批准发布人
+    
+    @XmlJavaTypeAdapter(value=DateTimeXmlAdapter.class)
     protected Date approvedTime = null;//批准发布时间
     
     protected String latestEditor = null;//最后编辑流程的操作者姓名
+    
+    @XmlJavaTypeAdapter(value=DateTimeXmlAdapter.class)
     protected Date lastUpdateTime = null;
     
     public String getId() {

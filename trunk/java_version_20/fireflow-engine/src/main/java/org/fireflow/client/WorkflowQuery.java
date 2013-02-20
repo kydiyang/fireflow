@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine;
+package org.fireflow.client;
 
 import java.util.List;
 
+import org.fireflow.client.query.Criterion;
+import org.fireflow.client.query.Order;
 import org.fireflow.engine.entity.WorkflowEntity;
-import org.fireflow.engine.query.Criterion;
-import org.fireflow.engine.query.Order;
 
 
 /**
