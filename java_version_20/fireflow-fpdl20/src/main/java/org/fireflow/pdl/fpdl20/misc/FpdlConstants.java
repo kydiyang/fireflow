@@ -20,8 +20,7 @@ package org.fireflow.pdl.fpdl20.misc;
  * @author 非也
  * @version 2.0
  */
-public class FpdlConstants {
-	public static final String PROCESS_TYPE = "FPDL20";
-	public static final String DEFAULT_COMPENSATION_CODE = "org.fireflow.constants.DEFAULT_COMPENSATION_CODE";
+public final class FpdlConstants {
+	public static final String PROCESS_TYPE_FPDL20 = "FPDL20";
 	public static final String PROCESS_FILE_SUFFIX = "f20.xml";
 }

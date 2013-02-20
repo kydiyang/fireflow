@@ -17,8 +17,12 @@
  */
 package org.fireflow.pdl.fpdl20.process.features.router.impl;
 
+import org.fireflow.pdl.fpdl20.behavior.router.impl.AndJoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.AndSplitEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrJoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrSplitEvaluator;
 import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
 
 /**
@@ -32,6 +36,33 @@ public class CustomizedRouterFeature implements RouterFeature {
 	private String joinEvaluatorName = DynamicJoinEvaluator.class.getName();
 	private String splitEvaluatorName = DynamicSplitEvaluator.class.getName();
 	
+	private static final String joinDesc = "自定义汇聚逻辑。";
+	private static final String splitDesc = "自定义分支逻辑。";
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
+	 */
+	@Override
+	public String getJoinDescription() {
+		if(AndJoinEvaluator.class.getName().equals(joinEvaluatorName)){
+			return AndJoinEvaluator.JOIN_DESCRIPTION;
+		}else if (OrJoinEvaluator.class.getName().equals(joinEvaluatorName)){
+			return OrJoinEvaluator.JOIN_DESCRIPTION;
+		}else if (DynamicJoinEvaluator.class.getName().equals(joinEvaluatorName)){
+			return DynamicJoinEvaluator.JOIN_DESCRIPTION;
+		}
+		return joinDesc;
+	}
+	
+	public String getSplitDescription(){
+		if (AndSplitEvaluator.class.getName().equals(splitEvaluatorName)){
+			return AndSplitEvaluator.SPLIT_DESCRIPTION;
+		}else if (OrSplitEvaluator.class.getName().equals(splitEvaluatorName)){
+			return OrSplitEvaluator.SPLIT_DESCRIPTION;
+		}else if (DynamicSplitEvaluator.class.getName().equals(splitEvaluatorName)){
+			return DynamicSplitEvaluator.SPLIT_DESCRIPTION;
+		}
+		return splitDesc;
+	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getJoinEvaluatorClass()
 	 */
@@ -42,7 +73,7 @@ public class CustomizedRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getSplitEvalutorClass()
 	 */
-	public String getSplitEvalutorClass() {
+	public String getSplitEvaluatorClass() {
 		return splitEvaluatorName;
 	}
 	

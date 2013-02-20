@@ -22,9 +22,9 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
@@ -69,7 +69,7 @@ public class EmailSendProcessTest   extends FireWorkflowJunitEnviroment{
 	@Test
 	public void testStartProcess(){
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());
-		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
+		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 				
 		transactionTemplate.execute(new TransactionCallback(){
 			public Object doInTransaction(TransactionStatus arg0) {

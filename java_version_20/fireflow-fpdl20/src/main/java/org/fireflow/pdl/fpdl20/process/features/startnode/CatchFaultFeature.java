@@ -4,6 +4,7 @@ import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
 
 public interface CatchFaultFeature  extends Feature{
+	public static final String CATCH_ALL_FAULT = "org.fireflow.constants.CATCH_ALL_FAULT";
 	/**
 	 * 被catch的Activity
 	 * @return

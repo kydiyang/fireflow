@@ -20,12 +20,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.event.Event;
 import org.fireflow.engine.modules.event.EventBroadcaster;
@@ -49,7 +49,7 @@ public class WorkItemEventBroadcaster implements EventBroadcaster {
 	
 	private void fireEvent(WorkflowSession session,EventListenerDef eventListenerDef,WorkItemEvent event){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String referencedBeanId = eventListenerDef.getBeanName();
 		if (referencedBeanId!=null){

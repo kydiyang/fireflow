@@ -91,11 +91,18 @@ public interface WorkflowProcess extends ModelElement{
 	 */
 	public SubProcess getLocalSubProcess(String subProcessId);
 	
+	
 	/**
 	 * 向WorkflowProcess中增加一个subprocess
 	 * @param subProcess
 	 */
 	public void addSubProcess(SubProcess subProcess);
+	
+	/**
+	 * 删除子过程
+	 * @param subProcessId
+	 */
+	public void deleteSubProcess(String subProcessId);
 	
 	/**
 	 * 获得流程所有的subprocesss，包括引入的外部流程的main_flow
@@ -190,6 +197,8 @@ public interface WorkflowProcess extends ModelElement{
 //	public String getTargetNamespace();
 	
 	public List<Diagram> getDiagrams();
+	
+	public void deleteDiagram(String subprocessId);
 	public void addDiagram(Diagram diagram);
 	public Diagram getDiagramBySubProcessId(String subProcessId);
 }

@@ -27,14 +27,27 @@ import org.fireflow.pdl.fpdl20.process.features.Feature;
  */
 public interface RouterFeature extends Feature {
 	/**
-	 * 
+	 * 汇聚逻辑的描述信息
+	 * @return
+	 */
+	public String getJoinDescription();
+	
+	/**
+	 * 分支描述信息
+	 * @return
+	 */
+	public String getSplitDescription();
+	/**
+	 * 汇聚评价器的java类名或者Spring Bean id；
+	 * 汇聚评价器必须实现org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator
 	 * @return
 	 */
 	public String getJoinEvaluatorClass();
 	
 	/**
-	 * 
+	 * 分支评价器的类名或者Spring Bean id；
+	 * 分支评价器必须实现org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator
 	 * @return
 	 */
-	public String getSplitEvalutorClass();
+	public String getSplitEvaluatorClass();
 }

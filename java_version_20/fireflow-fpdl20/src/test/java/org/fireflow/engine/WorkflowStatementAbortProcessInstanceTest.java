@@ -21,13 +21,17 @@ import static org.junit.Assert.fail;
 import junit.framework.Assert;
 
 import org.fireflow.FireWorkflowJunitEnviroment;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceProperty;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
@@ -58,12 +62,12 @@ public class WorkflowStatementAbortProcessInstanceTest  extends FireWorkflowJuni
 	private static final String bizId = "bizobj123";
 	private static final String note = "test abort process instance";
 	/**
-	 * Test method for {@link org.fireflow.engine.WorkflowStatement#abortProcessInstance(java.lang.String, java.lang.String)}.
+	 * Test method for {@link org.fireflow.client.WorkflowStatement#abortProcessInstance(java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	public void testAbortProcessInstance() {
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());
-		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE);
+		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 		transactionTemplate.execute(new TransactionCallback(){
 			public Object doInTransaction(TransactionStatus arg0) {
 				//构建流程定义

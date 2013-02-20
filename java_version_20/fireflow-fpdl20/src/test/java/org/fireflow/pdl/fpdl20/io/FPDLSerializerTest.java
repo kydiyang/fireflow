@@ -113,43 +113,43 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		diagram.addComment(commentShape);
 		
 		AssociationShapeImpl associationShape = new AssociationShapeImpl("association_1");
-		associationShape.setFromDiagramElement(commentShape);
-		associationShape.setToDiagramElement(pool);
-		associationShape.setLabel("This is a association");
+		associationShape.setFromNode(commentShape);
+		associationShape.setToNode(pool);
+		associationShape.setTitle("This is a association");
 		diagram.addAssociation(associationShape);
 		
 		PoolShapeImpl pool2 = new PoolShapeImpl("pool_2");
 		diagram.addPool(pool2);
 		
 		MessageFlowShapeImpl messageFlow = new MessageFlowShapeImpl("message_1");
-		messageFlow.setFromDiagramElement(pool);
-		messageFlow.setToDiagramElement(pool2);
-		messageFlow.setLabel("This is a message Flow");
+		messageFlow.setFromNode(pool);
+		messageFlow.setToNode(pool2);
+		messageFlow.setTitle("This is a message Flow");
 		diagram.addMessageFlow(messageFlow);
 		
 		
 		StartNodeShape startNodeShape = new StartNodeShapeImpl(startNode.getId()+"_shape");
 		startNodeShape.setWorkflowElementRef(startNode.getId());
-		diagram.addWorkflowNodeShape(startNodeShape);
+		diagram.addProcessNodeShape(startNodeShape);
 		
 		ActivityShape activityShape = new ActivityShapeImpl(activity.getId()+"_shape");
 		activityShape.setWorkflowElementRef(activity.getId());
-		lane1.addWorkflowNodeShape(activityShape);
+		lane1.addProcessNodeShape(activityShape);
 		
 		EndNodeShape endNodeShape = new EndNodeShapeImpl(endNode.getId()+"_shape");
 		endNodeShape.setWorkflowElementRef(endNode.getId());
-		diagram.addWorkflowNodeShape(endNodeShape);
+		diagram.addProcessNodeShape(endNodeShape);
 		
 		TransitionShape transitionShape1 = new TransitionShapeImpl(transition1.getId()+"_shape");
 		transitionShape1.setWorkflowElementRef(transition1.getId());
-		transitionShape1.setFromWorkflowNodeShape(startNodeShape);
-		transitionShape1.setToWorkflowNodeShape(activityShape);
+		transitionShape1.setFromNode(startNodeShape);
+		transitionShape1.setToNode(activityShape);
 		diagram.addTransition(transitionShape1);
 		
 		TransitionShape transitionShape2 = new TransitionShapeImpl(transition2.getId()+"_shape");
 		transitionShape2.setWorkflowElementRef(transition2.getId());
-		transitionShape2.setFromWorkflowNodeShape(activityShape);
-		transitionShape2.setToWorkflowNodeShape(endNodeShape);
+		transitionShape2.setFromNode(activityShape);
+		transitionShape2.setToNode(endNodeShape);
 		diagram.addTransition(transitionShape2);
 		
 		LaneShape lane = new LaneShapeImpl("lane_3");

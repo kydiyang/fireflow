@@ -37,9 +37,9 @@
 				</entry>
 
 				<!-- Webservice管理器 -->
-				<entry key="org.fireflow.engine.modules.callback.CallbackManager">
+				<entry key="org.fireflow.engine.modules.webservice.WebServiceManager">
 					<bean
-						class="org.fireflow.pdl.fpdl20.enginemodules.callback.CallbackManagerFpdl20Impl">
+						class="org.fireflow.pdl.fpdl20.enginemodules.webservice.WebServiceManagerFpdl20Impl">
 						<property name="transactionTemplate">
 							<ref bean="springTransactionTemplate" />
 						</property>

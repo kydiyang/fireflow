@@ -18,10 +18,9 @@
 package org.fireflow.pdl.fpdl20.process.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang.StringUtils;
 import org.fireflow.model.AbstractModelElement;
 import org.fireflow.model.ModelElement;
@@ -31,15 +30,12 @@ import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.process.lifecycle.InstanceCreatorDef;
 import org.fireflow.model.process.lifecycle.InstanceExecutorDef;
 import org.fireflow.model.process.lifecycle.InstanceTerminatorDef;
-import org.fireflow.model.resourcedef.ResourceDef;
-import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.EndNode;
-import org.fireflow.pdl.fpdl20.process.SubProcess;
-import org.fireflow.pdl.fpdl20.process.Import;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Router;
 import org.fireflow.pdl.fpdl20.process.StartNode;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 
@@ -62,7 +58,7 @@ public class SubProcessImpl extends AbstractModelElement implements SubProcess {
 	/**
 	 * 流程环节
 	 */
-	private List<Activity> activities = new ArrayList<Activity>();
+	private List<Activity> activities = SetUniqueList.decorate(new ArrayList<Activity>());
 
 	/**
 	 * 转移
@@ -89,9 +85,6 @@ public class SubProcessImpl extends AbstractModelElement implements SubProcess {
 	 */
 	private List<EventListenerDef> eventListenerDefs = new ArrayList<EventListenerDef>();
 	
-
-	private Map<String, String> extendAttributes = new HashMap<String, String>();
-
 	private InstanceCreatorDef instanceCreatorDef = null;
 	private InstanceExecutorDef instanceExecutorDef = null;
 	private InstanceTerminatorDef instanceTerminatorDef = null;
@@ -249,9 +242,6 @@ public class SubProcessImpl extends AbstractModelElement implements SubProcess {
 		return startNodes;
 	}
 	
-	public Map<String, String> getExtendedAttributes() {
-		return extendAttributes;
-	}
 
 	public List<EventListenerDef> getEventListeners() {
 		return eventListenerDefs;
@@ -521,7 +511,7 @@ public class SubProcessImpl extends AbstractModelElement implements SubProcess {
 		 * (task.getType().equals(org.fireflow.model.service.impl.SUBFLOW)) {
 		 * SubflowTask subflowTask = (SubflowTask) task; if
 		 * (subflowTask.getSubWorkflowProcess() == null) { return errHead +
-		 * "SUBFLOW-task[id=" + task.getId() + "] must has a subflow."; } } else
+		 * "SUBPROCESS-task[id=" + task.getId() + "] must has a subflow."; } } else
 		 * { return errHead + " unknown task type of task[" + task.getId() +
 		 * "]"; } } }
 		 * 
