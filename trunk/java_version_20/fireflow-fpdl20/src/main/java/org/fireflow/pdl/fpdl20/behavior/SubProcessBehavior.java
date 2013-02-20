@@ -25,7 +25,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.InternalSessionAttributeKeys;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.impl.ProcessDescriptorImpl;
@@ -36,8 +38,6 @@ import org.fireflow.engine.entity.runtime.Variable;
 import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
-import org.fireflow.engine.impl.InternalSessionAttributeKeys;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.persistence.PersistenceService;
@@ -142,7 +142,7 @@ public class SubProcessBehavior implements WorkflowBehavior {
 	public void onTokenStateChanged(WorkflowSession session, Token token,
 			Object workflowElement) {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();
 		
 		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
@@ -152,7 +152,7 @@ public class SubProcessBehavior implements WorkflowBehavior {
 			
 		}
 		
-		ProcessInstanceManager processInstanceManager = ctx.getEngineModule(ProcessInstanceManager.class, FpdlConstants.PROCESS_TYPE);
+		ProcessInstanceManager processInstanceManager = ctx.getEngineModule(ProcessInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 
 		try{
 			ProcessInstanceState state = ProcessInstanceState.valueOf(token.getState().name());

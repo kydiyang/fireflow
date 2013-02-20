@@ -19,11 +19,11 @@ package org.fireflow.pdl.fpdl20.behavior.router.impl;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
@@ -44,7 +44,10 @@ import org.fireflow.pvm.kernel.TokenState;
  * 
  */
 public class DynamicJoinEvaluator implements JoinEvaluator {
-
+	public static final String JOIN_DESCRIPTION = "汇聚逻辑：当任意输入Transition到达时，判断是否有活动的前驱结点，如果有则等待汇聚，否则执行后续分支。";
+	public String getJoinDescription(){
+		return JOIN_DESCRIPTION;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -55,7 +58,7 @@ public class DynamicJoinEvaluator implements JoinEvaluator {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(
-				PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+				PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 
 		boolean multiEnteringTransitions = false;// 表示是否有多条输入边
@@ -103,7 +106,7 @@ public class DynamicJoinEvaluator implements JoinEvaluator {
 	 */
 	protected boolean hasAlivePreviousNode(WorkflowSession session,Token token,Node thisNode){
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 		
 		List<Transition> enteringTransitions = thisNode.getEnteringTransitions();		

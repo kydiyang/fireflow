@@ -23,13 +23,6 @@ package org.fireflow.pdl.fpdl20.diagram;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface AssociationShape extends DiagramElement {
-	public DiagramElement getFromDiagramElement();	
-	public void setFromDiagramElement(DiagramElement from);
+public interface AssociationShape extends ConnectorShape {
 	
-	public DiagramElement getToDiagramElement();
-	public void setToDiagramElement(DiagramElement to);
-	
-	public void setLabel(String lb);
-	public String getLabel();
 }

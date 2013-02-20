@@ -18,9 +18,9 @@ package org.fireflow.pdl.fpdl20.behavior;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
@@ -47,7 +47,7 @@ public class EndNodeBehavior extends AbsSynchronizerBehavior {
 	public Boolean canBeFired(WorkflowSession session, Token token,
 			Synchronizer synchronizer){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String className = DynamicJoinEvaluator.class.getName();
 		JoinEvaluator joinEvaluator = this.joinEvaluatorRegistry.get(className);

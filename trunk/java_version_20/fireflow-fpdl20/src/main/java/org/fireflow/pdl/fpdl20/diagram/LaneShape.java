@@ -26,11 +26,12 @@ import java.util.List;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface LaneShape extends DiagramElement {
+public interface LaneShape extends NodeShape {
 
-	public List<WorkflowNodeShape> getWorkflowNodeShapes();
+	public List<ProcessNodeShape> getProcessNodeShapes();
 	
-	public void addWorkflowNodeShape(WorkflowNodeShape shape);
+	public void addProcessNodeShape(ProcessNodeShape shape);
+
 
 //  所有的链接线 都放在Diagram这一层
 //	/**

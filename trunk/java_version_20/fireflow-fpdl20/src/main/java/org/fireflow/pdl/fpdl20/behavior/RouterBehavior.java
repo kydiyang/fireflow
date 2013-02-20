@@ -19,9 +19,9 @@ package org.fireflow.pdl.fpdl20.behavior;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
@@ -42,7 +42,7 @@ public class RouterBehavior extends AbsSynchronizerBehavior implements WorkflowB
 	public Boolean canBeFired(WorkflowSession session, Token token,
 			Synchronizer synchronizer){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String className = DynamicJoinEvaluator.class.getName();//缺省是DynamicJoin
 		
@@ -62,13 +62,13 @@ public class RouterBehavior extends AbsSynchronizerBehavior implements WorkflowB
 	protected List<String> determineNextTransitions(
 			WorkflowSession session, Token token4Node, Node node){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String className = DynamicSplitEvaluator.class.getName();
 		
 		RouterFeature feature = (RouterFeature)node.getFeature();
-		if (feature!=null && !StringUtils.isEmpty(feature.getSplitEvalutorClass())){
-			className = feature.getSplitEvalutorClass();
+		if (feature!=null && !StringUtils.isEmpty(feature.getSplitEvaluatorClass())){
+			className = feature.getSplitEvaluatorClass();
 		}
 		
 		SplitEvaluator splitEvaluator = this.splitEvaluatorRegistry.get(className);

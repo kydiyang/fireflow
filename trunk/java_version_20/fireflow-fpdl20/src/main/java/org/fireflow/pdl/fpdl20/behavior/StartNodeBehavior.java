@@ -22,7 +22,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -30,7 +31,6 @@ import org.fireflow.engine.entity.runtime.ScheduleJob;
 import org.fireflow.engine.entity.runtime.ScheduleJobState;
 import org.fireflow.engine.entity.runtime.impl.ScheduleJobImpl;
 import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.TimerOperationName;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.calendar.CalendarService;
@@ -75,7 +75,7 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 	protected List<String> determineNextTransitions(
 			WorkflowSession session, Token token4Node, Node node){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE);
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		String className = DynamicSplitEvaluator.class.getName();
 		
@@ -133,7 +133,7 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 			RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 					.getRuntimeContext();
 			PersistenceService persistenceService = ctx.getEngineModule(
-					PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+					PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 			ActivityInstancePersister actInstPersistenceService = persistenceService
 					.getActivityInstancePersister();
 			ProcessInstancePersister processInstancePersister = persistenceService

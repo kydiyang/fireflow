@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;
@@ -29,7 +30,6 @@ import org.fireflow.engine.entity.runtime.ScheduleJob;
 import org.fireflow.engine.entity.runtime.ScheduleJobState;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.ScheduleJobImpl;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
@@ -83,7 +83,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 		.getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(
-				PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+				PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 
 		boolean multiEnteringTransitions = false;// 表示是否有多条输入边
@@ -111,7 +111,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 			}
 
 			ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(
-					ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE);
+					ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 			ActivityInstancePersister actInstPersistSvc = persistenceStrategy
 					.getActivityInstancePersister();
 			ProcessInstance processInstance = session
@@ -156,7 +156,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 		ActivityInstance oldActInst = session.getCurrentActivityInstance();
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 		ProcessInstancePersister processInstancePersister = persistenceStrategy.getProcessInstancePersister();
 		
@@ -199,10 +199,10 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 			Object workflowElement) {
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 	
-		CalendarService calendarService = ctx.getEngineModule(CalendarService.class,  FpdlConstants.PROCESS_TYPE);
+		CalendarService calendarService = ctx.getEngineModule(CalendarService.class,  FpdlConstants.PROCESS_TYPE_FPDL20);
 		
 		ActivityInstance oldActInst = session.getCurrentActivityInstance();
 		ActivityInstance activityInstance = oldActInst;
@@ -252,7 +252,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 		ActivityInstance oldActInst = session.getCurrentActivityInstance();
 
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE);
+		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceService.getActivityInstancePersister();
 		ProcessInstancePersister processInstancePersister = persistenceService.getProcessInstancePersister();
 		

@@ -25,7 +25,9 @@ import java.util.List;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface PoolShape extends DiagramElement {
+public interface PoolShape extends NodeShape {
+
+	
 	/**
 	 * 是否是抽象Pool
 	 * （该属性无意义，2012-05-10）
@@ -40,11 +42,17 @@ public interface PoolShape extends DiagramElement {
 	public List<LaneShape> getLanes();
 	
 	/**
-	 * 增加泳道
+	 * 增加泳道，追加在末尾
 	 * @param ln
 	 */
 	public void addLane(LaneShape ln);
 
+	/**
+	 * 在指定位置追加泳道，-1表示末尾，0表示第一个位置，当index超过当前队列长度时，追加在末尾
+	 * @param ln
+	 * @param index
+	 */
+	public void addLane(LaneShape ln,int index);
 	
 	//所有的链接线放在diagram这一层
 //	/**

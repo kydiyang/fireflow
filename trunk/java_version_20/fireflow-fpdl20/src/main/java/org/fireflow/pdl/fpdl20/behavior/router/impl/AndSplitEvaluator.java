@@ -20,7 +20,7 @@ package org.fireflow.pdl.fpdl20.behavior.router.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Transition;
@@ -33,7 +33,10 @@ import org.fireflow.pvm.kernel.Token;
  *
  */
 public class AndSplitEvaluator implements SplitEvaluator {
-
+	public static final String SPLIT_DESCRIPTION = "分支逻辑：所有分支都会被执行，分支上的转移条件被忽略。";
+	public String getSplitDescription(){
+		return SPLIT_DESCRIPTION;
+	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator#determineNextTransitions(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, org.fireflow.pdl.fpdl20.process.Node)
 	 */

@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
@@ -39,7 +39,10 @@ import org.fireflow.pvm.kernel.Token;
  * 
  */
 public class OrSplitEvaluator implements SplitEvaluator {
-
+	public static final String SPLIT_DESCRIPTION = "分支逻辑：第一个满足转移条件的分支会被执行，其他分支被忽略。因此，要求后续分支的判断条件是互斥的，如果同时有多个分支的转移条件计算结果为true，则有不可预知的结果。";
+	public String getSplitDescription(){
+		return SPLIT_DESCRIPTION;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
