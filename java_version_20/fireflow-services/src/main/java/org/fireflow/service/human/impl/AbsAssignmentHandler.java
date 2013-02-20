@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.config.ReassignConfig;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
@@ -14,7 +15,6 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.OUSystemConnector;
 import org.fireflow.engine.modules.ousystem.User;

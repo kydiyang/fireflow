@@ -46,10 +46,12 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
 
 import org.apache.commons.lang.StringUtils;
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessKey;
@@ -59,14 +61,12 @@ import org.fireflow.engine.entity.runtime.ActivityInstanceState;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.ServiceBinding;
@@ -220,7 +220,7 @@ public class FireWorkflowServiceProvider implements Provider<Source>{
 				throw new WebServiceException("The correlation can NOT be empty; the callbackservice is "+callbackService.getName());
 			}
 			//1、通过serviceId和service version获得candidate activityInstance
-			WorkflowQuery<ActivityInstance> query = session.createWorkflowQuery(ActivityInstance.class,processType);
+			WorkflowQuery<ActivityInstance> query = session.createWorkflowQuery(ActivityInstance.class);
 			List<ActivityInstance> candidates = query.add(Restrictions.eq(ActivityInstanceProperty.SERVICE_ID, callbackService.getId()))
 				.add(Restrictions.eq(ActivityInstanceProperty.SERVICE_VERSION, callbackService.getVersion()))
 				.add(Restrictions.eq(ActivityInstanceProperty.STATE, ActivityInstanceState.RUNNING))
