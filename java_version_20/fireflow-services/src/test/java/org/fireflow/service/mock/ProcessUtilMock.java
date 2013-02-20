@@ -3,6 +3,7 @@ package org.fireflow.service.mock;
 import java.io.InputStream;
 
 import org.fireflow.engine.context.RuntimeContext;
+import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
@@ -99,6 +100,15 @@ public class ProcessUtilMock implements ProcessUtil {
 	 */
 	public ResourceDef getResourceDef(ActivityInstance activityInstance,
 			Object activity, String resourceId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#generateProcessDescriptor(java.lang.Object)
+	 */
+	@Override
+	public ProcessDescriptor generateProcessDescriptor(Object process) {
 		// TODO Auto-generated method stub
 		return null;
 	}

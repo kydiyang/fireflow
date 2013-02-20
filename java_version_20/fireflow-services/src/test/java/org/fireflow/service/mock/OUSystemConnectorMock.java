@@ -110,6 +110,10 @@ public class OUSystemConnectorMock implements OUSystemConnector {
 		roleUsersMap.put("manager",tmp );
 		
 	}
+	
+	public User login(String userId,String password){
+		return findUserById(userId);
+	}
 	public User findUserById(String userId) {
 		
 		return usersList.get(userId);

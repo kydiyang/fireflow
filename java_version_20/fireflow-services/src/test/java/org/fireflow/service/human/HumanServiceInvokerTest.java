@@ -4,10 +4,12 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
-import org.fireflow.engine.WorkflowStatement;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowStatement;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -16,10 +18,8 @@ import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.entity.runtime.WorkItemState;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.binding.impl.ResourceBindingImpl;
 import org.fireflow.model.binding.impl.ServiceBindingImpl;
 import org.fireflow.model.data.impl.InputImpl;
