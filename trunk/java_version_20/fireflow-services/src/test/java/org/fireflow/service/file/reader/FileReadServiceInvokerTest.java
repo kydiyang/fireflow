@@ -10,13 +10,13 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.Message;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;

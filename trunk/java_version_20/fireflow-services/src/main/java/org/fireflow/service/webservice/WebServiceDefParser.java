@@ -25,7 +25,7 @@ import org.fireflow.model.io.Util4Serializer;
 import org.fireflow.model.io.service.ServiceParser;
 import org.fireflow.model.servicedef.InterfaceDef;
 import org.fireflow.model.servicedef.ServiceDef;
-import org.fireflow.service.subflow.SubflowService;
+import org.fireflow.service.call.CallServiceDef;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

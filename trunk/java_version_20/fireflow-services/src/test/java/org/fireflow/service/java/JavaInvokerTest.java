@@ -26,9 +26,11 @@ import junit.framework.Assert;
 
 import org.dom4j.io.DOMWriter;
 import org.dom4j.io.SAXReader;
-import org.fireflow.engine.WorkflowQuery;
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowQuery;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -36,10 +38,8 @@ import org.fireflow.engine.entity.runtime.Variable;
 import org.fireflow.engine.entity.runtime.VariableProperty;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
-import org.fireflow.engine.query.Restrictions;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.impl.AssignmentImpl;
 import org.fireflow.model.binding.impl.InputAssignmentImpl;
@@ -296,7 +296,7 @@ public class JavaInvokerTest extends AbsTestContext {
 		Assert.assertEquals(6, ((Result)result).getResult());
 		
 		// 3、验证session中是否有 result 
-		result = session.getAttribute("result2");
+		result = ((WorkflowSessionLocalImpl)session).getAttribute("result2");
 		Assert.assertNotNull(result);
 		Assert.assertTrue(result instanceof Result);
 		Assert.assertEquals(6, ((Result)result).getResult());
@@ -561,7 +561,7 @@ public class JavaInvokerTest extends AbsTestContext {
 		Assert.assertEquals(5, ((Result)result).getResult());
 		
 		// 3、验证session中是否有 result 
-		result = session.getAttribute("result6");
+		result = ((WorkflowSessionLocalImpl)session).getAttribute("result6");
 		Assert.assertNotNull(result);
 		Assert.assertTrue(result instanceof Result);
 		Assert.assertEquals(5, ((Result)result).getResult());

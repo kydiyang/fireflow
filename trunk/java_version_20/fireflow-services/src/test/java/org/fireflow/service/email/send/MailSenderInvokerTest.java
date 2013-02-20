@@ -24,13 +24,13 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.fireflow.engine.WorkflowSession;
-import org.fireflow.engine.WorkflowSessionFactory;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.model.binding.Assignment;
@@ -61,7 +61,7 @@ public class MailSenderInvokerTest  extends AbsTestContext {
 	ProcessInstance procInst = null;
 	ActivityInstance actInst = null;
 	/**
-	 * Test method for {@link org.fireflow.engine.invocation.impl.AbsServiceInvoker#invoke(org.fireflow.engine.WorkflowSession, org.fireflow.engine.entity.runtime.ActivityInstance, org.fireflow.model.binding.ServiceBinding, org.fireflow.model.binding.ResourceBinding, Object)}.
+	 * Test method for {@link org.fireflow.engine.invocation.impl.AbsServiceInvoker#invoke(org.fireflow.client.WorkflowSession, org.fireflow.engine.entity.runtime.ActivityInstance, org.fireflow.model.binding.ServiceBinding, org.fireflow.model.binding.ResourceBinding, Object)}.
 	 */
 	@Test
 	public void testInvoke() throws Exception{
