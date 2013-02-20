@@ -307,7 +307,7 @@ public class JavaDataTypeConverter {
 
 	public static Integer convertToInt(Object object) throws ClassCastException {
 		if (object == null)
-			return null;
+			return 0;
 		if (object instanceof Integer) {
 			return (Integer) object;
 		}
@@ -324,7 +324,11 @@ public class JavaDataTypeConverter {
 			return ((Short) object).intValue();
 		}
 		if (object instanceof String && StringUtils.isNumeric((String)object)){
-			return Integer.parseInt((String)object);
+			String s = ((String)object).trim();
+			if (s.equals("")){
+				s = "0";
+			}
+			return Integer.parseInt(s);
 		}
 		throw new ClassCastException("Can NOT convert from "
 				+ object.getClass().toString() + " to java.lang.Integer");
