@@ -18,7 +18,7 @@ package org.fireflow.service.callback;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.engine.invocation.ServiceInvoker;
