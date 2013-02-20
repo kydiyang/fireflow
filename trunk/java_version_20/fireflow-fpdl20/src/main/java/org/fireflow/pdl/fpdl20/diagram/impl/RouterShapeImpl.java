@@ -18,10 +18,7 @@
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
 import org.fireflow.pdl.fpdl20.diagram.RouterShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.BoundsImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.PointImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
-import org.fireflow.pdl.fpdl20.diagram.style.impl.BoundsStyleImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.RectangleImpl;
 
 /**
  *
@@ -29,20 +26,10 @@ import org.fireflow.pdl.fpdl20.diagram.style.impl.BoundsStyleImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class RouterShapeImpl extends AbsDiagramElement implements RouterShape {
+public class RouterShapeImpl extends AbsProcessNodeShapeImpl implements RouterShape {
 	public RouterShapeImpl(String id){
 		this.id = id;
 		
-		RectangleImpl rect = new RectangleImpl();
-		
-		BoundsStyleImpl boundsStyle = new BoundsStyleImpl();
-		
-		BoundsImpl bounds = new BoundsImpl();
-		bounds.setBoundsStyle(boundsStyle);
-		bounds.setUpperLeftCorner(new PointImpl(100,100));
-		bounds.setWidth(35);
-		bounds.setHeight(35);
-		
-		rect.setBounds(bounds);
+		this.figure = new RectangleImpl();
 	}
 }

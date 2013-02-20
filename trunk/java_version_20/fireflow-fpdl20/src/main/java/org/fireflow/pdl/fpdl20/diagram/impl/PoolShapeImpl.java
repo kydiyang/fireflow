@@ -23,8 +23,8 @@ import java.util.List;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.LaneShape;
 import org.fireflow.pdl.fpdl20.diagram.PoolShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.Rectangle;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.Rectangle;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.RectangleImpl;
 
 /**
  *
@@ -32,7 +32,7 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
+public class PoolShapeImpl extends AbsNodeShapeImpl implements PoolShape {
 //	private boolean isAbstract = true;
 	private List<LaneShape> lanes = new ArrayList<LaneShape>();
 
@@ -47,7 +47,7 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 		plane.getBounds().setWidth(600);
 		plane.getBounds().setHeight(250);
 		
-		this.shape = plane;
+		this.figure = plane;
 	}
 	
 	public DiagramElement findChild(String diagramElementId){
@@ -55,8 +55,10 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 			return this;
 		}
 		for (DiagramElement diagramElm : lanes){
-			if (diagramElementId.equals(diagramElm.getId())){
-				return diagramElm;
+			DiagramElement foundElm = diagramElm.findChild(diagramElementId);
+			
+			if (foundElm!=null){
+				return foundElm;
 			}
 		}
 		return null;
@@ -84,6 +86,16 @@ public class PoolShapeImpl extends AbsDiagramElement implements PoolShape {
 	 */
 	public void addLane(LaneShape ln) {
 		this.lanes .add(ln);
+
+	}
+	
+	public void addLane(LaneShape ln,int index){
+		if (index<0 || index>this.lanes.size()){ 
+			this.lanes .add(ln);
+		}
+		else{
+			this.lanes.add(index, ln);
+		}
 
 	}
 

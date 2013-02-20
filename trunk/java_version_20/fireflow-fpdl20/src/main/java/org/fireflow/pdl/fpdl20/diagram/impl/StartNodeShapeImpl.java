@@ -18,9 +18,9 @@
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
 import org.fireflow.pdl.fpdl20.diagram.StartNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.Label;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.CircleImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.LabelImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.CircleImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.part.Label;
+import org.fireflow.pdl.fpdl20.diagram.figure.part.LabelImpl;
 
 /**
  *
@@ -28,14 +28,11 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.LabelImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class StartNodeShapeImpl extends AbsDiagramElement implements
+public class StartNodeShapeImpl extends AbsProcessNodeShapeImpl implements
 		StartNodeShape {
 	public StartNodeShapeImpl(String id){
 		this.id = id;
-		CircleImpl circle = new CircleImpl();
-		Label lb = new LabelImpl();
-		circle.setLabel(lb);
-		
-		this.shape = circle;
+
+		this.figure = new CircleImpl();;
 	}
 }

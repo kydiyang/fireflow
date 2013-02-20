@@ -23,11 +23,7 @@ import java.util.List;
 import org.fireflow.pdl.fpdl20.diagram.ActivityShape;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.StartNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.BoundsImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.PointImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.RectangleImpl;
-import org.fireflow.pdl.fpdl20.diagram.style.BoundsStyle;
-import org.fireflow.pdl.fpdl20.diagram.style.impl.BoundsStyleImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.RectangleImpl;
 
 /**
  *
@@ -35,29 +31,15 @@ import org.fireflow.pdl.fpdl20.diagram.style.impl.BoundsStyleImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class ActivityShapeImpl extends AbsDiagramElement implements
+public class ActivityShapeImpl extends AbsProcessNodeShapeImpl implements
 		ActivityShape {
 	
 	List<StartNodeShape> attachedStartNodes = new ArrayList<StartNodeShape>();
 	
 	public ActivityShapeImpl(String id){
 		this.id = id;
-		
-		RectangleImpl rect = new RectangleImpl();
-		
-		BoundsStyleImpl boundsStyle = new BoundsStyleImpl();
-		boundsStyle.setCornerType(BoundsStyle.CORNER_STYLE_ROUNDED);
-		boundsStyle.setRadius(5);
-		
-		BoundsImpl bounds = new BoundsImpl();
-		bounds.setBoundsStyle(boundsStyle);
-		bounds.setUpperLeftCorner(new PointImpl(100,100));
-		bounds.setWidth(50);
-		bounds.setHeight(35);
-		
-		rect.setBounds(bounds);
 
-		this.shape = rect;
+		this.figure = new RectangleImpl();
 	}
 	public DiagramElement findChild(String diagramElementId){
 		

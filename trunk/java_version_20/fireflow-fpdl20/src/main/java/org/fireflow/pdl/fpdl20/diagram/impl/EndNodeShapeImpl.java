@@ -18,9 +18,7 @@
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
 import org.fireflow.pdl.fpdl20.diagram.EndNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.basic.Label;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.CircleImpl;
-import org.fireflow.pdl.fpdl20.diagram.basic.impl.LabelImpl;
+import org.fireflow.pdl.fpdl20.diagram.figure.impl.CircleImpl;
 
 /**
  *
@@ -28,16 +26,11 @@ import org.fireflow.pdl.fpdl20.diagram.basic.impl.LabelImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class EndNodeShapeImpl extends AbsDiagramElement implements EndNodeShape {
+public class EndNodeShapeImpl extends AbsProcessNodeShapeImpl implements EndNodeShape {
 	public EndNodeShapeImpl(String id){
 		this.id = id;
 		
-		CircleImpl circle = new CircleImpl();
-		
-		Label lb = new LabelImpl();
-		circle.setLabel(lb);
-		
-		this.shape = circle;
+		this.figure = new CircleImpl();
 
 	}
 }

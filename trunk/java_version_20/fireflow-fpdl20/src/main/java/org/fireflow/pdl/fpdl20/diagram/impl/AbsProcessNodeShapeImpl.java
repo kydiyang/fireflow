@@ -17,12 +17,11 @@
  */
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
-import org.fireflow.pdl.fpdl20.diagram.NodeShape;
-import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape;
-import org.fireflow.pdl.fpdl20.diagram.figure.impl.LineImpl;
-import org.fireflow.pdl.fpdl20.diagram.figure.part.Label;
-import org.fireflow.pdl.fpdl20.diagram.figure.part.LabelImpl;
+import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
 
 /**
  *
@@ -30,11 +29,25 @@ import org.fireflow.pdl.fpdl20.diagram.figure.part.LabelImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class TransitionShapeImpl extends AbsConnectorShapeImpl implements
-		TransitionShape {
+public abstract class AbsProcessNodeShapeImpl extends AbsNodeShapeImpl implements
+		ProcessNodeShape {
+	List<TransitionShape> leavingTransitionShapes = new ArrayList<TransitionShape>();
+	List<TransitionShape> enteringTransitionShapes = new ArrayList<TransitionShape>();
 	
-	public TransitionShapeImpl(String id){
-		super(id);
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape#getLeavingTransitionShapes()
+	 */
+	@Override
+	public List<TransitionShape> getLeavingTransitionShapes() {
+		return leavingTransitionShapes;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape#getEnteringTransitionShapes()
+	 */
+	@Override
+	public List<TransitionShape> getEnteringTransitionShapes() {
+		return enteringTransitionShapes;
 	}
 
 }
