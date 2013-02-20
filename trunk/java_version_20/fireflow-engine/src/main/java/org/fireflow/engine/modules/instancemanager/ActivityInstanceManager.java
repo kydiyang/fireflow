@@ -16,7 +16,7 @@
  */
 package org.fireflow.engine.modules.instancemanager;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceState;

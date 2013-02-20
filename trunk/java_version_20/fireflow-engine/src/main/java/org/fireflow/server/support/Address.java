@@ -15,11 +15,10 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.engine.modules.callback;
+package org.fireflow.server.support;
 
-import org.fireflow.engine.context.EngineModule;
-import org.fireflow.engine.context.RuntimeContextAware;
-import org.fireflow.engine.exception.WebservicePublishException;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
@@ -27,9 +26,17 @@ import org.fireflow.engine.exception.WebservicePublishException;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface CallbackManager extends EngineModule,RuntimeContextAware{
-	/**
-	 * 将所有的回调发布成WebService
-	 */
-	public void publishAllCallbackServices()throws WebservicePublishException;
+@XmlRootElement(name="AddressElm")
+@XmlType(name="AddressType")
+public class Address extends ContactInfo {
+	String address = null;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
 }

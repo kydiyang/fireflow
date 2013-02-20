@@ -16,16 +16,17 @@
  */
 package org.fireflow.engine.modules.ousystem;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public interface Actor {
-	public static final String ID = "ID";
-	public static final String NAME = "NAME";
-	public static final String EMAIL_ADDRESS = "EMAIL_ADDRESS";
+public interface Actor extends Serializable {
+//	public static final String ID = "ID";
+//	public static final String NAME = "NAME";
+//	public static final String EMAIL_ADDRESS = "EMAIL_ADDRESS";
 	
 	public String getId();
 	public String getName();

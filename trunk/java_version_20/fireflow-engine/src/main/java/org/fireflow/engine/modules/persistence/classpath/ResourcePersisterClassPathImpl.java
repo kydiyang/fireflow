@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fireflow.engine.WorkflowQuery;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.repository.ResourceDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
@@ -33,9 +33,9 @@ import org.fireflow.engine.entity.repository.ResourceRepository;
 import org.fireflow.engine.entity.repository.impl.ResourceDescriptorImpl;
 import org.fireflow.engine.entity.repository.impl.ResourceRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
+import org.fireflow.misc.Utils;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.resource.ResourceDeserializer;
 import org.fireflow.model.resourcedef.ResourceDef;
@@ -78,7 +78,7 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 			throws DeserializerException {
 		ResourceDeserializer parser = new ResourceDeserializer();
 		try {
-			byte[] bytes = Utils.getBytes(inStream);
+			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
 			List<ResourceDef> resources = parser.deserialize(bytesIn);
 			

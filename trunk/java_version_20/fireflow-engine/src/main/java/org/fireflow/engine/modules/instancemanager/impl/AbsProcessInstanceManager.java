@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.InternalSessionAttributeKeys;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.context.RuntimeContextAware;
@@ -34,8 +36,6 @@ import org.fireflow.engine.entity.runtime.ProcessInstanceProperty;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
 import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.impl.InternalSessionAttributeKeys;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.event.EventBroadcaster;
 import org.fireflow.engine.modules.event.EventBroadcasterManager;
@@ -119,10 +119,11 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 		PersistenceService persistenceStrategy = runtimeContext.getEngineModule(PersistenceService.class, procInst.getProcessType());
 		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();
 
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
 		//从session取相关字段的值
 		//TODO 是否需要state.getValue()==ProcessInstanceState.ABORTED.getValue() 这个判断
 		if (state.getValue()==ProcessInstanceState.ABORTED.getValue()){
-			Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)session.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
+			Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)localSession.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
 			if (fieldsValues!=null){
 				String note = (String)fieldsValues.get(ProcessInstanceProperty.NOTE);
 				if (!StringUtils.isEmpty(note)){
@@ -201,10 +202,10 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 				}
 			}
 		}
-		
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
 		//2、然后restore processInstance
 		//从session取相关字段的值
-		Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)session.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
+		Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)localSession.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
 		if (fieldsValues!=null){
 			String note = (String)fieldsValues.get(ProcessInstanceProperty.NOTE);
 			if (!StringUtils.isEmpty(note)){
@@ -226,7 +227,7 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 			ProcessInstance processInstance) {
 		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceService = context.getEngineModule(PersistenceService.class, processInstance.getProcessType());
-		
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
 		//1、首先suspend相应的activityInstance
 		ActivityInstancePersister actInstPersister = persistenceService.getActivityInstancePersister();
 		List<ActivityInstance> activityInstanceList = actInstPersister.findActivityInstances(processInstance.getId());
@@ -241,7 +242,7 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 		
 		//2、然后suspend processInstance
 		//从session取相关字段的值
-		Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)session.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
+		Map<EntityProperty,Object> fieldsValues = (Map<EntityProperty,Object>)localSession.getAttribute(InternalSessionAttributeKeys.FIELDS_VALUES);
 		if (fieldsValues!=null){
 			String note = (String)fieldsValues.get(ProcessInstanceProperty.NOTE);
 			if (!StringUtils.isEmpty(note)){

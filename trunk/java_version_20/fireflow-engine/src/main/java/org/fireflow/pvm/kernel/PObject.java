@@ -16,7 +16,7 @@
  */
 package org.fireflow.pvm.kernel;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pvm.pdllogic.WorkflowBehavior;
 
 /**

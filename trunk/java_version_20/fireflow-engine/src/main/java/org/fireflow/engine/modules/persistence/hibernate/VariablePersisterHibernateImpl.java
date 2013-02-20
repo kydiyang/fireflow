@@ -31,7 +31,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.io.DocumentResult;
-import org.fireflow.engine.WorkflowQuery;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.runtime.Scope;
 import org.fireflow.engine.entity.runtime.Variable;

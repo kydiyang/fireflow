@@ -16,13 +16,26 @@
  */
 package org.fireflow.engine.modules.ousystem.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * 
  * 
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="departmentElm")
+@XmlType(name="departmentType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DepartmentImpl extends AbsActor implements
 		org.fireflow.engine.modules.ousystem.Department {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7311223069262345995L;
 
 }

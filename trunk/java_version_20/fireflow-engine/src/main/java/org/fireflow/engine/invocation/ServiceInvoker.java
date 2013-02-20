@@ -1,6 +1,6 @@
 package org.fireflow.engine.invocation;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.exception.ServiceInvocationException;
 import org.fireflow.model.binding.ResourceBinding;

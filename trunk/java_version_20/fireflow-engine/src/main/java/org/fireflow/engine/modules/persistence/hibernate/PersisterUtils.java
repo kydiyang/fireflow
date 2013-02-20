@@ -26,7 +26,7 @@ import org.hibernate.criterion.Restrictions;
  */
 public class PersisterUtils {
 	public static org.hibernate.criterion.Criterion fireCriterion2HibernateCriterion(
-			org.fireflow.engine.query.Criterion fireCriterion) {
+			org.fireflow.client.query.Criterion fireCriterion) {
 		String operation = fireCriterion.getOperation().trim();
 		
 		if (operation.equals("=")){
@@ -63,16 +63,16 @@ public class PersisterUtils {
 			return Restrictions.between(fireCriterion.getEntityProperty().getPropertyName(),fireCriterion.getValues()[0],fireCriterion.getValues()[1]);
 		}		
 		else if (operation.equals("and")){
-			org.fireflow.engine.query.Criterion left = (org.fireflow.engine.query.Criterion)fireCriterion.getValues()[0];
-			org.fireflow.engine.query.Criterion right = (org.fireflow.engine.query.Criterion)fireCriterion.getValues()[1];
+			org.fireflow.client.query.Criterion left = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[0];
+			org.fireflow.client.query.Criterion right = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[1];
 			org.hibernate.criterion.Criterion hLeft = fireCriterion2HibernateCriterion(left);
 			org.hibernate.criterion.Criterion hRight = fireCriterion2HibernateCriterion(right);
 			return Restrictions.and(hLeft, hRight);
 			
 		}		
 		else if (operation.equals("or")){
-			org.fireflow.engine.query.Criterion left = (org.fireflow.engine.query.Criterion)fireCriterion.getValues()[0];
-			org.fireflow.engine.query.Criterion right = (org.fireflow.engine.query.Criterion)fireCriterion.getValues()[1];
+			org.fireflow.client.query.Criterion left = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[0];
+			org.fireflow.client.query.Criterion right = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[1];
 			org.hibernate.criterion.Criterion hLeft = fireCriterion2HibernateCriterion(left);
 			org.hibernate.criterion.Criterion hRight = fireCriterion2HibernateCriterion(right);
 			return Restrictions.or(hLeft, hRight);
@@ -82,7 +82,7 @@ public class PersisterUtils {
 	}
 	
 	public static org.hibernate.criterion.Order fireOrder2HibernateOrder(
-			org.fireflow.engine.query.Order fireOrder) {
+			org.fireflow.client.query.Order fireOrder) {
 		if (fireOrder.isAscending()){
 			return org.hibernate.criterion.Order.asc(fireOrder.getEntityProperty().getPropertyName());
 		}else{

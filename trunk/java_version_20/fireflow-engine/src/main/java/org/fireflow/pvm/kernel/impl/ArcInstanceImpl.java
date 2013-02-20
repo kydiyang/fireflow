@@ -18,9 +18,9 @@ package org.fireflow.pvm.kernel.impl;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.pvm.kernel.ArcInstance;
 import org.fireflow.pvm.kernel.BookMark;
 import org.fireflow.pvm.kernel.ExecutionEntrance;

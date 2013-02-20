@@ -16,6 +16,11 @@
  */
 package org.fireflow.engine.modules.ousystem.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.fireflow.engine.modules.ousystem.Group;
 
 /**
@@ -24,6 +29,14 @@ import org.fireflow.engine.modules.ousystem.Group;
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="groupElm")
+@XmlType(name="groupType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class GroupImpl extends AbsActor implements Group {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4304683385733993209L;
 
 }

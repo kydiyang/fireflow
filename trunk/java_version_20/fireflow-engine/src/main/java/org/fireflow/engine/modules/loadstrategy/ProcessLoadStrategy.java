@@ -16,7 +16,7 @@
  */
 package org.fireflow.engine.modules.loadstrategy;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.entity.repository.ProcessKey;

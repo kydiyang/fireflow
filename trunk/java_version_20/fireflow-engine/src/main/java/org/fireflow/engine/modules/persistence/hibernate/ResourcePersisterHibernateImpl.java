@@ -34,8 +34,8 @@ import org.fireflow.engine.entity.repository.ResourceRepository;
 import org.fireflow.engine.entity.repository.impl.ResourceDescriptorImpl;
 import org.fireflow.engine.entity.repository.impl.ResourceRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.misc.Utils;
 import org.fireflow.engine.modules.persistence.ResourcePersister;
+import org.fireflow.misc.Utils;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.resource.ResourceDeserializer;
@@ -167,7 +167,7 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 		
 		ResourceDeserializer parser = new ResourceDeserializer();
 		try {
-			byte[] bytes = Utils.getBytes(inStream);
+			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
 			List<ResourceDef> resources = parser.deserialize(bytesIn);
 			

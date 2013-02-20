@@ -16,6 +16,11 @@
  */
 package org.fireflow.engine.modules.ousystem;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+import org.fireflow.engine.modules.ousystem.impl.UserImpl;
+
 
 
 /**
@@ -23,8 +28,8 @@ package org.fireflow.engine.modules.ousystem;
  * @version 2.0
  */
 public interface User extends Actor{
-	public static final String DEPT_ID = "DEPT_ID";
-	public static final String DEPT_NAME = "DEPT_NAME";
+//	public static final String DEPT_ID = "DEPT_ID";
+//	public static final String DEPT_NAME = "DEPT_NAME";
 	
 	public String getDeptId();
 	public String getDeptName();

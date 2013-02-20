@@ -19,7 +19,7 @@ package org.fireflow.pvm.kernel;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pvm.pdllogic.ExecuteResult;
 
 /**

@@ -1,4 +1,4 @@
-package org.fireflow.engine.misc;
+package org.fireflow.misc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,7 +8,7 @@ public class Utils {
 	//InputStream 转换成byte[]
 	private static final int BUFFER_SIZE = 1024;
 
-	public static byte[] getBytes(InputStream is) throws IOException {
+	public static byte[] inputStream2ByteArray(InputStream is) throws IOException {
 
 	   ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	   byte[] b = new byte[BUFFER_SIZE];
@@ -24,4 +24,11 @@ public class Utils {
 
 	   return bytes;
 	}
+	
+	public static String inputStream2String(InputStream in,String charset) throws IOException{
+		byte[] bytes = inputStream2ByteArray(in);
+
+		return new String(bytes,charset);
+	}
+	
 }

@@ -20,7 +20,7 @@ package org.fireflow.engine.modules.persistence.classpath;
 import java.util.List;
 import java.util.Map;
 
-import org.fireflow.engine.WorkflowQuery;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
@@ -93,13 +93,13 @@ public class ProcessPersisterClassPathImpl implements ProcessPersister {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.ProcessPersister#persistProcessToRepository(java.lang.Object, java.util.Map)
 	 */
-	@Override
-	public ProcessRepository persistProcessToRepository(Object process,
-			Map<ProcessDescriptorProperty, Object> descriptorKeyValues)
-			throws InvalidModelException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public ProcessRepository persistProcessToRepository(Object process,
+//			Map<ProcessDescriptorProperty, Object> descriptorKeyValues)
+//			throws InvalidModelException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.persistence.ProcessPersister#findProcessRepositoryByProcessKey(org.fireflow.engine.entity.repository.ProcessKey)
@@ -176,6 +176,16 @@ public class ProcessPersisterClassPathImpl implements ProcessPersister {
 	public void setUseProcessCache(boolean b) {
 		// TODO Auto-generated method stub
 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.persistence.ProcessPersister#persistProcessToRepository(java.lang.String, org.fireflow.engine.entity.repository.ProcessDescriptor)
+	 */
+	@Override
+	public ProcessRepository persistProcessToRepository(String processXml,
+			ProcessDescriptor descriptor) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

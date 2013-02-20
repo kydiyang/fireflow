@@ -18,7 +18,7 @@ package org.fireflow.engine.modules.persistence;
 
 import java.util.List;
 
-import org.fireflow.engine.WorkflowQuery;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.engine.entity.WorkflowEntity;
 
 

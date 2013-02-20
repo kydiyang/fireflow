@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.modules.ousystem.Actor;
 import org.fireflow.engine.modules.ousystem.OUSystemConnector;
 import org.fireflow.engine.modules.ousystem.User;
@@ -66,10 +66,10 @@ public class ProcessInstanceCreatorResolver extends ResourceResolver{
 		//不从数据库查询，而是构造一个User，提高效率
 		UserImpl u = new UserImpl();
 		Properties props = new Properties();
-		props.put(User.ID, processInstance.getCreatorId());
-		props.put(User.NAME, processInstance.getCreatorName());
-		props.put(User.DEPT_ID, processInstance.getCreatorDeptId());
-		props.put(User.DEPT_NAME, processInstance.getCreatorDeptName());
+		u.setId(processInstance.getCreatorId());
+		u.setName( processInstance.getCreatorName());
+		u.setDeptId(processInstance.getCreatorDeptId());
+		u.setDeptName( processInstance.getCreatorDeptName());
 		u.setProperties(props);
 		
 		users.add(u);

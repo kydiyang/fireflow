@@ -16,7 +16,7 @@
  */
 package org.fireflow.pvm.pdllogic;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.pvm.kernel.Token;
 
 /**
