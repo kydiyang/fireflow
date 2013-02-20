@@ -19,62 +19,79 @@ package org.fireflow.engine.entity.runtime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * @author 非也
  * @version 2.0
  */
+@XmlType(name="processInstanceStateType")
+@XmlEnum(int.class)
 public enum ProcessInstanceState {
 	/**
 	 * 活的状态
 	 */
+	@XmlEnumValue("-1")
 	ALIVE(-1),
 	
 	/**
 	 * 初始化状态
 	 */
+	@XmlEnumValue("0")
 	INITIALIZED(0),
 
 	/**
 	 * 运行状态
 	 */
+	@XmlEnumValue("1")
 	RUNNING(1),
 	
 	
 	/**
 	 * 错误处理中
 	 */
+	@XmlEnumValue("5")
 	FAULTING(5),
 	/**
 	 * 取消处理中
 	 */
+	@XmlEnumValue("6")
 	ABORTING(6),
 	/**
 	 * 补偿操作中
 	 */
+	@XmlEnumValue("7")
 	COMPENSATING(7),
 	
 	/**
 	 * 活动属性和非活动属性的分界线
 	 */
+	@XmlEnumValue("10")
 	DELIMITER(10),
 	
 	/**
 	 * 已经结束
 	 */
+	@XmlEnumValue("11")
 	COMPLETED(11),
 	
 	/**
 	 * 因错误而终止
 	 */
+	@XmlEnumValue("15")
 	FAULTED(15),
 	
 	/**
 	 * 被取消
 	 */
+	@XmlEnumValue("16")
 	ABORTED(16),
 	/**
 	 * 被补偿
 	 */
+	@XmlEnumValue("17")
 	COMPENSATED(17);
 
 	
@@ -97,6 +114,19 @@ public enum ProcessInstanceState {
 	public int getValue(){
 		return this.value;
 	}
+	
+	public int value(){
+		return this.value;
+	}
+	
+    public static ProcessInstanceState fromValue(int v) {
+        for (ProcessInstanceState c: ProcessInstanceState.values()) {
+            if (c.value==v) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(Integer.toString(v));
+    }
 	
 	public static ProcessInstanceState valueOf(Integer v){
 		ProcessInstanceState[] states =  ProcessInstanceState.values();

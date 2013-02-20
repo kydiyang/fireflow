@@ -38,6 +38,27 @@ import org.fireflow.pvm.kernel.KernelException;
  *
  */
 public class RuntimeContext {
+	/**
+	 * FPDL2.0缺省需要Spring作为容器，该常量定义transaction template的名字
+	 */
+	public static final String Spring_Transaction_Template_Name = "springTransactionTemplate";
+	
+	/**
+	 * FPDL2.0 缺省采用Hibernate作为存储层ORM方案，该常量定义hibernate session factory的名字
+	 */
+	public static final String Spring_Hibernate_Session_Factory_Name = "hibernateSessionFactory";
+	
+	/**
+	 * FPDL2.0缺省采用Spring作为容器，该常量定义Transaction Manager的名字
+	 */
+	public static final String Spring_Transaction_Manager_Name = "springTransactionManager";
+	
+	/**
+	 * Fire workflow runtime context的bean name(或者id)
+	 */
+	public static final String Fireflow_Runtime_Context_Name = "fireflowRuntimeContext";
+	
+	
 	private Map<String,ProcessDefinitionLanguageExtension> processDefinitionLanguageRegistry = new HashMap<String,ProcessDefinitionLanguageExtension>();
 	private Map<String,EngineModule> defaultEngineModules = new HashMap<String,EngineModule>();
 	
@@ -50,6 +71,13 @@ public class RuntimeContext {
      * 是否打开流程跟踪，如果打开，则会往T_FF_HIST_TRACE表中插入纪录。
      */
     private boolean enableTrace = false;
+    
+    /**
+     * 是否将org.fireflow.engine.server.WorkflowServer发布成WebService。
+     * WebService的地址由org.fireflow.engine.modules.env.Environment.getWebserviceContextPath()决定。
+     * 缺省是关闭的，不推荐使用Webservice方式调用Fire workflow engin.
+     */
+    private boolean publishWorkflowServer = false;
     
     private String defaultScript = "JEXL";//缺省的脚本语言
     private String defaultProcessType="FPDL20";//缺省的流程类型
@@ -64,7 +92,19 @@ public class RuntimeContext {
     }
 
 
-    /**
+    public boolean isPublishWorkflowServer() {
+		return publishWorkflowServer;
+	}
+
+
+
+	public void setPublishWorkflowServer(boolean publishWorkflowServer) {
+		this.publishWorkflowServer = publishWorkflowServer;
+	}
+
+
+
+	/**
      * 初始化方法
      * @throws EngineException
      * @throws KernelException

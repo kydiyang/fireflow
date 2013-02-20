@@ -18,9 +18,18 @@ package org.fireflow.engine.entity.runtime.impl;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
+import org.fireflow.misc.DateTimeXmlAdapter;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 
 /**
@@ -29,9 +38,10 @@ import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
  * @author 非也
  * @version 2.0
  */
-public abstract class AbsWorkItem implements WorkItem{
-	protected String id = null;
-
+@XmlType(name="absWorkItemType")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({WorkItemImpl.class,WorkItemHistory.class})
+public abstract class AbsWorkItem extends AbsWorkflowEntity implements WorkItem{
 	protected WorkItemState state = WorkItemState.INITIALIZED;
 	
 	/**
@@ -58,16 +68,21 @@ public abstract class AbsWorkItem implements WorkItem{
 	/**
 	 * 创建时间
 	 */
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date createdTime;
 	
 	/**
 	 * 到期时间，等于ActivityInstance.expiredTime
 	 */
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date expiredTime;
     /**
      * 签收时间
      */
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date claimedTime;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date endTime;
 
 	protected String ownerId;
@@ -103,11 +118,11 @@ public abstract class AbsWorkItem implements WorkItem{
 	protected String parentWorkItemId = WorkItem.NO_PARENT_WORKITEM;
 	protected String reassignType;
 	
-	protected ActivityInstance activityInstance;
+	@XmlElementRef
+	protected AbsActivityInstance activityInstance;
+	
     protected WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
 	
-    protected Date lastUpdateTime = null;
-    
     
     //////////////////////////////////////
     ///////////  冗余字段 便于查询 /////////
@@ -121,19 +136,6 @@ public abstract class AbsWorkItem implements WorkItem{
     protected int stepNumber = -1;
     
     
-    /**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the state
@@ -393,7 +395,7 @@ public abstract class AbsWorkItem implements WorkItem{
 	 * @param activityInstance the activityInstance to set
 	 */
 	public void setActivityInstance(ActivityInstance activityInstance) {
-		this.activityInstance = activityInstance;
+		this.activityInstance = (AbsActivityInstance)activityInstance;
 	}
 	
 
@@ -488,15 +490,6 @@ public abstract class AbsWorkItem implements WorkItem{
 	public void setWorkItemType(String workItemType) {
 		this.workItemType = workItemType;
 	}
-	
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date lastUpdateTime){
-		this.lastUpdateTime = lastUpdateTime;
-	}
-	
 	
 
 	public String getProcessId() {

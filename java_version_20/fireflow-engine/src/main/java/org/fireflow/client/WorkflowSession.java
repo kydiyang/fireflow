@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine;
+package org.fireflow.client;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -32,53 +33,21 @@ import org.fireflow.engine.modules.ousystem.User;
  * @author 非也,nychen2000@163.com
  * 
  */
-public interface WorkflowSession {
+public interface WorkflowSession extends Serializable {
 	public static final String CURRENT_PROCESS_INSTANCE = "CURRENT_PROCESS_INSTANCE";
 	public static final String CURRENT_ACTIVITY_INSTANCE = "CURRENT_ACTIVITY_INSTANCE";
 //	public static final String LATEST_CREATED_WORKITEMS = "LATEST_CREATED_WORKITEMS";
-	
-
+	/**
+	 * 唯一标示一个session
+	 */
+	public String getSessionId();
 	/**
 	 * 返回当前连接BPM子系统的用户
 	 * @return
 	 */
 	public User getCurrentUser();
 	
-	/**
-	 * 设置属性
-	 * @param name
-	 * @param value
-	 */
-	public WorkflowSession setAttribute(String name,Object value);
-	
-	/**
-	 * 类似HttpServletRequest的getAttribute,用于流程操作中传递参数。
-	 * @param name
-	 * @return
-	 */
-	public Object getAttribute(String name);
-	
-	/**
-	 * 清空workflowSession中的所有参数
-	 */
-	public void clearAttributes();
-	
-	/**
-	 * 清空workflowSession中指定名称的参数，并返回该参数。
-	 * @param name
-	 */
-	public Object removeAttribute(String name);
-	
-	/**
-	 * 
-	 * @param attributes
-	 */
-	public WorkflowSession setAllAttributes(Map<String ,Object> attributes);
-	
-	/**
-	 * 返回当前session中的所有的attributes属性
-	 */
-	public Map<String,Object> getAllAttributes();
+
 	
 	/**
 	 * 获得当前的流程实例
@@ -116,8 +85,9 @@ public interface WorkflowSession {
 	 * @param <T> 需要查询的Entity的class类
 	 * @param t 流程类别名称，如"FPDL20"。对于Fpdl 2.0，可以用常量FpdlConstants.PROCESS_TYPE。
 	 * @return
+	 * WorkfowQuery只是一个存储查询条件信息的Bean,不需要该方法，2013-02-20
 	 */
-	public <T extends WorkflowEntity> WorkflowQuery<T> createWorkflowQuery(Class<T> c,String processType);
+	//public <T extends WorkflowEntity> WorkflowQuery<T> createWorkflowQuery(Class<T> c,String processType);
 	
 	/**
 	 * 创建Query，使用缺省的流程类别，即"FPDL20";缺省流程类别可以在RuntimeContext中设置。

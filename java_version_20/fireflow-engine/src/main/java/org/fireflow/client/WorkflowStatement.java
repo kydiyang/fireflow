@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine;
+package org.fireflow.client;
 
 import java.io.File;
 import java.io.InputStream;
@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
-import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.RepositoryDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptor;
@@ -44,12 +43,12 @@ import org.fireflow.pvm.kernel.KernelException;
 
 /**
  * 使用模式：
- * WorkflowStatement statement = workflowSession.createWorkflowStatement();
- * statement.setAttribute("a","abc")
+ * WorkflowStatement queryDelegate = workflowSession.createWorkflowStatement();
+ * queryDelegate.setAttribute("a","abc")
  *          .setDynamicAssignmentHandler("activity2",theAssigmentHandler)
  *          .startProcess("process1");
- * ActivityInstance activityInstance = statement.getCurrentActivityInstance();
- * List<WorkItem> workitemList = statement.getLatestCreatedWorkItems();
+ * ActivityInstance activityInstance = queryDelegate.getCurrentActivityInstance();
+ * List<WorkItem> workitemList = queryDelegate.getLatestCreatedWorkItems();
  * 
  * 
  * @author 非也
@@ -123,6 +122,11 @@ public interface WorkflowStatement {
 	public ProcessInstance startProcess(String workflowProcessId,int version,String bizId,Map<String,Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException,InvalidOperationException;
 	
+	public ProcessInstance startProcess(String workflowProcessId,int version,String subProcessId,String bizId,Map<String,Object> variables) throws InvalidModelException,
+			WorkflowProcessNotFoundException,InvalidOperationException;
+	
+	public ProcessInstance startProcess(String workflowProcessId,String subProcessId,String bizId,Map<String,Object> variables) throws InvalidModelException,
+	WorkflowProcessNotFoundException,InvalidOperationException;
 	/**
 	 * 创建并启动流程。具体启动哪个版本需要根据外部策略决定。<br/>
 	 * 该方法执行完毕后，可以通过WorkflowStatement.getCurrentProcessInstance(),
@@ -163,6 +167,8 @@ public interface WorkflowStatement {
 	public ProcessInstance createProcessInstance(String workflowProcessId) throws InvalidModelException ,WorkflowProcessNotFoundException;
 	public ProcessInstance createProcessInstance(Object process)throws InvalidModelException ;
 	public ProcessInstance createProcessInstance(String workflowProcessId,int version) throws InvalidModelException ,WorkflowProcessNotFoundException;
+	public ProcessInstance createProcessInstance(String workflowProcessId,int version,String subProcessId) throws InvalidModelException ,WorkflowProcessNotFoundException;
+	public ProcessInstance createProcessInstance(String workflowProcessId,String subProcessId)throws InvalidModelException ,WorkflowProcessNotFoundException;
 	
 	public ProcessInstance runProcessInstance(String processInstanceId,String bizId,Map<String,Object> variables) ;
 
@@ -350,11 +356,32 @@ public interface WorkflowStatement {
 	 * 将流程定义发布到系统中
 	 * @param processObject 流程定义对象
 	 * @param publishState 发布状态，true表示发布，false表示未发布。
-	 * @param metadata 元数据信息，如流程类别、packagename等等，该HashMap的key是ProcessDescriptorProperty
+	 * @param bizType 该流程所属业务类别，（TODO 描述信息待补充）
+	 * @param ownerDeptId 该流程所述的部门Id
 	 */
-	public ProcessDescriptor uploadProcessObject(Object processObject,boolean publishState, Map<ProcessDescriptorProperty,Object> metadata) throws InvalidModelException;
+	public ProcessDescriptor uploadProcessObject(Object processObject,boolean publishState, String bizType, String ownerDeptId) throws InvalidModelException;
 	
-	public ProcessDescriptor uploadProcessStream(InputStream inStream,boolean publishState, Map<ProcessDescriptorProperty,Object> metadata) throws InvalidModelException;
+	/**
+	 * 
+	 * @param inStream
+	 * @param publishState
+	 * @param bizType
+	 * @param ownerDeptId
+	 * @return
+	 * @throws InvalidModelException
+	 */
+	public ProcessDescriptor uploadProcessStream(InputStream inStream,boolean publishState, String bizType, String ownerDeptId) throws InvalidModelException;
+	
+	/**
+	 * 
+	 * @param processXml
+	 * @param publishState
+	 * @param bizType
+	 * @param ownerDeptId
+	 * @return
+	 * @throws InvalidModelException
+	 */
+	public ProcessDescriptor uploadProcessXml(String processXml,boolean publishState, String bizType, String ownerDeptId)throws InvalidModelException;
 	
 	/**
 	 * 将zip文件中的所有流程定义文件、服务定义和资源定义发布到流程库中。<br/>
@@ -410,17 +437,7 @@ public interface WorkflowStatement {
 	/*****************************************************************/
 	/***************   查询相关的api ******************************/
 	/*****************************************************************/
-//	public <T extends WorkflowEntity> List<T> executeQueryList(WorkflowQuery<T> q);
-//	public <T extends WorkflowEntity> int executeQueryCount(WorkflowQuery<T> q);
-	/**
-	 * 根据实体的Id返回实体对象，如果运行时表没有发现该对象，则从历史表中查询。
-	 * @param <T>
-	 * @param entityId 实体Id
-	 * @param entityClass 实体接口类
-	 * @return
-	 */
-//	public <T extends WorkflowEntity> T getEntity(String entityId,Class<T> entityClass);
-	
+
 	public Object getWorkflowProcess(ProcessKey key) throws InvalidModelException;
 
 }

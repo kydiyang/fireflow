@@ -18,7 +18,7 @@ package org.fireflow.engine.entity.runtime;
 
 import java.util.Date;
 
-import org.fireflow.engine.WorkflowSession;
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.model.InvalidModelException;

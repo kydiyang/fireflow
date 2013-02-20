@@ -1,6 +1,13 @@
 package org.fireflow.engine.entity.repository.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
+import org.fireflow.engine.entity.repository.ProcessRepository;
 
 /**
  * TODO 如何体现“流程族”的概念
@@ -9,19 +16,25 @@ import org.fireflow.engine.entity.repository.ProcessDescriptor;
  * @author 非也
  *
  */
+@XmlRootElement(name="processDescriptorElm")
+@XmlType(name="processDescriptorType",propOrder={"processId","processType","version","isTimerStart","hasCallbackService"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ProcessDescriptorImpl extends AbsRepositoryDescriptorImpl implements ProcessDescriptor{
 	//TODO 如何体现“流程族”的概念
-
+	@XmlElement(name="processId")
     protected String processId;//流程id
+	
+	@XmlElement(name="processType")
     protected String processType = null;//定义文件的语言类型，fpdl,xpdl,bepl...
-    protected Integer version;//版本号
     
+	@XmlElement(name="version")
+	protected Integer version;//版本号
     
+	@XmlElement(name="isTimerStart")
     protected Boolean isTimerStart = Boolean.FALSE;//是否是定时启动的流程
     
+	@XmlElement(name="hasCallbackService")
     protected Boolean hasCallbackService = Boolean.FALSE;//是否有回调接口，即是否要发布Webservice
-    
-
     
     public String getProcessId() {
         return processId;
@@ -66,5 +79,29 @@ public class ProcessDescriptorImpl extends AbsRepositoryDescriptorImpl implement
     
     public void setHasCallbackService(Boolean b){
     	this.hasCallbackService = b;
+    }
+    
+    public ProcessRepository toProcessRepository(){
+    	ProcessRepositoryImpl repository = new ProcessRepositoryImpl();
+    	repository.setId(this.getId());//如果Id不为空，表示覆盖；否则表示插入；插入时需要重新计算version字段
+    	repository.setName(this.getName());
+    	repository.setDisplayName(this.getDisplayName());
+    	repository.setProcessId(this.getProcessId());
+    	repository.setProcessType(this.getProcessType());
+    	repository.setVersion(this.getVersion());
+    	repository.setDescription(this.getDescription());
+    	repository.setFileName(this.getFileName());
+    	repository.setOwnerDeptId(this.getOwnerDeptId());
+    	repository.setOwnerDeptName(this.getOwnerDeptName());
+    	repository.setPublishState(this.getPublishState());
+    	
+    	repository.setApprovedTime(this.getApprovedTime());
+    	repository.setApprover(this.getApprover());
+    	repository.setBizType(this.getBizType());
+    	repository.setHasCallbackService(this.getHasCallbackService());
+    	repository.setLastEditor(this.getLastEditor());
+    	repository.setLastUpdateTime(this.getLastUpdateTime());
+    	repository.setTimerStart(this.getTimerStart());
+    	return repository;
     }
 }

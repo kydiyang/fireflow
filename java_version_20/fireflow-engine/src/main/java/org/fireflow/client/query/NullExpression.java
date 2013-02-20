@@ -14,20 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses. *
  */
-package org.fireflow.engine.entity.repository;
+package org.fireflow.client.query;
+
+import org.fireflow.engine.entity.EntityProperty;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public interface ProcessRepository extends ProcessDescriptor {
-	public String getProcessContent();
-	
-	public Object getProcessObject();
-	
-	/**
-	 * 转换成ProcessDescriptorImpl对象，便于WebService参数传递
-	 * @return
+public class NullExpression implements Criterion {
+	private final EntityProperty property;
+
+	protected NullExpression(EntityProperty property) {
+		this.property = property;
+	}
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.Criterion#toSqlString()
 	 */
-	public ProcessDescriptor toProcessDescriptor();
+	public String toSqlString() {
+		return property.getColumnName() + " "+getOperation();
+	}
+	public String toString() {
+		return property.getColumnName() + " "+getOperation();
+	}
+	
+	public String getOperation(){
+		return " is null ";
+	}
+	public EntityProperty getEntityProperty(){
+		return property;
+	}
+	public Object[] getValues(){
+		return null;
+	}	
 }
