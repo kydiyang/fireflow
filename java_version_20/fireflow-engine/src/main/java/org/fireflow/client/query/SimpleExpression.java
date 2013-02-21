@@ -16,36 +16,65 @@
  */
 package org.fireflow.client.query;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.misc.EntityPropertyXmlAdapter;
+import org.fireflow.misc.ObjectXmlAdapter;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public class SimpleExpression implements Criterion{
-	private final EntityProperty property;
-	private final Object value;
-	private final String op;
+@XmlRootElement(name="simpleExp")
+@XmlType(name="simpleExpType",propOrder={"property","op","value"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SimpleExpression  extends AbsCriterion  implements Criterion{
+	@XmlElement(name="property")
+	@XmlJavaTypeAdapter(EntityPropertyXmlAdapter.class)
+	private EntityProperty property;
 	
-	protected SimpleExpression(EntityProperty property, Object value, String op) {
+	@XmlElement(name="operation")
+	private String op;
+
+	@XmlElement(name="value")
+	@XmlJavaTypeAdapter(ObjectXmlAdapter.class)
+	private Object value;
+	
+	public SimpleExpression(){
+		
+	}
+
+	
+	public SimpleExpression(EntityProperty property, Object value, String op) {
+		if (!JavaDataTypeConvertor.isPrimaryObject(value)){
+			throw new IllegalArgumentException("简单表达式只接受基本数据类型（包含String ,java.util.Date,不含byte），而你输入的value是"+value.getClass().getName());
+		}
 		this.property = property;
 		this.value = value;
 		this.op = op;
 	}
 	
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.Criterion#toSqlString()
 	 */
 	public String toSqlString() {
-		return " "+property.getColumnName() + getOperation() + " ? ";
+		return " "+property.getColumnName() +" "+ getOperation() + " ? ";
 	}
 	public String toString() {
-		return property.getColumnName() + getOperation() + value;
+		return property.getColumnName() +" "+ getOperation() +" "+ this.valueToSQLString(value);
 	}
 
 	
 	public String getOperation(){
-		return " "+op+" ";
+		return op;
 	}
 	public EntityProperty getEntityProperty(){
 		return property;

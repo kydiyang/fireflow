@@ -32,7 +32,7 @@ import org.fireflow.pvm.kernel.KernelException;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="activityInstanceHistoryElm")
+@XmlRootElement(name="activityInstanceHistory")
 @XmlType(name="activityInstanceHistoryType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ActivityInstanceHistory extends AbsActivityInstance implements

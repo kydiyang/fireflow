@@ -16,16 +16,33 @@
  */
 package org.fireflow.client.query;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.misc.EntityPropertyXmlAdapter;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public class NullExpression implements Criterion {
-	private final EntityProperty property;
+@XmlRootElement(name="isNull")
+@XmlType(name="isNullType")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class NullExpression  extends AbsCriterion implements Criterion {
+	@XmlAttribute(name="field")
+	@XmlJavaTypeAdapter(value=EntityPropertyXmlAdapter.class)
+	private EntityProperty property;
 
-	protected NullExpression(EntityProperty property) {
+	public NullExpression(){
+		
+	}
+	
+	public NullExpression(EntityProperty property) {
 		this.property = property;
 	}
 	/* (non-Javadoc)
@@ -39,7 +56,7 @@ public class NullExpression implements Criterion {
 	}
 	
 	public String getOperation(){
-		return " is null ";
+		return Criterion.OPERATION_IS_NULL;
 	}
 	public EntityProperty getEntityProperty(){
 		return property;

@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.modules.persistence.hibernate;
 
+import org.fireflow.client.query.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -29,40 +30,40 @@ public class PersisterUtils {
 			org.fireflow.client.query.Criterion fireCriterion) {
 		String operation = fireCriterion.getOperation().trim();
 		
-		if (operation.equals("=")){
+		if (Criterion.OPERATION_EQ.equals(operation)){
 			return Restrictions.eq(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}
-		else if (operation.equals("<>")){
+		else if (Criterion.OPERATION_NE.equals(operation)){
 			return Restrictions.ne(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}
-		else if (operation.equals("like")){
+		else if (Criterion.OPERATION_LIKE.equals(operation)){
 			return Restrictions.like(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}
-		else if (operation.equals(">")){
+		else if (Criterion.OPERATION_GT.equals(operation)){
 			return Restrictions.gt(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}
-		else if (operation.equals("<")){
+		else if (Criterion.OPERATION_LT.equals(operation)){
 			return Restrictions.lt(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}	
-		else if (operation.equals(">=")){
+		else if (Criterion.OPERATION_GE.equals(operation)){
 			return Restrictions.ge(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}		
-		else if (operation.equals("<=")){
+		else if (Criterion.OPERATION_LE.equals(operation)){
 			return Restrictions.le(fireCriterion.getEntityProperty().getPropertyName(), fireCriterion.getValues()[0]);
 		}
-		else if (operation.equals("is null")){
+		else if (operation.equals(Criterion.OPERATION_IS_NULL)){
 			return Restrictions.isNull(fireCriterion.getEntityProperty().getPropertyName());
 		}	
-		else if (operation.equals("is not null")){
+		else if (operation.equals(Criterion.OPERATION_IS_NOT_NULL)){
 			return Restrictions.isNotNull(fireCriterion.getEntityProperty().getPropertyName());
 		}	
-		else if (operation.equals("in")){
+		else if (operation.equals(Criterion.OPERATION_IN)){
 			return Restrictions.in(fireCriterion.getEntityProperty().getPropertyName(),fireCriterion.getValues());
 		}	
-		else if (operation.equals("between")){
+		else if (Criterion.OPERATION_BETWEEN.equals(operation)){
 			return Restrictions.between(fireCriterion.getEntityProperty().getPropertyName(),fireCriterion.getValues()[0],fireCriterion.getValues()[1]);
 		}		
-		else if (operation.equals("and")){
+		else if (Criterion.OPERATION_AND.equals(operation)){
 			org.fireflow.client.query.Criterion left = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[0];
 			org.fireflow.client.query.Criterion right = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[1];
 			org.hibernate.criterion.Criterion hLeft = fireCriterion2HibernateCriterion(left);
@@ -70,7 +71,7 @@ public class PersisterUtils {
 			return Restrictions.and(hLeft, hRight);
 			
 		}		
-		else if (operation.equals("or")){
+		else if (Criterion.OPERATION_OR.equals(operation)){
 			org.fireflow.client.query.Criterion left = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[0];
 			org.fireflow.client.query.Criterion right = (org.fireflow.client.query.Criterion)fireCriterion.getValues()[1];
 			org.hibernate.criterion.Criterion hLeft = fireCriterion2HibernateCriterion(left);

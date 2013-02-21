@@ -16,7 +16,6 @@
  */
 package org.fireflow.engine.entity;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -29,6 +28,5 @@ public interface EntityProperty {
 	public String getColumnName();
 	public String getDisplayName(Locale locale);
 	public String getDisplayName();
-	
-//	public List<EntityProperty> getAllProperties();
+	public String getEntityName();
 }

@@ -46,7 +46,7 @@ import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.data.Expression;
 import org.firesoa.common.jxpath.model.dom.W3CDomFactory;
 import org.firesoa.common.schema.NameSpaces;
-import org.firesoa.common.util.JavaDataTypeConverter;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 import org.firesoa.common.util.ScriptLanguages;
 
 /**
@@ -228,7 +228,7 @@ public class ScriptEngineHelper {
 
 			if (fromExpression.getDataType() != null && obj!=null) {
 				try {
-					obj = JavaDataTypeConverter.dataTypeConvert(
+					obj = JavaDataTypeConvertor.dataTypeConvert(
 							fromExpression.getDataType(), obj, null);
 				} catch (ClassCastException e) {
 					throw new ScriptException(e);
@@ -245,7 +245,7 @@ public class ScriptEngineHelper {
 					&& dataType.getNamespaceURI().equals(
 							NameSpaces.JAVA.getUri()) && obj!=null) {// 进行类型验证和转换
 				try {
-					obj = JavaDataTypeConverter.dataTypeConvert(dataType, obj, null);
+					obj = JavaDataTypeConvertor.dataTypeConvert(dataType, obj, null);
 				} catch (ClassCastException e) {
 					throw new ScriptException(e);
 				} catch (ClassNotFoundException e) {

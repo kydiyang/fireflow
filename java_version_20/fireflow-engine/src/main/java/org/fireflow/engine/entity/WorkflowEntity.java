@@ -26,6 +26,18 @@ import java.util.Date;
  * @version 2.0
  */
 public interface WorkflowEntity {
+	public static final String ENTITY_NAME_ACTIVITY_INSTANCE = "ActivityInstance";
+	public static final String ENTITY_NAME_PROCESS_INSTANCE = "ProcessInstance";
+	public static final String ENTITY_NAME_WORKITEM = "WorkItem";
+	public static final String ENTITY_NAME_VARIABLE = "Variable";
+	public static final String ENTITY_NAME_TOKEN = "Token";
+	public static final String ENTITY_NAME_FIREFLOW_CONFIG = "FireflowConfig";
+	public static final String ENTITY_NAME_REASSIGN_CONFIG = "ReassignConfig";
+	public static final String ENTITY_NAME_SCHEDULE_JOB = "ScheduleJob";
+	public static final String ENTITY_NAME_PROCESS_DESCRIPTOR = "ProcessDescriptor";
+	public static final String ENTITY_NAME_SERVICE_DESCRIPTOR = "ServiceDescriptor";
+	public static final String ENTITY_NAME_RESOUCE_DESCRIPTOR = "ResourceDescriptor";
+	
 	/**
 	 * WorkflowEntity 的 Id
 	 * 

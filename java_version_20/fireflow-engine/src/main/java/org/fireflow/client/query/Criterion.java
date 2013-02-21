@@ -23,6 +23,20 @@ import org.fireflow.engine.entity.EntityProperty;
  * @version 2.0
  */
 public interface Criterion {
+	public static final String OPERATION_EQ = "=";
+	public static final String OPERATION_NE = "<>";
+	public static final String OPERATION_GT = ">";
+	public static final String OPERATION_LT = "<";
+	public static final String OPERATION_GE = ">=";
+	public static final String OPERATION_LE = "<=";
+	public static final String OPERATION_LIKE = "like";
+	public static final String OPERATION_IN = "in";
+	public static final String OPERATION_AND = "and";
+	public static final String OPERATION_OR = "or";
+	public static final String OPERATION_IS_NULL = "is null";
+	public static final String OPERATION_IS_NOT_NULL = "is not null";
+	public static final String OPERATION_BETWEEN = "between";
+	
 	public String toSqlString();
 	public String getOperation();
 	public EntityProperty getEntityProperty();

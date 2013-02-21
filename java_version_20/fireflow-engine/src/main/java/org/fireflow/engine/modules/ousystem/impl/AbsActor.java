@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.fireflow.engine.modules.ousystem.Actor;
-import org.fireflow.misc.XmlPropertiesAdapter;
+import org.fireflow.misc.PropertiesXmlAdapter;
 
 
 /**
@@ -43,7 +43,7 @@ public abstract class AbsActor implements Actor {
 	private static final long serialVersionUID = -5454575926553679668L;
 
 	@XmlElement(name="properties")
-	@XmlJavaTypeAdapter(value=XmlPropertiesAdapter.class)
+	@XmlJavaTypeAdapter(value=PropertiesXmlAdapter.class)
 	private Properties properties = new Properties(); 
 	
 	@XmlElement(name="id")

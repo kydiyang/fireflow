@@ -29,7 +29,7 @@ import org.fireflow.engine.modules.ousystem.Group;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="groupElm")
+@XmlRootElement(name="group")
 @XmlType(name="groupType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GroupImpl extends AbsActor implements Group {

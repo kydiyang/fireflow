@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlValue;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement(name="propertiesElm")
-@XmlType(name="propertiesType")
+@XmlRootElement(name="propertiesContainer")
+@XmlType(name="propertiesContainerType")
 @XmlAccessorType(XmlAccessType.FIELD) 
 public class PropertiesConvertor {
 	@XmlElement(name="entries")

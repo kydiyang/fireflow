@@ -15,17 +15,18 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.server.support;
+package org.fireflow.misc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlType;
+
+import org.fireflow.client.query.AbsCriterion;
 
 /**
  *
@@ -33,25 +34,19 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Customer {
+@XmlRootElement(name="criterionList")
+@XmlType(name="criterionListType")
+@XmlAccessorType(XmlAccessType.FIELD) 
+public class CriterionListWrapper {
+	
 	@XmlElementRef
-	private ContactInfo contactInfo;
+	List<AbsCriterion> criterions = new ArrayList<AbsCriterion>();
 	
-	@XmlElement(name="contactInfoList")
-	@XmlJavaTypeAdapter(ListXmlAdapter4Test.class)
-	private List<ContactInfo> contactInfoList = new ArrayList<ContactInfo>();
-
-	public ContactInfo getContactInfo() {
-		return contactInfo;
-	}
-
-	public void setContactInfo(ContactInfo contactInfo) {
-		this.contactInfo = contactInfo;
+	public void addAll(List<AbsCriterion> l){
+		criterions.addAll(l);
 	}
 	
-	public void addContactInfo(ContactInfo info){
-		contactInfoList.add(info);
+	public List<AbsCriterion> getAll(){
+		return criterions;
 	}
 }

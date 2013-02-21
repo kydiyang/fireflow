@@ -41,14 +41,14 @@ import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.misc.XmlUserAdapter;
+import org.fireflow.misc.UserXmlAdapter;
 
 
 /**
  * @author chennieyun
  * 
  */
-@XmlRootElement(name="workflowSessionElm")
+@XmlRootElement(name="workflowSession")
 @XmlType(name="workflowSessionType",propOrder={"sessionId","currentUser"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkflowSessionLocalImpl implements WorkflowSession,RuntimeContextAware{
@@ -70,7 +70,7 @@ public class WorkflowSessionLocalImpl implements WorkflowSession,RuntimeContextA
 	protected RuntimeContext context = null;
 	
 	@XmlElement(name="currentUser")
-	@XmlJavaTypeAdapter(value = XmlUserAdapter.class)  
+	@XmlJavaTypeAdapter(value = UserXmlAdapter.class)  
 	protected User currentUser = null;
 	
 	@XmlElement(name="sessionId")

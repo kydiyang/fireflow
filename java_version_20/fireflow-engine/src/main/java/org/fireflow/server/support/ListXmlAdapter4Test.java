@@ -17,41 +17,38 @@
  */
 package org.fireflow.server.support;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  *
  * @author 非也 nychen2000@163.com
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
+ * @param <ListConvert4Test>
  *
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Customer {
-	@XmlElementRef
-	private ContactInfo contactInfo;
-	
-	@XmlElement(name="contactInfoList")
-	@XmlJavaTypeAdapter(ListXmlAdapter4Test.class)
-	private List<ContactInfo> contactInfoList = new ArrayList<ContactInfo>();
+public class ListXmlAdapter4Test extends
+		XmlAdapter<ListConvertor4Test, List<ContactInfo>> {
 
-	public ContactInfo getContactInfo() {
-		return contactInfo;
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public List<ContactInfo> unmarshal(ListConvertor4Test v) throws Exception {
+		if (v==null)return null;
+		return v.getContactInfoList();
 	}
 
-	public void setContactInfo(ContactInfo contactInfo) {
-		this.contactInfo = contactInfo;
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public ListConvertor4Test marshal(List<ContactInfo> v) throws Exception {
+		ListConvertor4Test test = new ListConvertor4Test();
+		if (v==null)return test;
+		test.addAll(v);
+		return test;
 	}
-	
-	public void addContactInfo(ContactInfo info){
-		contactInfoList.add(info);
-	}
+
 }

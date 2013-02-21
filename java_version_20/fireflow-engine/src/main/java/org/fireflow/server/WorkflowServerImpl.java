@@ -17,6 +17,8 @@
  */
 package org.fireflow.server;
 
+import java.util.List;
+
 import javax.jws.WebService;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.soap.SOAPBinding;
@@ -28,6 +30,7 @@ import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 
 import org.fireflow.client.WorkflowSessionFactory;
+import org.fireflow.client.impl.WorkflowQueryImpl;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.client.impl.WorkflowStatementLocalImpl;
 import org.fireflow.engine.context.EngineModule;
@@ -212,7 +215,24 @@ public class WorkflowServerImpl implements WorkflowServer,RuntimeContextAware,En
 		return null;
 	}
 	
+	public List<AbsWorkflowEntity> executeQueryList(String sessionId,WorkflowQueryImpl q){
+		final WorkflowSessionLocalImpl session = validateSession(sessionId);
+		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
+
+		List result = statement.executeQueryList(q);
+		
+		return result;
+	}
 	
+	public int executeQueryCount(String sessionId,
+			WorkflowQueryImpl q){
+		final WorkflowSessionLocalImpl session = validateSession(sessionId);
+		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
+
+		int i = statement.executeQueryCount(q);
+		
+		return i;
+	}
 	
 	private WorkflowSessionLocalImpl validateSession(String sessionId){
 		Cache cache = cacheManager.getCache(SESSION_CACHE);
@@ -224,6 +244,8 @@ public class WorkflowServerImpl implements WorkflowServer,RuntimeContextAware,En
 
 		return session;
 	}
+
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.server.WorkflowServer#test(java.lang.String)
 	 */

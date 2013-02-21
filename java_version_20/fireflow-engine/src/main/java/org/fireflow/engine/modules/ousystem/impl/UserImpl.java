@@ -30,7 +30,7 @@ import org.fireflow.engine.modules.ousystem.User;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="userElm")
+@XmlRootElement(name="user")
 @XmlType(name="userType",propOrder={"deptId","deptName"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserImpl extends AbsActor implements User {

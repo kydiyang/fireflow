@@ -16,12 +16,59 @@
  */
 package org.fireflow.engine.entity.config;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
+
 /**
  * 
  * 
  * @author 非也
  * @version 2.0
  */
-public class ReassignConfigProperty {
+public enum ReassignConfigProperty  implements EntityProperty {
+	;
 
+	String propertyName = null;
+	private ReassignConfigProperty(String propName){
+		propertyName = propName;
+	}
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.entity.EntityProperty#getPropertyName()
+	 */
+	@Override
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.entity.EntityProperty#getColumnName()
+	 */
+	@Override
+	public String getColumnName() {
+		return this.name();
+	}
+
+	public String getDisplayName(Locale locale){
+		ResourceBundle resb = ResourceBundle.getBundle("EngineMessages", locale);
+		return resb.getString(this.name());
+	}
+	
+	public String getDisplayName(){
+		return this.getDisplayName(Locale.getDefault());
+	}
+	
+    public static ReassignConfigProperty fromValue(String v) {
+        for (ReassignConfigProperty c: ReassignConfigProperty.values()) {
+            if (c.getPropertyName().equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
+	public String getEntityName(){
+		return WorkflowEntity.ENTITY_NAME_REASSIGN_CONFIG;
+	}
 }

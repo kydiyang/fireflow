@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
+import org.fireflow.engine.entity.config.FireflowConfigProperty;
 
 /**
  * 
@@ -64,5 +66,15 @@ public enum TokenProperty implements EntityProperty{
 	public String getDisplayName(){
 		return this.getDisplayName(Locale.getDefault());
 	}
-
+    public static TokenProperty fromValue(String v) {
+        for (TokenProperty c: TokenProperty.values()) {
+            if (c.getPropertyName().equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
+	public String getEntityName(){
+		return WorkflowEntity.ENTITY_NAME_TOKEN;
+	}
 }

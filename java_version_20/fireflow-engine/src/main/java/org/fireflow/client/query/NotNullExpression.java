@@ -16,17 +16,33 @@
  */
 package org.fireflow.client.query;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.misc.EntityPropertyXmlAdapter;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public class NotNullExpression implements Criterion {
+@XmlRootElement(name="isNotNull")
+@XmlType(name="isNotNullType")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class NotNullExpression  extends AbsCriterion implements Criterion {
+	@XmlAttribute(name="field")
+	@XmlJavaTypeAdapter(value=EntityPropertyXmlAdapter.class)
+	private EntityProperty property;
 
-	private final EntityProperty property;
-
-	protected NotNullExpression(EntityProperty property) {
+	public NotNullExpression(){
+		
+	}
+	
+	public NotNullExpression(EntityProperty property) {
 		this.property = property;
 	}
 
@@ -38,7 +54,7 @@ public class NotNullExpression implements Criterion {
 	}
 
 	public String getOperation(){
-		return " is not null ";
+		return Criterion.OPERATION_IS_NOT_NULL;
 	}
 	public EntityProperty getEntityProperty(){
 		return property;

@@ -32,7 +32,7 @@ import org.fireflow.engine.exception.InvalidOperationException;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="processInstanceHistoryElm")
+@XmlRootElement(name="processInstanceHistory")
 @XmlType(name="processInstanceHistoryType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProcessInstanceHistory extends AbsProcessInstance implements

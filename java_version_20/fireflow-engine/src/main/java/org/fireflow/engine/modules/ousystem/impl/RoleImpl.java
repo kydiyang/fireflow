@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="roleElm")
+@XmlRootElement(name="role")
 @XmlType(name="roleType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RoleImpl extends AbsActor implements

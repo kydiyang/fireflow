@@ -17,12 +17,15 @@
  */
 package org.fireflow.server;
 
+import java.util.List;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
 
+import org.fireflow.client.impl.WorkflowQueryImpl;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.AbsWorkflowEntity;
@@ -73,19 +76,27 @@ public interface WorkflowServer extends EngineModule {
 
 
 
-//	public <T extends WorkflowEntity> List<T> executeQueryList(WorkflowQueryImpl<T> q);
+	@WebMethod
+	public  @WebResult(name="workflowEntity") List<AbsWorkflowEntity> executeQueryList(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowQuery") WorkflowQueryImpl q);
 
 	@WebMethod
 	public @WebResult(name="workflowEntity") AbsWorkflowEntity getEntity(
 			@WebParam(name="sessionId") String sessionId,
 			@WebParam(name="entityId") String entityId,
 			@WebParam(name="entityClassName") String entityClassName);
+	
+	@WebMethod
+	public @WebResult(name="entityCount") int executeQueryCount(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowQuery") WorkflowQueryImpl q);
 
 	/* 下面两个方法用于测试 */
+	
+//	@WebMethod
+//	public @WebResult(name="customer") Customer test(@WebParam(name="name") String name);
 	/*
-	@WebMethod
-	public @WebResult(name="customer") Customer test(@WebParam(name="name") String name);
-
 	@WebMethod
 	public ContactInfo test2(String s);
 	*/

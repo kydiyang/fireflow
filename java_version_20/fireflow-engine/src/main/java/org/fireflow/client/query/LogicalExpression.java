@@ -16,20 +16,39 @@
  */
 package org.fireflow.client.query;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.fireflow.engine.entity.EntityProperty;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public class LogicalExpression implements Criterion {
-	private final Criterion lhs;
-	private final Criterion rhs;
-	private final String op;
+@XmlRootElement(name="logicExp")
+@XmlType(name="logicExpType",propOrder={"op","lhs","rhs"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class LogicalExpression  extends AbsCriterion implements Criterion {
+	@XmlAttribute(name="operation")
+	private String op;
+	
+	@XmlElementRef
+	private AbsCriterion lhs;
+	
+	@XmlElementRef
+	private AbsCriterion rhs;
+	
+	public LogicalExpression(){
+		
+	}
 
-	protected LogicalExpression(Criterion lhs, Criterion rhs, String op) {
-		this.lhs = lhs;
-		this.rhs = rhs;
+	public LogicalExpression(Criterion lhs, Criterion rhs, String op) {
+		this.lhs = (AbsCriterion)lhs;
+		this.rhs = (AbsCriterion)rhs;
 		this.op = op;
 	}
 	/* (non-Javadoc)
@@ -46,11 +65,11 @@ public class LogicalExpression implements Criterion {
 	}
 
 	public String toString() {
-		return lhs.toString() + ' ' + getOperation() + ' ' + rhs.toString();
+		return "("+lhs.toString()+") "  + getOperation() + " (" + rhs.toString()+")";
 	}
 	
 	public String getOperation(){
-		return " "+op+" ";
+		return op;
 	}
 	public EntityProperty getEntityProperty(){
 		return null;
