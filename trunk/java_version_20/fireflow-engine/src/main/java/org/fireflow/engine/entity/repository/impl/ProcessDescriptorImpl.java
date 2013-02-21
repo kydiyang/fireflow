@@ -16,7 +16,7 @@ import org.fireflow.engine.entity.repository.ProcessRepository;
  * @author 非也
  *
  */
-@XmlRootElement(name="processDescriptorElm")
+@XmlRootElement(name="processDescriptor")
 @XmlType(name="processDescriptorType",propOrder={"processId","processType","version","isTimerStart","hasCallbackService"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProcessDescriptorImpl extends AbsRepositoryDescriptorImpl implements ProcessDescriptor{

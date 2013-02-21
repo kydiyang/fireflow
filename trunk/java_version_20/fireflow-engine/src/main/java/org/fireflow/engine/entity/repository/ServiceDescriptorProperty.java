@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
 
 /**
  * 
@@ -69,5 +70,17 @@ public enum ServiceDescriptorProperty implements EntityProperty {
 	
 	public String getDisplayName(){
 		return this.getDisplayName(Locale.getDefault());
+	}
+	
+    public static ServiceDescriptorProperty fromValue(String v) {
+        for (ServiceDescriptorProperty c: ServiceDescriptorProperty.values()) {
+            if (c.getPropertyName().equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
+	public String getEntityName(){
+		return WorkflowEntity.ENTITY_NAME_SERVICE_DESCRIPTOR;
 	}
 }

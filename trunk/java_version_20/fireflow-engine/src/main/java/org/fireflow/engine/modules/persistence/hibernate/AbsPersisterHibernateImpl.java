@@ -61,7 +61,7 @@ public abstract class AbsPersisterHibernateImpl extends HibernateDaoSupport
 							criteria.createAlias("activityInstance", "activityInstance");
 						}
 
-						List<org.fireflow.client.query.Criterion> fireCriterions = q
+						List<? extends org.fireflow.client.query.Criterion> fireCriterions = q
 								.getAllCriterions();
 						if (fireCriterions != null && fireCriterions.size() > 0) {
 							for (org.fireflow.client.query.Criterion fireCriterion : fireCriterions) {
@@ -115,7 +115,7 @@ public abstract class AbsPersisterHibernateImpl extends HibernateDaoSupport
 						if (isConnectToActivityInstance(q)){
 							criteria.createAlias("activityInstance", "activityInstance");
 						}
-						List<org.fireflow.client.query.Criterion> fireCriterions = q
+						List<? extends org.fireflow.client.query.Criterion> fireCriterions = q
 								.getAllCriterions();
 						if (fireCriterions != null && fireCriterions.size() > 0) {
 							for (org.fireflow.client.query.Criterion fireCriterion : fireCriterions) {

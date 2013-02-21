@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
 
 /**
  * 
@@ -79,4 +80,15 @@ public enum ScheduleJobProperty implements EntityProperty {
 		return this.getDisplayName(Locale.getDefault());
 	}
 	
+    public static ScheduleJobProperty fromValue(String v) {
+        for (ScheduleJobProperty c: ScheduleJobProperty.values()) {
+            if (c.getPropertyName().equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
+	public String getEntityName(){
+		return WorkflowEntity.ENTITY_NAME_SCHEDULE_JOB;
+	}
 }

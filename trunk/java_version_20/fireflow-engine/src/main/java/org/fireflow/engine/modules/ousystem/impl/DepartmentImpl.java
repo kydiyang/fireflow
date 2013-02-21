@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="departmentElm")
+@XmlRootElement(name="department")
 @XmlType(name="departmentType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DepartmentImpl extends AbsActor implements

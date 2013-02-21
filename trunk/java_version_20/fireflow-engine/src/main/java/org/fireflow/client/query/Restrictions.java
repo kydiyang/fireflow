@@ -23,40 +23,41 @@ import org.fireflow.engine.entity.EntityProperty;
  * @version 2.0
  */
 public class Restrictions {
+
 	public static SimpleExpression eq(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, "=");
+		return new SimpleExpression(property, value, Criterion.OPERATION_EQ);
 	}
 	
 	public static SimpleExpression ne(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, "<>");
+		return new SimpleExpression(property, value, Criterion.OPERATION_NE);
 	}	
 	
 	public static SimpleExpression like(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, " like ");
+		return new SimpleExpression(property, value, Criterion.OPERATION_LIKE);
 	}	
 	
 	public static SimpleExpression gt(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, ">");
+		return new SimpleExpression(property, value, Criterion.OPERATION_GT);
 	}
 
 	public static SimpleExpression lt(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, "<");
+		return new SimpleExpression(property, value, Criterion.OPERATION_LT);
 	}
 	
 	public static SimpleExpression le(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, "<=");
+		return new SimpleExpression(property, value, Criterion.OPERATION_GE);
 	}
 
 	public static SimpleExpression ge(EntityProperty property, Object value) {
-		return new SimpleExpression(property, value, ">=");
+		return new SimpleExpression(property, value, Criterion.OPERATION_LE);
 	}	
 	
 	public static LogicalExpression and(Criterion lhs, Criterion rhs) {
-		return new LogicalExpression(lhs, rhs, " and ");
+		return new LogicalExpression(lhs, rhs, Criterion.OPERATION_AND);
 	}
 
 	public static LogicalExpression or(Criterion lhs, Criterion rhs) {
-		return new LogicalExpression(lhs, rhs, " or " );
+		return new LogicalExpression(lhs, rhs, Criterion.OPERATION_OR );
 	}
 	
 	public static Criterion isNull(EntityProperty property) {

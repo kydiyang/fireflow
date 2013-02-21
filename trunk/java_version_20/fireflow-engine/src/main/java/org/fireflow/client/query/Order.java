@@ -16,16 +16,31 @@
  */
 package org.fireflow.client.query;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.misc.EntityPropertyXmlAdapter;
 
 /**
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="orderBy")
+@XmlType(name="orderByType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Order {
-
+	
+	@XmlAttribute(name="asc")
 	private boolean ascending = true;
-	private boolean ignoreCase;
+	
+	@XmlValue
+	@XmlJavaTypeAdapter(value = EntityPropertyXmlAdapter.class)
 	private EntityProperty property;
 	
 	public String toString() {
@@ -37,10 +52,13 @@ public class Order {
 //		return this;
 //	}
 
+	public Order(){
+		
+	}
 	/**
 	 * Constructor for Order.
 	 */
-	protected Order(EntityProperty propertyName, boolean ascending) {
+	public Order(EntityProperty propertyName, boolean ascending) {
 		this.property = propertyName;
 		this.ascending = ascending;
 	}

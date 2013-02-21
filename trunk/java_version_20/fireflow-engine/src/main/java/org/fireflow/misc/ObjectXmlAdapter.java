@@ -17,52 +17,40 @@
  */
 package org.fireflow.misc;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.fireflow.misc.PropertiesConvertor.PropertiesEntry;
-
 /**
- *
+ * 将查询条件的值转换为String。
+ * 在WorkflowQuery只能接受简单类型的查询条件值。
+ * 
+ * 如：String ,java.util.Date ,Integer, int,Float,float,等
+ * 
  * @author 非也 nychen2000@163.com
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class XmlPropertiesAdapter extends
-		XmlAdapter<PropertiesConvertor, Properties> {
+public class ObjectXmlAdapter extends XmlAdapter<ObjectWrapper, Object> {
 
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
 	 */
 	@Override
-	public Properties unmarshal(PropertiesConvertor v) throws Exception {
-		if (v==null)return null;
-		List<PropertiesEntry> entries = v.getEntries();
-		Properties result = new Properties();
-		for (PropertiesEntry entry : entries){
-			result.put(entry.getKey(), entry.getValue());
+	public Object unmarshal(ObjectWrapper v) throws Exception {
+		if (v==null){
+			return null;
 		}
-		return result;
+		return v.getOriginalValue();
 	}
 
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
 	 */
 	@Override
-	public PropertiesConvertor marshal(Properties v) throws Exception {
-		if(v==null) return null;
-		PropertiesConvertor result = new PropertiesConvertor();
-		Iterator keys = v.keySet().iterator();
-		while (keys.hasNext()){
-			String key = (String)keys.next();
-			String value = v.getProperty(key);
-			PropertiesEntry entry = new PropertiesEntry(key,value);
-			result.addEntry(entry);
-		}
-		return result;
+	public ObjectWrapper marshal(Object v) throws Exception {
+		if (v==null)return null;
+		ObjectWrapper wrapper = new ObjectWrapper();
+		wrapper.setOriginalValue(v);
+		return wrapper;
 	}
 
 }

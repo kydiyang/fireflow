@@ -17,6 +17,7 @@
  */
 package org.fireflow.client.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -176,8 +177,14 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		public <T extends WorkflowEntity> List<T> executeQueryList(
 				WorkflowQuery<T> q) {
 			WorkflowQueryImpl queryImpl = (WorkflowQueryImpl)q;
-//			return workflowServer.executeQueryList(sessionId,q);
-			return null;
+			List<AbsWorkflowEntity> list = workflowServer.executeQueryList(sessionId, queryImpl);
+			List<T> result = new ArrayList<T>();
+			if (list!=null){
+				for (AbsWorkflowEntity entity:list){
+					result.add((T)entity);
+				}
+			}
+			return result;
 		}
 
 		/* (non-Javadoc)
@@ -186,8 +193,8 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		@Override
 		public <T extends WorkflowEntity> int executeQueryCount(
 				WorkflowQuery<T> q) {
-			// TODO Auto-generated method stub
-			return 0;
+			WorkflowQueryImpl queryImpl = (WorkflowQueryImpl)q;
+			return workflowServer.executeQueryCount(sessionId,queryImpl);
 		}
 
 		/* (non-Javadoc)

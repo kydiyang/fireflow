@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
 
 /**
  * @author 非也
@@ -90,6 +91,17 @@ public enum ProcessInstanceProperty implements EntityProperty {
 		return this.getDisplayName(Locale.getDefault());
 	}
 	
+    public static ProcessInstanceProperty fromValue(String v) {
+        for (ProcessInstanceProperty c: ProcessInstanceProperty.values()) {
+            if (c.getPropertyName().equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
+	public String getEntityName(){
+		return WorkflowEntity.ENTITY_NAME_PROCESS_INSTANCE;
+	}
 //	public List<EntityProperty> getAllProperties(){
 //		List<EntityProperty> all = new ArrayList<EntityProperty>();
 //		all.add(ID);

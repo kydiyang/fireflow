@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
 
 /**
  * @author 非也
@@ -93,6 +94,18 @@ public enum WorkItemProperty implements EntityProperty {
 		List<EntityProperty> all = new ArrayList<EntityProperty>();
 		all.add(ID);
 		return all;
+	}
+	
+    public static WorkItemProperty fromValue(String v) {
+        for (WorkItemProperty c: WorkItemProperty.values()) {
+            if (c.getPropertyName().equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
+	public String getEntityName(){
+		return WorkflowEntity.ENTITY_NAME_WORKITEM;
 	}
 
 }

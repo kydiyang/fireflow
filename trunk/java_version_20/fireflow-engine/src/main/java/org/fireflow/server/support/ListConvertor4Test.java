@@ -22,10 +22,9 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
@@ -33,25 +32,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Customer {
+@XmlRootElement(name="listElm")
+@XmlType(name="listType")
+@XmlAccessorType(XmlAccessType.FIELD) 
+public class ListConvertor4Test {
 	@XmlElementRef
-	private ContactInfo contactInfo;
-	
-	@XmlElement(name="contactInfoList")
-	@XmlJavaTypeAdapter(ListXmlAdapter4Test.class)
 	private List<ContactInfo> contactInfoList = new ArrayList<ContactInfo>();
-
-	public ContactInfo getContactInfo() {
-		return contactInfo;
-	}
-
-	public void setContactInfo(ContactInfo contactInfo) {
-		this.contactInfo = contactInfo;
+	
+	public void addAll(List<ContactInfo> arg){
+		contactInfoList.addAll(arg);
 	}
 	
-	public void addContactInfo(ContactInfo info){
-		contactInfoList.add(info);
+	public List<ContactInfo> getContactInfoList(){
+		return contactInfoList;
 	}
 }

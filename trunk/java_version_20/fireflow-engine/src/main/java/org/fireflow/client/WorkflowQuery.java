@@ -85,6 +85,6 @@ public interface WorkflowQuery<T extends WorkflowEntity> {
 	
 	public Class<T> getEntityClass();
 	
-	public List<Criterion> getAllCriterions();
+	public List<? extends Criterion> getAllCriterions();
 	public List<Order> getAllOrders();
 }

@@ -19,12 +19,25 @@ package org.fireflow.client.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.fireflow.client.WorkflowQuery;
-import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.query.AbsCriterion;
 import org.fireflow.client.query.Criterion;
 import org.fireflow.client.query.Order;
+import org.fireflow.client.query.Restrictions;
 import org.fireflow.client.query.WorkflowQueryDelegate;
 import org.fireflow.engine.entity.WorkflowEntity;
+import org.fireflow.engine.entity.runtime.ActivityInstance;
+import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
+import org.fireflow.misc.ClassXmlAdapter;
+import org.fireflow.misc.CriterionListXmlAdapter;
 
 /**
  * 
@@ -32,20 +45,39 @@ import org.fireflow.engine.entity.WorkflowEntity;
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="workflowQuery")
+@XmlType(name="workflowQueryType",propOrder={"interfaceClass","criterions","orders","firstResult","maxResults","queryFromHistory"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WorkflowQueryImpl<T extends WorkflowEntity> implements WorkflowQuery<T> {
-	List<Criterion> criterions = new ArrayList<Criterion>();
+	@XmlElement(name="interfaceClass")
+	@XmlJavaTypeAdapter(value = ClassXmlAdapter.class)
+	Class<T> interfaceClass = null;
 	
+	@XmlElement(name="criterionList")
+	@XmlJavaTypeAdapter(CriterionListXmlAdapter.class)
+	List<AbsCriterion> criterions = new ArrayList<AbsCriterion>();
+	
+	@XmlElement(name="orderBy")
 	List<Order> orders = new ArrayList<Order>();
 	
+	@XmlElement(name="firstResult")
 	int firstResult = 0;
+	
+	@XmlElement(name="maxResults")
 	int maxResults = -1;//表示查询所有
 	
+	@XmlElement(name="queryFromHistory")
 	boolean queryFromHistory = false;
 	
 //	WorkflowSession session = null;
-	Class<T> interfaceClass = null;
+	
+	
+	@XmlTransient
 	WorkflowQueryDelegate queryDelegate = null;
 	
+	public WorkflowQueryImpl(){
+		
+	}
 	
 	public WorkflowQueryImpl(Class<T> interfaceClass){
 //		this.session = session;
@@ -62,7 +94,7 @@ public class WorkflowQueryImpl<T extends WorkflowEntity> implements WorkflowQuer
 	 */
 	public WorkflowQuery<T> add(Criterion criterion) {
 		
-		criterions.add(criterion);
+		criterions.add((AbsCriterion)criterion);
 		return this;
 	}
 
@@ -172,10 +204,23 @@ public class WorkflowQueryImpl<T extends WorkflowEntity> implements WorkflowQuer
 		return this.interfaceClass;
 	}
 	
-	public List<Criterion> getAllCriterions(){
+	public List<? extends Criterion> getAllCriterions(){
 		return this.criterions;
 	}
 	public List<Order> getAllOrders(){
 		return this.orders;
+	}
+	
+	public static void main(String[] args){
+		WorkflowQueryImpl<ActivityInstance> impl = new WorkflowQueryImpl<ActivityInstance>(ActivityInstance.class);
+		impl.add(Restrictions.eq(ActivityInstanceProperty.ID, "213"));
+		impl.add(Restrictions.isNotNull(ActivityInstanceProperty.BIZ_TYPE));
+		
+		List<? extends Criterion> critierionList = impl.getAllCriterions();
+		
+		for (Criterion c : critierionList){
+			System.out.println(c);
+		}
+	
 	}
 }

@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.fireflow.engine.entity.EntityProperty;
+import org.fireflow.engine.entity.WorkflowEntity;
+import org.fireflow.engine.entity.runtime.WorkItemProperty;
 
 /**
  * @author 非也
@@ -77,5 +79,16 @@ public enum ProcessDescriptorProperty 	implements EntityProperty{
 		public String getDisplayName(){
 			return this.getDisplayName(Locale.getDefault());
 		}
-		
+	    public static ProcessDescriptorProperty fromValue(String v) {
+	        for (ProcessDescriptorProperty c: ProcessDescriptorProperty.values()) {
+	            if (c.getPropertyName().equals(v)) {
+	                return c;
+	            }
+	        }
+	        throw new IllegalArgumentException(v);
+	    }
+		public String getEntityName(){
+			return WorkflowEntity.ENTITY_NAME_PROCESS_DESCRIPTOR;
+		}
+
 }

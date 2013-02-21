@@ -17,10 +17,13 @@
  */
 package org.fireflow.misc;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.engine.modules.ousystem.impl.UserImpl;
+import org.fireflow.misc.PropertiesConvertor.PropertiesEntry;
 
 /**
  *
@@ -28,30 +31,38 @@ import org.fireflow.engine.modules.ousystem.impl.UserImpl;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class XmlUserAdapter extends XmlAdapter<UserImpl, User> {
+public class PropertiesXmlAdapter extends
+		XmlAdapter<PropertiesConvertor, Properties> {
 
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
 	 */
 	@Override
-	public User unmarshal(UserImpl v) throws Exception {
-		return v;
+	public Properties unmarshal(PropertiesConvertor v) throws Exception {
+		if (v==null)return null;
+		List<PropertiesEntry> entries = v.getEntries();
+		Properties result = new Properties();
+		for (PropertiesEntry entry : entries){
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
 	 */
 	@Override
-	public UserImpl marshal(User v) throws Exception {
-		if (v==null)return null;
-		UserImpl userImpl = new UserImpl();
-		userImpl.setId(v.getId());
-		userImpl.setName(v.getName());
-		userImpl.setDeptId(v.getDeptId());
-		userImpl.setDeptName(v.getDeptName());
-		userImpl.setProperties(v.getProperties());
-
-		return userImpl;
+	public PropertiesConvertor marshal(Properties v) throws Exception {
+		if(v==null) return null;
+		PropertiesConvertor result = new PropertiesConvertor();
+		Iterator keys = v.keySet().iterator();
+		while (keys.hasNext()){
+			String key = (String)keys.next();
+			String value = v.getProperty(key);
+			PropertiesEntry entry = new PropertiesEntry(key,value);
+			result.addEntry(entry);
+		}
+		return result;
 	}
 
 }

@@ -33,7 +33,7 @@ import org.fireflow.pvm.kernel.KernelException;
  * @author 非也
  * @version 2.0
  */
-@XmlRootElement(name="workItemHistoryElm")
+@XmlRootElement(name="workItemHistory")
 @XmlType(name="workItemHistoryType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkItemHistory extends AbsWorkItem implements WorkItem {
