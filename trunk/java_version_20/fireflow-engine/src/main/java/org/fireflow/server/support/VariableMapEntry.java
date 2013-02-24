@@ -17,26 +17,37 @@
  */
 package org.fireflow.server.support;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-/**
- *
- * @author 非也 nychen2000@163.com
- * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
- *
- */
-@XmlRootElement(name="PhoneNumberElm")
-@XmlType(name="PhoneNumberType")
-public class PhoneNumber extends ContactInfo {
-	String number = "";
 
-	public String getNumber() {
-		return number;
+@XmlType(name="varMapEntryType")
+@XmlAccessorType(XmlAccessType.FIELD) 
+public class VariableMapEntry extends AbsMapEntry{
+	@XmlElement(name="key")
+	private String key = null;
+	
+	@XmlElement(name="value")
+	@XmlJavaTypeAdapter(ObjectXmlAdapter.class)
+	private Object value = null;
+	
+	public String getKey() {
+		return key;
 	}
 
-	public void setNumber(String number) {
-		this.number = number;
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
 	}
 	
 	

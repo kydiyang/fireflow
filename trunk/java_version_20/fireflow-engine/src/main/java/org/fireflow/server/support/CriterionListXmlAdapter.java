@@ -17,7 +17,11 @@
  */
 package org.fireflow.server.support;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.List;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.fireflow.client.query.AbsCriterion;
 
 /**
  *
@@ -25,7 +29,28 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlSeeAlso({Address.class,PhoneNumber.class})
-public abstract class  ContactInfo {
+public class CriterionListXmlAdapter extends
+		XmlAdapter<CriterionListWrapper, List<AbsCriterion>> {
+
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public List<AbsCriterion> unmarshal(CriterionListWrapper v)
+			throws Exception {
+		if (v==null)return null;
+		return v.getAll();
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public CriterionListWrapper marshal(List<AbsCriterion> v) throws Exception {
+		CriterionListWrapper wrapper = new CriterionListWrapper();
+		if (v==null)return wrapper;
+		wrapper.addAll(v);
+		return wrapper;
+	}
 
 }

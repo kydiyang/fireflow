@@ -16,8 +16,12 @@
  */
 package org.fireflow.pvm.kernel.impl;
 
-import java.util.Date;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.pvm.kernel.OperationContextName;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenState;
@@ -28,8 +32,10 @@ import org.fireflow.pvm.kernel.TokenState;
  * @author 非也
  * @version 2.0
  */
-public class AbsToken implements Token {
-    private String id = null;
+@XmlType(name="absTokenType")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({TokenImpl.class,TokenHistory.class})
+public abstract class AbsToken extends AbsWorkflowEntity implements Token {
     private String processInstanceId = null;
     private String elementInstanceId = null;
     
@@ -52,8 +58,7 @@ public class AbsToken implements Token {
     private Boolean isContainer = Boolean.FALSE;
     
     private String attachedToToken = null;
-    
-    private Date lastUpdateTime = null;
+
 
     public AbsToken(){
     	
@@ -91,13 +96,7 @@ public class AbsToken implements Token {
         this.elementId = wfElementId;
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public void setProcessInstanceId(String id) {
         this.processInstanceId = id;
@@ -313,11 +312,4 @@ public class AbsToken implements Token {
 		isContainer = b;
 	}
 	
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date lastUpdateTime){
-		this.lastUpdateTime = lastUpdateTime;
-	}
 }

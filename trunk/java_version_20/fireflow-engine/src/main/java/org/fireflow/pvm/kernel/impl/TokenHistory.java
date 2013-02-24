@@ -16,6 +16,11 @@
  */
 package org.fireflow.pvm.kernel.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.fireflow.pvm.kernel.Token;
 
 /**
@@ -24,6 +29,9 @@ import org.fireflow.pvm.kernel.Token;
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="tokenHistory")
+@XmlType(name="tokenHistoryType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TokenHistory extends AbsToken implements Token {
 
 }

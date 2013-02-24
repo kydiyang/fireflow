@@ -17,13 +17,7 @@
  */
 package org.fireflow.server.support;
 
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.fireflow.engine.entity.AbsWorkflowEntity;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  *
@@ -31,16 +25,24 @@ import org.fireflow.engine.entity.AbsWorkflowEntity;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class WorkflowEntityWrapper {
-	@XmlElementRef
-	private AbsWorkflowEntity entity = null;
-	
-	public AbsWorkflowEntity getWorkflowEntity(){
-		return entity;
+public class ClassXmlAdapter extends XmlAdapter<String, Class> {
+
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public Class unmarshal(String v) throws Exception {
+		if (v==null)return null;
+		return Class.forName(v.trim());
 	}
-	public void setWorkflowEntity(AbsWorkflowEntity entity){
-		this.entity = entity;
+
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public String marshal(Class v) throws Exception {
+		if (v==null)return null;
+		return v.getName();
 	}
+
 }

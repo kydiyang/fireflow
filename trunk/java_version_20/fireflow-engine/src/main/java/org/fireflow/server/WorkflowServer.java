@@ -30,7 +30,18 @@ import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.repository.impl.ProcessDescriptorImpl;
+import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
+import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
+import org.fireflow.engine.entity.runtime.impl.WorkItemImpl;
 import org.fireflow.engine.exception.EngineException;
+import org.fireflow.engine.exception.InvalidOperationException;
+import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
+import org.fireflow.engine.invocation.impl.ReassignmentHandler;
+import org.fireflow.model.InvalidModelException;
+import org.fireflow.server.support.MapConvertor;
+import org.fireflow.server.support.ObjectWrapper;
+import org.fireflow.server.support.PropertiesConvertor;
+import org.fireflow.server.support.ScopeBean;
 
 /**
  * 
@@ -38,6 +49,7 @@ import org.fireflow.engine.exception.EngineException;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
+
 @WebService(name=WorkflowServer.PORT_TYPE,
 		targetNamespace=WorkflowServer.TARGET_NAMESPACE)
 public interface WorkflowServer extends EngineModule {
@@ -92,6 +104,214 @@ public interface WorkflowServer extends EngineModule {
 			@WebParam(name="sessionId") String sessionId,
 			@WebParam(name="workflowQuery") WorkflowQueryImpl q);
 
+	
+	/**
+	 * 远程创建流程实例。
+	 * @param workflowProcessId
+	 * @return
+	 * @throws InvalidModelException
+	 * @throws WorkflowProcessNotFoundException
+	 */
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl createProcessInstance1(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId)
+	throws InvalidModelException, WorkflowProcessNotFoundException;
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl createProcessInstance2(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="version") int version)
+	throws InvalidModelException, WorkflowProcessNotFoundException;
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl createProcessInstance4(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="version") int version,
+			@WebParam(name="subProcessId") String subProcessId)
+	throws InvalidModelException, WorkflowProcessNotFoundException;
+	
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl createProcessInstance3(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="subProcessId") String subProcessId)
+	throws InvalidModelException, WorkflowProcessNotFoundException;
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl runProcessInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="processInstanceId") String processInstanceId,
+			@WebParam(name="bizId") String bizId,
+			@WebParam(name="variables") MapConvertor mapConvertor);
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl startProcess2(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="version") int version,
+			@WebParam(name="bizId") String bizId,
+			@WebParam(name="variables") MapConvertor mapConvertor)
+			throws InvalidModelException, WorkflowProcessNotFoundException,
+			InvalidOperationException;
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl startProcess4(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="version") int version,
+			@WebParam(name="subProcessId") String subProcessId,
+			@WebParam(name="bizId") String bizId,
+			@WebParam(name="variables") MapConvertor mapConvertor)
+			throws InvalidModelException, WorkflowProcessNotFoundException,
+			InvalidOperationException;
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl startProcess1(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="bizId") String bizId,
+			@WebParam(name="variables") MapConvertor mapConvertor)
+			throws InvalidModelException, WorkflowProcessNotFoundException,
+			InvalidOperationException;
+	
+	@WebMethod
+	public @WebResult(name="processInstance") ProcessInstanceImpl startProcess3(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workflowProcessId") String workflowProcessId,
+			@WebParam(name="subProcessId") String subProcessId,
+			@WebParam(name="bizId") String bizId,
+			@WebParam(name="variables") MapConvertor mapConvertor)
+			throws InvalidModelException, WorkflowProcessNotFoundException,
+			InvalidOperationException;
+	
+	@WebMethod
+	public @WebResult(name="activityInstance") ActivityInstanceImpl  suspendActivityInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="activityInstanceId")String activityInstanceId,
+			@WebParam(name="note")String note) throws InvalidOperationException ;
+	
+	@WebMethod
+	public @WebResult(name="activityInstance") ActivityInstanceImpl  abortActivityInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="activityInstanceId")String activityInstanceId,
+			@WebParam(name="note")String note) throws InvalidOperationException ;
+	
+	@WebMethod
+	public @WebResult(name="activityInstance") ActivityInstanceImpl  restoreActivityInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="activityInstanceId")String activityInstanceId,
+			@WebParam(name="note")String note) throws InvalidOperationException ;
+	
+	@WebMethod
+	public @WebResult(name="activityInstance") ProcessInstanceImpl  abortProcessInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="activityInstanceId")String processInstanceId,
+			@WebParam(name="note")String note) throws InvalidOperationException ;	
+	
+	@WebMethod
+	public @WebResult(name="activityInstance") ProcessInstanceImpl  suspendProcessInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="activityInstanceId")String processInstanceId,
+			@WebParam(name="note")String note) throws InvalidOperationException ;	
+	
+	@WebMethod
+	public @WebResult(name="activityInstance") ProcessInstanceImpl  restoreProcessInstance(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="activityInstanceId")String processInstanceId,
+			@WebParam(name="note")String note) throws InvalidOperationException ;	
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl claimWorkItem(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl withdrawWorkItem(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl disclaimWorkItem(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId,
+			@WebParam(name="attachmentId") String attachmentId,
+			@WebParam(name="attachmentType") String attachmentType,
+			@WebParam(name="note") String note);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl completeWorkItem1(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId,
+			@WebParam(name="attachmentId") String attachmentId,
+			@WebParam(name="attachmentType") String attachmentType,
+			@WebParam(name="note") String note);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl completeWorkItem2(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId,
+			@WebParam(name="assignmentStrategy") MapConvertor assignmentStrategy,			
+			@WebParam(name="attachmentId") String attachmentId,
+			@WebParam(name="attachmentType") String attachmentType,
+			@WebParam(name="note") String note);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl completeWorkItemAndJumpTo1(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId,
+			@WebParam(name="targetActivityId") String targetActivityId,
+			@WebParam(name="attachmentId") String attachmentId,
+			@WebParam(name="attachmentType") String attachmentType,
+			@WebParam(name="note") String note);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl completeWorkItemAndJumpTo2(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId,
+			@WebParam(name="targetActivityId") String targetActivityId,
+			@WebParam(name="assignmentStrategy") MapConvertor assignmentStrategy,			
+			@WebParam(name="attachmentId") String attachmentId,
+			@WebParam(name="attachmentType") String attachmentType,
+			@WebParam(name="note") String note);
+	
+	@WebMethod
+	public @WebResult(name="workItem") WorkItemImpl reassignWorkItemTo(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="workItemId") String workItemId,
+			@WebParam(name="reassignHandler") ReassignmentHandler reassignHandler,
+			@WebParam(name="attachmentId") String attachmentId,
+			@WebParam(name="attachmentType") String attachmentType,
+			@WebParam(name="note") String note)
+			throws InvalidOperationException;
+	@WebMethod
+	public @WebResult(name="varValue") ObjectWrapper getVariableValue(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="scope") ScopeBean scopeBean,
+			@WebParam(name="varName") String varName);
+	
+	@WebMethod
+	public @WebResult(name="varValues") MapConvertor getVariableValues(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="scope") ScopeBean scopeBean);
+	
+	@WebMethod
+	public void setVariableValue1(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="scope") ScopeBean scopeBean,
+			@WebParam(name="varName") String name,
+			@WebParam(name="varValue") ObjectWrapper obj);
+	
+	@WebMethod
+	public void setVariableValue2(
+			@WebParam(name="sessionId") String sessionId,
+			@WebParam(name="scope") ScopeBean scopeBean,
+			@WebParam(name="varName") String name,
+			@WebParam(name="varValue") ObjectWrapper obj,
+			@WebParam(name="headers")PropertiesConvertor convertor );
 	/* 下面两个方法用于测试 */
 	
 //	@WebMethod
