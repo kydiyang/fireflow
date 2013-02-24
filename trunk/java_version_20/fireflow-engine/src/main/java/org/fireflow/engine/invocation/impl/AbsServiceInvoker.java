@@ -89,7 +89,7 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 			RuntimeContext runtimeContext = sessionLocalImpl
 					.getRuntimeContext();
 
-			ProcessInstance processInstance = session.getCurrentProcessInstance();
+			ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 			
 			ProcessUtil processUtil = runtimeContext.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
 			ServiceDef svc = processUtil.getServiceDef(activityInstance,theActivity, serviceBinding.getServiceId());

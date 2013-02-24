@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.fireflow.engine.modules.ousystem.Actor;
-import org.fireflow.misc.PropertiesXmlAdapter;
+import org.fireflow.server.support.PropertiesXmlAdapter;
 
 
 /**
@@ -78,5 +78,9 @@ public abstract class AbsActor implements Actor {
 
 	public void setProperties(Properties properties){
 		this.properties.putAll( properties);
+	}
+	
+	public void setProperty(String key,String value){
+		this.properties.put(key, value);
 	}
 }

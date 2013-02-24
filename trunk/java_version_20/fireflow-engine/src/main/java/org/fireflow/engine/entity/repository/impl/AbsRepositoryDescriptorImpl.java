@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.fireflow.engine.entity.repository.RepositoryDescriptor;
-import org.fireflow.misc.DateTimeXmlAdapter;
+import org.fireflow.server.support.DateTimeXmlAdapter;
 
 /**
  *

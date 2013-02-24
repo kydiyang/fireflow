@@ -16,10 +16,18 @@
  */
 package org.fireflow.engine.entity.runtime.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="variableHistory")
+@XmlType(name="variableHistoryType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class VariableHistory extends AbsVariable {
 
 }

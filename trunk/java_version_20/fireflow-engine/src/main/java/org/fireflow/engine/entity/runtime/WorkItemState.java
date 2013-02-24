@@ -23,13 +23,15 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
+import org.fireflow.engine.entity.EntityState;
+
 /**
  * @author 非也
  * @version 2.0
  */
 @XmlType(name="workItemStateType")
 @XmlEnum(int.class)
-public enum WorkItemState {
+public enum WorkItemState  implements EntityState{
 	/**
 	 * 活的状态
 	 */

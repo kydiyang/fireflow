@@ -141,28 +141,46 @@ public abstract class AbsActivityInstanceManager  extends AbsEngineModule implem
 		persister.saveOrUpdate(activityInstance);
 		return activityInstance;
 	}
-	
 	protected ServiceInvoker getServiceInvoker(RuntimeContext runtimeContext,ServiceDef service,String processType){
 		ServiceInvoker serviceInvoker = null;
 		String invokerBeanName = service.getInvokerBeanName();
 		String invokerClassName = service.getInvokerClassName();
 		
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class,processType);
-		if (!StringUtils.isEmpty(invokerBeanName)){
-			
-			serviceInvoker = (ServiceInvoker)beanFactory.getBean(invokerBeanName);
+		//1、首先从缓存中获取
+		if (invokerClassName!=null && !invokerClassName.trim().equals("")){
+			serviceInvoker = this.serviceInvokerRegistry.get(invokerClassName.trim());
 		}
 		
-		if (serviceInvoker==null && !StringUtils.isEmpty(invokerClassName)){
-			//首先从缓存中获得serviceInvoker，避免重复创建。
-			serviceInvoker = this.serviceInvokerRegistry.get(invokerClassName);
-			if (serviceInvoker==null){
-				serviceInvoker = (ServiceInvoker)beanFactory.createBean(invokerClassName);
-				if (serviceInvoker!=null){
-					serviceInvokerRegistry.put(invokerClassName, serviceInvoker);
-				}
+		if (serviceInvoker==null && invokerBeanName!=null && !invokerBeanName.trim().equals("")){
+			serviceInvoker = this.serviceInvokerRegistry.get(invokerBeanName.trim());
+		}
+		
+		if (serviceInvoker!=null){
+			return serviceInvoker;
+		}
+		
+		//2、如果缓存没有，则重新通过BeanName创建
+		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class,processType);
+		if (serviceInvoker==null && !StringUtils.isEmpty(invokerBeanName)){
+			serviceInvoker = (ServiceInvoker)beanFactory.getBean(invokerBeanName.trim());
+			if (serviceInvoker!=null){
+				serviceInvokerRegistry.put(invokerBeanName.trim(), serviceInvoker);
+				return serviceInvoker;
 			}
 		}
+
+		// 3、如果没有创建成功，则通过className创建
+		if (serviceInvoker == null && !StringUtils.isEmpty(invokerClassName)) {
+
+			serviceInvoker = (ServiceInvoker) beanFactory
+					.createBean(invokerClassName);
+			if (serviceInvoker != null) {
+				serviceInvokerRegistry.put(invokerClassName.trim(),
+						serviceInvoker);
+				return serviceInvoker;
+			}
+		}
+
 		return serviceInvoker;
 	}
 	

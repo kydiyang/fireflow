@@ -121,7 +121,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		if (!assignDone){
 			//TODO 分配给系统用户，并记录流程日志
 			//TODO 此处直接调用WorkItemManager，待优化
-			this.createWorkItem(session, session.getCurrentProcessInstance(), activityInstance, FireWorkflowSystem.getInstance(), theActivity,null);
+			this.createWorkItem(session, ((WorkflowSessionLocalImpl)session).getCurrentProcessInstance(), activityInstance, FireWorkflowSystem.getInstance(), theActivity,null);
 		}
 		return false;//表示是异步调用
 	}
@@ -220,10 +220,10 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		return workItem;
 	}
 
-	public List<WorkItem> disclaimWorkItem(WorkflowSession currentSession,
-			WorkItem workItem)throws InvalidOperationException{
+	public WorkItem disclaimWorkItem(WorkflowSession currentSession,
+			WorkItem workItemToBeDisclaimed)throws InvalidOperationException{
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
-		ActivityInstance thisActivityInstance = workItem.getActivityInstance();	
+		ActivityInstance thisActivityInstance = workItemToBeDisclaimed.getActivityInstance();	
 		ProcessInstance thisProcessInstance = thisActivityInstance.getProcessInstance(currentSession);
 		((WorkflowSessionLocalImpl)currentSession).setCurrentProcessInstance(thisProcessInstance);
 		
@@ -257,11 +257,11 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		}
 		try {
 			this.invoke(currentSession, thisActivityInstance,serviceBinding,resourceBinding, theActivity);
-			((AbsWorkItem)workItem).setState(WorkItemState.DISCLAIMED);
-			((AbsWorkItem)workItem).setEndTime(calendarService.getSysDate());
+			((AbsWorkItem)workItemToBeDisclaimed).setState(WorkItemState.DISCLAIMED);
+			((AbsWorkItem)workItemToBeDisclaimed).setEndTime(calendarService.getSysDate());
 			WorkItemPersister workItemPersister = persistenceService.getWorkItemPersister();
-			workItemPersister.saveOrUpdate(workItem);
-			return currentSession.getLatestCreatedWorkItems();
+			workItemPersister.saveOrUpdate(workItemToBeDisclaimed);
+			return workItemToBeDisclaimed;
 		} catch (ServiceInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -272,11 +272,11 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.service.form.WorkItemManager#completeWorkItemAndJumpTo(org.fireflow.engine.entity.runtime.WorkItem, java.lang.String, java.lang.String)
 	 */
-	public void completeWorkItemAndJumpTo(WorkflowSession currentSession,
-			WorkItem workItem, String targetActivityId) throws InvalidOperationException{
+	public WorkItem completeWorkItemAndJumpTo(WorkflowSession currentSession,
+			WorkItem workItemToBeCompleted, String targetActivityId) throws InvalidOperationException{
 		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)currentSession;
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
-		ActivityInstance thisActivityInstance = workItem.getActivityInstance();
+		ActivityInstance thisActivityInstance = workItemToBeCompleted.getActivityInstance();
 
 		PersistenceService persistenceService = rtCtx.getEngineModule(PersistenceService.class, thisActivityInstance.getProcessType());
 		CalendarService calendarService = rtCtx.getEngineModule(CalendarService.class,  thisActivityInstance.getProcessType());
@@ -284,20 +284,20 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		
 		WorkItemPersister workItemPersister = persistenceService.getWorkItemPersister();
 		
-		if (workItem.getParentWorkItemId() != null && !workItem.getParentWorkItemId().trim().equals("")
-				&& !workItem.getParentWorkItemId().trim().equals(
+		if (workItemToBeCompleted.getParentWorkItemId() != null && !workItemToBeCompleted.getParentWorkItemId().trim().equals("")
+				&& !workItemToBeCompleted.getParentWorkItemId().trim().equals(
 						WorkItem.NO_PARENT_WORKITEM)) {
-			String reassignType = workItem.getReassignType();
+			String reassignType = workItemToBeCompleted.getReassignType();
 			if (reassignType == null || reassignType.trim().equals("")
 					|| reassignType.trim().equals(WorkItem.REASSIGN_AFTER_ME)) {//后加签
-				WorkItemAssignmentStrategy assignmentStrategy = workItem.getAssignmentStrategy();
+				WorkItemAssignmentStrategy assignmentStrategy = workItemToBeCompleted.getAssignmentStrategy();
 				if (assignmentStrategy != null
 						&& !assignmentStrategy.equals(
 								WorkItemAssignmentStrategy.ASSIGN_TO_ANY)) {
 
 					List<WorkItem> workItemsWithSameParent = workItemPersister
-							.findWorkItemsForActivityInstance(workItem
-									.getActivityInstance().getId(), workItem
+							.findWorkItemsForActivityInstance(workItemToBeCompleted
+									.getActivityInstance().getId(), workItemToBeCompleted
 									.getParentWorkItemId());
 					
 					for(WorkItem wiTmp : workItemsWithSameParent){
@@ -318,19 +318,20 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		((WorkflowSessionLocalImpl)currentSession).setCurrentActivityInstance(thisActivityInstance);
 		
 
-		((AbsWorkItem)workItem).setState(WorkItemState.COMPLETED);
-		((AbsWorkItem)workItem).setEndTime(calendarService.getSysDate());
-		workItemPersister.saveOrUpdate(workItem);
+		((AbsWorkItem)workItemToBeCompleted).setState(WorkItemState.COMPLETED);
+		((AbsWorkItem)workItemToBeCompleted).setEndTime(calendarService.getSysDate());
+		workItemPersister.saveOrUpdate(workItemToBeCompleted);
 		
-		if (workItem.getParentWorkItemId() == null
-				|| workItem.getParentWorkItemId().trim().equals("")
-				|| workItem.getParentWorkItemId().trim().equals(
+		if (workItemToBeCompleted.getParentWorkItemId() == null
+				|| workItemToBeCompleted.getParentWorkItemId().trim().equals("")
+				|| workItemToBeCompleted.getParentWorkItemId().trim().equals(
 						WorkItem.NO_PARENT_WORKITEM)) {
 
 			localSession.setAttribute(WorkItemManager.TARGET_ACTIVITY_ID, targetActivityId);
 			activityInstanceManager.onServiceCompleted(currentSession, thisActivityInstance);
 		}
 
+		return workItemToBeCompleted;
 	}
 
 
@@ -339,11 +340,11 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	 * @see org.fireflow.engine.service.form.WorkItemManager#reassignWorkItemTo(org.fireflow.engine.entity.runtime.WorkItem, java.lang.String, java.lang.String)
 	 */
     public List<WorkItem> reassignWorkItemTo(WorkflowSession currentSession,
-			WorkItem workItem, AssignmentHandler assignmentHandler,
+			WorkItem workItemToBeReassign, AssignmentHandler assignmentHandler,
 			Object theActivity,ServiceBinding serviceBinding,
 			ResourceBinding resourceBinding){
     	
-		ActivityInstance thisActivityInstance = workItem.getActivityInstance();
+		ActivityInstance thisActivityInstance = workItemToBeReassign.getActivityInstance();
 		ProcessInstance thisProcessInstance = thisActivityInstance.getProcessInstance(currentSession);
 
 		((WorkflowSessionLocalImpl)currentSession).setCurrentActivityInstance(thisActivityInstance);
@@ -371,9 +372,9 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		
 		CalendarService calendarService = rtCtx.getEngineModule(CalendarService.class, thisActivityInstance.getProcessType());
 
-		((AbsWorkItem)workItem).setState(WorkItemState.REASSIGNED);
-		((AbsWorkItem)workItem).setEndTime(calendarService.getSysDate());
-		workItemPersister.saveOrUpdate(workItem);
+		((AbsWorkItem)workItemToBeReassign).setState(WorkItemState.REASSIGNED);
+		((AbsWorkItem)workItemToBeReassign).setEndTime(calendarService.getSysDate());
+		workItemPersister.saveOrUpdate(workItemToBeReassign);
 		
 		return result;
 	}
@@ -402,10 +403,10 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.service.human.WorkItemManager#completeWorkItem(org.fireflow.engine.WorkflowSession, org.fireflow.engine.entity.runtime.WorkItem, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void completeWorkItem(WorkflowSession currentSession,
-			WorkItem workItem) throws InvalidOperationException {
+	public WorkItem completeWorkItem(WorkflowSession currentSession,
+			WorkItem workItemToBeCompleted) throws InvalidOperationException {
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
-		ActivityInstance thisActivityInstance = workItem.getActivityInstance();
+		ActivityInstance thisActivityInstance = workItemToBeCompleted.getActivityInstance();
 
 		ProcessInstance thisProcessInstance = thisActivityInstance.getProcessInstance(currentSession);
 		
@@ -418,23 +419,23 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		
 		WorkItemPersister workItemPersister = persistenceService.getWorkItemPersister();
 		
-		((AbsWorkItem)workItem).setState(WorkItemState.COMPLETED);
-		((AbsWorkItem)workItem).setEndTime(calendarService.getSysDate());
-		workItemPersister.saveOrUpdate(workItem);
+		((AbsWorkItem)workItemToBeCompleted).setState(WorkItemState.COMPLETED);
+		((AbsWorkItem)workItemToBeCompleted).setEndTime(calendarService.getSysDate());
+		workItemPersister.saveOrUpdate(workItemToBeCompleted);
 		
-		if (workItem.getParentWorkItemId() == null
-				|| workItem.getParentWorkItemId().trim().equals("")
-				|| workItem.getParentWorkItemId().trim().equals(
+		if (workItemToBeCompleted.getParentWorkItemId() == null
+				|| workItemToBeCompleted.getParentWorkItemId().trim().equals("")
+				|| workItemToBeCompleted.getParentWorkItemId().trim().equals(
 						WorkItem.NO_PARENT_WORKITEM)) {
 
 			
 			actInstMgr.onServiceCompleted(currentSession, thisActivityInstance);
 		}else{
 			//委派的工作项特殊处理
-			String reassignType = workItem.getReassignType();
+			String reassignType = workItemToBeCompleted.getReassignType();
 			if (reassignType == null || reassignType.trim().equals("")
 					|| reassignType.trim().equals(WorkItem.REASSIGN_AFTER_ME)) {//后加签
-				WorkItemAssignmentStrategy assignmentStrategy = workItem.getAssignmentStrategy();
+				WorkItemAssignmentStrategy assignmentStrategy = workItemToBeCompleted.getAssignmentStrategy();
 				if (assignmentStrategy == null
 						|| assignmentStrategy.equals(
 								WorkItemAssignmentStrategy.ASSIGN_TO_ANY)) {
@@ -443,46 +444,54 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 							thisActivityInstance);
 				} else {
 					List<WorkItem> workItemsWithSameParent = workItemPersister
-							.findWorkItemsForActivityInstance(workItem
-									.getActivityInstance().getId(), workItem
+							.findWorkItemsForActivityInstance(workItemToBeCompleted
+									.getActivityInstance().getId(), workItemToBeCompleted
 									.getParentWorkItemId());
-					
+					boolean canCompleteActivityInstance = true;
 					for(WorkItem wiTmp : workItemsWithSameParent){
 						if (wiTmp.getState().getValue()<WorkItemState.DELIMITER.getValue()){
-							return;//还有待处理的workitem
+							canCompleteActivityInstance = false;
+							break;
 						}
 					}
-					
-					actInstMgr.onServiceCompleted(currentSession,
-							thisActivityInstance);
+					if (canCompleteActivityInstance){
+						actInstMgr.onServiceCompleted(currentSession,
+								thisActivityInstance);
+					}
+
 				}
 			}
 			else{//前加签
-				WorkItemAssignmentStrategy assignmentStrategy = workItem.getAssignmentStrategy();
+				WorkItemAssignmentStrategy assignmentStrategy = workItemToBeCompleted.getAssignmentStrategy();
 				if (assignmentStrategy == null
 						|| assignmentStrategy.equals(
 								WorkItemAssignmentStrategy.ASSIGN_TO_ANY)) {
-					WorkItem parentWorkItem = workItemPersister.find(WorkItem.class, workItem.getParentWorkItemId());
+					WorkItem parentWorkItem = workItemPersister.find(WorkItem.class, workItemToBeCompleted.getParentWorkItemId());
 					WorkItem newParentWi = this.cloneWorkItem(parentWorkItem, calendarService);
 					workItemPersister.saveOrUpdate(newParentWi);
 				} else {
 					List<WorkItem> workItemsWithSameParent = workItemPersister
-							.findWorkItemsForActivityInstance(workItem
-									.getActivityInstance().getId(), workItem
+							.findWorkItemsForActivityInstance(workItemToBeCompleted
+									.getActivityInstance().getId(), workItemToBeCompleted
 									.getParentWorkItemId());
 					
+					boolean canReturnToParentWorkItem = true;
 					for(WorkItem wiTmp : workItemsWithSameParent){
 						if (wiTmp.getState().getValue()<WorkItemState.DELIMITER.getValue()){
-							return;//还有待处理的workitem
+							canReturnToParentWorkItem = false;
+							break;
 						}
 					}
-					
-					WorkItem parentWorkItem = workItemPersister.find(WorkItem.class, workItem.getParentWorkItemId());
-					WorkItem newParentWi = this.cloneWorkItem(parentWorkItem, calendarService);
-					workItemPersister.saveOrUpdate(newParentWi);
+					if(canReturnToParentWorkItem){
+						WorkItem parentWorkItem = workItemPersister.find(WorkItem.class, workItemToBeCompleted.getParentWorkItemId());
+						WorkItem newParentWi = this.cloneWorkItem(parentWorkItem, calendarService);
+						workItemPersister.saveOrUpdate(newParentWi);
+					}
+
 				}
 			}
 		}
+		return workItemToBeCompleted;
 	}
 	private WorkItem cloneWorkItem(WorkItem wi,CalendarService calendarService){
 		AbsWorkItem tmp = (AbsWorkItem)((AbsWorkItem)wi).clone();
@@ -490,7 +499,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		tmp.setClaimedTime(calendarService.getSysDate());
 		tmp.setEndTime(null);
 		tmp.setNote(null);
-		tmp.setApprovalId(null);
+		tmp.setAttachmentId(null);
 		tmp.setCreatedTime(calendarService.getSysDate());
 		return tmp;
 	}
@@ -501,7 +510,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 //	@Override
 //	public void completeWorkItem(WorkflowSession currentSession,
 //			String workItemId, String commentSummary, String note,
-//			String approvalId,String processType) throws InvalidOperationException {
+//			String attachmentId,String processType) throws InvalidOperationException {
 //		
 //		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 //		
@@ -510,7 +519,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 //
 //		WorkItem wi = workItemPersister.find(WorkItem.class, workItemId);
 //		
-//		this.completeWorkItem(currentSession, wi, commentSummary, note, approvalId);
+//		this.completeWorkItem(currentSession, wi, commentSummary, note, attachmentId);
 //		
 //	}
 

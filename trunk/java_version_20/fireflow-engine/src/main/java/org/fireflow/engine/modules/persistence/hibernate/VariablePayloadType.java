@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -38,9 +38,9 @@ public class VariablePayloadType extends ClobStringType {
 			return xstream.fromXML(s);
 		}else{
 			//xml类型
-			Map<String,String> headers = VariableHeaderType.xmlString2Map(headerXml);
-			String className = headers.get(Variable.HEADER_KEY_CLASS_NAME);
-			String encoding = headers.get(Variable.HEADER_KEY_ENCODING);
+			Properties headers = VariableHeaderType.xmlString2Map(headerXml);
+			String className = (String)headers.get(Variable.HEADER_KEY_CLASS_NAME);
+			String encoding = (String)headers.get(Variable.HEADER_KEY_ENCODING);
 			
 			if (StringUtils.isEmpty(encoding)){
 				encoding = "UTF-8";

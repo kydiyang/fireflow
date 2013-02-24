@@ -17,8 +17,12 @@
  */
 package org.fireflow.engine.entity.config.impl;
 
-import java.util.Date;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.config.FireflowConfig;
 
 /**
@@ -27,8 +31,10 @@ import org.fireflow.engine.entity.config.FireflowConfig;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class FireflowConfigImpl implements FireflowConfig{
-	private String id ;
+@XmlRootElement(name="fireflowConfig")
+@XmlType(name="fireflowConfigType")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class FireflowConfigImpl extends AbsWorkflowEntity implements FireflowConfig{
 	private String configId;
 	private String configName;
 	private String configValue;
@@ -37,13 +43,7 @@ public class FireflowConfigImpl implements FireflowConfig{
 	private String parentConfigId;
 	
 	private String lastEditor;
-	private Date lastUpdateTime;
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+	
 	public String getConfigId() {
 		return configId;
 	}
@@ -80,17 +80,7 @@ public class FireflowConfigImpl implements FireflowConfig{
 	public void setParentConfigId(String parentConfigId) {
 		this.parentConfigId = parentConfigId;
 	}
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.entity.WorkflowEntity#getLastUpdateTime()
-	 */
-	@Override
-	public Date getLastUpdateTime() {
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date lastUpdateTime){
-		this.lastUpdateTime = lastUpdateTime;
-	}
+
 	public String getLastEditor() {
 		return lastEditor;
 	}

@@ -29,8 +29,8 @@ import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemState;
-import org.fireflow.misc.DateTimeXmlAdapter;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+import org.fireflow.server.support.DateTimeXmlAdapter;
 
 /**
  * 
@@ -96,7 +96,8 @@ public abstract class AbsWorkItem extends AbsWorkflowEntity implements WorkItem{
 	protected String responsiblePersonOrgId;
 	protected String responsiblePersonOrgName;
 	
-	protected String approvalId;
+	protected String attachmentId;
+	protected String attachmentType;
 	protected String note;
 	
 	/**
@@ -314,17 +315,17 @@ public abstract class AbsWorkItem extends AbsWorkflowEntity implements WorkItem{
 	}
 
 	/**
-	 * @return the approvalId
+	 * @return the attachmentId
 	 */
-	public String getApprovalId() {
-		return approvalId;
+	public String getAttachmentId() {
+		return attachmentId;
 	}
 
 	/**
-	 * @param approvalId the approvalId to set
+	 * @param attachmentId the attachmentId to set
 	 */
-	public void setApprovalId(String commentId) {
-		this.approvalId = commentId;
+	public void setAttachmentId(String commentId) {
+		this.attachmentId = commentId;
 	}
 
 	/**
@@ -549,6 +550,16 @@ public abstract class AbsWorkItem extends AbsWorkflowEntity implements WorkItem{
 	public void setStepNumber(int stepNumber) {
 		this.stepNumber = stepNumber;
 	}
+	
+	
+
+	public String getAttachmentType() {
+		return attachmentType;
+	}
+
+	public void setAttachmentType(String attachmentType) {
+		this.attachmentType = attachmentType;
+	}
 
 	public WorkItem clone(){
 		AbsWorkItem wi = null;
@@ -573,7 +584,8 @@ public abstract class AbsWorkItem extends AbsWorkflowEntity implements WorkItem{
 		wi.setAssignmentStrategy(assignmentStrategy);
 		wi.setClaimedTime(claimedTime);
 		wi.setNote(note);
-		wi.setApprovalId(approvalId);
+		wi.setAttachmentId(attachmentId);
+		wi.setAttachmentType(attachmentType);
 		wi.setCreatedTime(createdTime);
 		wi.setEndTime(endTime);
 		wi.setParentWorkItemId(parentWorkItemId);

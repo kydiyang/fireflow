@@ -17,23 +17,37 @@
 package org.fireflow.engine.entity.runtime.impl;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.runtime.Variable;
-import org.firesoa.common.schema.NameSpaces;
+import org.fireflow.server.support.DateTimeXmlAdapter;
+import org.fireflow.server.support.ObjectXmlAdapter;
+import org.fireflow.server.support.PropertiesXmlAdapter;
+import org.fireflow.server.support.QNameXmlAdapter;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public abstract class AbsVariable implements Variable {
-	String id = null;
+@XmlType(name="absVariableType")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({VariableImpl.class,VariableHistory.class})
+public abstract class AbsVariable extends AbsWorkflowEntity implements Variable {
 	String scopeId  = null;
 	String name = null;
-	Map<String,String> headers = new HashMap<String,String>();
+	
+	@XmlJavaTypeAdapter(PropertiesXmlAdapter.class)
+	Properties headers = new Properties();
+	
+	@XmlJavaTypeAdapter(QNameXmlAdapter.class)
 	QName dataType = null;
 //	String javaClassName = null;
 
@@ -42,23 +56,14 @@ public abstract class AbsVariable implements Variable {
 //	String mainSchemaFileName = null;
 	
 //	Map<String,String> schemas = null;
-	
+	@XmlJavaTypeAdapter(ObjectXmlAdapter.class)
 	Object value = null;
 	
 	String processElementId = null;
 	String processId = null;
 	Integer version = null;
 	String processType = null;
-	Date lastUpdateTime = null;
-
 	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getScopeId() {
 		return scopeId;
 	}
@@ -73,10 +78,10 @@ public abstract class AbsVariable implements Variable {
 	}
 	
 	
-	public Map<String, String> getHeaders() {
+	public Properties getHeaders() {
 		return headers;
 	}
-	public void setHeaders(Map<String, String> headers) {
+	public void setHeaders(Properties headers) {
 		this.headers = headers;
 	}
 	
@@ -163,12 +168,5 @@ public abstract class AbsVariable implements Variable {
 //	public void setJavaClassName(String javaClassName) {
 //		this.javaClassName = javaClassName;
 //	}
-	
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date lastUpdateTime){
-		this.lastUpdateTime = lastUpdateTime;
-	}
+
 }

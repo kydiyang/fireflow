@@ -1,8 +1,9 @@
 package org.fireflow.engine.invocation;
 
-import java.util.Map;
+import java.util.Properties;
+
 
 public interface Message<T> {
-	public Map<String,String> getHeaders();
+	public Properties getHeaders();
 	public T getPayload();	
 }

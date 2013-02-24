@@ -28,6 +28,7 @@ import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.invocation.AssignmentHandler;
+import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.workitem.event.WorkItemEventTrigger;
 import org.fireflow.model.binding.ResourceBinding;
@@ -38,7 +39,7 @@ import org.fireflow.model.binding.ServiceBinding;
  * @author 非也
  * @version 2.0
  */
-public interface WorkItemManager extends EngineModule{
+public interface WorkItemManager extends EngineModule,ServiceInvoker{
 	public static final String TARGET_ACTIVITY_ID = "org.fireflow.constants.TARGET_ACTIVITY_ID";
   
 	/**
@@ -75,7 +76,7 @@ public interface WorkItemManager extends EngineModule{
 	 * @param workItem
 	 * @return
 	 */
-	public List<WorkItem> disclaimWorkItem(WorkflowSession currentSession,
+	public WorkItem disclaimWorkItem(WorkflowSession currentSession,
 			WorkItem workItem)throws InvalidOperationException;
 
 
@@ -83,9 +84,10 @@ public interface WorkItemManager extends EngineModule{
 	 * 结束工作项，
 	 * @param currentSession
 	 * @param workItem
+	 * @return TODO
 	 * @throws InvalidOperationException
 	 */
-	public void completeWorkItem(WorkflowSession currentSession,
+	public WorkItem completeWorkItem(WorkflowSession currentSession,
 			WorkItem workItem)
 			throws InvalidOperationException;
 
@@ -111,19 +113,20 @@ public interface WorkItemManager extends EngineModule{
 //	 * @param workItemId
 //	 * @param commentSummary
 //	 * @param note
-//	 * @param approvalId
+//	 * @param attachmentId
 //	 * @throws InvalidOperationException
 //	 */
 //	public void completeWorkItem(WorkflowSession currentSession,
-//			String workItemId, String commentSummary, String note,String approvalId,String processType)
+//			String workItemId, String commentSummary, String note,String attachmentId,String processType)
 //			throws InvalidOperationException;	
 
     /**
      * 结束工单并跳转
      * @param workItem
      * @param targetActivityId
+     * @return TODO
      */
-    public void completeWorkItemAndJumpTo(WorkflowSession currentSession,WorkItem workItem,String targetActivityId)throws InvalidOperationException  ;
+    public WorkItem completeWorkItemAndJumpTo(WorkflowSession currentSession,WorkItem workItem,String targetActivityId)throws InvalidOperationException  ;
 
 
     /**
