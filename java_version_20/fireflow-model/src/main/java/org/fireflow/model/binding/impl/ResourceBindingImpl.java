@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fireflow.model.binding.ResourceBinding;
-import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
 
 /**
@@ -30,7 +29,7 @@ import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
  * @version 2.0
  */
 public class ResourceBindingImpl implements ResourceBinding {
-	private static final String DEFAULT_ASSIGNMENT_HANDLER_CLASS_NAME= "org.fireflow.service.human.impl.DefaultAssignmentHandler";
+	private static final String DEFAULT_ASSIGNMENT_HANDLER_CLASS_NAME= "org.fireflow.engine.invocation.impl.DefaultAssignmentHandler";
 	private String name = null;
 	private WorkItemAssignmentStrategy assignmentStrategy = WorkItemAssignmentStrategy.ASSIGN_TO_ANY;
 	private List<String> administrators = new ArrayList<String>();
