@@ -26,13 +26,21 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.fireflow.engine.entity.config.impl.FireflowConfigImpl;
+import org.fireflow.engine.entity.config.impl.ReassignConfigImpl;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceHistory;
 import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceHistory;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
+import org.fireflow.engine.entity.runtime.impl.ScheduleJobHistory;
+import org.fireflow.engine.entity.runtime.impl.ScheduleJobImpl;
+import org.fireflow.engine.entity.runtime.impl.VariableHistory;
+import org.fireflow.engine.entity.runtime.impl.VariableImpl;
 import org.fireflow.engine.entity.runtime.impl.WorkItemHistory;
 import org.fireflow.engine.entity.runtime.impl.WorkItemImpl;
-import org.fireflow.misc.DateTimeXmlAdapter;
+import org.fireflow.pvm.kernel.impl.TokenHistory;
+import org.fireflow.pvm.kernel.impl.TokenImpl;
+import org.fireflow.server.support.DateTimeXmlAdapter;
 
 /**
  *
@@ -44,7 +52,11 @@ import org.fireflow.misc.DateTimeXmlAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({ProcessInstanceImpl.class,ProcessInstanceHistory.class,
 	ActivityInstanceImpl.class,ActivityInstanceHistory.class,
-	WorkItemImpl.class,WorkItemHistory.class})
+	WorkItemImpl.class,WorkItemHistory.class,
+	TokenImpl.class,TokenHistory.class,
+	VariableImpl.class,VariableHistory.class,
+	ScheduleJobImpl.class,ScheduleJobHistory.class,
+	ReassignConfigImpl.class,FireflowConfigImpl.class})
 public abstract class AbsWorkflowEntity implements WorkflowEntity {
 	@XmlElement(name="entityId")
 	protected String id = null;

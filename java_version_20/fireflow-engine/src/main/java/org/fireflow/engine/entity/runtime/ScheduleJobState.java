@@ -19,45 +19,60 @@ package org.fireflow.engine.entity.runtime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
+import org.fireflow.engine.entity.EntityState;
+
 /**
  * 
  * 
  * @author 非也
  * @version 2.0
  */
-public enum ScheduleJobState {
+@XmlType(name="scheduleJobStateType")
+@XmlEnum(int.class)
+public enum ScheduleJobState  implements EntityState{
 	/**
 	 * 运行状态
 	 */
+	@XmlEnumValue("1")
 	RUNNING(1),
 	
 	/**
 	 * 调度器被暂停，但是仍然有效
 	 * TODO 什么场景用到呢?
 	 */
+	@XmlEnumValue("3")
 	SUSPENDED(3),
 	/**
 	 * 活动属性和非活动属性的分界线
 	 */
+	@XmlEnumValue("10")
 	DELIMITER(10),
 	
 	/**
 	 * 已经结束
 	 */
+	@XmlEnumValue("11")
 	COMPLETED(11),
 	
 	/**
 	 * 因错误而终止
 	 */
+	@XmlEnumValue("15")
 	FAULTED(15),
 	
 	/**
 	 * 被取消
 	 */
+	@XmlEnumValue("16")
 	ABORTED(16),
 	/**
 	 * 已经失效的，
 	 */
+	@XmlEnumValue("98")
 	OUT_OF_DATE(98);
 	
 	private int value = 0;
@@ -87,4 +102,16 @@ public enum ScheduleJobState {
 		}
 		return null;
 	}	
+	
+	public int value(){
+		return this.value;
+	}
+    public static ScheduleJobState fromValue(int v) {
+        for (ScheduleJobState c: ScheduleJobState.values()) {
+            if (c.value==v) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(Integer.toString(v));
+    }
 }

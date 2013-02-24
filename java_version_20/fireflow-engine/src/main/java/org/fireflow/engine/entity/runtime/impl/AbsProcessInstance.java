@@ -18,6 +18,7 @@ package org.fireflow.engine.entity.runtime.impl;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,8 +33,8 @@ import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.exception.InvalidOperationException;
-import org.fireflow.misc.DateTimeXmlAdapter;
 import org.fireflow.model.InvalidModelException;
+import org.fireflow.server.support.DateTimeXmlAdapter;
 
 /**
  * @author 非也
@@ -375,7 +376,7 @@ public abstract class AbsProcessInstance extends AbsWorkflowEntity implements Pr
 		WorkflowStatement stmt = session.createWorkflowStatement(this.getProcessType());
 		stmt.setVariableValue(this, name,value);
 	}
-	public void setVariableValue(WorkflowSession session ,String name ,Object value,Map<String,String> headers)throws InvalidOperationException{
+	public void setVariableValue(WorkflowSession session ,String name ,Object value,Properties headers)throws InvalidOperationException{
 		WorkflowStatement stmt = session.createWorkflowStatement(this.getProcessType());
 		stmt.setVariableValue(this, name,value,headers);
 	}

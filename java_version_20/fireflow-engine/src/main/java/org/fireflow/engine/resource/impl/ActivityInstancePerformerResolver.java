@@ -54,8 +54,8 @@ public class ActivityInstancePerformerResolver extends ResourceResolver {
 	public List<User> resolve(WorkflowSession session, ProcessInstance currentProcessInstance,
 			ActivityInstance currentActivityInstance, ResourceDef resource) {
 		List<User> users = new ArrayList<User>();
-		
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
+		ProcessInstance processInstance = localSession.getCurrentProcessInstance();
 		if (processInstance==null){
 			log.error("Current process instance is null,can NOT retrieve the actors");
 			return users;

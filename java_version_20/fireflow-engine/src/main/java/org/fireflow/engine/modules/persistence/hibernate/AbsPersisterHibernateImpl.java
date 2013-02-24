@@ -43,6 +43,7 @@ public abstract class AbsPersisterHibernateImpl extends HibernateDaoSupport
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.persistence.Persister#List(org.fireflow.engine.WorkflowQuery)
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T extends WorkflowEntity> java.util.List<T> list(final WorkflowQuery<T> q) {
 		Class tmp = null;
 		if (q.isQueryFromHistory()){

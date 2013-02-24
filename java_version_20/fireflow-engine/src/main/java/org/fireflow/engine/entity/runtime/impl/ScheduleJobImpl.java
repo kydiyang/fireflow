@@ -18,6 +18,11 @@ package org.fireflow.engine.entity.runtime.impl;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ScheduleJob;
 import org.fireflow.engine.entity.runtime.ScheduleJobState;
@@ -28,6 +33,9 @@ import org.fireflow.engine.entity.runtime.ScheduleJobState;
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="scheduleJob")
+@XmlType(name="scheduleJobType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ScheduleJobImpl extends AbsScheduleJob implements ScheduleJob{
 
 	

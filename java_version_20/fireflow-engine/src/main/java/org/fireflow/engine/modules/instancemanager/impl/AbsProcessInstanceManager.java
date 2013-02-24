@@ -64,12 +64,13 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 		if (processInstanceId==null || processInstanceId.trim().equals("")){
 			throw new EngineException("流程实例Id不能为空");
 		}
+		WorkflowSessionLocalImpl localSession = (WorkflowSessionLocalImpl)session;
 		KernelManager kernelManager = runtimeContext.getDefaultEngineModule(KernelManager.class);
 		PersistenceService persistenceStrategy = runtimeContext.getEngineModule(PersistenceService.class,processType);
 		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();
 		ProcessPersister processPersister = persistenceStrategy.getProcessPersister();
 
-		ProcessInstance processInstance = (ProcessInstance)session.getCurrentProcessInstance();
+		ProcessInstance processInstance = (ProcessInstance)localSession.getCurrentProcessInstance();
 		if (processInstance==null || !processInstanceId.equals(processInstance.getId())){
 			processInstance = procInstPersistenceService.find(ProcessInstance.class, processInstanceId);
 			((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(processInstance);

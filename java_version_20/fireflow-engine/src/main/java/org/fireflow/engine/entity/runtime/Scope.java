@@ -17,6 +17,7 @@
 package org.fireflow.engine.entity.runtime;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.exception.InvalidOperationException;
@@ -30,7 +31,7 @@ public interface Scope {
 	public String getParentScopeId();
 	public Object getVariableValue(WorkflowSession session,String name);
 	public void setVariableValue(WorkflowSession session ,String name ,Object value)throws InvalidOperationException;
-	public void setVariableValue(WorkflowSession session ,String name,Object value,Map<String,String> headers)throws InvalidOperationException;
+	public void setVariableValue(WorkflowSession session ,String name,Object value,Properties headers)throws InvalidOperationException;
 	public Map<String,Object> getVariableValues(WorkflowSession session);
 	
 	/**

@@ -133,12 +133,22 @@ public interface WorkItem extends WorkflowEntity{
     public String getResponsiblePersonDeptName();
     
     /**
-     * 返回审批意见信息Id，用于关联到外部的审批意见表
+     * 返回审批意见信息Id，用于关联到外部的审批意见表或者附件表
      * @return
      */
-    public String getApprovalId();
+    public String getAttachmentId();
     
-    public void setApprovalId(String approvalId);
+    public void setAttachmentId(String attachementId);
+    
+    /**
+     * 附件的类型信息，具体内涵由业务系统解释。<br/>
+     * 例如：如果业务系统审批已经不是集中存储在一张表里面，此字段也可以用于
+     * 存储审批意见（或者附件信息）表的表名。
+     * @return
+     */
+    public String getAttachmentType();
+    
+    public void setAttachmentType(String type);
     
     /**
      * 返回审批意见的结论信息，结论信息不必在workItem中体现，只要有审批意见的详细信息即可。
@@ -150,7 +160,8 @@ public interface WorkItem extends WorkflowEntity{
 //    public void setApprovalConclusion(String approvalConclusion);
     
     /**
-     * 返回详细的审批意见信息或者备注信息
+     * 对于简单的业务系统，如果审批意见不必单独存储在一张表中，则可以用
+     * 该字段存储审批意见。
      * @return
      */
     public String getNote();

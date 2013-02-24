@@ -18,7 +18,15 @@ package org.fireflow.engine.entity.config.impl;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.config.ReassignConfig;
+import org.fireflow.server.support.DateTimeXmlAdapter;
 
 /**
  * 
@@ -26,8 +34,10 @@ import org.fireflow.engine.entity.config.ReassignConfig;
  * @author 非也
  * @version 2.0
  */
-public class ReassignConfigImpl implements ReassignConfig{
-	protected String id;
+@XmlRootElement(name="reassignConfig")
+@XmlType(name="reassignConfigType")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ReassignConfigImpl extends AbsWorkflowEntity implements ReassignConfig{
 	protected String processId;
 	protected String processName;
 	protected String processDisplayName;
@@ -45,27 +55,14 @@ public class ReassignConfigImpl implements ReassignConfig{
 	protected String agentName;
 	protected String agentType;
 	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date startTime;
+	
+	@XmlJavaTypeAdapter(DateTimeXmlAdapter.class)
 	protected Date endTime;
 	
 	protected Boolean alive;
 	
-	protected Date lastUpdateTime = null;
-
-	
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the processId
@@ -305,11 +302,4 @@ public class ReassignConfigImpl implements ReassignConfig{
 		this.alive = alive;
 	}
 	
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date lastUpdateTime){
-		this.lastUpdateTime = lastUpdateTime;
-	}
 }

@@ -25,10 +25,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,11 +56,11 @@ public class VariableHeaderType implements UserType {
 	private static DocumentFactory documentFactory = new DocumentFactory();
 	private static final int[] TYPES = new int[] { Types.VARCHAR };
 
-	public static Map<String,String> xmlString2Map(String theString){
+	public static Properties xmlString2Map(String theString){
 		String s = (String) theString;
 		if (s == null || s.trim().equals(""))
-			return new HashMap<String, String>();
-		Map map = new HashMap<String, String>();
+			return new Properties();
+		Properties map = new Properties();
 		SAXReader reader = new SAXReader();
 		try {
 			Document doc = reader.read(new ByteArrayInputStream(s
@@ -82,18 +82,18 @@ public class VariableHeaderType implements UserType {
 		return map;
 	}
 	
-	public static String map2XmlString(Map<String,String> arg0){
+	public static String map2XmlString(Properties arg0){
 		if (arg0 == null)
 			return null;
-		Map<String, String> map = (Map<String, String>) arg0;
+		Properties map =  arg0;
 		Document document = documentFactory.createDocument();
 		Element root = documentFactory.createElement("map");
 		document.setRootElement(root);
 
-		Iterator<String> keys = map.keySet().iterator();
+		Iterator<Object> keys = map.keySet().iterator();
 		while (keys.hasNext()) {
-			String key = keys.next();
-			String value = map.get(key);
+			String key = (String)keys.next();
+			String value = (String)map.get(key);
 			Element entry = documentFactory.createElement("entry");
 			root.add(entry);
 			Element keyElm = documentFactory.createElement("key");
@@ -163,7 +163,7 @@ public class VariableHeaderType implements UserType {
 	@Override
 	public void nullSafeSet(PreparedStatement st, Object value, int index)
 			throws HibernateException, SQLException {
-		Hibernate.STRING.nullSafeSet(st, this.map2XmlString((Map<String,String>)value), index);
+		Hibernate.STRING.nullSafeSet(st, this.map2XmlString((Properties)value), index);
 
 	}
 
