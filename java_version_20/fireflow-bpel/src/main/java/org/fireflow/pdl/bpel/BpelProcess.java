@@ -94,7 +94,7 @@ public class BpelProcess implements WorkflowBehavior{
 
 
 
-		ProcessInstance newProcessInstance = session.getCurrentProcessInstance();
+		ProcessInstance newProcessInstance = ((WorkflowSessionLocalImpl)session).getCurrentProcessInstance();
 		((ProcessInstanceImpl)newProcessInstance).setTokenId(token.getId());
 		procInstPersistSvc.saveOrUpdate(newProcessInstance);
 		

@@ -112,7 +112,7 @@ public abstract class AbstractActivity implements BpelActivity {
 		ActivityInstancePersister actInstPersistSvc = persistenceStrategy
 				.getActivityInstancePersister();
 
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		ProcessInstance processInstance = ((WorkflowSessionLocalImpl)session).getCurrentProcessInstance();
 		ActivityInstance activityInstance = activityInstanceMgr
 				.createActivityInstance(session, processInstance,
 						workflowElement);

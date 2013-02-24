@@ -27,7 +27,7 @@ public class XYZActivity extends BasicActivity {
 			Object workflowElement) {
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		ProcessInstance processInstance = ((WorkflowSessionLocalImpl)session).getCurrentProcessInstance();
 		PersistenceService persistenceService = ctx.getEngineModule(PersistenceService.class, token.getProcessType());
 		VariablePersister variablePersister = persistenceService.getVariablePersister();
 		Variable var = variablePersister.findVariable(processInstance.getScopeId(), "x");

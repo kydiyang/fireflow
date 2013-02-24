@@ -90,8 +90,8 @@ public class While extends StructureActivity  {
 //			boolean b = resolver.resolveBooleanExpression(session, exp, fireflowVariableContext);
 			Map<String, Object> fireflowVariableContext = ScriptEngineHelper
 					.fulfillScriptContext(session, ctx,
-							session.getCurrentProcessInstance(),
-							session.getCurrentActivityInstance());
+							((WorkflowSessionLocalImpl)session).getCurrentProcessInstance(),
+							((WorkflowSessionLocalImpl)session).getCurrentActivityInstance());
 
 			boolean b = false;
 			Object obj;
@@ -150,8 +150,8 @@ public class While extends StructureActivity  {
 //			fireflowVariableContext.putAll(varValues);
 //			fireflowVariableContext.putAll("<系统常量>");
 			Map<String,Object> fireflowVariableContext = ScriptEngineHelper.fulfillScriptContext(session, ctx,
-					session.getCurrentProcessInstance(),
-					session.getCurrentActivityInstance());
+					((WorkflowSessionLocalImpl)session).getCurrentProcessInstance(),
+					((WorkflowSessionLocalImpl)session).getCurrentActivityInstance());
 	        
 //			ConditionResolver resolver = ctx.getEngineModule(ConditionResolver.class,BpelConstants.PROCESS_TYPE);
 //			boolean b = resolver.resolveBooleanExpression(session, exp, fireflowVariableContext);
