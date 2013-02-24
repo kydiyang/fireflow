@@ -111,8 +111,8 @@ public class If extends StructureActivity {
 //		fireflowVariableContext.putAll(varValues);
 //		fireflowVariableContext.putAll("<系统常量>");		
 		Map<String,Object> fireflowVariableContext = ScriptEngineHelper.fulfillScriptContext(session, runtimeContext,
-				session.getCurrentProcessInstance(),
-				session.getCurrentActivityInstance());
+				((WorkflowSessionLocalImpl)session).getCurrentProcessInstance(),
+				((WorkflowSessionLocalImpl)session).getCurrentActivityInstance());
 
         
 		List<Child> theChildren = this.getChildren();
