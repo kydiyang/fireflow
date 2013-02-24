@@ -30,9 +30,7 @@ import org.fireflow.model.InvalidModelException;
 import org.fireflow.pdl.fpdl20.behavior.ActivityBehavior;
 import org.fireflow.pdl.fpdl20.behavior.EndNodeBehavior;
 import org.fireflow.pdl.fpdl20.behavior.RouterBehavior;
-import org.fireflow.pdl.fpdl20.behavior.StartNodeBehavior;
 import org.fireflow.pdl.fpdl20.behavior.SubProcessBehavior;
-import org.fireflow.pdl.fpdl20.behavior.TransitionBehavior;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.EndNode;
@@ -49,6 +47,7 @@ import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.impl.ArcInstanceImpl;
 import org.fireflow.pvm.kernel.impl.NetInstanceImpl;
 import org.fireflow.pvm.kernel.impl.NodeInstanceImpl;
+import org.fireflow.pvm.pdllogic.WorkflowBehavior;
 import org.fireflow.pvm.translate.Process2PObjectTranslator;
 
 /**
@@ -58,6 +57,63 @@ import org.fireflow.pvm.translate.Process2PObjectTranslator;
  */
 public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implements
 		Process2PObjectTranslator {
+	private WorkflowBehavior transitionBehavior = null;
+	private WorkflowBehavior startNodeBehavior = null;
+	private EndNodeBehavior endNodeBehavior = null;
+	private ActivityBehavior activityBehavior = null;
+	private RouterBehavior routerBehavior = null;
+	private SubProcessBehavior subProcessBehavior = null;
+	
+	
+//	private WorkflowProcessBehavior workflowProcessBehavior = null;
+
+	public WorkflowBehavior getTransitionBehavior() {
+		return transitionBehavior;
+	}
+
+	public void setTransitionBehavior(WorkflowBehavior transitionBehavior) {
+		this.transitionBehavior = transitionBehavior;
+	}
+
+	public WorkflowBehavior getStartNodeBehavior() {
+		return startNodeBehavior;
+	}
+
+	public void setStartNodeBehavior(WorkflowBehavior startNodeBehavior) {
+		this.startNodeBehavior = startNodeBehavior;
+	}
+
+	public EndNodeBehavior getEndNodeBehavior() {
+		return endNodeBehavior;
+	}
+
+	public void setEndNodeBehavior(EndNodeBehavior endNodeBehavior) {
+		this.endNodeBehavior = endNodeBehavior;
+	}
+
+	public ActivityBehavior getActivityBehavior() {
+		return activityBehavior;
+	}
+
+	public void setActivityBehavior(ActivityBehavior activityBehavior) {
+		this.activityBehavior = activityBehavior;
+	}
+
+	public RouterBehavior getRouterBehavior() {
+		return routerBehavior;
+	}
+
+	public void setRouterBehavior(RouterBehavior routerBehavior) {
+		this.routerBehavior = routerBehavior;
+	}
+
+	public SubProcessBehavior getSubProcessBehavior() {
+		return subProcessBehavior;
+	}
+
+	public void setSubProcessBehavior(SubProcessBehavior subProcessBehavior) {
+		this.subProcessBehavior = subProcessBehavior;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.translate.PDL2ProcessObjectTranslator#translatePDL2ProcessObjects(org.fireflow.engine.entity.repository.ProcessRepository)
@@ -75,14 +131,13 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 	}
 	
 	private List<PObject> translateSubflow(SubProcess subflow,ProcessKey processKey){
-		SubProcessBehavior workflowProcessBehavior = new SubProcessBehavior();
-		
+	
 		PObjectKey key = new PObjectKey(processKey.getProcessId(),
 				processKey.getVersion(), processKey.getProcessType(), subflow.getId());
 
 		
 		PObject pObject = new NetInstanceImpl(key);
-		pObject.setWorkflowBehavior(workflowProcessBehavior);
+		pObject.setWorkflowBehavior(subProcessBehavior);
 		pObject.setWorkflowElement(subflow);
 		
 		List<PObject> pobjectList = new ArrayList<PObject>();
@@ -137,7 +192,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 			PObject pObject = new NodeInstanceImpl(key);
 			pObject.setCancellable(true);
 			pObject.setCompensable(false);
-			pObject.setWorkflowBehavior(new StartNodeBehavior());
+			pObject.setWorkflowBehavior(startNodeBehavior);
 			pObject.setWorkflowElement(startNode);
 			
 			result.add(pObject);
@@ -158,7 +213,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 			PObject pObject = new NodeInstanceImpl(key);
 			pObject.setCancellable(true);
 			pObject.setCompensable(false);
-			pObject.setWorkflowBehavior(new RouterBehavior());
+			pObject.setWorkflowBehavior(routerBehavior);
 			pObject.setWorkflowElement(router);
 			
 			result.add(pObject);
@@ -179,7 +234,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 			PObject pObject = new NodeInstanceImpl(key);
 			pObject.setCancellable(true);
 			pObject.setCompensable(false);
-			pObject.setWorkflowBehavior(new EndNodeBehavior());
+			pObject.setWorkflowBehavior(endNodeBehavior );
 			pObject.setWorkflowElement(endNode);
 			
 			result.add(pObject);
@@ -200,7 +255,7 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 			PObject pObject = new NodeInstanceImpl(key);
 			pObject.setCancellable(true);
 			pObject.setCompensable(true);
-			pObject.setWorkflowBehavior(new ActivityBehavior());
+			pObject.setWorkflowBehavior(activityBehavior );
 			pObject.setWorkflowElement(activity);
 			
 			result.add(pObject);
@@ -221,8 +276,8 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 			PObject pObject = new ArcInstanceImpl(key);
 			pObject.setCancellable(false);
 			pObject.setCompensable(false);
-			pObject.setWorkflowBehavior(new TransitionBehavior());
-			pObject.setWorkflowElement(transition);
+			pObject.setWorkflowBehavior(transitionBehavior);
+			pObject.setWorkflowElement(transition);//TODO 流程对象被众多PObject引用，是否浪费内存？
 			
 			result.add(pObject);
 		}

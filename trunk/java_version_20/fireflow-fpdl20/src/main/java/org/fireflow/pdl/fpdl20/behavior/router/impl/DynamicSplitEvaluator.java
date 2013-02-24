@@ -57,11 +57,12 @@ public class DynamicSplitEvaluator implements SplitEvaluator {
 			Token token4Node, Node node) {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
+		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
 
 		Map<String, Object> fireflowVariableContext = ScriptEngineHelper
 				.fulfillScriptContext(session, ctx,
-						session.getCurrentProcessInstance(),
-						session.getCurrentActivityInstance());
+						sessionLocal.getCurrentProcessInstance(),
+						sessionLocal.getCurrentActivityInstance());
 
 		List<String> result = new ArrayList<String>();
 		

@@ -25,7 +25,6 @@ import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.pdllogic.BusinessStatus;
-import org.fireflow.pvm.pdllogic.CancellationHandler;
 import org.fireflow.pvm.pdllogic.CompensationHandler;
 import org.fireflow.pvm.pdllogic.ContinueDirection;
 import org.fireflow.pvm.pdllogic.ExecuteResult;

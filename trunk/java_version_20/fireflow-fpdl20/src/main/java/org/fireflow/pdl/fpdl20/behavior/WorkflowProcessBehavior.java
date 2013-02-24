@@ -16,44 +16,8 @@
  */
 package org.fireflow.pdl.fpdl20.behavior;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.fireflow.client.WorkflowSession;
-import org.fireflow.client.impl.InternalSessionAttributeKeys;
-import org.fireflow.client.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.entity.repository.ProcessDescriptor;
-import org.fireflow.engine.entity.repository.ProcessKey;
-import org.fireflow.engine.entity.runtime.ActivityInstance;
-import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.entity.runtime.ProcessInstanceState;
-import org.fireflow.engine.entity.runtime.Variable;
-import org.fireflow.engine.entity.runtime.impl.AbsVariable;
-import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
-import org.fireflow.engine.modules.calendar.CalendarService;
-import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
-import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
-import org.fireflow.engine.modules.persistence.PersistenceService;
-import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
-import org.fireflow.engine.modules.persistence.ProcessPersister;
-import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.engine.modules.persistence.VariablePersister;
-import org.fireflow.engine.modules.script.ScriptEngineHelper;
-import org.fireflow.model.data.Property;
-import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
-import org.fireflow.pdl.fpdl20.process.SubProcess;
-import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pvm.kernel.KernelManager;
-import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
-import org.fireflow.pvm.kernel.TokenState;
-import org.fireflow.pvm.pdllogic.BusinessStatus;
-import org.fireflow.pvm.pdllogic.CancellationHandler;
 import org.fireflow.pvm.pdllogic.CompensationHandler;
 import org.fireflow.pvm.pdllogic.ContinueDirection;
 import org.fireflow.pvm.pdllogic.ExecuteResult;
