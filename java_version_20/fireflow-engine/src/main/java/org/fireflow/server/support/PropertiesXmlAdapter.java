@@ -17,15 +17,13 @@
  */
 package org.fireflow.server.support;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.fireflow.server.support.PropertiesConvertor.PropertiesEntry;
 
 /**
  *
@@ -33,25 +31,29 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Customer {
-	@XmlElementRef
-	private ContactInfo contactInfo;
-	
-	@XmlElement(name="contactInfoList")
-	@XmlJavaTypeAdapter(ListXmlAdapter4Test.class)
-	private List<ContactInfo> contactInfoList = new ArrayList<ContactInfo>();
+public class PropertiesXmlAdapter extends
+		XmlAdapter<PropertiesConvertor, Properties> {
 
-	public ContactInfo getContactInfo() {
-		return contactInfo;
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public Properties unmarshal(PropertiesConvertor v) throws Exception {
+		if (v==null)return null;
+
+		return v.getProperties();
 	}
 
-	public void setContactInfo(ContactInfo contactInfo) {
-		this.contactInfo = contactInfo;
+	/* (non-Javadoc)
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public PropertiesConvertor marshal(Properties v) throws Exception {
+		if(v==null) return null;
+		PropertiesConvertor result = new PropertiesConvertor();
+		result.putAll(v);
+
+		return result;
 	}
-	
-	public void addContactInfo(ContactInfo info){
-		contactInfoList.add(info);
-	}
+
 }

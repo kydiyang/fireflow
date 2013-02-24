@@ -19,66 +19,83 @@ package org.fireflow.pvm.kernel;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.fireflow.engine.entity.runtime.ProcessInstanceState;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
+import org.fireflow.engine.entity.EntityState;
 
 /**
  * @author 非也
  * @version 2.0
  */
-public enum TokenState {
+@XmlType(name="tokenStateType")
+@XmlEnum(int.class)
+public enum TokenState  implements EntityState{
 	/**
 	 * 活的状态
 	 */
+	@XmlEnumValue("-1")
 	ALIVE(-1),
 	
 	/**
 	 * 初始化状态
 	 */
+	@XmlEnumValue("0")
 	INITIALIZED(0),
 
 	/**
 	 * 运行状态
 	 */
+	@XmlEnumValue("1")
 	RUNNING(1),
 	
 	
 	/**
 	 * 错误处理中
 	 */
+	@XmlEnumValue("5")
 	FAULTING(5),
 	
 	/**
 	 * 取消处理中
 	 */
+	@XmlEnumValue("6")
 	ABORTING(6),
 	
 	/**
 	 * 补偿操作中
 	 */
+	@XmlEnumValue("7")
 	COMPENSATING(7),
 	
 	/**
 	 * 活动属性和非活动属性的分界线
 	 */
+	@XmlEnumValue("10")
 	DELIMITER(10),
 	
 	/**
 	 * 已经结束
 	 */
+	@XmlEnumValue("11")
 	COMPLETED(11),
 	
 	/**
 	 * 因错误而终止
 	 */
+	@XmlEnumValue("15")
 	FAULTED(15),
 	
 	/**
 	 * 被取消
 	 */
+	@XmlEnumValue("16")
 	ABORTED(16),
 	/**
 	 * 被补偿
 	 */
+	@XmlEnumValue("17")
 	COMPENSATED(17);
 	
 	
@@ -111,4 +128,17 @@ public enum TokenState {
 		}
 		return null;
 	}	
+	
+	public int value(){
+		return this.value;
+	}
+    public static TokenState fromValue(int v) {
+        for (TokenState c: TokenState.values()) {
+            if (c.value==v) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(Integer.toString(v));
+    }
+    
 }

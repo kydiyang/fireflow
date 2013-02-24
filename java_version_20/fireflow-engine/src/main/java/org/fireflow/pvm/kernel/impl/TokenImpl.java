@@ -16,6 +16,11 @@
  */
 package org.fireflow.pvm.kernel.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenState;
 
@@ -23,6 +28,9 @@ import org.fireflow.pvm.kernel.TokenState;
  * @author 非也
  * @version 2.0
  */
+@XmlRootElement(name="token")
+@XmlType(name="tokenType")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TokenImpl extends AbsToken implements Token {
 	public TokenImpl(){
 		

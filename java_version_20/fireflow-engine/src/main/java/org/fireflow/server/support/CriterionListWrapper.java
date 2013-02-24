@@ -17,8 +17,16 @@
  */
 package org.fireflow.server.support;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.fireflow.client.query.AbsCriterion;
 
 /**
  *
@@ -26,17 +34,19 @@ import javax.xml.bind.annotation.XmlType;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement(name="AddressElm")
-@XmlType(name="AddressType")
-public class Address extends ContactInfo {
-	String address = null;
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
+@XmlRootElement(name="criterionList")
+@XmlType(name="criterionListType")
+@XmlAccessorType(XmlAccessType.FIELD) 
+public class CriterionListWrapper {
+	
+	@XmlElementRef
+	List<AbsCriterion> criterions = new ArrayList<AbsCriterion>();
+	
+	public void addAll(List<AbsCriterion> l){
+		criterions.addAll(l);
 	}
 	
+	public List<AbsCriterion> getAll(){
+		return criterions;
+	}
 }

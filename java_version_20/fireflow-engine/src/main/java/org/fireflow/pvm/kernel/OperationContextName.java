@@ -16,13 +16,19 @@
  */
 package org.fireflow.pvm.kernel;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * @author 非也
  * @version 2.0
  */
+@XmlType(name="operationContextNameType")
+@XmlEnum(String.class)
 public enum OperationContextName {
 	NORMAL,
 	FAULT,
 //	CANCELLATION,//（2012-02-05，Cancel动作容易和handleTermination混淆，意义也不是特别大，暂且注销）
 	COMPENSATION;
+	
 }

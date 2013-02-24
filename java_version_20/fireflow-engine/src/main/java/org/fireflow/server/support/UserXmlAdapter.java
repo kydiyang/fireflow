@@ -17,38 +17,41 @@
  */
 package org.fireflow.server.support;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.fireflow.engine.modules.ousystem.User;
+import org.fireflow.engine.modules.ousystem.impl.UserImpl;
 
 /**
  *
  * @author 非也 nychen2000@163.com
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
- * @param <ListConvert4Test>
  *
  */
-public class ListXmlAdapter4Test extends
-		XmlAdapter<ListConvertor4Test, List<ContactInfo>> {
+public class UserXmlAdapter extends XmlAdapter<UserImpl, User> {
 
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
 	 */
 	@Override
-	public List<ContactInfo> unmarshal(ListConvertor4Test v) throws Exception {
-		if (v==null)return null;
-		return v.getContactInfoList();
+	public User unmarshal(UserImpl v) throws Exception {
+		return v;
 	}
 
 	/* (non-Javadoc)
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
 	 */
 	@Override
-	public ListConvertor4Test marshal(List<ContactInfo> v) throws Exception {
-		ListConvertor4Test test = new ListConvertor4Test();
-		if (v==null)return test;
-		test.addAll(v);
-		return test;
+	public UserImpl marshal(User v) throws Exception {
+		if (v==null)return null;
+		UserImpl userImpl = new UserImpl();
+		userImpl.setId(v.getId());
+		userImpl.setName(v.getName());
+		userImpl.setDeptId(v.getDeptId());
+		userImpl.setDeptName(v.getDeptName());
+		userImpl.setProperties(v.getProperties());
+
+		return userImpl;
 	}
 
 }

@@ -17,14 +17,12 @@
  */
 package org.fireflow.server.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.fireflow.engine.invocation.impl.DynamicAssignmentHandler;
 
 /**
  *
@@ -32,18 +30,45 @@ import javax.xml.bind.annotation.XmlType;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-@XmlRootElement(name="listElm")
-@XmlType(name="listType")
+@XmlType(name="assignmentHandlerMapEntryType")
 @XmlAccessorType(XmlAccessType.FIELD) 
-public class ListConvertor4Test {
-	@XmlElementRef
-	private List<ContactInfo> contactInfoList = new ArrayList<ContactInfo>();
+public class AssignmentHandlerMapEntry extends AbsMapEntry {
+	@XmlElement(name="activityId")
+	private String key = null;
 	
-	public void addAll(List<ContactInfo> arg){
-		contactInfoList.addAll(arg);
+	@XmlElement(name="assignmentHandler")
+	private DynamicAssignmentHandler value = null;
+	/* (non-Javadoc)
+	 * @see org.fireflow.misc.AbsMapEntry#getKey()
+	 */
+	@Override
+	public String getKey() {
+		return key;
 	}
-	
-	public List<ContactInfo> getContactInfoList(){
-		return contactInfoList;
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.misc.AbsMapEntry#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		return value;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.misc.AbsMapEntry#setKey(java.lang.String)
+	 */
+	@Override
+	public void setKey(String k) {
+		this.key = k;
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.misc.AbsMapEntry#setValue(java.lang.Object)
+	 */
+	@Override
+	public void setValue(Object v) {
+		this.value = (DynamicAssignmentHandler)v;		
+	}
+
 }

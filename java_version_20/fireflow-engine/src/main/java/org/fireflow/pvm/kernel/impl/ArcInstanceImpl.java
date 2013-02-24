@@ -125,7 +125,13 @@ public class ArcInstanceImpl extends AbstractPObject implements
 
 
 			kernelManager.addBookMark(bookMark);
-		} else {
+		} 
+		else if (status.equals(BusinessStatus.RUNNING)){
+			//调试状态
+			return;
+		}
+		
+		else {
 			// 不支持其他类型的Status
 			throw new KernelException(
 					"Not supported workflow behavior status for arc instance ,the WorkflowBehaviorStatus.COMPLETED is expected ,but the status is "
