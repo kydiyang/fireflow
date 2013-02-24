@@ -1,15 +1,15 @@
 package org.fireflow.engine.modules.persistence.hibernate;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class MapStringTypeTest {
-	private static Map<String,String> mapOriginal = new HashMap<String,String>();
-	private static Map<String,String> emptyMapOriginal = new HashMap<String,String>();
+public class PropertiesStringTypeTest {
+	private static Properties mapOriginal = new Properties();
+	private static Properties emptyMapOriginal = new Properties();
 	
 	String mapXml = null;
 	String emptyMapXml = null;
@@ -39,7 +39,7 @@ public class MapStringTypeTest {
 		testDisassemble();//首先生成xml
 		
 		VariableHeaderType type = new VariableHeaderType();
-		Map<String,String> map1 = (Map<String,String>)type.xmlString2Map(mapXml);
+		Properties map1 = (Properties)type.xmlString2Map(mapXml);
 		Assert.assertNotNull(map1);
 		Assert.assertEquals(4, map1.size());
 		Assert.assertTrue(map1.containsKey("key1"));
@@ -54,7 +54,7 @@ public class MapStringTypeTest {
 		Assert.assertTrue(map1.containsKey("key4"));
 		Assert.assertEquals(mapOriginal.get("key4"), map1.get("key4"));
 		
-		Map<String,String> map2 = (Map<String,String>)type.xmlString2Map(emptyMapXml);
+		Properties map2 = (Properties)type.xmlString2Map(emptyMapXml);
 		Assert.assertNotNull(map2);
 		Assert.assertEquals(0, map2.size());
 		

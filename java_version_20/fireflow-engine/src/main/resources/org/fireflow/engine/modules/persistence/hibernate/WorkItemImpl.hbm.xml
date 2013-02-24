@@ -112,11 +112,16 @@
 		</property>	
 		
 		<!--  -->
-		<property name="approvalId" type="java.lang.String">
-			<column length="50" name="APPROVAL_ID">
-				<comment>审批信息表id</comment>
+		<property name="attachmentId" type="java.lang.String">
+			<column length="50" name="ATTACHMENT_ID">
+				<comment>附件信息id</comment>
 			</column>
 		</property>	
+		<property name="attachmentType" type="java.lang.String">
+			<column length="150" name="ATTACHMENT_TYPE">
+				<comment>附件信息类型，具体含义由业务系统结石</comment>
+			</column>
+		</property>			
 
 		<property name="note" type="java.lang.String">
 			<column length="300" name="NOTE">
