@@ -8,11 +8,11 @@ import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
+import org.fireflow.engine.invocation.impl.AbsAssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.UserImpl;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
-import org.fireflow.service.human.impl.AbsAssignmentHandler;
 
 public class MyAssignmentHandler extends AbsAssignmentHandler {
 

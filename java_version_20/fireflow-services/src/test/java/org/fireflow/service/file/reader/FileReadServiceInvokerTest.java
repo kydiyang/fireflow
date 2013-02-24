@@ -321,7 +321,7 @@ public class FileReadServiceInvokerTest extends AbsTestContext {
 		File f = new File(originalFilesDir+File.separator+textFileName_2+FileReadServiceDef.READ_FILE_SUFFIX);
 		Assert.assertTrue(f.exists());
 
-		lastModified = Long.parseLong(((Message<List<FileObject>>)result).getHeaders().get("NEXT_START_TIME"));
+		lastModified = Long.parseLong((String)((Message<List<FileObject>>)result).getHeaders().get("NEXT_START_TIME"));
 	}
 
 	public ServiceDef buildService1(){
