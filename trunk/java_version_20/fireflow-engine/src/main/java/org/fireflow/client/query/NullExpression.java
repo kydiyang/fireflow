@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.fireflow.engine.entity.EntityProperty;
-import org.fireflow.misc.EntityPropertyXmlAdapter;
+import org.fireflow.server.support.EntityPropertyXmlAdapter;
 
 /**
  * @author 非也

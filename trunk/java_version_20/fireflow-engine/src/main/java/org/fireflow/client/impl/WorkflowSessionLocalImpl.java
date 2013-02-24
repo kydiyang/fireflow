@@ -41,7 +41,7 @@ import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.invocation.AssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.misc.UserXmlAdapter;
+import org.fireflow.server.support.UserXmlAdapter;
 
 
 /**

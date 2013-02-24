@@ -20,11 +20,21 @@ package org.fireflow.client.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import org.fireflow.client.WorkflowStatement;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
+import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.RepositoryDescriptor;
 import org.fireflow.engine.entity.repository.ResourceDescriptor;
@@ -35,13 +45,20 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.Scope;
 import org.fireflow.engine.entity.runtime.WorkItem;
-import org.fireflow.engine.entity.runtime.WorkItemProperty;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.invocation.AssignmentHandler;
+import org.fireflow.engine.invocation.impl.DynamicAssignmentHandler;
+import org.fireflow.engine.invocation.impl.ReassignmentHandler;
 import org.fireflow.misc.Utils;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.server.WorkflowServer;
+import org.fireflow.server.support.MapConvertor;
+import org.fireflow.server.support.ObjectWrapper;
+import org.fireflow.server.support.PropertiesConvertor;
+import org.fireflow.server.support.ScopeBean;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
  *
@@ -50,9 +67,9 @@ import org.fireflow.server.WorkflowServer;
  *
  */
 public class WorkflowStatementRemoteImpl implements WorkflowStatement {
-	private WorkflowServer workflowServer = null;
-	private String processType = null;
-	private WorkflowSessionRemoteImpl remoteSession = null;
+	protected WorkflowServer workflowServer = null;
+	protected String processType = null;
+	protected WorkflowSessionRemoteImpl remoteSession = null;
 	
 	public WorkflowStatementRemoteImpl(WorkflowSessionRemoteImpl session,String processType){
 		remoteSession = session;
@@ -75,51 +92,46 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowStatement#getCurrentProcessInstance()
-	 */
-	@Override
-	public ProcessInstance getCurrentProcessInstance() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowStatement#getCurrentActivityInstance()
-	 */
-	@Override
-	public ActivityInstance getCurrentActivityInstance() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowStatement#getLatestCreatedWorkItems()
-	 */
-	@Override
-	public List<WorkItem> getLatestCreatedWorkItems() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowStatement#getCurrentProcessInstance()
+//	 */
+//	@Override
+//	public ProcessInstance getCurrentProcessInstance() {
+//		return null;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowStatement#getCurrentActivityInstance()
+//	 */
+//	@Override
+//	public ActivityInstance getCurrentActivityInstance() {
+//		return null;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowStatement#getLatestCreatedWorkItems()
+//	 */
+//	@Override
+//	public List<WorkItem> getLatestCreatedWorkItems() {
+//		return null;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#setDynamicAssignmentHandler(java.lang.String, org.fireflow.engine.invocation.AssignmentHandler)
 	 */
-	@Override
-	public WorkflowStatement setDynamicAssignmentHandler(String activityId,
-			AssignmentHandler dynamicAssignmentHandler) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public WorkflowStatement setDynamicAssignmentHandler(String activityId,
+//			AssignmentHandler dynamicAssignmentHandler) {
+//		return null;
+//	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowStatement#setAttribute(java.lang.String, java.lang.Object)
-	 */
-	@Override
-	public WorkflowStatement setAttribute(String name, Object attr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowStatement#setAttribute(java.lang.String, java.lang.Object)
+//	 */
+//	@Override
+//	public WorkflowStatement setAttribute(String name, Object attr) {
+//		return null;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#startProcess(java.lang.String, int, java.lang.String, java.util.Map)
@@ -129,8 +141,12 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 			String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
 			InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!checkVariableMap(variables))return null;
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(variables,MapConvertor.MAP_TYPE_VARIABLE);
+		
+		return this.workflowServer.startProcess2(this.remoteSession.getSessionId(),
+				workflowProcessId,version,bizId,mapConvertor);
 	}
 
 	/* (non-Javadoc)
@@ -141,8 +157,12 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 			String subProcessId, String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
 			InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!checkVariableMap(variables))return null;
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(variables,MapConvertor.MAP_TYPE_VARIABLE);
+		
+		return this.workflowServer.startProcess4(this.remoteSession.getSessionId(),
+				workflowProcessId,version,subProcessId,bizId,mapConvertor);
 	}
 
 	/* (non-Javadoc)
@@ -153,8 +173,12 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 			String subProcessId, String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
 			InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!checkVariableMap(variables))return null;
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(variables,MapConvertor.MAP_TYPE_VARIABLE);
+		
+		return this.workflowServer.startProcess3(this.remoteSession.getSessionId(),
+				workflowProcessId,subProcessId,bizId,mapConvertor);
 	}
 
 	/* (non-Javadoc)
@@ -164,8 +188,12 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	public ProcessInstance startProcess(String workflowProcessId, String bizId,
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!checkVariableMap(variables))return null;
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(variables,MapConvertor.MAP_TYPE_VARIABLE);
+		
+		return this.workflowServer.startProcess1(this.remoteSession.getSessionId(),
+				workflowProcessId,bizId,mapConvertor);
 	}
 
 	/* (non-Javadoc)
@@ -175,8 +203,7 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	public ProcessInstance startProcess(Object process, String bizId,
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("远程接口不支持该方法，只能为流程库中已经存在的流程创建实例");
 	}
 
 	/* (non-Javadoc)
@@ -185,8 +212,7 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId)
 			throws InvalidModelException, WorkflowProcessNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return workflowServer.createProcessInstance1(remoteSession.getSessionId(), workflowProcessId);
 	}
 
 	/* (non-Javadoc)
@@ -195,8 +221,7 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ProcessInstance createProcessInstance(Object process)
 			throws InvalidModelException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("远程接口不支持该方法，只能为流程库中已经存在的流程创建实例");
 	}
 
 	/* (non-Javadoc)
@@ -206,8 +231,7 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			int version) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return workflowServer.createProcessInstance2(remoteSession.getSessionId(), workflowProcessId,version);
 	}
 
 	/* (non-Javadoc)
@@ -217,8 +241,7 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			int version, String subProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return workflowServer.createProcessInstance4(remoteSession.getSessionId(), workflowProcessId,version,subProcessId);
 	}
 
 	/* (non-Javadoc)
@@ -228,8 +251,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			String subProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return workflowServer.createProcessInstance3(remoteSession.getSessionId(), workflowProcessId,subProcessId);
+
 	}
 
 	/* (non-Javadoc)
@@ -238,8 +261,35 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ProcessInstance runProcessInstance(String processInstanceId,
 			String bizId, Map<String, Object> variables) {
-		// TODO Auto-generated method stub
-		return null;
+		//远程接口只能传递简单类型的流程参数（包括java.util.Date)
+		if (!checkVariableMap(variables))return null;
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(variables,MapConvertor.MAP_TYPE_VARIABLE);
+		return workflowServer.runProcessInstance(remoteSession.getSessionId(),processInstanceId,bizId, mapConvertor);
+	}
+	
+	/**
+	 * 检查流程参数是否为简单类型
+	 * @param variables
+	 * @return
+	 */
+	private boolean checkVariableMap(Map<String,Object> variables){
+		if (variables==null)return true;
+		Iterator<Entry<String,Object>> entries = variables.entrySet().iterator();
+		if (entries!=null){
+			while (entries.hasNext()){
+				Map.Entry<String, Object>  entry = entries.next();
+				Object value = entry.getValue();
+				if (value!=null){
+					if (!JavaDataTypeConvertor.isPrimaryObject(value)){
+						throw new EngineException("远程接口只能传递简单类型的流程变量（含java.util.Date,不含byte），而你传入了"+
+								entry.getKey()+"="+value.toString()+"，值对象类型是"+value.getClass().getName());
+					}
+				}
+			}
+		}
+		
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -248,8 +298,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ProcessInstance abortProcessInstance(String processInstanceId,
 			String note) throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.abortProcessInstance(this.remoteSession.getSessionId(),
+				processInstanceId,note);
 	}
 
 	/* (non-Javadoc)
@@ -258,8 +308,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ProcessInstance suspendProcessInstance(String processInstanceId,
 			String note) throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.suspendProcessInstance(this.remoteSession.getSessionId(),
+				processInstanceId,note);
 	}
 
 	/* (non-Javadoc)
@@ -268,8 +318,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ProcessInstance restoreProcessInstance(String processInstanceId,
 			String note) throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.restoreProcessInstance(this.remoteSession.getSessionId(),
+				processInstanceId,note);
 	}
 
 	/* (non-Javadoc)
@@ -278,8 +328,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ActivityInstance suspendActivityInstance(String activityInstanceId,
 			String note) throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.suspendActivityInstance(this.remoteSession.getSessionId(),
+				activityInstanceId,note);
 	}
 
 	/* (non-Javadoc)
@@ -288,8 +338,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ActivityInstance restoreActivityInstance(String activityInstanceId,
 			String note) throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.restoreActivityInstance(this.remoteSession.getSessionId(),
+				activityInstanceId,note);
 	}
 
 	/* (non-Javadoc)
@@ -298,8 +348,8 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public ActivityInstance abortActivityInstance(String activityInstanceId,
 			String note) throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.abortActivityInstance(this.remoteSession.getSessionId(),
+				activityInstanceId,note);
 	}
 
 	/* (non-Javadoc)
@@ -308,19 +358,19 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public WorkItem claimWorkItem(String workItemId)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.claimWorkItem(this.remoteSession.getSessionId(),
+				workItemId);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#disclaimWorkItem(java.lang.String, java.util.Map)
 	 */
 	@Override
-	public List<WorkItem> disclaimWorkItem(String workItemId,
-			Map<WorkItemProperty, Object> changedProperties)
+	public WorkItem disclaimWorkItem(String workItemId,
+			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.disclaimWorkItem(this.remoteSession.getSessionId(),
+				workItemId,attachmentId,attachmentType,note);
 	}
 
 	/* (non-Javadoc)
@@ -329,18 +379,19 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public WorkItem withdrawWorkItem(String workItemId)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.withdrawWorkItem(this.remoteSession.getSessionId(),
+				workItemId);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItem(java.lang.String, java.util.Map)
 	 */
 	@Override
-	public void completeWorkItem(String workItemId,
-			Map<WorkItemProperty, Object> changedProperties)
+	public WorkItem completeWorkItem(String workItemId,
+			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		return this.workflowServer.completeWorkItem1(this.remoteSession.getSessionId(),
+				workItemId,attachmentId,attachmentType,note);
 
 	}
 
@@ -348,23 +399,56 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItem(java.lang.String, java.util.Map, java.util.Map)
 	 */
 	@Override
-	public void completeWorkItem(String workItemId,
+	public WorkItem completeWorkItem(String workItemId,
 			Map<String, AssignmentHandler> assignmentStrategy,
-			Map<WorkItemProperty, Object> changedProperties)
+			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		if(!checkAssignmentStrategy(assignmentStrategy)) return null;
+		
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(assignmentStrategy, MapConvertor.MAP_TYPE_ASSIGNMENT_HANDLER);
+		
+		
+		return this.workflowServer.completeWorkItem2(this.remoteSession.getSessionId(),
+				workItemId,mapConvertor,attachmentId,attachmentType,note);
 
+	}
+	
+	/**
+	 * 远程接口的动态指定操作者只能使用DynamicAssignmentHandler，其他自行扩展的AssignmentHandler不能使用。
+	 * 因为无法通过webservice进行传输。
+	 * @param assitnmentStrategy
+	 * @return
+	 */
+	private boolean checkAssignmentStrategy(Map<String, AssignmentHandler> assitnmentStrategy){
+		Iterator<Entry<String,AssignmentHandler>> iterator = assitnmentStrategy.entrySet().iterator();
+		while (iterator.hasNext()){
+			Entry<String,AssignmentHandler> entry = iterator.next();
+			String key = entry.getKey();
+			AssignmentHandler value = entry.getValue();
+			if (value==null){
+				throw new EngineException("参数assignmentStrategy中的AssignmentHandler不能为null");
+			}
+			String className = DynamicAssignmentHandler.class.getName();
+			if (!className.equals(value.getClass().getName())){
+				throw new  EngineException("参数assignmentStrategy中的AssignmentHandler只能是"+
+						className+"的实例，而传入参数中含有"+value.getClass().getName()+"实例");
+			}
+		}
+		
+		return true;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItemAndJumpTo(java.lang.String, java.lang.String, java.util.Map)
 	 */
 	@Override
-	public void completeWorkItemAndJumpTo(String workItemId,
+	public WorkItem completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
-			Map<WorkItemProperty, Object> changedProperties)
+			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		return this.workflowServer.completeWorkItemAndJumpTo1(this.remoteSession.getSessionId(),
+				workItemId,targetActivityId,attachmentId,attachmentType,note);
 
 	}
 
@@ -372,12 +456,20 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItemAndJumpTo(java.lang.String, java.lang.String, java.util.Map, java.util.Map)
 	 */
 	@Override
-	public void completeWorkItemAndJumpTo(String workItemId,
+	public WorkItem completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
 			Map<String, AssignmentHandler> assignmentStrategy,
-			Map<WorkItemProperty, Object> changedProperties)
+			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		if(!checkAssignmentStrategy(assignmentStrategy)) return null;
+		
+		MapConvertor mapConvertor = new MapConvertor();
+		mapConvertor.putAll(assignmentStrategy, MapConvertor.MAP_TYPE_ASSIGNMENT_HANDLER);
+		
+		
+		return this.workflowServer.completeWorkItemAndJumpTo2(this.remoteSession.getSessionId(),
+				workItemId,targetActivityId,mapConvertor,attachmentId,attachmentType,note);
+
 
 	}
 
@@ -385,12 +477,13 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 * @see org.fireflow.engine.WorkflowStatement#reassignWorkItemTo(java.lang.String, org.fireflow.engine.invocation.AssignmentHandler, java.util.Map)
 	 */
 	@Override
-	public List<WorkItem> reassignWorkItemTo(String workItemId,
-			AssignmentHandler reassignHandler,
-			Map<WorkItemProperty, Object> changedProperties)
+	public WorkItem reassignWorkItemTo(String workItemId,
+			ReassignmentHandler reassignHandler,
+			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.workflowServer.reassignWorkItemTo(
+				this.remoteSession.getSessionId(),workItemId,
+				reassignHandler,attachmentId, attachmentType, note);
 	}
 
 	/* (non-Javadoc)
@@ -430,10 +523,79 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public List<RepositoryDescriptor> uploadModelDefsInZipFile(File zipFile,
 			boolean publishState) throws InvalidModelException {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,InputStream> modelDefsMap = parseModelDefsFromZipFile(zipFile);
+		
+		Iterator<Entry<String,InputStream>> entries = modelDefsMap.entrySet().iterator();
+		
+		List<RepositoryDescriptor> allDescriptors = new ArrayList<RepositoryDescriptor>();
+	
+		while(entries.hasNext()){
+			Entry<String,InputStream> entry = entries.next();
+			String fName = entry.getKey();
+			InputStream inStream = entry.getValue();
+			
+			if (fName.toLowerCase().endsWith(".svc.xml")){
+				Map<ServiceDescriptorProperty,Object> props = new HashMap<ServiceDescriptorProperty,Object>();
+				props.put(ServiceDescriptorProperty.FILE_NAME, fName);
+
+				List<ServiceDescriptor> svcDescs = this.uploadServicesStream(inStream, publishState, props);
+				allDescriptors.addAll(svcDescs);
+			}
+			else if (fName.toLowerCase().endsWith(".rsc.xml")){
+				Map<ResourceDescriptorProperty,Object> props = new HashMap<ResourceDescriptorProperty,Object>();
+				props.put(ResourceDescriptorProperty.FILE_NAME, fName);
+
+				List<ResourceDescriptor> svcDescs = this.uploadResourcesStream(inStream, publishState, props);
+				allDescriptors.addAll(svcDescs);
+			}else {
+				Map<ProcessDescriptorProperty,Object> props = new HashMap<ProcessDescriptorProperty,Object>();
+				props.put(ProcessDescriptorProperty.FILE_NAME, fName);
+				
+				this.uploadProcessStream(inStream, publishState, null, null);
+			}
+		}
+		return allDescriptors;
 	}
 
+	private Map<String, InputStream> parseModelDefsFromZipFile(
+			File processZipFile) throws InvalidModelException {
+		Map<String, InputStream> modelDefsMap = new HashMap<String, InputStream>();
+		ZipFile zf = null;
+		try {
+			zf = new ZipFile(processZipFile);
+		} catch (ZipException e) {
+			throw new InvalidModelException(e);
+		} catch (IOException e) {
+			throw new InvalidModelException(e);
+		}
+
+		Enumeration enu = zf.entries();
+		while (enu.hasMoreElements()) {
+			ZipEntry entry = (ZipEntry) enu.nextElement();
+			String fileName = entry.getName();
+			try {
+				if (!(entry.isDirectory())) {
+					InputStream inputStream = zf.getInputStream(entry);
+					modelDefsMap.put(fileName, inputStream);
+					// ByteArrayOutputStream out = new ByteArrayOutputStream();
+					//
+					// byte[] buf = new byte[1024];
+					// int read = 0;
+					// do {
+					// read = inputStream.read(buf, 0, buf.length);
+					// if (read > 0)
+					// out.write(buf, 0, read);
+					// } while (read >= 0);
+					// processDefinitionsContent.put(fileName,
+					// out.toString("UTF-8"));
+				}
+			} catch (IOException e) {
+				throw new InvalidModelException(e);
+			}
+		}
+
+		return modelDefsMap;
+	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#uploadServicesStream(java.io.InputStream, java.lang.Boolean, java.util.Map)
 	 */
@@ -463,7 +625,14 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 */
 	@Override
 	public Object getVariableValue(Scope scope, String name) {
-		// TODO Auto-generated method stub
+		if (scope==null || name==null)return null;
+		ScopeBean bean = ScopeBean.fromScopeObject(scope);
+		ObjectWrapper objWrapper = this.workflowServer.getVariableValue(this.remoteSession.getSessionId(),
+				bean,name);
+		
+		if (objWrapper!=null){
+			return objWrapper.getOriginalValue();
+		}
 		return null;
 	}
 
@@ -473,8 +642,21 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	@Override
 	public void setVariableValue(Scope scope, String name, Object value)
 			throws InvalidOperationException {
-		// TODO Auto-generated method stub
+		if (!JavaDataTypeConvertor.isPrimaryObject(value)){
+			throw new InvalidOperationException("远程接口只能设置基本数据类型的流程变量（含java.util.Date，不含byte）；而当前设置数据类型是"+
+					value.getClass().getName());
+		}
+		if (scope==null){
+			throw new InvalidOperationException("scope参数不能为null");
+		}
+		
+		ScopeBean bean = ScopeBean.fromScopeObject(scope);
 
+		ObjectWrapper objWrapper = new ObjectWrapper();
+		objWrapper.setOriginalValue(value);
+		
+		this.workflowServer.setVariableValue1(this.remoteSession.getSessionId(),
+				bean,name,objWrapper);
 	}
 
 	/* (non-Javadoc)
@@ -482,8 +664,25 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 */
 	@Override
 	public void setVariableValue(Scope scope, String name, Object value,
-			Map<String, String> headers) throws InvalidOperationException {
-		// TODO Auto-generated method stub
+			Properties headers) throws InvalidOperationException {
+		if (!JavaDataTypeConvertor.isPrimaryObject(value)){
+			throw new InvalidOperationException("远程接口只能设置基本数据类型的流程变量（含java.util.Date，不含byte）；而当前设置数据类型是"+
+					value.getClass().getName());
+		}
+		if (scope==null){
+			throw new InvalidOperationException("scope参数不能为null");
+		}
+		
+		ScopeBean bean = ScopeBean.fromScopeObject(scope);
+
+		ObjectWrapper objWrapper = new ObjectWrapper();
+		objWrapper.setOriginalValue(value);
+		
+		PropertiesConvertor propConvertor = new PropertiesConvertor();
+		propConvertor.putAll(headers);
+		
+		this.workflowServer.setVariableValue2(this.remoteSession.getSessionId(),
+				bean, name, objWrapper,propConvertor);
 
 	}
 
@@ -492,8 +691,16 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 */
 	@Override
 	public Map<String, Object> getVariableValues(Scope scope) {
-		// TODO Auto-generated method stub
-		return null;
+		if (scope==null)return null;
+		ScopeBean bean = ScopeBean.fromScopeObject(scope);
+		
+		MapConvertor convertor = this.workflowServer.getVariableValues(this.remoteSession.getSessionId(),
+				bean);
+		if (convertor!=null){
+			return convertor.getMap();
+		}else{
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)

@@ -68,7 +68,7 @@ public class WorkflowSessionFactory {
 		return remoteSession;
 	}
 	
-	private static Service createWorkflowServerService(String url)throws MalformedURLException{
+	protected static Service createWorkflowServerService(String url)throws MalformedURLException{
 		if (workflowServerService==null){
 			synchronized(WorkflowSessionFactory.class){
 				if (workflowServerService==null){

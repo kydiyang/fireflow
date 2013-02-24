@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -69,6 +70,7 @@ import org.fireflow.engine.entity.runtime.impl.VariableImpl;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.invocation.AssignmentHandler;
+import org.fireflow.engine.invocation.impl.ReassignmentHandler;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
@@ -539,7 +541,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		return workItemMgr.claimWorkItem(session, workItem);
 	}
 
-	public List<WorkItem> disclaimWorkItem(String workItemId,Map<WorkItemProperty,Object> changedProperties)
+	public WorkItem disclaimWorkItem(String workItemId,String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
 		RuntimeContext rtCtx = this.session.getRuntimeContext();
 
@@ -579,7 +581,9 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 					"Disclaim work item failed .The  correspond activity instance is suspended");
 		}
 		//将审批意见等信息写入workItem
-		updateWorkItemChangedProperties(workItem,changedProperties);
+		workItem.setAttachmentId(attachmentId);
+		workItem.setAttachmentType(attachmentType);
+		workItem.setNote(note);
 		
 		WorkItemManager workItemMgr = rtCtx.getEngineModule(
 				WorkItemManager.class, this.processType);
@@ -614,14 +618,14 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		return workItemMgr.withdrawWorkItem(session, workItem);
 	}
 	
-    public void completeWorkItem(String workItemId,Map<String,AssignmentHandler> assignmentStrategy,Map<WorkItemProperty,Object> changedProperties)throws InvalidOperationException{
+    public WorkItem completeWorkItem(String workItemId,Map<String,AssignmentHandler> assignmentStrategy,String attachmentId, String attachmentType, String note)throws InvalidOperationException{
     	if (assignmentStrategy!=null){
     		this.session.dynamicAssignmentHandlers.putAll(assignmentStrategy);
     	}
-    	completeWorkItem(workItemId,changedProperties);
+    	return completeWorkItem(workItemId,attachmentId, attachmentType, note);
     }
 
-	public void completeWorkItem(String workItemId,Map<WorkItemProperty,Object> changedProperties)
+	public WorkItem completeWorkItem(String workItemId,String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
 		RuntimeContext rtCtx = this.session.getRuntimeContext();
 
@@ -662,19 +666,23 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		}
 
 		//将审批意见等信息写入workItem
-		updateWorkItemChangedProperties(workItem,changedProperties);
+		//将审批意见等信息写入workItem
+		workItem.setAttachmentId(attachmentId);
+		workItem.setAttachmentType(attachmentType);
+		workItem.setNote(note);
+		
 		WorkItemManager workItemMgr = rtCtx.getEngineModule(
 				WorkItemManager.class, this.processType);
-		workItemMgr.completeWorkItem(session, workItem);
+		return workItemMgr.completeWorkItem(session, workItem);
 	}
-    public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<String,AssignmentHandler> assignmentStrategy,Map<WorkItemProperty,Object>  changedProperties) throws InvalidOperationException{
+    public WorkItem completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<String,AssignmentHandler> assignmentStrategy,String attachmentId, String attachmentType, String note) throws InvalidOperationException{
     	if (assignmentStrategy!=null){
     		this.session.dynamicAssignmentHandlers.putAll(assignmentStrategy);
     	}
-    	this.completeWorkItemAndJumpTo(workItemId, targetActivityId,changedProperties);
+    	return this.completeWorkItemAndJumpTo(workItemId, targetActivityId,attachmentId, attachmentType, note);
     }
-	public void completeWorkItemAndJumpTo(String workItemId,
-			String targetActivityId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException {
+	public WorkItem completeWorkItemAndJumpTo(String workItemId,
+			String targetActivityId,String attachmentId, String attachmentType, String note) throws InvalidOperationException {
 		RuntimeContext rtCtx = this.session.getRuntimeContext();
 
 		PersistenceService persistenceService = rtCtx.getEngineModule(
@@ -714,15 +722,17 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		}
 		
 		//将审批意见等信息写入workItem
-		updateWorkItemChangedProperties(workItem,changedProperties);
-
+		workItem.setAttachmentId(attachmentId);
+		workItem.setAttachmentType(attachmentType);
+		workItem.setNote(note);
+		
 		WorkItemManager workItemMgr = rtCtx.getEngineModule(
 				WorkItemManager.class, this.processType);
-		workItemMgr.completeWorkItemAndJumpTo(session, workItem,
+		return workItemMgr.completeWorkItemAndJumpTo(session, workItem,
 				targetActivityId);
 	}
 
-	public List<WorkItem> reassignWorkItemTo(String workItemId,AssignmentHandler dynamicAssignmentHandler,Map<WorkItemProperty,Object> changedProperties)
+	public WorkItem reassignWorkItemTo(String workItemId,ReassignmentHandler dynamicAssignmentHandler,String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
 		RuntimeContext rtCtx = this.session.getRuntimeContext();
 
@@ -785,11 +795,15 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		}
 		
 		//将审批意见等信息写入workItem
-		updateWorkItemChangedProperties(workItem,changedProperties);
+		workItem.setAttachmentId(attachmentId);
+		workItem.setAttachmentType(attachmentType);
+		workItem.setNote(note);
 		
-		return workItemMgr.reassignWorkItemTo(session, workItem,
+		workItemMgr.reassignWorkItemTo(session, workItem,
 				dynamicAssignmentHandler, theActivity,
 				serviceBinding,resourceBinding);
+		
+		return workItem;
 	}
 
 	/*****************************************************************/
@@ -1061,7 +1075,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		this.setVariableValue(scope, name, value,null);
 	}
 
-	public void setVariableValue(Scope scope, String name, Object value,Map<String,String> headers)
+	public void setVariableValue(Scope scope, String name, Object value,Properties headers)
 			throws InvalidOperationException {
 		RuntimeContext ctx = this.session.getRuntimeContext();
 
@@ -1343,13 +1357,18 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		return procInstMgr.runProcessInstance(session, processInstanceId, processType, bizId, variables);
 	}
 	
+	/**
+	 * @deprecated
+	 * @param workItem
+	 * @param changedProperties
+	 */
 	private void updateWorkItemChangedProperties(WorkItem workItem,Map<WorkItemProperty,Object> changedProperties){
 		//当前版本只能对审批详细意见，审批意见表Id进行修改，
 		//其他字段不允许通过changedProperty进行修改。2012-11-10
 		if (changedProperties!=null){			
-			if (changedProperties.containsKey(WorkItemProperty.APPROVAL_ID)){
-				String approvalId = (String)changedProperties.get(WorkItemProperty.APPROVAL_ID);
-				workItem.setApprovalId(approvalId);
+			if (changedProperties.containsKey(WorkItemProperty.ATTACHMENT_ID)){
+				String approvalId = (String)changedProperties.get(WorkItemProperty.ATTACHMENT_ID);
+				workItem.setAttachmentId(approvalId);
 			}
 			
 			if (changedProperties.containsKey(WorkItemProperty.NOTE)){
