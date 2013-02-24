@@ -49,23 +49,18 @@ public interface WorkflowSession extends Serializable {
 	
 
 	
-	/**
-	 * 获得当前的流程实例
-	 * @return
-	 */
-	public ProcessInstance getCurrentProcessInstance();
+	//获得当前的流程实例
+	//该方法在远程接口中不合理，因此在接口中注销
+	//public ProcessInstance getCurrentProcessInstance();
 	
-	/**
-	 * 获得当前的活动实例
-	 * @return
-	 */
-	public ActivityInstance getCurrentActivityInstance();
+	//获得当前的活动实例。
+	//该方法在远程接口中不合理，因此在接口中注销
+	//public ActivityInstance getCurrentActivityInstance();
 	
-	/**
-	 * 获得最近一次流程操作所创建的所有的工作项
-	 * @return
-	 */
-	public List<WorkItem> getLatestCreatedWorkItems();	
+	//获得最近一次流程操作所创建的所有的工作项。
+	//该方法用于远程接口不合理，因为新产生的工作项可能非常多，通过该方法返回会导致
+	//网络通信障碍，因此在接口中注销。
+	//public List<WorkItem> getLatestCreatedWorkItems();	
 	
 	/**
 	 * 创建Statement
@@ -102,11 +97,11 @@ public interface WorkflowSession extends Serializable {
 	 * @param activityId
 	 * @param assignmentHandler
 	 */
-	public WorkflowSession setDynamicAssignmentHandler(String activityId,AssignmentHandler assignmentHandler);
+//	public WorkflowSession setDynamicAssignmentHandler(String activityId,AssignmentHandler assignmentHandler);
 	
 	/**
 	 * 返回当前session中保存的所有的动态工作项分配句柄
 	 * @return
 	 */
-	public Map<String,AssignmentHandler> getDynamicAssignmentHandler();
+//	public Map<String,AssignmentHandler> getDynamicAssignmentHandler();
 }

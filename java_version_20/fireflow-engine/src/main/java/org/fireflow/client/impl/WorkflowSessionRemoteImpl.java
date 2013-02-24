@@ -77,32 +77,29 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowSession#getCurrentProcessInstance()
-	 */
-	@Override
-	public ProcessInstance getCurrentProcessInstance() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowSession#getCurrentActivityInstance()
-	 */
-	@Override
-	public ActivityInstance getCurrentActivityInstance() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowSession#getLatestCreatedWorkItems()
-	 */
-	@Override
-	public List<WorkItem> getLatestCreatedWorkItems() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowSession#getCurrentProcessInstance()
+//	 */
+//	@Override
+//	public ProcessInstance getCurrentProcessInstance() {
+//		return null;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowSession#getCurrentActivityInstance()
+//	 */
+//	@Override
+//	public ActivityInstance getCurrentActivityInstance() {
+//		return null;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowSession#getLatestCreatedWorkItems()
+//	 */
+//	@Override
+//	public List<WorkItem> getLatestCreatedWorkItems() {
+//		return null;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowSession#createWorkflowStatement(java.lang.String)
@@ -149,24 +146,22 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		return queryRemote;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowSession#setDynamicAssignmentHandler(java.lang.String, org.fireflow.engine.invocation.AssignmentHandler)
-	 */
-	@Override
-	public WorkflowSession setDynamicAssignmentHandler(String activityId,
-			AssignmentHandler assignmentHandler) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.WorkflowSession#getDynamicAssignmentHandler()
-	 */
-	@Override
-	public Map<String, AssignmentHandler> getDynamicAssignmentHandler() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowSession#setDynamicAssignmentHandler(java.lang.String, org.fireflow.engine.invocation.AssignmentHandler)
+//	 */
+//	@Override
+//	public WorkflowSession setDynamicAssignmentHandler(String activityId,
+//			AssignmentHandler assignmentHandler) {
+//		return null;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see org.fireflow.engine.WorkflowSession#getDynamicAssignmentHandler()
+//	 */
+//	@Override
+//	public Map<String, AssignmentHandler> getDynamicAssignmentHandler() {
+//		return null;
+//	}
 
 	class InnerWorkflowQueryDelegate implements WorkflowQueryDelegate{
 

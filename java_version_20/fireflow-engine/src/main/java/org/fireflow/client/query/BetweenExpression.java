@@ -25,8 +25,11 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.fireflow.engine.entity.EntityProperty;
-import org.fireflow.misc.EntityPropertyXmlAdapter;
-import org.fireflow.misc.ObjectXmlAdapter;
+import org.fireflow.engine.entity.EntityState;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+import org.fireflow.pvm.kernel.OperationContextName;
+import org.fireflow.server.support.EntityPropertyXmlAdapter;
+import org.fireflow.server.support.ObjectXmlAdapter;
 import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
@@ -54,14 +57,28 @@ public class BetweenExpression extends AbsCriterion implements Criterion {
 	}
 
 	public BetweenExpression(EntityProperty property, Object lo, Object hi) {
-		if (!JavaDataTypeConvertor.isPrimaryObject(lo)
-				||
-				!JavaDataTypeConvertor.isPrimaryObject(hi)){
-			throw new IllegalArgumentException("Between表达式只接受基本数据类型（包含String ,java.util.Date,不含byte）");
-		}
 		if (lo==null || hi==null){
 			throw new IllegalArgumentException("Between表达式不接受空值。");
 		}
+		
+		if (lo!=null){
+			if (!JavaDataTypeConvertor.isPrimaryObject(lo)
+					&& !(lo instanceof EntityState)
+					&& !(lo instanceof OperationContextName)
+					&& !(lo instanceof WorkItemAssignmentStrategy)){
+				throw new IllegalArgumentException("Between表达式只接受基本数据类型（包含String ,java.util.Date,不含byte），而你输入的value是"+lo.getClass().getName());
+			}
+		}
+		
+		if (hi!=null){
+			if (!JavaDataTypeConvertor.isPrimaryObject(hi)
+					&& !(hi instanceof EntityState)
+					&& !(hi instanceof OperationContextName)
+					&& !(hi instanceof WorkItemAssignmentStrategy)){
+				throw new IllegalArgumentException("Between表达式只接受基本数据类型（包含String ,java.util.Date,不含byte），而你输入的value是"+hi.getClass().getName());
+			}
+		}
+		
 		this.property = property;
 		this.lo = lo;
 		this.hi = hi;

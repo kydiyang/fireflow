@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.RepositoryDescriptor;
@@ -33,11 +33,11 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.Scope;
 import org.fireflow.engine.entity.runtime.WorkItem;
-import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.exception.InvalidOperationException;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.invocation.AssignmentHandler;
+import org.fireflow.engine.invocation.impl.ReassignmentHandler;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pvm.kernel.KernelException;
 
@@ -60,41 +60,39 @@ public interface WorkflowStatement {
 	 * @return
 	 */
 	public String getProcessType();
-	/**
-	 * 等同与Session中的getCurrentProcessInstance();
-	 * @return
-	 */
-	public ProcessInstance getCurrentProcessInstance();
 	
-	/**
-	 * 等同于Session中的getCurrentActivityInstance();
-	 * @return
-	 */
-	public ActivityInstance getCurrentActivityInstance();
+	//获得当前的流程实例
+	//该方法在远程接口中不合理，因此在接口中注销
+	//public ProcessInstance getCurrentProcessInstance();
 	
-	/**
-	 * 等同于Session中的getLatestCreatedWorkItems();
-	 * @return
-	 */
-	public List<WorkItem> getLatestCreatedWorkItems();
+	//获得当前的活动实例。
+	//该方法在远程接口中不合理，因此在接口中注销
+//	public ActivityInstance getCurrentActivityInstance();
+	
+	//获得最近一次流程操作所创建的所有的工作项。
+	//该方法用于远程接口不合理，因为新产生的工作项可能非常多，通过该方法返回会导致
+	//网络通信障碍，因此在接口中注销。
+	//public List<WorkItem> getLatestCreatedWorkItems();
 	
 	
 
-	/**
-	 * 设置一个动态任务分配处理句柄。该方法实质是调用WorkflowSession.setDynamicAssignmentHandler(String activityId,AssignmentHandler assignmentHandler);
-	 * @param dynamicAssignmentHandler
-	 */
-	public WorkflowStatement setDynamicAssignmentHandler(String activityId,
-			AssignmentHandler dynamicAssignmentHandler);
+//	/**
+//	 * 设置一个动态任务分配处理句柄。该方法实质是调用WorkflowSession.setDynamicAssignmentHandler(String activityId,AssignmentHandler assignmentHandler);
+//	 * @param dynamicAssignmentHandler
+//	 */
+//   通过调用completeWorkItem(...)或者completeWorkItemAndJumpTo(...)设置该参数，
+//   不必单独暴露该方法
+//	public WorkflowStatement setDynamicAssignmentHandler(String activityId,
+//			AssignmentHandler dynamicAssignmentHandler);
 	
 	
-	/**
-	 * 类似HttpServletRequest的setAttribute,用于流程操作中传递参数。
-	 * 该方法实质是调用，WorkflowSession.setAttribute(String name ,Object attr);
-	 * @param name
-	 * @param attr
-	 */
-	public WorkflowStatement setAttribute(String name ,Object attr);
+	//
+	// 类似HttpServletRequest的setAttribute,用于流程操作中传递参数。
+	// 该方法实质是调用，WorkflowSession.setAttribute(String name ,Object attr);
+	// @param name
+	// @param attr
+	// 在远程接口中，该方法不合理，因此从该接口注销。
+	//	public WorkflowStatement setAttribute(String name ,Object attr);
 		
 	
     /******************************************************************************/
@@ -242,15 +240,23 @@ public interface WorkflowStatement {
      * 签收操作，也必然有一个人签收失败。系统对这种竞争性操作进行了同步。<br/>
      * 该方法和IWorkItem.claim()是等价的。
      * @param workItemId 被签收的工作项的Id
-     * @return 如果签收成功，则返回一个新的IWorkItem对象；否则返回null
+     * @return 如果签收成功，则返回被签收的IWorkItem对象；否则返回null
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      * 
      */
 	public WorkItem claimWorkItem(String workItemId) throws InvalidOperationException ;
 
-	
-	public List<WorkItem> disclaimWorkItem(String workItemId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException ;
+	/**
+	 * 
+	 * @param workItemId
+	 * @param attachmentId
+	 * @param attachmentType
+	 * @param note
+	 * @return 如果退签收成功，则返回被退签的WorkItem，否则返回null
+	 * @throws InvalidOperationException
+	 */
+	public WorkItem disclaimWorkItem(String workItemId,String attachmentId, String attachmentType, String note) throws InvalidOperationException ;
 	/**
 	 * 对已经结束的工作项执行取回操作。<br/>
 	 * 只有满足如下约束才能正确执行取回操作：<br/>
@@ -300,12 +306,16 @@ public interface WorkflowStatement {
      * 为ANY，或者，complete strategy为ALL且他的所有的TaskInstance都已经结束，则结束当前ActivityInstance<br/>
      * 3、根据流程定义，启动下一个Activity，并创建相关的TaskInstance和WorkItem
      * @param workItemId 工作项Id
+     * @param attachmentId TODO
+     * @param attachmentType TODO
+     * @param note TODO
+     * @return TODO
      * @throws org.fireflow.engine.exception.EngineException
      * @throws org.fireflow.kenel.KenelException
      */
-    public void completeWorkItem(String workItemId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
+    public WorkItem completeWorkItem(String workItemId,String attachmentId, String attachmentType, String note) throws InvalidOperationException;
     
-    public void completeWorkItem(String workItemId,Map<String,AssignmentHandler> assignmentStrategy,Map<WorkItemProperty,Object> changedProperties)throws InvalidOperationException;
+    public WorkItem completeWorkItem(String workItemId,Map<String,AssignmentHandler> assignmentStrategy,String attachmentId, String attachmentType, String note)throws InvalidOperationException;
 
 //    
     /**
@@ -318,20 +328,27 @@ public interface WorkflowStatement {
      * 尚有其他的TaskInstance仍然处于活动状态，这种情况下执行jumpTo操作会被拒绝。
      * @param workItemId 工作项Id
      * @param targetActivityId 将要被启动的ActivityId
+     * @param attachmentId TODO
+     * @param attachmentType TODO
+     * @param note TODO
+     * @return TODO
      * @throws org.fireflow.engine.exception.EngineException 
      * @throws org.fireflow.kenel.KenelException
      */
-    public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
+    public WorkItem completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,String attachmentId, String attachmentType, String note) throws InvalidOperationException;
 
-    public void completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<String,AssignmentHandler> assignmentStrategy,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
+    public WorkItem completeWorkItemAndJumpTo(String workItemId ,String targetActivityId,Map<String,AssignmentHandler> assignmentStrategy,String attachmentId, String attachmentType, String note) throws InvalidOperationException;
 //
     /**
      * 将工作项委派给其他人，自己的工作项变成CANCELED状态
      * @param workItemId 工作项Id
      * @param reassignHandler ReassignmentHandler实例
+     * @param attachmentId TODO
+     * @param attachmentType TODO
+     * @param note TODO
      * @return 新创建的工作项
      */    
-    public List<WorkItem> reassignWorkItemTo(String workItemId, AssignmentHandler reassignHandler,Map<WorkItemProperty,Object> changedProperties) throws InvalidOperationException;
+    public WorkItem reassignWorkItemTo(String workItemId, ReassignmentHandler reassignHandler,String attachmentId, String attachmentType, String note) throws InvalidOperationException;
 //    
 //    /**
 //     * 将工作项委派给其他人，自己的工作项变成CANCELED状态。返回新创建的工作项
@@ -410,6 +427,7 @@ public interface WorkflowStatement {
 	
 	/**
 	 * TODO XML数据用什么对象表达呢？
+	 * 远程接口中，复杂的Object对象被Xtream转换成xml返回
 	 */
 	public Object getVariableValue(Scope scope,String name);
 	/**
@@ -429,7 +447,7 @@ public interface WorkflowStatement {
 	 * @param headers
 	 * @throws InvalidOperationException
 	 */
-	public void setVariableValue(Scope scope,String name,Object value,Map<String,String> headers)throws InvalidOperationException;
+	public void setVariableValue(Scope scope,String name,Object value,Properties headers)throws InvalidOperationException;
 	public Map<String ,Object> getVariableValues(Scope scope);
 	
 	//TODO 增加一个saveOrUpdateVariable(Variable var)吗？

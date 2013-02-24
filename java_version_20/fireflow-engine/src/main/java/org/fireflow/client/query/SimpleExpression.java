@@ -24,8 +24,11 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.fireflow.engine.entity.EntityProperty;
-import org.fireflow.misc.EntityPropertyXmlAdapter;
-import org.fireflow.misc.ObjectXmlAdapter;
+import org.fireflow.engine.entity.EntityState;
+import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
+import org.fireflow.pvm.kernel.OperationContextName;
+import org.fireflow.server.support.EntityPropertyXmlAdapter;
+import org.fireflow.server.support.ObjectXmlAdapter;
 import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
@@ -53,9 +56,15 @@ public class SimpleExpression  extends AbsCriterion  implements Criterion{
 
 	
 	public SimpleExpression(EntityProperty property, Object value, String op) {
-		if (!JavaDataTypeConvertor.isPrimaryObject(value)){
-			throw new IllegalArgumentException("简单表达式只接受基本数据类型（包含String ,java.util.Date,不含byte），而你输入的value是"+value.getClass().getName());
+		if (value!=null){
+			if (!JavaDataTypeConvertor.isPrimaryObject(value)
+					&& !(value instanceof EntityState)
+					&& !(value instanceof OperationContextName)
+					&& !(value instanceof WorkItemAssignmentStrategy)){
+				throw new IllegalArgumentException("简单表达式只接受基本数据类型（包含String ,java.util.Date,不含byte），而你输入的value是"+value.getClass().getName());
+			}
 		}
+
 		this.property = property;
 		this.value = value;
 		this.op = op;

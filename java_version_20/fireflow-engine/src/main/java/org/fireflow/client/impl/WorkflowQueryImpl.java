@@ -36,8 +36,8 @@ import org.fireflow.client.query.WorkflowQueryDelegate;
 import org.fireflow.engine.entity.WorkflowEntity;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
-import org.fireflow.misc.ClassXmlAdapter;
-import org.fireflow.misc.CriterionListXmlAdapter;
+import org.fireflow.server.support.ClassXmlAdapter;
+import org.fireflow.server.support.CriterionListXmlAdapter;
 
 /**
  * 
