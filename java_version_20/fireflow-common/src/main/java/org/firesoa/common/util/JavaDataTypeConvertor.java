@@ -32,7 +32,7 @@ import org.firesoa.common.schema.NameSpaces;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class JavaDataTypeConverter {
+public class JavaDataTypeConvertor {
 //	/**
 //	 * 将string 转换成相应的java对象，例如Integer,Float等
 //	 * 
@@ -91,26 +91,38 @@ public class JavaDataTypeConverter {
 //	}
 
 	/**
-	 * 判断是否是基本数据类型或者其包装类型
+	 * 判断是否是基本数据类型或者其包装类型; 包含String类型和java.util.Date类型
 	 * 
-	 * @param dataTypeStr
+	 * @param dataTypeStr 数据类型的Java类名
 	 * @return
 	 */
-	private static boolean isPrimaryDataType(String dataTypeStr) {
+	public static boolean isPrimaryDataType(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
 		String s = dataTypeStr.trim();
 
 		if (isInt(s) || isFloat(s) || isDouble(s) || isLong(s) || isShort(s)
-				|| isChar(s) || isBoolean(s)) {
+				|| isChar(s) || isBoolean(s)
+				|| isString(s) || isDate(s)) {
 			return true;
 		}
 
 		return false;
 	}
+	
+	/**
+	 * 判断该对象是否是基本数据类型。
+	 * @param value
+	 * @return
+	 */
+	public static boolean isPrimaryObject(Object value){
+		if (value==null)return true;
+		String dataType = value.getClass().getName();
+		return isPrimaryDataType(dataType);
+	}
 
-	private static boolean isChar(String dataTypeStr) {
+	public static boolean isChar(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -123,7 +135,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 
-	private static boolean isBoolean(String dataTypeStr) {
+	public static boolean isBoolean(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -136,7 +148,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 	
-	private static boolean isDate(String dataTypeStr){
+	public static boolean isDate(String dataTypeStr){
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -148,7 +160,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 	
-	private static boolean isString(String dataTypeStr){
+	public static boolean isString(String dataTypeStr){
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -160,7 +172,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 
-	private static boolean isShort(String dataTypeStr) {
+	public static boolean isShort(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -173,7 +185,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 
-	private static boolean isLong(String dataTypeStr) {
+	public static boolean isLong(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -186,7 +198,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 
-	private static boolean isInt(String dataTypeStr) {
+	public static boolean isInt(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -199,7 +211,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 
-	private static boolean isFloat(String dataTypeStr) {
+	public static boolean isFloat(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -212,7 +224,7 @@ public class JavaDataTypeConverter {
 		return false;
 	}
 
-	private static boolean isDouble(String dataTypeStr) {
+	public static boolean isDouble(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
 		}
@@ -223,6 +235,11 @@ public class JavaDataTypeConverter {
 		}
 
 		return false;
+	}
+	
+	public static Object convertToJavaObject(QName dataType, String strValue,
+			String dataPattern)throws ClassNotFoundException, ClassCastException {
+		return dataTypeConvert(dataType,strValue,dataPattern);
 	}
 
 	/**
@@ -240,54 +257,49 @@ public class JavaDataTypeConverter {
 		if (targetDataType.getNamespaceURI().equals(NameSpaces.JAVA.getUri())) {
 			String typeClassStr = targetDataType.getLocalPart();
 
-			if (isPrimaryDataType(typeClassStr)) {
-				if (isInt(typeClassStr)) {
-					return convertToInt(source);
-				} else if (isFloat(typeClassStr)) {
-					return convertToFloat(source);
-				} else if (isDouble(typeClassStr)) {
-					return convertToDouble(source);
-				} else if (isLong(typeClassStr)) {
-					return convertToLong(source);
-				} else if (isShort(typeClassStr)) {
-					return convertToShort(source);
-				} else if (isBoolean(typeClassStr)) {
-					return convertToBoolean(source);
-				} else if (isChar(typeClassStr)) {
-					return convertToChar(source);
-				}
-				throw new ClassCastException("Can not convert from "
-						+ source.getClass().getName() + " to "
-						+ typeClassStr);
+			if (isInt(typeClassStr)) {
+				return convertToInt(source);
+			} else if (isFloat(typeClassStr)) {
+				return convertToFloat(source);
+			} else if (isDouble(typeClassStr)) {
+				return convertToDouble(source);
+			} else if (isLong(typeClassStr)) {
+				return convertToLong(source);
+			} else if (isShort(typeClassStr)) {
+				return convertToShort(source);
+			} else if (isBoolean(typeClassStr)) {
+				return convertToBoolean(source);
+			} else if (isChar(typeClassStr)) {
+				return convertToChar(source);
 			}
-			else if (isDate(typeClassStr)){
-				if (source instanceof Date){
-					return (Date)source;
-				}
-				else if (source instanceof String){
-					String _pattern = StringUtils.isEmpty(dataPattern)?"yyyy-MM-dd HH:mm:ss":dataPattern;
+
+			else if (isDate(typeClassStr)) {
+				if (source instanceof Date) {
+					return (Date) source;
+				} else if (source instanceof String) {
+					String _pattern = StringUtils.isEmpty(dataPattern) ? "yyyy-MM-dd HH:mm:ss"
+							: dataPattern;
 					SimpleDateFormat df = new SimpleDateFormat(_pattern);
 					try {
-						return df.parse((String)source);
+						return df.parse((String) source);
 					} catch (ParseException e) {
 						throw new ClassCastException("Can not convert from "
 								+ source.getClass().getName() + " to "
-								+ typeClassStr+",data patter is "+dataPattern);
+								+ typeClassStr + ",data patter is "
+								+ dataPattern);
 					}
-				}else{
+				} else {
 					throw new ClassCastException("Can not convert from "
 							+ source.getClass().getName() + " to "
 							+ typeClassStr);
 				}
-			}
-			else if (isString(typeClassStr)){
-				if (source==null){
+			} else if (isString(typeClassStr)) {
+				if (source == null) {
 					return source;
-				}else{
+				} else {
 					return source.toString();
 				}
-			}
-			else {
+			} else {
 				Class typeClass = Class.forName(typeClassStr);
 				if (!typeClass.isAssignableFrom(source.getClass())) {
 					throw new ClassCastException("Can not convert from "
