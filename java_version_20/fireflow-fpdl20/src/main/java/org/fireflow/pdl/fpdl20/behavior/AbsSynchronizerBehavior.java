@@ -79,6 +79,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 	 */
 	public Boolean prepare(WorkflowSession session, Token token,
 			Object workflowElement) {
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
 		Synchronizer node = (Synchronizer)workflowElement;
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 		.getRuntimeContext();
@@ -114,7 +115,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 					ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 			ActivityInstancePersister actInstPersistSvc = persistenceStrategy
 					.getActivityInstancePersister();
-			ProcessInstance processInstance = session
+			ProcessInstance processInstance = sessionLocalImpl
 					.getCurrentProcessInstance();
 			// 1、创建并保存活动实例
 			ActivityInstanceImpl activityInstance = (ActivityInstanceImpl) activityInstanceMgr
@@ -151,9 +152,11 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 	 */
 	public ContinueDirection continueOn(WorkflowSession session, Token token,
 			Object workflowElement) {
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
 		//检验currentActivityInstance和currentProcessInstance的一致性
-		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
-		ActivityInstance oldActInst = session.getCurrentActivityInstance();
+		ProcessInstance oldProcInst = sessionLocalImpl.getCurrentProcessInstance();
+		ActivityInstance oldActInst = sessionLocalImpl.getCurrentActivityInstance();
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
@@ -197,14 +200,15 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 	 */
 	public void onTokenStateChanged(WorkflowSession session, Token token,
 			Object workflowElement) {
-		
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 	
 		CalendarService calendarService = ctx.getEngineModule(CalendarService.class,  FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		ActivityInstance oldActInst = session.getCurrentActivityInstance();
+		ActivityInstance oldActInst = sessionLocalImpl.getCurrentActivityInstance();
 		ActivityInstance activityInstance = oldActInst;
 		if (oldActInst==null || !oldActInst.getId().equals(token.getElementInstanceId())){
 			activityInstance = actInstPersistenceService.find(ActivityInstance.class, token.getElementInstanceId());
@@ -240,7 +244,7 @@ public abstract class AbsSynchronizerBehavior extends AbsNodeBehavior{
 			//修改ActivityInstance的状态，在此处调用ActivityInstanceManager.changeActivityInstanceState(...)完成
 			activityInstanceMgr.changeActivityInstanceState(session, activityInstance, state, workflowElement);
 		}finally{
-			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(oldActInst);
+			sessionLocalImpl.setCurrentActivityInstance(oldActInst);
 		}
 	}
 	

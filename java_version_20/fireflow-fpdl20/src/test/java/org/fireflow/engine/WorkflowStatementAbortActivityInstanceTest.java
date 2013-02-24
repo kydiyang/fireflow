@@ -65,6 +65,7 @@ public class WorkflowStatementAbortActivityInstanceTest  extends FireWorkflowJun
 	/**
 	 * Test method for {@link org.fireflow.client.WorkflowStatement#abortProcessInstance(java.lang.String, java.lang.String)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testAbortProcessInstance() {
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());

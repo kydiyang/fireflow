@@ -42,9 +42,7 @@ import org.fireflow.engine.modules.schedule.Scheduler;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.ModelElement;
 import org.fireflow.model.data.Expression;
-import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
@@ -99,7 +97,9 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 	@Override
 	public ExecuteResult execute(WorkflowSession session, Token token,
 			Object workflowElement) {
-		ActivityInstance activityInstance = session
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
+		ActivityInstance activityInstance = sessionLocalImpl
 				.getCurrentActivityInstance();
 
 		StartNode startNode = (StartNode) workflowElement;
@@ -127,8 +127,8 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 		else if (dec != null && dec instanceof TimerStartFeature) {
 
 			// 1、检验currentActivityInstance和currentProcessInstance的一致性
-			ProcessInstance oldProcInst = session.getCurrentProcessInstance();
-			ActivityInstance oldActInst = session.getCurrentActivityInstance();
+			ProcessInstance oldProcInst = sessionLocalImpl.getCurrentProcessInstance();
+			ActivityInstance oldActInst = sessionLocalImpl.getCurrentActivityInstance();
 
 			RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 					.getRuntimeContext();
@@ -183,8 +183,10 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 				.getRuntimeContext();
 		CalendarService calendarService = runtimeContext.getEngineModule(
 				CalendarService.class, activityInstance.getProcessType());
+		
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
 
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 
 		String operationName = timerDecorator.getTimerOperationName().name();
 		String triggerType = null;
@@ -259,7 +261,10 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 			throws EngineException {
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
+		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 
 		Expression theStartTimeExpression = timerDecorator
 				.getStartTimeExpression();
@@ -298,8 +303,9 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 			throws EngineException {
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
 
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 
 		Expression theStartTimeExpression = timerDecorator
 				.getStartTimeExpression();
@@ -354,7 +360,10 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 			throws EngineException {
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
+		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 		Expression theStartTimeExpression = timerDecorator
 				.getStartTimeExpression();
 		Expression theEndTimeExpression = timerDecorator.getEndTimeExpression();
@@ -407,8 +416,9 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 			throws EngineException {
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
 
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 		Expression theCronExpression = timerDecorator.getCronExpression();
 
 		if (theCronExpression == null) {

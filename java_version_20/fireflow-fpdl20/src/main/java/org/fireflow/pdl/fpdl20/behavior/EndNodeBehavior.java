@@ -29,7 +29,6 @@ import org.fireflow.pdl.fpdl20.process.EndNode;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
-import org.fireflow.pdl.fpdl20.process.features.endnode.NormalEndFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowTerminationFeature;

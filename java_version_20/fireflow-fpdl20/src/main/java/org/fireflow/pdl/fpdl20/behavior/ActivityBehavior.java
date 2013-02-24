@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
@@ -44,7 +45,6 @@ import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
 import org.fireflow.engine.modules.persistence.TokenPersister;
 import org.fireflow.engine.modules.persistence.VariablePersister;
 import org.fireflow.model.data.Property;
-import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
@@ -65,7 +65,7 @@ import org.fireflow.pvm.pdllogic.ContinueDirection;
 import org.fireflow.pvm.pdllogic.ExecuteResult;
 import org.fireflow.pvm.pdllogic.WorkflowBehavior;
 import org.firesoa.common.schema.NameSpaces;
-import org.firesoa.common.util.JavaDataTypeConverter;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
  * @author 非也
@@ -83,12 +83,21 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 	 */
 	public Boolean prepare(WorkflowSession session, Token token,
 			Object workflowElement) {
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, token.getProcessType());
 		ActivityInstancePersister actInstPersistSvc = persistenceStrategy.getActivityInstancePersister();
 		
-		ProcessInstance processInstance = session.getCurrentProcessInstance();
+		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
+
+		if (processInstance==null){
+			WorkflowQuery<ProcessInstance> q4ProcInst = sessionLocalImpl.createWorkflowQuery(ProcessInstance.class);
+			ProcessInstance procInst = q4ProcInst.get(token.getProcessInstanceId());
+			sessionLocalImpl.setCurrentProcessInstance(procInst);
+		}
+		
 		//1、创建并保存环节实例
 		ActivityInstanceImpl activityInstance = (ActivityInstanceImpl)activityInstanceMgr.createActivityInstance(session, processInstance, workflowElement);
 		
@@ -117,13 +126,15 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 	 */
 	public ExecuteResult execute(WorkflowSession session, Token token,
 			Object workflowElement) {
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
 		Activity activity = (Activity)workflowElement;
 		log.debug("Activity[id="+activity.getId()+"] Behavior executed!");
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 
 		//1、检验currentActivityInstance和currentProcessInstance的一致性
-		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
-		ActivityInstance oldActInst = session.getCurrentActivityInstance();
+		ProcessInstance oldProcInst = sessionLocalImpl.getCurrentProcessInstance();
+		ActivityInstance oldActInst = sessionLocalImpl.getCurrentActivityInstance();
 
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
@@ -140,7 +151,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		
 		//2、执行业务操作
 		ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
-		ActivityInstance currentActivityInstance = session.getCurrentActivityInstance();
+		ActivityInstance currentActivityInstance = sessionLocalImpl.getCurrentActivityInstance();
 		
 		try {
 			boolean b = activityInstanceMgr.runActivityInstance(session, workflowElement, currentActivityInstance);
@@ -191,8 +202,8 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 			return result;
 		}finally{
 			
-			((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(oldProcInst);
-			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(oldActInst);
+			sessionLocalImpl.setCurrentProcessInstance(oldProcInst);
+			sessionLocalImpl.setCurrentActivityInstance(oldActInst);
 		}
 		
 
@@ -204,10 +215,12 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 				token.getState().getValue()!=TokenState.RUNNING.getValue()){
 			return ContinueDirection.closeMe();
 		}
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
 		
 		//1、检验currentActivityInstance和currentProcessInstance的一致性
-		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
-		ActivityInstance oldActInst = session.getCurrentActivityInstance();
+		ProcessInstance oldProcInst = sessionLocalImpl.getCurrentProcessInstance();
+		ActivityInstance oldActInst = sessionLocalImpl.getCurrentActivityInstance();
 
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
@@ -226,7 +239,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		//2、执行业务操作
 		try{
 			ActivityInstanceManager activityInstanceMgr = ctx.getEngineModule(ActivityInstanceManager.class, FpdlConstants.PROCESS_TYPE_FPDL20);
-			ActivityInstance currentActivityInstance = session.getCurrentActivityInstance();
+			ActivityInstance currentActivityInstance = sessionLocalImpl.getCurrentActivityInstance();
 			int direction = activityInstanceMgr.tryCloseActivityInstance(session, currentActivityInstance,workflowElement);
 			if (direction == ContinueDirection.WAITING_FOR_CLOSE) {
 				return ContinueDirection.waitingForClose();// 继续等待；
@@ -276,13 +289,14 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 	 */
 	public void onTokenStateChanged(WorkflowSession session, Token token,
 			Object workflowElement) {
-		
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ActivityInstancePersister actInstPersistenceService = persistenceStrategy.getActivityInstancePersister();
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 		
-		ActivityInstance oldActInst = session.getCurrentActivityInstance();
+		ActivityInstance oldActInst = sessionLocalImpl.getCurrentActivityInstance();
 		ActivityInstance activityInstance = oldActInst;
 		if (oldActInst==null || !oldActInst.getId().equals(token.getElementInstanceId())){
 			activityInstance = actInstPersistenceService.find(ActivityInstance.class, token.getElementInstanceId());
@@ -404,7 +418,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 				Object value = null;
 				if (valueAsStr!=null && valueAsStr.trim()!=null){
 					try {
-						value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
+						value = JavaDataTypeConvertor.convertToJavaObject(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
 					} catch (ClassCastException e) {
 						//TODO 记录流程日志
 						log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubProcessId()+", variableName="+property.getName(), e);
@@ -418,7 +432,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 					Object tmpValue = initVariables.remove(property.getName());
 					if (tmpValue!=null){
 						try {
-							value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
+							value = JavaDataTypeConvertor.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
 						} catch (ClassCastException e) {
 							//TODO 记录流程日志
 							log.warn("Initialize process instance variable error, subflowId="+activityInstance.getSubProcessId()+", variableName="+property.getName(), e);

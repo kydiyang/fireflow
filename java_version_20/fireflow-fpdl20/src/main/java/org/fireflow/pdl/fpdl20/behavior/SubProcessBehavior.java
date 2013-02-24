@@ -17,35 +17,21 @@
  */
 package org.fireflow.pdl.fpdl20.behavior;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
-import org.fireflow.client.impl.InternalSessionAttributeKeys;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.entity.repository.ProcessKey;
-import org.fireflow.engine.entity.repository.impl.ProcessDescriptorImpl;
-import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
-import org.fireflow.engine.entity.runtime.Variable;
-import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
-import org.fireflow.engine.entity.runtime.impl.VariableImpl;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
-import org.fireflow.engine.modules.persistence.ProcessPersister;
 import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.engine.modules.persistence.VariablePersister;
-import org.fireflow.model.data.Property;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
@@ -59,8 +45,6 @@ import org.fireflow.pvm.pdllogic.ContinueDirection;
 import org.fireflow.pvm.pdllogic.ExecuteResult;
 import org.fireflow.pvm.pdllogic.FaultHandler;
 import org.fireflow.pvm.pdllogic.WorkflowBehavior;
-import org.firesoa.common.schema.NameSpaces;
-import org.firesoa.common.util.JavaDataTypeConverter;
 
 /**
  *
@@ -95,7 +79,7 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		PersistenceService persistenceService = context.getEngineModule(PersistenceService.class, token.getProcessType());
 
 		ProcessInstancePersister procInstPersistSvc = persistenceService.getProcessInstancePersister();
-		ProcessInstance newProcessInstance = (ProcessInstance)session.getCurrentProcessInstance();
+		ProcessInstance newProcessInstance = (ProcessInstance)sessionLocal.getCurrentProcessInstance();
 		
 		//发布事件
 		ProcessInstanceManager procInstManager = context.getEngineModule(ProcessInstanceManager.class, token.getProcessType());
@@ -144,8 +128,9 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		ProcessInstancePersister procInstPersistenceService = persistenceStrategy.getProcessInstancePersister();
-		
-		ProcessInstance oldProcInst = session.getCurrentProcessInstance();
+		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
+
+		ProcessInstance oldProcInst = sessionLocal.getCurrentProcessInstance();
 		ProcessInstance procInst = oldProcInst;
 		if (oldProcInst==null || !oldProcInst.getId().equals(token.getElementInstanceId())){
 			procInst = procInstPersistenceService.find(ProcessInstance.class, token.getElementInstanceId());

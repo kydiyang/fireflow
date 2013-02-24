@@ -33,12 +33,14 @@ import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.impl.AbsActivityInstanceManager;
 import org.fireflow.engine.modules.process.ProcessUtil;
+import org.fireflow.engine.modules.workitem.WorkItemManager;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
+import org.fireflow.service.human.HumanService;
 
 /**
  * @author 非也
@@ -143,7 +145,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 			ServiceInvoker serviceExecutor = this.getServiceInvoker(runtimeContext, serviceDef, activityInstance.getProcessType());
 
 			if (serviceExecutor==null){
-				throw new EngineException(session.getCurrentActivityInstance(),
+				throw new EngineException(sessionLocalImpl.getCurrentActivityInstance(),
 						"Can NOT find the service invoker for the "+serviceDef.toString());
 			}
 
@@ -160,7 +162,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 		Activity activity = (Activity)workflowElement;		
 		//调用ServiceExecutor
 		ProcessUtil processUtil = this.runtimeContext.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
-		
+		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
 		ServiceBinding serviceBinding = activity.getServiceBinding();
 		if (serviceBinding!=null){
 			
@@ -171,7 +173,7 @@ public class ActivityInstanceManagerFpdl20Impl extends
 			ServiceInvoker serviceExecutor = this.getServiceInvoker(runtimeContext, serviceDef, activityInstance.getProcessType());
 			
 			if (serviceExecutor==null){
-				throw new EngineException(session.getCurrentActivityInstance(),
+				throw new EngineException(sessionLocalImpl.getCurrentActivityInstance(),
 						"Can NOT find the service invoker for the  "+serviceDef.toString());
 			}
 			int b = serviceExecutor.determineActivityCloseStrategy(session, activityInstance, activity, serviceBinding);
@@ -183,5 +185,18 @@ public class ActivityInstanceManagerFpdl20Impl extends
 
 	}	
 	
+	protected ServiceInvoker getServiceInvoker(RuntimeContext runtimeContext,ServiceDef service,String processType){
+		ServiceInvoker serviceInvoker = super.getServiceInvoker(runtimeContext, service, processType);
 	
+		if (serviceInvoker==null){
+			//4、如果是HumanService且没有成功创建serviceInvoker，则返回缺省的WorkItemManager
+			if (service instanceof HumanService){
+				WorkItemManager workItemManager = runtimeContext.getEngineModule(WorkItemManager.class, processType);
+				serviceInvoker = workItemManager;
+			}
+		}
+		
+		return serviceInvoker;
+
+	}
 }

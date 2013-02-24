@@ -59,7 +59,7 @@ import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
 import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.firesoa.common.schema.NameSpaces;
-import org.firesoa.common.util.JavaDataTypeConverter;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
  * @author 非也
@@ -164,7 +164,7 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 				Object value = null;
 				if (valueAsStr!=null && valueAsStr.trim()!=null){
 					try {
-						value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
+						value = JavaDataTypeConvertor.convertToJavaObject(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
 					} catch (ClassCastException e) {
 						//TODO 记录流程日志
 						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
@@ -178,7 +178,7 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 					Object tmpValue = initVariables.remove(property.getName());
 					if (tmpValue!=null){
 						try {
-							value = JavaDataTypeConverter.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
+							value = JavaDataTypeConvertor.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
 						} catch (ClassCastException e) {
 							//TODO 记录流程日志
 							log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
