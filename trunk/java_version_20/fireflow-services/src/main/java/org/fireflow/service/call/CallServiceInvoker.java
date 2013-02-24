@@ -64,9 +64,10 @@ public class CallServiceInvoker implements ServiceInvoker {
 			ResourceBinding resourceBinding, Object theActivity)
 			throws ServiceInvocationException {
 		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
+		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
 
-		ProcessInstance oldProcessInstance = session.getCurrentProcessInstance();
-		ActivityInstance oldActivityInstance = session.getCurrentActivityInstance();
+		ProcessInstance oldProcessInstance = sessionLocal.getCurrentProcessInstance();
+		ActivityInstance oldActivityInstance = sessionLocal.getCurrentActivityInstance();
 		
 		((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(null);
 		((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(null);
@@ -137,7 +138,8 @@ public class CallServiceInvoker implements ServiceInvoker {
 	public int determineActivityCloseStrategy(WorkflowSession session,
 			ActivityInstance activityInstance, Object theActivity, ServiceBinding serviceBinding) {
 		RuntimeContext context = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		
+		WorkflowSessionLocalImpl sessionLocal = (WorkflowSessionLocalImpl)session;
+
 		int result = ServiceInvoker.CLOSE_ACTIVITY;
 		//此处可以增加特殊逻辑，以判断子流程是否可以结束。
 		
@@ -146,7 +148,7 @@ public class CallServiceInvoker implements ServiceInvoker {
 		if (result==ServiceInvoker.CLOSE_ACTIVITY){
 			//校验currentActivityInstance和currentProcessInstance
 			((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(activityInstance);
-			ProcessInstance parentProcessInstance = session.getCurrentProcessInstance();
+			ProcessInstance parentProcessInstance = sessionLocal.getCurrentProcessInstance();
 			if (parentProcessInstance==null || !parentProcessInstance.getId().equals(activityInstance.getProcessInstanceId())){
 				parentProcessInstance = activityInstance.getProcessInstance(session);
 				((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(parentProcessInstance);
