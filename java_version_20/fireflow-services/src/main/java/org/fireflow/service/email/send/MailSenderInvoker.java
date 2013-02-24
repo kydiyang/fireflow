@@ -37,7 +37,7 @@ import org.fireflow.model.data.Expression;
 import org.fireflow.model.data.Input;
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.service.email.MailTemplate;
-import org.firesoa.common.util.JavaDataTypeConverter;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 
 
 /**
@@ -116,7 +116,7 @@ public class MailSenderInvoker extends AbsServiceInvoker {
 					}
 					Object obj = ScriptEngineHelper.evaluateExpression(runtimeContext, exp, contextVars);
 					try{
-						args.add(JavaDataTypeConverter.dataTypeConvert(toExpression.getDataType(),obj,null));
+						args.add(JavaDataTypeConvertor.dataTypeConvert(toExpression.getDataType(),obj,null));
 					}catch(Exception e){
 						args.add(null);
 					}

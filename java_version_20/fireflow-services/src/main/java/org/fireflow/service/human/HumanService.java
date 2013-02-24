@@ -20,8 +20,8 @@ public class HumanService extends AbstractServiceDef implements ServiceDef {
 	Expression workItemSubject = null;
 
 	public HumanService(){
-		this.invokerBeanName = DEFAULT_INVOKER_BEAN_NAME;
-//		this.invokerClassName = DEFAULT_INVOKER_CLASS_NAME;
+//		this.invokerBeanName = DEFAULT_INVOKER_BEAN_NAME;//不需要缺省设置，系统默认采用当前WorkItemManager
+//		this.invokerClassName = DEFAULT_INVOKER_CLASS_NAME;//不需要缺省设置，系统默认采用当前WorkItemManager
 		this.parserClassName = HumanServiceParser.class.getName();
 	}
 	
