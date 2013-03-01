@@ -27,6 +27,11 @@ import org.fireflow.engine.context.EngineModule;
  *
  */
 public interface Environment extends EngineModule{
+	public static final String WEBSERVICE_PORT_PROPERTY_NAME = "webservicePort";
+	public static final int DEFAULT_WEBSERVICE_PORT = 9099;
+	public static final String DEFAULT_WEBSERVICE_IP = "127.0.0.1";
+	public static final String DEFAULT_WEBSERVICE_CONTEXT_PATH = "/FireWorkflowServices/";
+	
 	/**
 	 * Fire workflow的工作目录名
 	 */
@@ -41,8 +46,12 @@ public interface Environment extends EngineModule{
 	
 	/**
 	 * Fire workflow发布的Webservice的上下文路径URL。
-	 * 如：http://127.0.0.1:8080/MyApp/ff_webservices/
+	 * 如：/MyApp/ff_webservices/
 	 * @return
 	 */
 	public String getWebserviceContextPath();
+	
+	public String getWebserviceIP();
+	
+	public int getWebservicePort();
 }

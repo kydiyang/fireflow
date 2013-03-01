@@ -31,8 +31,11 @@ import org.fireflow.engine.modules.env.Environment;
  *
  */
 public class Enviroment4J2SE  extends AbsEngineModule implements Environment {
-	String webserviceContextPath = "http://127.0.0.1:3069/FireWorkflowServices/";
+	String webserviceContextPath = DEFAULT_WEBSERVICE_CONTEXT_PATH;
+	String webserviceIP = DEFAULT_WEBSERVICE_IP;
+	int webservicePort = DEFAULT_WEBSERVICE_PORT;
 	String workspaceDirName = null;
+	
 	public void init(RuntimeContext runtimeContext){
 		String userDir = System.getProperty("user.dir");
 		workspaceDirName = userDir+File.separator+WORK_DIR_NAME;
@@ -41,6 +44,16 @@ public class Enviroment4J2SE  extends AbsEngineModule implements Environment {
 			boolean b = f.mkdir();
 			if (!b){
 				throw new EngineException("Create fire workflow workspace failed; the workspace dir name is '"+workspaceDirName+"'");
+			}
+		}
+		
+		String wsPort = System.getProperty(WEBSERVICE_PORT_PROPERTY_NAME);
+		if (wsPort!=null && !wsPort.trim().equals("")){
+			try{
+				Integer port = Integer.parseInt(wsPort);
+				webservicePort = port;
+			}catch(Exception e){
+				
 			}
 		}
 	}
@@ -64,5 +77,16 @@ public class Enviroment4J2SE  extends AbsEngineModule implements Environment {
 	public void setWebserviceContextPath(String path){
 		this.webserviceContextPath = path;
 	}
-
+	public String getWebserviceIP() {
+		return webserviceIP;
+	}
+	public void setWebserviceIP(String webserviceIP) {
+		this.webserviceIP = webserviceIP;
+	}
+	public int getWebservicePort() {
+		return webservicePort;
+	}
+	public void setWebservicePort(int webservicePort) {
+		this.webservicePort = webservicePort;
+	}
 }

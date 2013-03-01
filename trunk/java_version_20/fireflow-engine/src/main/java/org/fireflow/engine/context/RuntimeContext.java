@@ -77,7 +77,7 @@ public class RuntimeContext {
      * WebService的地址由org.fireflow.engine.modules.env.Environment.getWebserviceContextPath()决定。
      * 缺省是关闭的，不推荐使用Webservice方式调用Fire workflow engin.
      */
-    private boolean publishWorkflowServer = false;
+    private boolean publishWorkflowService = false;
     
     private String defaultScript = "JEXL";//缺省的脚本语言
     private String defaultProcessType="FPDL20";//缺省的流程类型
@@ -92,14 +92,14 @@ public class RuntimeContext {
     }
 
 
-    public boolean isPublishWorkflowServer() {
-		return publishWorkflowServer;
+    public boolean isPublishWorkflowService() {
+		return publishWorkflowService;
 	}
 
 
 
-	public void setPublishWorkflowServer(boolean publishWorkflowServer) {
-		this.publishWorkflowServer = publishWorkflowServer;
+	public void setPublishWorkflowService(boolean b) {
+		this.publishWorkflowService = b;
 	}
 
 
