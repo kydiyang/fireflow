@@ -18,10 +18,11 @@ package org.fireflow.client;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.ws.Service;
-import javax.xml.ws.soap.SOAPBinding;
 
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.client.impl.WorkflowSessionRemoteImpl;
@@ -34,7 +35,7 @@ import org.fireflow.server.WorkflowServer;
  * @version 2.0
  */
 public class WorkflowSessionFactory {
-	private static Service workflowServerService = null;
+	private static Map<String,Service> workflowServerServiceMap = new HashMap<String,Service>();
 	/**
 	 * 获得本地Session
 	 * @param currentUser
@@ -69,17 +70,21 @@ public class WorkflowSessionFactory {
 	}
 	
 	protected static Service createWorkflowServerService(String url)throws MalformedURLException{
-		if (workflowServerService==null){
-			synchronized(WorkflowSessionFactory.class){
-				if (workflowServerService==null){
-					String wsdlAddress = url+"/"+WorkflowServer.SERVICE_LOCAL_NAME+"?wsdl";
-					URL wsdlURL = new URL(wsdlAddress);
+		if (!url.endsWith("/")){
+			url = url+"/";
+		}
+		String wsdlAddress = url+WorkflowServer.SERVICE_LOCAL_NAME+"?wsdl";
 
-					workflowServerService = Service.create(wsdlURL,WorkflowServer.SERVICE_QNAME);
+		if (workflowServerServiceMap.get(wsdlAddress)==null){
+			synchronized(WorkflowSessionFactory.class){
+				if (workflowServerServiceMap.get(wsdlAddress)==null){
+					URL wsdlURL = new URL(wsdlAddress);
+					Service workflowServerService = Service.create(wsdlURL,WorkflowServer.SERVICE_QNAME);
+					workflowServerServiceMap.put(wsdlAddress, workflowServerService);
 				}
 			}
 		}
-		return workflowServerService;
+		return workflowServerServiceMap.get(wsdlAddress);
 
 	}
 }
