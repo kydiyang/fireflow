@@ -18,7 +18,7 @@
 	<bean id="fireflowRuntimeContext" class="org.fireflow.engine.context.RuntimeContext"
 		init-method="initialize">
 		<!-- true表示系统启动时，将WorkflowServer类发布成WebService，供远程调用FireWorkflow Engine。（不推荐Webservice方式调用Fire Workflow Engine） -->
-		<property name="publishWorkflowServer">
+		<property name="publishWorkflowService">
 			<value>true</value>
 		</property>
 		

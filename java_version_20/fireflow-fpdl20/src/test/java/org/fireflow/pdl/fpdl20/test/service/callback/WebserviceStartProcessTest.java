@@ -144,7 +144,18 @@ public class WebserviceStartProcessTest  extends FireWorkflowJunitEnviroment{
 		Environment env = runtimeContext.getEngineModule(Environment.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		URL url = null;
 		try{
-			url = new URL(env.getWebserviceContextPath()+serviceQName.getLocalPart()+"?wsdl");
+			String contextPath = env.getWebserviceContextPath();
+			if (!contextPath.startsWith("/")){
+				contextPath = "/"+contextPath;
+			}
+			if (!contextPath.endsWith("/")){
+				contextPath = contextPath+"/";
+			}
+			String address = "http://"+env.getWebserviceIP()+":"
+						+Integer.toString(env.getWebservicePort())
+						+contextPath;
+			
+			url = new URL(address+serviceQName.getLocalPart()+"?wsdl");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
