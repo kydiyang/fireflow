@@ -118,7 +118,7 @@ public class WebServiceManagerFpdl20Impl  extends AbsEngineModule implements Web
 		try {
 			this.publishAllCallbackServices();
 			
-			if (runtimeContext.isPublishWorkflowServer()){
+			if (runtimeContext.isPublishWorkflowService()){
 				publishFireWorkflowServer();
 			}
 			
@@ -270,8 +270,13 @@ public class WebServiceManagerFpdl20Impl  extends AbsEngineModule implements Web
 		// TODO 如何组织address，使之与已有的Server context适应？
 		Environment evn = runtimeContext
 				.getDefaultEngineModule(Environment.class);
-		String address = evn.getWebserviceContextPath() + serviceQName.getLocalPart();		
-		
+		String contextPath = evn.getWebserviceContextPath();
+		if (!contextPath.startsWith("/")){
+			contextPath = "/"+contextPath;
+		}
+		String address = "http://"+evn.getWebserviceIP()+":"
+					+Integer.toString(evn.getWebservicePort())
+					+contextPath;
 		// 2、构造wsdl
 		List<Source> wsdls = null;
 		try {
@@ -328,7 +333,13 @@ public class WebServiceManagerFpdl20Impl  extends AbsEngineModule implements Web
 		if (b!=null && b)return;//已经发布
 		Environment evn = runtimeContext
 				.getDefaultEngineModule(Environment.class);
-		String address = evn.getWebserviceContextPath();
+		String contextPath = evn.getWebserviceContextPath();
+		if (!contextPath.startsWith("/")){
+			contextPath = "/"+contextPath;
+		}
+		String address = "http://"+evn.getWebserviceIP()+":"
+					+Integer.toString(evn.getWebservicePort())
+					+contextPath;
 
 		WorkflowServer implementor = runtimeContext.getDefaultEngineModule(WorkflowServer.class);
 		
