@@ -16,9 +16,9 @@ public class DBQueryServiceDef extends AbstractDBService implements ServiceDef {
 		JavaInterfaceDef javaInterface = new JavaInterfaceDef();
 		javaInterface
 				.setInterfaceClassName("org.fireflow.service.jdbc.query.DBQuery");
-		javaInterface.putParameterTypeMap(0,
+		javaInterface.putParameterTypeMap("doQuery",0,
 				new QName(this.getTargetNamespaceUri(), SQLSchemaGenerator.WHERE_ELEMENT));
-		javaInterface.putParameterTypeMap(-1,
+		javaInterface.putParameterTypeMap("doQuery",-1,
 				new QName(this.getTargetNamespaceUri(), SQLSchemaGenerator.DATA_SET_ELEMENT));
 
 		this.setInterface(javaInterface);

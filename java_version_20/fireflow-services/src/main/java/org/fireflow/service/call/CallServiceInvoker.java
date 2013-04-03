@@ -76,6 +76,11 @@ public class CallServiceInvoker implements ServiceInvoker {
 		try{
 			//1、确定子流程的ProcessId,SubflowId,版本号等信息
 			CallServiceDef subflowService = (CallServiceDef)processUtil.getServiceDef(activityInstance, theActivity, serviceBinding.getServiceId());
+			if (subflowService==null){
+				ServiceInvocationException ex = new ServiceInvocationException("");
+				ex.setErrorCode(ServiceInvocationException.SERVICE_NOT_FOUND);
+				throw ex;
+			}
 			String subflowId = subflowService.getSubProcessId();
 			String processId = subflowService.getProcessId();
 			String processType = activityInstance.getProcessType();

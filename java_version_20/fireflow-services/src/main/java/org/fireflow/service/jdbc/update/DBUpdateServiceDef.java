@@ -15,7 +15,7 @@ public class DBUpdateServiceDef extends AbstractDBService {
 		JavaInterfaceDef javaInterface = new JavaInterfaceDef();
 		javaInterface
 				.setInterfaceClassName("org.fireflow.service.jdbc.update.DBUpdate");
-		javaInterface.putParameterTypeMap(0,
+		javaInterface.putParameterTypeMap("doUpdate",0,
 				new QName(this.getTargetNamespaceUri(), SQLSchemaGenerator.UPDATE_ELEMENT));
 
 		this.setInterface(javaInterface);

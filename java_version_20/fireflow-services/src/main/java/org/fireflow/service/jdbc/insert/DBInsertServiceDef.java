@@ -15,7 +15,7 @@ public class DBInsertServiceDef extends AbstractDBService {
 		JavaInterfaceDef javaInterface = new JavaInterfaceDef();
 		javaInterface
 				.setInterfaceClassName("org.fireflow.service.jdbc.insert.DBInsert");
-		javaInterface.putParameterTypeMap(0,
+		javaInterface.putParameterTypeMap("doInsert",0,
 				new QName(this.getTargetNamespaceUri(), SQLSchemaGenerator.VALUES_ELEMENT));
 
 
