@@ -70,11 +70,10 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContextAware,EngineModule{
 	private static final String SESSION_CACHE = "SESSION_CACHE";
-	private RuntimeContext runtimeContext = null;
+	protected RuntimeContext runtimeContext = null;
 	private int sessionToIdleSeconds = 30*60;//最大空闲时间，30分钟，
 	private int maxSessions = 50;//可并行存在的session数量
-	private TransactionTemplate springTransactionTemplate = null;
-	
+	protected TransactionTemplate springTransactionTemplate = null;
 	/**
 	 * 登录成功后，WorkflowSession被缓存。
 	 * 目前采用EhCache实现。
@@ -921,6 +920,17 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 			}
 			
 		});
+	}
+	
+	public boolean isSessionValid(String sessionId){
+		try{
+			WorkflowSessionLocalImpl sessionLocalImpl = validateSession(sessionId);
+			if (sessionLocalImpl!=null)return true;
+			else return false;
+		}catch(Exception e){
+			return false;
+		}
+		
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.server.WorkflowServer#test(java.lang.String)

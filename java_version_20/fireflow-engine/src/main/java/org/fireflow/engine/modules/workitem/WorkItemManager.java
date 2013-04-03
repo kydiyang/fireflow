@@ -40,7 +40,7 @@ import org.fireflow.model.binding.ServiceBinding;
  * @version 2.0
  */
 public interface WorkItemManager extends EngineModule,ServiceInvoker{
-	public static final String TARGET_ACTIVITY_ID = "org.fireflow.constants.TARGET_ACTIVITY_ID";
+	public static final String TARGET_ACTIVITY_ID = "org.fireflow.constants.workitem.TARGET_ACTIVITY_ID";
   
 	/**
 	 * 获得远程的统一待办箱接口

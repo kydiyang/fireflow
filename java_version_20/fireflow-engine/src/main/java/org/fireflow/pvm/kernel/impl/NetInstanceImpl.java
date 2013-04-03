@@ -197,7 +197,7 @@ public class NetInstanceImpl extends AbstractPObject implements
 	public void handleCompensation(WorkflowSession session, Token listenerToken, Token sourceToken, String compensationCode) {
 		if (!listenerToken.getState().equals(TokenState.COMPLETED) && !listenerToken.getState().equals(TokenState.RUNNING)
 				&& !listenerToken.getState().equals(TokenState.COMPENSATING)){
-			throw new KernelException(
+			throw new KernelException(this,
 					"Illegal token state ,the TokenState.COMPLETED or TokenState.RUNNING is expected,but it is  "
 							+ listenerToken.getState().name());
 		}

@@ -231,7 +231,7 @@ public abstract class AbstractPObject implements PObject {
 	protected void executeBusinessLogicLogic(WorkflowSession session,
 			Token token) {
 		if (!token.getState().equals(TokenState.RUNNING)) {
-			throw new KernelException(
+			throw new KernelException(this,
 					"Illegal token state ,the TokenState.RUNNING is expected,but it is  "
 							+ token.getState().name());
 		}
@@ -259,7 +259,7 @@ public abstract class AbstractPObject implements PObject {
 			kernelManager.addBookMark(bookMark);
 
 		} else {
-			throw new KernelException(
+			throw new KernelException(this,
 					"Not supported workflow behavior status for NodeInstance.takeToken(...) ,"
 							+ "WorkflowBehaviorStatus.RUNNING or WorkflowBehaviorStatus.FAULTING or status.equals(WorkflowBehaviorStatus.COMPLETED is expected,but the status is "
 							+ status.name());// 非法的返回状态
@@ -363,7 +363,7 @@ public abstract class AbstractPObject implements PObject {
 		}
 
 		else {
-			throw new KernelException(
+			throw new KernelException(this,
 					"Illegal token state ,the TokenState.RUNNING or TokenState.COMPENSATING or TokenState.CANCELLING is expected,but it is  "
 							+ token.getState().name());
 		}
@@ -602,10 +602,11 @@ public abstract class AbstractPObject implements PObject {
 
 	public void handleFault(WorkflowSession session, Token thisToken, Token sourceToken, String faultCode) {
 		if (!thisToken.getState().equals(TokenState.RUNNING)) {
-			throw new KernelException(
+			throw new KernelException(this,
 					"Illegal token state ,the TokenState.RUNNING is expected,but it is  "
 							+ thisToken.getState().name());
 		}
+		System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 进入错误处理逻辑");
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
@@ -613,8 +614,18 @@ public abstract class AbstractPObject implements PObject {
 		PObject processObject = null;
 		if (faultCode==null || faultCode.trim().equals("")){
 			processObject = this.defaultFaultHandler;
+			String s = "null";
+			if (processObject!=null){
+				s = processObject.getKey().getWorkflowElementId();
+			}
+			System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 采用defaultFaultHandler="+s);
 		}else{
 			processObject = this.getFaultHandler(faultCode);
+			System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 根据faultCode获得faultHandler="+processObject);
+			if (processObject==null){//如果没有找到匹配的错误处理器，则自动采用缺省的错误处理器
+				processObject = this.defaultFaultHandler;
+			}
+			
 		}
 
 
@@ -705,7 +716,7 @@ public abstract class AbstractPObject implements PObject {
 				else{
 										
 					//抛出异常
-					throw new KernelException("No fault handler found for FaultCode="+faultCode);
+					throw new KernelException(this,"No fault handler found for FaultCode="+faultCode);
 				}
 			}
 		}

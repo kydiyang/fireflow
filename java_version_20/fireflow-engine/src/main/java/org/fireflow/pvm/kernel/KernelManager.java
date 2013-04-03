@@ -126,4 +126,9 @@ public interface KernelManager extends EngineModule{
 	public PObject getProcessObject(PObjectKey key);
 	
 	public void saveOrUpdateToken(Token token);
+	
+	/**
+	 * 将缓存的PObject清除
+	 */
+	public void clearCachedPObject();
 }

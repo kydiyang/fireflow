@@ -16,9 +16,7 @@
  */
 package org.fireflow.pvm.kernel.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
@@ -33,10 +31,8 @@ import org.fireflow.pvm.kernel.PObject;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenState;
-import org.fireflow.pvm.pdllogic.CancellationHandler;
 import org.fireflow.pvm.pdllogic.CompensationHandler;
 import org.fireflow.pvm.pdllogic.ExecuteResult;
-import org.fireflow.pvm.pdllogic.FaultHandler;
 import org.fireflow.pvm.pdllogic.WorkflowBehavior;
 
 /**
@@ -153,7 +149,7 @@ public class NodeInstanceImpl extends AbstractPObject implements NodeInstance {
 			return;
 		}
 		if (!listenerToken.getState().equals(TokenState.COMPLETED)) {
-			throw new KernelException(
+			throw new KernelException(this,
 					"Illegal token state ,the TokenState.COMPLETED is expected,but it is  "
 							+ listenerToken.getState().name());
 		}
