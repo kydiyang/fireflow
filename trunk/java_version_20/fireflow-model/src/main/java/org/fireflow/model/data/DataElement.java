@@ -24,4 +24,10 @@ public interface DataElement {
     public QName getDataType();
     
     public void setDataType(QName dataType);
+    
+    /**
+     * 复制
+     * @return
+     */
+    public DataElement copy();//
 }
