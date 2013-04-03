@@ -28,10 +28,10 @@ import org.fireflow.model.process.WorkflowElement;
  * @version 2.0
  */
 public interface Import<T extends ModelElement> {
-	public static final String SERVICES_IMPORT = "org.fireflow.constants.SERVICES_IMPORT";
-	public static final String RESOURCES_IMPORT = "org.fireflow.constants.RESOURCES_IMPORT";
-	public static final String XSD_IMPORT = "org.fireflow.constants.XSD_IMPORT";
-	public static final String PROCESS_IMPORT = "org.fireflow.constants.PROCESS_IMPORT";
+	public static final String SERVICES_IMPORT = "org.fireflow.constants.import.SERVICES_IMPORT";
+	public static final String RESOURCES_IMPORT = "org.fireflow.constants.import.RESOURCES_IMPORT";
+	public static final String XSD_IMPORT = "org.fireflow.constants.import.XSD_IMPORT";
+	public static final String PROCESS_IMPORT = "org.fireflow.constants.import.PROCESS_IMPORT";
 	
 	/**
 	 * import的类型，取值为ProcessImport.SERVICES_IMPORT

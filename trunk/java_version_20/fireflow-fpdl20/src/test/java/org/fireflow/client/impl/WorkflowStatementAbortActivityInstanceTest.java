@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.engine;
+package org.fireflow.client.impl;
 
 import junit.framework.Assert;
 

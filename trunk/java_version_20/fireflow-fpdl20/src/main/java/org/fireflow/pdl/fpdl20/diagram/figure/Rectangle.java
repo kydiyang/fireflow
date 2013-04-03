@@ -35,7 +35,7 @@ public interface Rectangle extends Figure{
 	 * @return
 	 */
 	public Label getContentLabel();
-//	public void setContentLabel(Label lb);
+	public void setContentLabel(Label lb);
 	
 	
 	/**
@@ -44,5 +44,5 @@ public interface Rectangle extends Figure{
 	 */
 	public FulfilStyle getFulfilStyle();
 	
-//	public void setFulfilStyle(FulfilStyle style);
+	public void setFulfilStyle(FulfilStyle style);
 }

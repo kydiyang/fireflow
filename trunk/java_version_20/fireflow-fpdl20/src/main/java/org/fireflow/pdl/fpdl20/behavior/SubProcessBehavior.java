@@ -27,6 +27,7 @@ import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstanceState;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
+import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 import org.fireflow.engine.modules.persistence.PersistenceService;
@@ -108,7 +109,9 @@ public class SubProcessBehavior implements WorkflowBehavior {
 			Object workflowElement) {
 		SubProcess subflow = (SubProcess)workflowElement;
 		Node entry = subflow.getEntry();
-		
+		if (entry==null){
+			throw new EngineException("子过程入口节点为空，无法继续执行；子过程Id 是"+subflow.getId());
+		}
 		PObjectKey pobjectKey = new PObjectKey(processToken.getProcessId(),processToken.getVersion(),processToken.getProcessType(),entry.getId());
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();

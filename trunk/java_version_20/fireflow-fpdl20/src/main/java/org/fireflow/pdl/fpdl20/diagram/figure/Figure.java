@@ -36,7 +36,6 @@ public interface Figure {
 	public void setContent(String content);
 	
 	public Label getTitleLabel();
-	
 	/**
 	 * 边框
 	 * @return

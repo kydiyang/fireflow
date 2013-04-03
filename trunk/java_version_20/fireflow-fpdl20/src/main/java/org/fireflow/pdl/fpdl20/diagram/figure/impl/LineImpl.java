@@ -34,19 +34,20 @@ import org.fireflow.pdl.fpdl20.diagram.figure.part.Point;
  *
  */
 public class LineImpl implements Line {
-	Label label = new LabelImpl();
+	Label titleLabel = new LabelImpl();
 	Point labelPosition = new Point();
 	List<Point> points = new ArrayList<Point>();
 	Bounds bounds = new BoundsImpl();
 
 
 	public LineImpl(){
-		label = new LabelImpl();
+		titleLabel = new LabelImpl();
 	}
 	
 	public Label getTitleLabel(){
-		return label;
+		return titleLabel;
 	}
+	
 	
 //	public void setTitleLabel(Label lb){
 //		this.label = lb;
@@ -68,25 +69,25 @@ public class LineImpl implements Line {
 
 
 	public String getTitle(){
-		if (label==null) return "";
-		return label.getText();
+		if (titleLabel==null) return "";
+		return titleLabel.getText();
 	}
 	public void setTitle(String title){
-		if (label==null){
-			label = new LabelImpl();
+		if (titleLabel==null){
+			titleLabel = new LabelImpl();
 		}
-		label.setText(title);
+		titleLabel.setText(title);
 	}
 	
 	public String getContent(){
-		if (label==null) return "";
-		return label.getText();
+		if (titleLabel==null) return "";
+		return titleLabel.getText();
 	}
 	public void setContent(String content){
-		if (label==null){
-			label = new LabelImpl();
+		if (titleLabel==null){
+			titleLabel = new LabelImpl();
 		}
-		label.setText(content);
+		titleLabel.setText(content);
 	}
 
 	/* (non-Javadoc)
@@ -96,4 +97,5 @@ public class LineImpl implements Line {
 	public Bounds getBounds() {
 		return bounds;
 	}
+	
 }

@@ -39,9 +39,7 @@ public class RectangleImpl implements Rectangle {
 	
 	public RectangleImpl(){
 		titleLabel = new LabelImpl();
-		contentLabel = new LabelImpl();
 		bounds = new BoundsImpl();
-		fulfilStyle = new FulfilStyleImpl();
 	}
 	
 	public Label getTitleLabel(){
@@ -70,6 +68,10 @@ public class RectangleImpl implements Rectangle {
 	public FulfilStyle getFulfilStyle() {
 		return fulfilStyle;
 	}
+	
+	public void setFulfilStyle(FulfilStyle style){
+		this.fulfilStyle = style;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Node#setFulfillStyle(org.fireflow.pdl.fpdl20.diagram.style.FulfillStyle)
@@ -82,6 +84,10 @@ public class RectangleImpl implements Rectangle {
 	 */
 	public Label getContentLabel() {
 		return this.contentLabel;
+	}
+	
+	public void setContentLabel(Label lb){
+		this.contentLabel = lb;
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Rectangle#setMinorLabel(org.fireflow.pdl.fpdl20.diagram.figure.Label)

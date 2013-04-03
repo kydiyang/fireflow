@@ -328,8 +328,11 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 						if (po!=null){
 							String errorCode = exceptionDecorator.getErrorCode();
 							if (errorCode==null || errorCode.trim().equals("")){
-								((NodeInstanceImpl)pobject4Activity).setFaultHandler("", po,true);
-							}else{
+								((NodeInstanceImpl)pobject4Activity).setFaultHandler(CatchFaultFeature.CATCH_ALL_FAULT, po,true);
+							}else if (errorCode.trim().equals(CatchFaultFeature.CATCH_ALL_FAULT)){
+								((NodeInstanceImpl)pobject4Activity).setFaultHandler(CatchFaultFeature.CATCH_ALL_FAULT, po,true);
+							}
+							else{
 								((NodeInstanceImpl)pobject4Activity).setFaultHandler(errorCode, po);
 							}
 							

@@ -494,12 +494,12 @@ public class FPDLSerializer implements FPDLNames {
     protected void writeRectangle(Rectangle rect,Element parentElement){
     	Element rectElm = Util4Serializer.addElement(parentElement, RECTANGLE);
     	
-    	if (rect.getTitleLabel()!=null && !StringUtils.isEmpty(rect.getTitleLabel().getText())){
+    	if (rect.getTitleLabel()!=null ){
         	Element titleElm = Util4Serializer.addElement(rectElm, TITLE);
         	this.writeLabel(rect.getTitleLabel(), titleElm);
     	}
 
-    	if (rect.getContentLabel()!=null && !StringUtils.isEmpty(rect.getContentLabel().getText())){
+    	if (rect.getContentLabel()!=null ){
     		Element contentElm = Util4Serializer.addElement(rectElm, CONTENT);
         	this.writeLabel(rect.getContentLabel(), contentElm);
     	}
@@ -537,9 +537,9 @@ public class FPDLSerializer implements FPDLNames {
 			if (!StringUtils.isEmpty(lb.getFontColor())) {
 				labelElm.setAttribute(COLOR, lb.getFontColor());
 			}
-			if (!StringUtils.isEmpty(lb.getWeight())) {
+			if (!StringUtils.isEmpty(lb.getFontStyle())) {
 
-				labelElm.setAttribute(WEIGHT, lb.getWeight());
+				labelElm.setAttribute(FONT_STYLE, lb.getFontStyle());
 			}
 
 			Document doc = parentElm.getOwnerDocument();
@@ -559,23 +559,27 @@ public class FPDLSerializer implements FPDLNames {
 		boundsElm.setAttribute(WIDTH, Integer.toString(bounds.getWidth()));
 		boundsElm.setAttribute(HEIGHT, Integer.toString(bounds.getHeight()));
 
-		Element boundsStyleElm = Util4Serializer.addElement(boundsElm,
-				BOUNDS_STYLE);
+		if (bounds.getThick()>=0){
+			Element boundsStyleElm = Util4Serializer.addElement(boundsElm,
+					BORDER_STYLE);
 
-		boundsStyleElm.setAttribute(LINE_TYPE, bounds.getLineType());
-		boundsStyleElm.setAttribute(THICK, Integer.toString(bounds.getThick()));
+			boundsStyleElm.setAttribute(LINE_TYPE, bounds.getLineType());
+			boundsStyleElm.setAttribute(THICK, Integer.toString(bounds.getThick()));
 
-		boundsStyleElm.setAttribute(COLOR, bounds.getColor());
+			boundsStyleElm.setAttribute(COLOR, bounds.getColor());
 
-		boundsStyleElm.setAttribute(RADIUS,
-				Integer.toString(bounds.getCornerRadius()));
+			boundsStyleElm.setAttribute(RADIUS,
+					Integer.toString(bounds.getCornerRadius()));
+
+		}
 
 	}
     
     protected void writeFulfilStyle(FulfilStyle fulfilStyle,Element parentElm){
     	if (fulfilStyle!=null){
     		Element fulfilStyleElm = Util4Serializer.addElement(parentElm, FULFIL_STYLE);
-    		fulfilStyleElm.setAttribute(COLOR, fulfilStyle.getColor());
+    		fulfilStyleElm.setAttribute(COLOR+"1", fulfilStyle.getColor1());
+    		fulfilStyleElm.setAttribute(COLOR+"2", fulfilStyle.getColor2());
     		fulfilStyleElm.setAttribute(GRADIENT_STYLE, fulfilStyle.getGradientStyle());
     	}
     }

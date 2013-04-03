@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
-import org.fireflow.client.impl.InternalSessionAttributeKeys;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
@@ -38,26 +37,16 @@ import org.fireflow.engine.entity.runtime.Variable;
 import org.fireflow.engine.entity.runtime.impl.AbsVariable;
 import org.fireflow.engine.entity.runtime.impl.ProcessInstanceImpl;
 import org.fireflow.engine.entity.runtime.impl.VariableImpl;
-import org.fireflow.engine.exception.InvalidOperationException;
-import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
-import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
-import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEvent;
-import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventListener;
 import org.fireflow.engine.modules.instancemanager.impl.AbsProcessInstanceManager;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
 import org.fireflow.engine.modules.persistence.VariablePersister;
-import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.data.Property;
-import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.SubProcess;
 import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
-import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
-import org.fireflow.pvm.kernel.KernelManager;
-import org.fireflow.pvm.kernel.PObjectKey;
 import org.firesoa.common.schema.NameSpaces;
 import org.firesoa.common.util.JavaDataTypeConvertor;
 
@@ -163,20 +152,70 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 				String valueAsStr = property.getInitialValueAsString();
 				Object value = null;
 				if (valueAsStr!=null && valueAsStr.trim()!=null){
+					//数字类型,bool类型自动赋给初始值
+					QName dataType = property.getDataType();
+					
+					if (valueAsStr.trim().equals("") && dataType!=null 
+							&& NameSpaces.JAVA.getUri().equals(dataType.getNamespaceURI())){
+						if (JavaDataTypeConvertor.isByte(dataType.getLocalPart()) || 
+								JavaDataTypeConvertor.isDouble(dataType.getLocalPart()) ||
+								JavaDataTypeConvertor.isInt(dataType.getLocalPart()) ||
+								JavaDataTypeConvertor.isFloat(dataType.getLocalPart()) ||
+								JavaDataTypeConvertor.isLong(dataType.getLocalPart()) ||
+								JavaDataTypeConvertor.isShort(dataType.getLocalPart())){
+							valueAsStr = "0";
+						}
+						else if (JavaDataTypeConvertor.isBoolean(dataType.getLocalPart())){
+							valueAsStr = "false";
+						}
+					}
 					try {
-						value = JavaDataTypeConvertor.convertToJavaObject(property.getDataType(), property.getInitialValueAsString(), property.getDataPattern());
+//						System.out.println("valueAsStr=="+valueAsStr);
+						value = JavaDataTypeConvertor.convertToJavaObject(property.getDataType(), valueAsStr, property.getDataPattern());
+
 					} catch (ClassCastException e) {
 						//TODO 记录流程日志
 						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
 					} catch (ClassNotFoundException e) {
 						//TODO 记录流程日志
 						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
+					}catch(NumberFormatException e){
+						//TODO 记录流程日志
+						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
+
+					}catch(Exception e){
+						//TODO 记录流程日志
+						log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
+
 					}
 				}
-				//从initVariables中获取value
+				//从initVariables中获取value，覆盖初始值
 				if (initVariables!=null){
 					Object tmpValue = initVariables.remove(property.getName());
+//					System.out.println("tmpValue is "+(tmpValue==null?"null":tmpValue));
+//					System.out.println("tmpValue type is "+(tmpValue==null?"null":tmpValue.getClass().getName()));
 					if (tmpValue!=null){
+						if (tmpValue instanceof String){
+							tmpValue = ((String)tmpValue).trim();
+							//数字类型,bool类型自动赋给初始值
+							QName dataType = property.getDataType();
+							
+							if (tmpValue.equals("") && dataType!=null 
+									&& NameSpaces.JAVA.getUri().equals(dataType.getNamespaceURI())){
+								if (JavaDataTypeConvertor.isByte(dataType.getLocalPart()) || 
+										JavaDataTypeConvertor.isDouble(dataType.getLocalPart()) ||
+										JavaDataTypeConvertor.isInt(dataType.getLocalPart()) ||
+										JavaDataTypeConvertor.isFloat(dataType.getLocalPart()) ||
+										JavaDataTypeConvertor.isLong(dataType.getLocalPart()) ||
+										JavaDataTypeConvertor.isShort(dataType.getLocalPart())){
+									tmpValue = "0";
+								}
+								else if (JavaDataTypeConvertor.isBoolean(dataType.getLocalPart())){
+									tmpValue = "false";
+								}
+							}
+						}
+
 						try {
 							value = JavaDataTypeConvertor.dataTypeConvert(property.getDataType(), tmpValue, property.getDataPattern());
 						} catch (ClassCastException e) {
@@ -185,14 +224,22 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 						} catch (ClassNotFoundException e) {
 							//TODO 记录流程日志
 							log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
+						}catch(NumberFormatException e){
+							//TODO 记录流程日志
+							log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
+
+						}catch(Exception e){
+							//TODO 记录流程日志
+							log.warn("Initialize process instance variable error, subflowId="+processInstance.getSubProcessId()+", variableName="+property.getName(), e);
+
 						}
 					}
 				}
-				
+//				System.out.println("value === "+value);
 				createVariable(variablePersister,processInstance,property.getName(),value,property.getDataType());
 			}
 		}
-		
+		//如果还有未预先定义的initVariable，则继续仍然保存到变量列表中
 		if (initVariables!=null && !initVariables.isEmpty()){
 			Iterator<String> keySet = initVariables.keySet().iterator();
 			while (keySet.hasNext()){
@@ -206,28 +253,30 @@ public class ProcessInstanceManagerFpdl20Impl extends AbsProcessInstanceManager 
 	
 	private void createVariable(VariablePersister variablePersister,
 			ProcessInstance processInstance,String name ,Object value,QName dataType){
+//		System.out.println("===流程变量"+name+"="+value);
 		VariableImpl v = new VariableImpl();
 		((AbsVariable)v).setScopeId(processInstance.getScopeId());
 		((AbsVariable)v).setName(name);
 		((AbsVariable)v).setProcessElementId(processInstance.getProcessElementId());
 		((AbsVariable)v).setPayload(value);
 		
-		if (value!=null){
-			if (value instanceof org.w3c.dom.Document){
-				if (dataType != null ){
-					((AbsVariable)v).setDataType(dataType);
-				}
-				v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.w3c.dom.Document");
-			}else if (value instanceof org.dom4j.Document){
-				if (dataType != null ){
-					((AbsVariable)v).setDataType(dataType);
-				}
-				v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.dom4j.Document");
+		if (dataType!=null){
+			v.setDataType(dataType);
+		}else{//通过value判断dataType
+			if (value==null){
+				v.setDataType(new QName(NameSpaces.JAVA.getUri(),String.class.getName()));
 			}else{
 				((AbsVariable)v).setDataType(new QName(NameSpaces.JAVA.getUri(),value.getClass().getName()));
 			}
-			
 		}
+		
+		if (value instanceof org.w3c.dom.Document){
+
+			v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.w3c.dom.Document");
+		}else if (value instanceof org.dom4j.Document){
+			v.getHeaders().put(Variable.HEADER_KEY_CLASS_NAME, "org.dom4j.Document");
+		}
+
 		((AbsVariable)v).setProcessId(processInstance.getProcessId());
 		((AbsVariable)v).setVersion(processInstance.getVersion());
 		((AbsVariable)v).setProcessType(processInstance.getProcessType());

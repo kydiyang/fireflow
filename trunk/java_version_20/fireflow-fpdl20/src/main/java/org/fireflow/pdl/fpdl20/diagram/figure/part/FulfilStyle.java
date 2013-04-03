@@ -26,10 +26,16 @@ package org.fireflow.pdl.fpdl20.diagram.figure.part;
  */
 public interface FulfilStyle{
 	public static final String GRADIENT_STYLE_NONE = "NONE";
-	public static final String GRADIENT_STYLE_LEFT2RIGHT = "LEFT2RIGHT";
+	public static final String GRADIENT_STYLE_LEFT2RIGHT = "L2R";
+	public static final String GRADIENT_STYLE_UPPERLEFT2LOWERRIGHT = "UL2LR";
+	public static final String GRADIENT_STYLE_TOP2DOWN = "T2D";
+	public static final String GRADIENT_STYLE_UPPERRIGHT2LOWERLEFT = "UR2LL";
 	
-	public String getColor();
-	public void setColor(String color);
+	public String getColor1();
+	public void setColor1(String color);
+	
+	public String getColor2();
+	public void setColor2(String cl);
 	
 	public String getGradientStyle();
 	public void setGradientStyle(String style);

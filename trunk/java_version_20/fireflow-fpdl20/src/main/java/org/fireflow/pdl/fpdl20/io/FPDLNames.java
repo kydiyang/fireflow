@@ -180,7 +180,7 @@ public interface FPDLNames extends ModelElementNames{
     String DIRECTION = "direction";
     
     //String PLANE = "plane";
-    String LABEL = "label";
+    String LABEL = "titleLabel";
     String CONTENT = "content";
     
     String BOUNDS = "bounds";
@@ -189,13 +189,13 @@ public interface FPDLNames extends ModelElementNames{
 //    String UPPER_LEFT_CORNER = "upper-left-corner";
     String WIDTH = "width";
     String HEIGHT = "height";
-    String BOUNDS_STYLE = "bounds-style";
+    String BORDER_STYLE = "border-style";
     
     String LINE_TYPE = "line-type";
     String THICK = "thick";
     String SPACE = "space";
 //    String CORNER_TYPE = "corner-type";
-    String LABEL_POSITION = "label-position";
+    String LABEL_POSITION = "titleLabel-position";
     String TEXT_DIRECTION = "text-direction";
     
     String RADIUS = "radius";
@@ -215,7 +215,7 @@ public interface FPDLNames extends ModelElementNames{
 
     String COLOR = "color";
     String SIZE = "size";
-    String WEIGHT = "weight";
+    String FONT_STYLE = "font-style";
     String FONT_NAME = "font-name";
     String GRADIENT_STYLE = "gradient-style";
     

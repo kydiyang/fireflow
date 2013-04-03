@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.engine;
+package org.fireflow.client.impl;
 
 import junit.framework.Assert;
 
@@ -57,14 +57,14 @@ import org.springframework.transaction.support.TransactionCallback;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class WorkflowStatementSuspendProcessInstanceTest  extends FireWorkflowJunitEnviroment {
+public class WorkflowStatementSuspendActivityInstanceTest extends FireWorkflowJunitEnviroment {
 	private static final String processName = "Process4TestWorkflowStatement";
 	private static final String processDisplayName = "测试流程";
 	private static final String bizId = "bizobj123";
 	private static final String note = "test abort process instance";
 	
 	@Test
-	public void testSuspendProcessInstance() {
+	public void testSuspendActivityInstance() {
 		final WorkflowSession session = WorkflowSessionFactory.createWorkflowSession(runtimeContext,FireWorkflowSystem.getInstance());
 		final WorkflowStatement stmt = session.createWorkflowStatement(FpdlConstants.PROCESS_TYPE_FPDL20);
 		transactionTemplate.execute(new TransactionCallback(){
@@ -102,12 +102,20 @@ public class WorkflowStatementSuspendProcessInstanceTest  extends FireWorkflowJu
 		ProcessInstance procInst = query.unique();
 		
 		Assert.assertEquals(ProcessInstanceState.RUNNING, procInst.getState());
+		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		
-
+		WorkflowQuery<ActivityInstance> query2 = session.createWorkflowQuery(ActivityInstance.class);
+		query2.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
+			.add(Restrictions.eq(ActivityInstanceProperty.STATE, ActivityInstanceState.RUNNING));
+		final ActivityInstance actInst = query2.unique();
+		Assert.assertNotNull(actInst);
+		Assert.assertEquals(Boolean.FALSE, actInst.isSuspended());
+		
+		
 		transactionTemplate.execute(new TransactionCallback(){
 			public Object doInTransaction(TransactionStatus arg0) {
 				try {
-					stmt.suspendProcessInstance(processInstanceId, note);
+					stmt.suspendActivityInstance(actInst.getId(), note);
 				} catch (InvalidOperationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -123,7 +131,7 @@ public class WorkflowStatementSuspendProcessInstanceTest  extends FireWorkflowJu
 		transactionTemplate.execute(new TransactionCallback(){
 			public Object doInTransaction(TransactionStatus arg0) {
 				try {
-					stmt.restoreProcessInstance(processInstanceId, "haha");
+					stmt.restoreActivityInstance(actInst.getId(), "haha");
 				} catch (InvalidOperationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -134,20 +142,16 @@ public class WorkflowStatementSuspendProcessInstanceTest  extends FireWorkflowJu
 			}
 		});
 		
-
+		
 		procInst = query.unique();
 		
 		Assert.assertEquals(ProcessInstanceState.RUNNING, procInst.getState());
-		Assert.assertEquals("haha", procInst.getNote());
 		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		
-		WorkflowQuery<ActivityInstance> query2 = session.createWorkflowQuery(ActivityInstance.class);
-		query2.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
-			.add(Restrictions.eq(ActivityInstanceProperty.STATE, ActivityInstanceState.RUNNING));
-		ActivityInstance actInst = query2.unique();
-		Assert.assertNotNull(actInst);
-		Assert.assertEquals(Boolean.FALSE, actInst.isSuspended());
-		Assert.assertEquals("haha", actInst.getNote());
+		ActivityInstance actInst2 = query2.unique();
+		Assert.assertNotNull(actInst2);
+		Assert.assertEquals(Boolean.FALSE, actInst2.isSuspended());
+		Assert.assertEquals("haha", actInst2.getNote());
 	}
 	
 	public void assertResult(WorkflowSession session){
@@ -157,8 +161,7 @@ public class WorkflowStatementSuspendProcessInstanceTest  extends FireWorkflowJu
 		ProcessInstance procInst = query.unique();
 		
 		Assert.assertEquals(ProcessInstanceState.RUNNING, procInst.getState());
-		Assert.assertEquals(note, procInst.getNote());
-		Assert.assertEquals(Boolean.TRUE, procInst.isSuspended());
+		Assert.assertEquals(Boolean.FALSE, procInst.isSuspended());
 		
 		WorkflowQuery<ActivityInstance> query2 = session.createWorkflowQuery(ActivityInstance.class);
 		query2.add(Restrictions.eq(ActivityInstanceProperty.PROCESS_INSTANCE_ID, processInstanceId))
