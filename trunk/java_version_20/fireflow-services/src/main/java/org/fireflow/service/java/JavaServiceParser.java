@@ -16,9 +16,6 @@
  */
 package org.fireflow.service.java;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-
 import org.apache.commons.lang.StringUtils;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.Util4Deserializer;
@@ -29,8 +26,6 @@ import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.model.servicedef.impl.JavaInterfaceDef;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.sun.mail.imap.protocol.Namespaces.Namespace;
 
 /**
  * 

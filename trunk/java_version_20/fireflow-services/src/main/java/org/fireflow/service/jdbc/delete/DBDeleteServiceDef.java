@@ -15,7 +15,7 @@ public class DBDeleteServiceDef extends AbstractDBService {
 		JavaInterfaceDef javaInterface = new JavaInterfaceDef();
 		javaInterface
 				.setInterfaceClassName("org.fireflow.service.jdbc.delete.DBDelete");
-		javaInterface.putParameterTypeMap(0,
+		javaInterface.putParameterTypeMap("doDelete",0,
 				new QName(this.getTargetNamespaceUri(), SQLSchemaGenerator.WHERE_ELEMENT));
 
 		this.setInterface(javaInterface);
