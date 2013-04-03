@@ -47,7 +47,6 @@ import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessInstancePersister;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
-import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.PObjectKey;

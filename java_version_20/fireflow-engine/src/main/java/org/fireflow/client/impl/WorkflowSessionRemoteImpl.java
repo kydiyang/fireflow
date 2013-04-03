@@ -204,4 +204,9 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		}
 		
 	}
+	
+	
+	public boolean isSessionValid(){
+		return workflowServer.isSessionValid(this.getSessionId());
+	}
 }

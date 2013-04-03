@@ -115,6 +115,7 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 			// 4、获得参数类型
 			Class[] parameterTypes = this.getParameterTypes(serviceObject.getClass(), methodName, params);
 
+			
 			// 5、调用
 			Object result = MethodUtils.invokeMethod(serviceObject, methodName,
 						params,parameterTypes);
@@ -127,22 +128,51 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 			return true;
 		}
 		catch (ScriptException e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		}
 		catch (SecurityException e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		} catch (NoSuchMethodException e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		} catch (IllegalArgumentException e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		} catch (IllegalAccessException e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		} catch (InvocationTargetException e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		} catch (Exception e) {
-			throw new ServiceInvocationException(e);
+			ServiceInvocationException ex = new ServiceInvocationException(e);
+			ex.setErrorCode(findRootCause(e).getClass().getName());
+
+			throw ex;
 		}
 
+	}
+	
+	private Throwable findRootCause(Throwable e){
+
+		if (e.getCause()==null){
+			return e;
+		}
+		return findRootCause(e.getCause());
 	}
 
 	protected abstract Object getServiceObject(RuntimeContext runtimeContext,
@@ -231,6 +261,9 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 		outputsResults.put(fromExp.getName(), result);
 		scriptContext.put(ScriptContextVariableNames.OUTPUTS,
 					outputsResults);
+		
+		//System.out.println("======待输出的结果是===="+outputsResults);
+		
 
 		ScriptEngineHelper.assignOutputToVariable(session,runtimeContext,
 				processInstance,activityInstance, outputAssignments,
