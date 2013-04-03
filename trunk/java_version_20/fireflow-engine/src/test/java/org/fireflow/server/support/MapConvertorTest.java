@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.misc;
+package org.fireflow.server.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +47,6 @@ import junit.framework.Assert;
 import org.fireflow.engine.invocation.impl.DynamicAssignmentHandler;
 import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.UserImpl;
-import org.fireflow.server.support.MapConvertor;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -196,6 +195,15 @@ public class MapConvertorTest {
 		Map<String, Object> vars = new HashMap<String, Object>();
 		vars.put("id", "id-123");
 		vars.put("age", 30);
+		vars.put("money", new Float("123.12"));
+		vars.put("float", 555f);
+		vars.put("short", new Short("32"));
+		vars.put("double", 321.0d);
+		vars.put("double2", new Double("333.12"));
+		vars.put("long", 666l);
+		vars.put("byte", new Byte("16"));
+		vars.put("char",new Character('a'));
+		vars.put("flag",Boolean.TRUE);
 		Date now = new Date();
 		vars.put("birthday", now);
 
@@ -256,7 +264,7 @@ public class MapConvertorTest {
 		MapConvertor convertor2 = (MapConvertor) obj;
 		Map<String, ? extends Object> entries = convertor2.getMap();
 		Assert.assertNotNull(entries);
-		Assert.assertEquals(3, entries.size());
+		Assert.assertEquals(12, entries.size());
 
 		Assert.assertEquals("id-123", entries.get("id"));
 
@@ -266,5 +274,14 @@ public class MapConvertorTest {
 		String dateStr2 = dformat.format(d);
 		Assert.assertEquals(dateStr, dateStr2);
 
+		Assert.assertEquals(new Float("123.12"),entries.get("money"));
+		Assert.assertEquals(new Float(555f), entries.get("float"));
+		Assert.assertEquals(new Double(321.0d),entries.get("double") );
+		Assert.assertEquals(new Double("333.12"), entries.get("double2"));
+		Assert.assertEquals( Boolean.TRUE,entries.get("flag"));
+		Assert.assertEquals(new Byte("16") , entries.get("byte"));
+		Assert.assertEquals(new Character('a'), entries.get("char"));
+		Assert.assertEquals(new Long(666l),entries.get("long"));
+		Assert.assertEquals(new Short("32"), entries.get("short"));
 	}
 }

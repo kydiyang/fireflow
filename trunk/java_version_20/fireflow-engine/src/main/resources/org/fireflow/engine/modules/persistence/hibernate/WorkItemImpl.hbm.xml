@@ -132,13 +132,13 @@
 		
 
 		<property name="reassignType" type="java.lang.String">
-			<column length="50" name="REASSIGN_TYPE">
+			<column length="100" name="REASSIGN_TYPE">
 				<comment>加签类型</comment>
 			</column>
 		</property>	
 		<property name="assignmentStrategy" type="org.fireflow.engine.modules.persistence.hibernate.AssignmentStrategyType"
 			update="false">
-			<column length="40" name="ASSIGNMENT_STRATEGY">
+			<column length="100" name="ASSIGNMENT_STRATEGY">
 				<comment>WorkItem分配策略,取值ALL,ANY</comment>
 			</column>
 		</property>		
