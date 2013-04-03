@@ -72,8 +72,6 @@ import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
 import org.fireflow.pdl.fpdl20.diagram.figure.Circle;
 import org.fireflow.pdl.fpdl20.diagram.figure.Line;
 import org.fireflow.pdl.fpdl20.diagram.figure.Rectangle;
-import org.fireflow.pdl.fpdl20.diagram.figure.impl.CircleImpl;
-import org.fireflow.pdl.fpdl20.diagram.figure.impl.LineImpl;
 import org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds;
 import org.fireflow.pdl.fpdl20.diagram.figure.part.BoundsImpl;
 import org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle;
@@ -375,6 +373,13 @@ public class FPDLDeserializer implements FPDLNames{
 		Element rectElm = Util4Deserializer.child(figureElement, RECTANGLE);
 		this.loadRectangle(groupShape, rectElm);
 		
+		//修正代码中的错误，例如，如果fulfilstyle==null，则给一个缺省值；如果bound为0
+		Rectangle rect = (Rectangle)groupShape.getFigure();
+		if (rect.getFulfilStyle()==null){
+			FulfilStyle style = new FulfilStyleImpl();
+			rect.setFulfilStyle(style);
+		}
+		
 		List<Element> childElmList = Util4Deserializer.children(groupElement,NODE);
 		if (childElmList!=null){
 			for (Element childElm : childElmList){
@@ -439,6 +444,13 @@ public class FPDLDeserializer implements FPDLNames{
 		Element figureElement = Util4Deserializer.child(poolElm, FIGURE);
 		Element planeElm = Util4Deserializer.child(figureElement, RECTANGLE);
 		this.loadRectangle(pool, planeElm);
+		
+		//修正代码中的错误，例如，如果fulfilstyle==null，则给一个缺省值；如果bound为0
+		Rectangle rect = (Rectangle)pool.getFigure();
+		if (rect.getFulfilStyle()==null){
+			FulfilStyle style = new FulfilStyleImpl();
+			rect.setFulfilStyle(style);
+		}
 		
 		//下级节点
 		List<Element> children = Util4Deserializer.children(poolElm, NODE);
@@ -573,7 +585,7 @@ public class FPDLDeserializer implements FPDLNames{
 				circle.getTitleLabel().setFontSize(lb.getFontSize());
 				circle.getTitleLabel().setText(lb.getText());
 				circle.getTitleLabel().setTextDirection(lb.getTextDirection());
-				circle.getTitleLabel().setWeight(lb.getWeight());
+				circle.getTitleLabel().setFontStyle(lb.getFontStyle());
 			}
 		}
 
@@ -596,13 +608,7 @@ public class FPDLDeserializer implements FPDLNames{
 		Element fulfilStyleElm = Util4Deserializer.child(circleElm,
 				FULFIL_STYLE);
 		FulfilStyle fulfilStyle = this.loadFulfilStyle(fulfilStyleElm);
-		if (fulfilStyle!=null){
-			circle.getFulfilStyle().setColor(fulfilStyle.getColor());
-			circle.getFulfilStyle().setGradientStyle(fulfilStyle.getGradientStyle());
-		}
-		
-
-
+		circle.setFulfilStyle(fulfilStyle);
 	}
 	
 	protected ActivityShape loadActivityShape(Element activityShapeElm){
@@ -619,6 +625,19 @@ public class FPDLDeserializer implements FPDLNames{
 		Element figureElement = Util4Deserializer.child(activityShapeElm,FIGURE);
 		Element rectElm = Util4Deserializer.child(figureElement, RECTANGLE);
 		this.loadRectangle(activityShape, rectElm);
+		
+		//修正代码中的错误，例如，如果fulfilstyle==null，则给一个缺省值；如果bound为0
+		Rectangle rect = (Rectangle)activityShape.getFigure();
+		if (rect.getFulfilStyle()==null){
+			FulfilStyle style = new FulfilStyleImpl();
+			rect.setFulfilStyle(style);
+		}
+		
+		if (rect.getContentLabel()==null){
+			Label contentLb = new LabelImpl();
+			contentLb.setText(Label.CONTENT_FROM_WORKFLOW_ELEMENT);
+			rect.setContentLabel(contentLb);
+		}
 		
 		List<Element> attachedStartNodeList = Util4Deserializer.children(activityShapeElm, NODE);
 		if (attachedStartNodeList!=null){
@@ -639,6 +658,13 @@ public class FPDLDeserializer implements FPDLNames{
 		Element figureElement = Util4Deserializer.child(laneElm, FIGURE);
 		Element planeElm = Util4Deserializer.child(figureElement, RECTANGLE);
 		this.loadRectangle(lane, planeElm);
+		
+		//修正代码中的错误，例如，如果fulfilstyle==null，则给一个缺省值；如果bound为0
+		Rectangle rect = (Rectangle)lane.getFigure();
+		if (rect.getFulfilStyle()==null){
+			FulfilStyle style = new FulfilStyleImpl();
+			rect.setFulfilStyle(style);
+		}
 		
 		//下级节点
 		List<Element> children = Util4Deserializer.children(laneElm, NODE);
@@ -702,6 +728,20 @@ public class FPDLDeserializer implements FPDLNames{
 		Element rectElm = Util4Deserializer.child(figureElement,RECTANGLE);
 		loadRectangle(comment, rectElm);
 		
+		//修正代码中的错误，例如，如果fulfilstyle==null，则给一个缺省值；如果bound为0
+		Rectangle rect = (Rectangle)comment.getFigure();
+		if (rect.getFulfilStyle()==null){
+			FulfilStyle style = new FulfilStyleImpl();
+			rect.setFulfilStyle(style);
+		}
+		
+		//如果没有contentLabel则初始化一个
+		if (rect.getContentLabel()==null){
+			Label contentLb = new LabelImpl();
+			contentLb.setText("");
+			rect.setContentLabel(contentLb);
+		}
+		
 		return comment;
 	}
 	
@@ -719,7 +759,7 @@ public class FPDLDeserializer implements FPDLNames{
 				rect.getTitleLabel().setFontSize(lb.getFontSize());
 				rect.getTitleLabel().setText(lb.getText());
 				rect.getTitleLabel().setTextDirection(lb.getTextDirection());
-				rect.getTitleLabel().setWeight(lb.getWeight());
+				rect.getTitleLabel().setFontStyle(lb.getFontStyle());
 			}
 		}
 		
@@ -727,14 +767,9 @@ public class FPDLDeserializer implements FPDLNames{
 		if (contentElm!=null){
 			Element labelElm = Util4Deserializer.child(contentElm, LABEL);
 			Label lb = this.loadLabel(labelElm);
-			if (lb!=null){
-				rect.getContentLabel().setFontColor(lb.getFontColor());
-				rect.getContentLabel().setFontName(lb.getFontName());
-				rect.getContentLabel().setFontSize(lb.getFontSize());
-				rect.getContentLabel().setText(lb.getText());
-				rect.getContentLabel().setTextDirection(lb.getTextDirection());
-				rect.getContentLabel().setWeight(lb.getWeight());
-			}
+			rect.setContentLabel(lb);
+		}else{
+			rect.setContentLabel(null);
 		}
 		
 		Element boundsElm = Util4Deserializer.child(rectElm, BOUNDS);
@@ -756,10 +791,9 @@ public class FPDLDeserializer implements FPDLNames{
 		Element fulfilElm = Util4Deserializer.child(rectElm, FULFIL_STYLE);
 		if (fulfilElm!=null){
 			FulfilStyle fulfilStyle = loadFulfilStyle(fulfilElm);
-			if (fulfilStyle!=null){
-				rect.getFulfilStyle().setColor(fulfilStyle.getColor());
-				rect.getFulfilStyle().setGradientStyle(fulfilStyle.getGradientStyle());
-			}
+			rect.setFulfilStyle(fulfilStyle);
+		}else{
+			rect.setFulfilStyle(null);
 		}
 	}
 	
@@ -790,7 +824,7 @@ public class FPDLDeserializer implements FPDLNames{
 			bounds.setWidth(Integer.parseInt(width));
 		}
 		
-		Element boundsStyleElm = Util4Deserializer.child(boundsElm, BOUNDS_STYLE);
+		Element boundsStyleElm = Util4Deserializer.child(boundsElm, BORDER_STYLE);
 		if(boundsStyleElm!=null){
 			
 			String color = boundsStyleElm.getAttribute(COLOR);
@@ -813,8 +847,11 @@ public class FPDLDeserializer implements FPDLNames{
 			if (!StringUtils.isEmpty(radius) && StringUtils.isNumeric(radius)){
 				bounds.setCornerRadius(Integer.parseInt(radius));
 			}
-			
-
+		}else{
+			bounds.setThick(-1);
+			bounds.setColor(null);
+			bounds.setLineType(null);
+			bounds.setCornerRadius(0);
 		}
 		return bounds;
 	}
@@ -823,9 +860,14 @@ public class FPDLDeserializer implements FPDLNames{
 		if (fulfilStyleElm==null) return null;
 		
 		FulfilStyle fulfilStyle = new FulfilStyleImpl();
-		String color = fulfilStyleElm.getAttribute(COLOR);
-		if (color!=null){
-			fulfilStyle.setColor(color);
+		String color1 = fulfilStyleElm.getAttribute(COLOR+"1");
+		if (color1!=null){
+			fulfilStyle.setColor1(color1);
+		}
+		
+		String color2 = fulfilStyleElm.getAttribute(COLOR+"2");
+		if (color2!=null){
+			fulfilStyle.setColor2(color2);
 		}
 		
 		
@@ -887,7 +929,7 @@ public class FPDLDeserializer implements FPDLNames{
 				line.getTitleLabel().setFontSize(lb.getFontSize());
 				line.getTitleLabel().setText(lb.getText());
 				line.getTitleLabel().setTextDirection(lb.getTextDirection());
-				line.getTitleLabel().setWeight(lb.getWeight());
+				line.getTitleLabel().setFontStyle(lb.getFontStyle());
 			}
 		}
 
@@ -958,9 +1000,9 @@ public class FPDLDeserializer implements FPDLNames{
 			lb.setFontColor(color);
 		}
 		
-		String weight = labelElm.getAttribute(WEIGHT);
+		String weight = labelElm.getAttribute(FONT_STYLE);
 		if (!StringUtils.isEmpty(weight)){
-			lb.setWeight(weight);
+			lb.setFontStyle(weight);
 		}
 		
 		

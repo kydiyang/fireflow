@@ -25,23 +25,24 @@ package org.fireflow.pdl.fpdl20.diagram.figure.part;
  *
  */
 public class FulfilStyleImpl implements FulfilStyle {
-	private String color = "#FFFFFF";//缺省为白色
+	private String color1 = "#FFFFFF";//缺省为白色
+	private String color2 = "#FFFFFF";
 	private String gradientStyle = FulfilStyle.GRADIENT_STYLE_NONE;
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle#getColor()
 	 */
 	@Override
-	public String getColor() {
-		return color;
+	public String getColor1() {
+		return color1;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle#setColor(java.lang.String)
 	 */
 	@Override
-	public void setColor(String color) {
-		this.color = color;
+	public void setColor1(String color) {
+		this.color1 = color;
 		
 	}
 
@@ -61,6 +62,11 @@ public class FulfilStyleImpl implements FulfilStyle {
 		gradientStyle = style;
 		
 	}
-
+	public String getColor2(){
+		return color2;
+	}
+	public void setColor2(String cl){
+		this.color2 = cl;
+	}
 
 }

@@ -38,8 +38,6 @@ public class CircleImpl implements Circle {
 
 	public CircleImpl(){
 		titleLabel = new LabelImpl();
-		fulfilStyle = new FulfilStyleImpl();
-
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Circle#getLabel()
@@ -62,6 +60,9 @@ public class CircleImpl implements Circle {
 		return this.fulfilStyle;
 	}
 
+	public void setFulfilStyle(FulfilStyle style){
+		this.fulfilStyle = style;
+	}
 //	/* (non-Javadoc)
 //	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Circle#setFulfilStyle(org.fireflow.pdl.fpdl20.diagram.style.FulfilStyle)
 //	 */

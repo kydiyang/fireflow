@@ -29,9 +29,9 @@ public class LabelImpl implements Label {
 	private String text = Label.CONTENT_FROM_WORKFLOW_ELEMENT;
 	private String direction = Label.TEXT_HORIZANTAL;//横向放置
 	private String fontName = "";//缺省为空
-	private int fontSize = 12;//
+	private int fontSize = 10;//
 	private String fontColor = "#000000";//缺省为黑色
-	private String weight = Label.FONT_WEIGHT_NORMAL;//正常字体，
+	private String weight = Label.FONT_STYLE_NORMAL;//正常字体，
 
 	public LabelImpl(){
 	}
@@ -123,7 +123,7 @@ public class LabelImpl implements Label {
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#getWeight()
 	 */
 	@Override
-	public String getWeight() {
+	public String getFontStyle() {
 		return weight;
 	}
 
@@ -131,7 +131,7 @@ public class LabelImpl implements Label {
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#setWeight(java.lang.String)
 	 */
 	@Override
-	public void setWeight(String wt) {
+	public void setFontStyle(String wt) {
 		weight = wt;
 		
 	}

@@ -28,8 +28,11 @@ public interface Label {
 	public static final String CONTENT_FROM_WORKFLOW_ELEMENT = "#CONTENT_FROM_WF_ELEMENT#";
 	public static final String CONTENT_IGNORE = "#CONTENT_IGNORE#";
 	
-	public static final String FONT_WEIGHT_BOLD = "BOLD";
-	public static final String FONT_WEIGHT_NORMAL = "NORMAL";
+	public static final String FONT_STYLE_BOLD = "BOLD";
+	public static final String FONT_STYLE_NORMAL = "NORMAL";
+	public static final String FONT_STYLE_ITALIC = "ITALIC";
+	public static final String FONT_STYLE_ITALIC_BOLD = "ITALIC_BOLD";
+	
 	
 	public static final String TEXT_HORIZANTAL = "HORIZANTAL";//文字水平
 	public static final String TEXT_VERTICAL = "VERTICAL";//文字垂直
@@ -53,6 +56,6 @@ public interface Label {
 	public String getFontColor();
 	public void setFontColor(String cl);
 	
-	public String getWeight();
-	public void setWeight(String wt);
+	public String getFontStyle();
+	public void setFontStyle(String wt);
 }

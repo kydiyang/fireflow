@@ -19,8 +19,6 @@ package org.fireflow.pdl.fpdl20.diagram.figure;
 
 import java.util.List;
 
-import org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds;
-import org.fireflow.pdl.fpdl20.diagram.figure.part.Label;
 import org.fireflow.pdl.fpdl20.diagram.figure.part.Point;
 
 
@@ -34,11 +32,7 @@ public interface Line extends Figure{
 	
 	
 	public Point getLabelPosition();
-//	public void setLabelPosition(Point p);
-	
 
-	
 	public List<Point> getPoints();
-//	public void set
 
 }

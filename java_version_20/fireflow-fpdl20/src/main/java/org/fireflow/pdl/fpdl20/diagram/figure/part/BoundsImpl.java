@@ -29,7 +29,7 @@ public class BoundsImpl implements Bounds {
 	protected int y=0;
 	
 	protected int height = 10;
-	protected int weight = 10;
+	protected int width = 10;
 
 	protected int radius = 0;//缺省为直角
 	
@@ -43,14 +43,14 @@ public class BoundsImpl implements Bounds {
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Bounds#getWidth()
 	 */
 	public int getWidth() {
-		return this.weight;
+		return this.width;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Bounds#setWidth(int)
 	 */
 	public void setWidth(int w) {
-		this.weight = w;
+		this.width = w;
 
 	}
 
@@ -174,7 +174,7 @@ public class BoundsImpl implements Bounds {
 		Bounds newInst = new BoundsImpl();
 		newInst.setX(this.x);
 		newInst.setY(this.y);
-		newInst.setWidth(this.weight);
+		newInst.setWidth(this.width);
 		newInst.setHeight(this.height);
 		newInst.setColor(this.color);
 		newInst.setCornerRadius(this.radius);

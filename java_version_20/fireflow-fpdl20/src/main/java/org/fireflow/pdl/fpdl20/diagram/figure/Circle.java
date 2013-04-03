@@ -17,9 +17,7 @@
  */
 package org.fireflow.pdl.fpdl20.diagram.figure;
 
-import org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds;
 import org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle;
-import org.fireflow.pdl.fpdl20.diagram.figure.part.Label;
 
 /**
  *
@@ -31,4 +29,6 @@ public interface Circle extends Figure{
 
 	
 	public FulfilStyle getFulfilStyle();
+	
+	public void setFulfilStyle(FulfilStyle style);
 }
