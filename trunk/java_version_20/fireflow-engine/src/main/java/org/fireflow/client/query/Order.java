@@ -44,7 +44,7 @@ public class Order {
 	private EntityProperty property;
 	
 	public String toString() {
-		return property.getColumnName() + ' ' + (ascending?"asc":"desc");
+		return (property==null?"":property.getColumnName()) + ' ' + (ascending?"asc":"desc");
 	}
 	
 //	public Order ignoreCase() {

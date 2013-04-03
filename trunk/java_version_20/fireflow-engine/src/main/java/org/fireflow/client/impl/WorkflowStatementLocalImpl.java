@@ -95,6 +95,7 @@ import org.fireflow.model.io.DeserializerException;
 import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.Token;
 import org.firesoa.common.schema.NameSpaces;
+import org.firesoa.common.util.JavaDataTypeConvertor;
 
 /**
  * @author 非也
@@ -195,6 +196,16 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 	public ProcessInstance startProcess(String workflowProcessId,String subProcessId,String bizId,Map<String,Object> variables) throws InvalidModelException,
 	WorkflowProcessNotFoundException,InvalidOperationException{
 		ProcessInstance processInstance = this.createProcessInstance(workflowProcessId, subProcessId);
+//		System.out.println("=============Server端收到的流程变量是===");
+//		if (variables!=null){
+//			Iterator<String> keys = variables.keySet().iterator();
+//			while(keys.hasNext()){
+//				String key = keys.next();
+//				Object value = variables.get(key);
+//				System.out.println(key+"===="+value);
+//			}
+//		}	
+//		System.out.println("=============Server端收到的流程变量如上");
 		return this.runProcessInstance(processInstance.getId(), bizId, variables);
 
 	}
@@ -1093,6 +1104,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		}
 
 
+		//检查变量值和变量类型是否一致
 		if (property != null && property.getDataType() != null && value != null) {
 			QName qName = property.getDataType();
 			// java类型
@@ -1102,19 +1114,17 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 				if (value instanceof org.w3c.dom.Document
 						|| value instanceof org.dom4j.Document) {
 					throw new ClassCastException(
-							"Can NOT cast from xml content to " + className);
+							"Can NOT cast from DOM to " + className);
 				}
 
 				try {
-					Class clz = Class.forName(className);
-					if (!clz.isInstance(value)) {
-						throw new ClassCastException("Can NOT cast from "
-								+ value.getClass().getName() + " to "
-								+ className);
+					if (!JavaDataTypeConvertor.isTypeValueMatch(className, value)){
+						throw new InvalidOperationException("设置流程变量失败，变量所需类型为"+className+",而设置值的类型是"+value.getClass().getName());
 					}
 				} catch (ClassNotFoundException e) {
 					throw new InvalidOperationException(e);
 				}
+
 			} 
 			// xml类型
 			else {
@@ -1131,6 +1141,7 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		VariablePersister variablePersister = persistenceService
 				.getVariablePersister();
 		Variable v = variablePersister.findVariable(scope.getScopeId(), name);
+		//System.out.println("===已经存在同名变量==name="+v.getName()+";新的值是"+value);
 		if (v!=null){
 			((AbsVariable)v).setPayload(value);
 			if (headers!=null && headers.size()>0){

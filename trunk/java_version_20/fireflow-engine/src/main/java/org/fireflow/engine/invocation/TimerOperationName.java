@@ -24,10 +24,10 @@ package org.fireflow.engine.invocation;
  * @version 2.0
  */
 public enum TimerOperationName {
-	TRIGGERED_ONLY_ONCE("org.fireflow.constants.TRIGGERED_ONLY_ONCE"),
-	TRIGGERED_BY_REPEAT_COUNT("org.fireflow.constants.TRIGGERED_BY_REPEAT_COUNT"),
-	TRIGGERED_BY_STARTTIME_ENDTIME("org.fireflow.constants.TRIGGERED_BY_STARTTIME_ENDTIME"),
-	TRIGGERED_BY_CRON("org.fireflow.constants.TRIGGERED_BY_CRON");
+	TRIGGERED_ONLY_ONCE("org.fireflow.constants.timmer.TRIGGERED_ONLY_ONCE"),
+	TRIGGERED_BY_REPEAT_COUNT("org.fireflow.constants.timmer.TRIGGERED_BY_REPEAT_COUNT"),
+	TRIGGERED_BY_STARTTIME_ENDTIME("org.fireflow.constants.timmer.TRIGGERED_BY_STARTTIME_ENDTIME"),
+	TRIGGERED_BY_CRON("org.fireflow.constants.timmer.TRIGGERED_BY_CRON");
 	
 	String value = null;
 	private TimerOperationName(String v){

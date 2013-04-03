@@ -32,17 +32,15 @@ import org.fireflow.pvm.kernel.KernelException;
  *
  */
 public interface WorkItem extends WorkflowEntity{
-//    public static final String ASSIGNMENT_ALL = "org.fireflow.constants.ALL";
-//    public static final String ASSIGNMENT_ANY = "org.fireflow.constants.ANY";
+
+    public static final String REASSIGN_AFTER_ME = "org.fireflow.constants.reassign_type.AFTER_ME";
+    public static final String REASSIGN_BEFORE_ME = "org.fireflow.constants.reassign_type.BEFORE_ME";
     
-    public static final String REASSIGN_AFTER_ME = "org.fireflow.constants.AFTER_ME";
-    public static final String REASSIGN_BEFORE_ME = "org.fireflow.constants.BEFORE_ME";
-    
-    public static final String NO_PARENT_WORKITEM = "org.fireflow.constants.NO_PARENT_WORKITEM";
+    public static final String NO_PARENT_WORKITEM = "org.fireflow.constants.workitem.NO_PARENT_WORKITEM";
 	
-    public static final String WORKITEM_TYPE_LOCAL = "org.fireflow.constants.LOCAL_WORKITEM";
-    public static final String WORKITEM_TYPE_REMOTE = "org.fireflow.constants.LOCAL_REMOTE";
-    public static final String WORKITEM_TYPE_NOT_FF = "org.fireflow.constants.NOT_FF_WORKITEM";
+    public static final String WORKITEM_TYPE_LOCAL = "org.fireflow.constants.workitem_type.LOCAL_WORKITEM";
+    public static final String WORKITEM_TYPE_REMOTE = "org.fireflow.constants.workitem_type.LOCAL_REMOTE";
+    public static final String WORKITEM_TYPE_NOT_FF = "org.fireflow.constants.workitem_type.NOT_FF_WORKITEM";
     
     //////////////////////////////////////////////////////////
 	///////////////// 工作项属性              /////////////////////////

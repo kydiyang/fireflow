@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.fireflow.engine.entity.AbsWorkflowEntity;
 import org.fireflow.engine.entity.repository.RepositoryDescriptor;
 import org.fireflow.server.support.DateTimeXmlAdapter;
 
@@ -37,13 +38,12 @@ import org.fireflow.server.support.DateTimeXmlAdapter;
  */
 @XmlRootElement(name="absRepositoryDescriptor")
 @XmlType(name="absRepositoryDescriptorType",
-		propOrder={"id","name","displayName","description","bizType",
+		propOrder={"name","displayName","description","bizType",
 		"fileName","publishState","ownerDeptId","ownerDeptName",
-		"approver","approvedTime","latestEditor","lastUpdateTime"})
+		"approver","approvedTime","latestEditor"})
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbsRepositoryDescriptorImpl implements
+public abstract class AbsRepositoryDescriptorImpl extends AbsWorkflowEntity implements
 		RepositoryDescriptor {
-    protected String id; //主键
     protected String name; //流程英文名称
     protected String displayName;//流程显示名称
     protected String description;//流程业务说明
@@ -63,16 +63,6 @@ public abstract class AbsRepositoryDescriptorImpl implements
     
     protected String latestEditor = null;//最后编辑流程的操作者姓名
     
-    @XmlJavaTypeAdapter(value=DateTimeXmlAdapter.class)
-    protected Date lastUpdateTime = null;
-    
-    public String getId() {
-        return id;
-    }
-    
-    public void setId(String id) {
-        this.id = id;
-    }
     
     public String getName() {
         return name;
@@ -172,12 +162,5 @@ public abstract class AbsRepositoryDescriptorImpl implements
 
 	public void setPublishState(Boolean state){
 		this.publishState = state;
-	}
-	public Date getLastUpdateTime(){
-		return this.lastUpdateTime;
-	}
-	
-	public void setLastUpdateTime(Date lastUpdateTime){
-		this.lastUpdateTime = lastUpdateTime;
 	}
 }

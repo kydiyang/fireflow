@@ -69,6 +69,7 @@ public class VariablePayloadType extends ClobStringType {
 			PreparedStatement ps, int index, Object value, LobCreator lobCreator)
 			throws SQLException {
 		String s = null;
+		//System.out.println("++Inside VariablePalyloadType.nullSageSetInternal():: value is "+value+",dataType is "+(value==null?"null":value.getClass().getName()));
 		if (value!=null && value instanceof org.w3c.dom.Document){
 			org.w3c.dom.Document w3cDom = (org.w3c.dom.Document)value;
 			DOMReader reader = new DOMReader();

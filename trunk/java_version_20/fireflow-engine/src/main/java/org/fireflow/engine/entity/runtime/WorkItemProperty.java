@@ -31,6 +31,8 @@ import org.fireflow.engine.entity.WorkflowEntity;
 public enum WorkItemProperty implements EntityProperty {
 	ID("id"),
 	STATE("state"),
+	WORKITEM_NAME("workItemName"),
+	SUBJECT("subject"),
 	OWNER_ID("ownerId"),
 	OWNER_NAME("ownerName"),
 	OWNER_DEPT_ID("ownerDeptId"),
