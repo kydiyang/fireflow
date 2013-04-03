@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.misc;
+package org.fireflow.server.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
