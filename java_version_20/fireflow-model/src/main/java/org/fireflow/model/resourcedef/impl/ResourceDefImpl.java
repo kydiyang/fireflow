@@ -32,7 +32,11 @@ import org.fireflow.model.resourcedef.ResourceType;
  * @version 2.0
  */
 public class ResourceDefImpl extends AbstractModelElement implements ResourceDef {
-	private ResourceType resourceType = ResourceType.PROCESS_INSTANCE_CREATOR;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2809502180615384347L;
+	private ResourceType resourceType = ResourceType.USER;
 	private String resolverBeanName = null;
 	private String resolverClassName = null;
 	private Map<String,String> extendedAttributes = new HashMap<String,String>();

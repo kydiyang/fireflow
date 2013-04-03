@@ -19,6 +19,7 @@ package org.fireflow.model.data.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.fireflow.model.data.DataElement;
 import org.fireflow.model.data.Expression;
 
 
@@ -65,4 +66,14 @@ public class ExpressionImpl extends AbsDataElement implements Expression {
 	public Map<String,String> getNamespaceMap(){
 		return namespaceMap;
 	}
+	
+    public DataElement copy(){
+    	ExpressionImpl obj = new ExpressionImpl();
+    	obj.setDataType(this.getDataType());
+    	obj.setDisplayName(this.getDisplayName());
+    	obj.setName(this.getName());
+    	obj.setBody(this.getBody());
+    	obj.setLanguage(this.getLanguage());
+    	return obj;
+    }
 }

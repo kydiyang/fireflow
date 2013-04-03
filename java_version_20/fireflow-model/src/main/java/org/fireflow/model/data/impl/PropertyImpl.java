@@ -4,6 +4,7 @@ import javax.xml.namespace.QName;
 
 import org.fireflow.model.AbstractModelElement;
 import org.fireflow.model.ModelElement;
+import org.fireflow.model.data.DataElement;
 import org.fireflow.model.data.Property;
 import org.firesoa.common.schema.NameSpaces;
 
@@ -76,5 +77,16 @@ public class PropertyImpl extends AbstractModelElement implements Property{
 
     public void setDataPattern(String dataPattern) {
         this.dataPattern = dataPattern;
+    }
+    public DataElement copy(){
+    	PropertyImpl obj = new PropertyImpl();
+    	obj.setDataPattern(this.getDataPattern());
+    	obj.setDataType(this.getDataType());
+    	obj.setDescription(this.getDescription());
+    	obj.setDisplayName(this.getDisplayName());
+    	obj.setInitialValueAsString(this.getInitialValueAsString());
+    	obj.setName(this.getName());
+    	obj.setParent(this.getParent());
+    	return obj;
     }
 }

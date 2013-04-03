@@ -30,11 +30,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name="workItemAssignmentStrategyType")
 @XmlEnum
 public enum WorkItemAssignmentStrategy {
-	@XmlEnumValue("org.fireflow.constants.ASSIGN_TO_ALL")
-	ASSIGN_TO_ALL("org.fireflow.constants.ASSIGN_TO_ALL"),
+	@XmlEnumValue("org.fireflow.constants.assignment_strategy.ASSIGN_TO_ALL")
+	ASSIGN_TO_ALL("org.fireflow.constants.assignment_strategy.ASSIGN_TO_ALL"),
 	
-	@XmlEnumValue("org.fireflow.constants.ASSIGN_TO_ANY")
-	ASSIGN_TO_ANY("org.fireflow.constants.ASSIGN_TO_ANY");
+	@XmlEnumValue("org.fireflow.constants.assignment_strategy.ASSIGN_TO_ANY")
+	ASSIGN_TO_ANY("org.fireflow.constants.assignment_strategy.ASSIGN_TO_ANY");
 	
 	private String value = null;
 	private WorkItemAssignmentStrategy(String value){

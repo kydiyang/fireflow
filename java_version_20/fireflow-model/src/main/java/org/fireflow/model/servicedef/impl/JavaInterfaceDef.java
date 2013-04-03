@@ -1,6 +1,7 @@
 package org.fireflow.model.servicedef.impl;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,16 @@ public class JavaInterfaceDef extends AbstractInterfaceDef implements InterfaceD
 
 	
 	protected String interfaceClassName = null;
-	protected Map<Integer,QName> parameterTypeMap = new HashMap<Integer,QName>();
+	protected Map<String,Map<Integer,QName>> parameterTypeMap = new HashMap<String,Map<Integer,QName>>();
 	protected boolean resolved = false;
 
+	
+	public boolean isResolved() {
+		return resolved;
+	}
+	public void setResolved(boolean resolved) {
+		this.resolved = resolved;
+	}
 	public JavaInterfaceDef(){
 //		this.namespaceUri = NameSpaces.JAVA.getUri();
 	}
@@ -41,8 +49,13 @@ public class JavaInterfaceDef extends AbstractInterfaceDef implements InterfaceD
 	 * @param paramPoistion
 	 * @param paramQName
 	 */
-	public void putParameterTypeMap(Integer paramPoistion,QName paramQName){
-		parameterTypeMap.put(paramPoistion, paramQName);
+	public void putParameterTypeMap(String methodName,Integer paramPoistion,QName paramQName){
+		Map<Integer,QName> methodParamMap = this.parameterTypeMap.get(methodName);
+		if (methodParamMap==null){
+			methodParamMap = new HashMap<Integer,QName>();
+			this.parameterTypeMap.put(methodName, methodParamMap);
+		}
+		methodParamMap.put(paramPoistion, paramQName);
 	}
 	
 	public String getInterfaceClassName() {
@@ -52,49 +65,21 @@ public class JavaInterfaceDef extends AbstractInterfaceDef implements InterfaceD
 	public void setInterfaceClassName(String interfaceClass)  {
 		this.interfaceClassName = interfaceClass;
 		this.name = interfaceClass;
+		
+		this.operationsList.clear();
 //		this.namespaceUri = NameSpaces.JAVA.getUri();
 		resolved = false;
 	}
 	
-	public OperationDef getOperation(String opName){
-		if (!resolved){
-			this.resolveInterfaceClass(this.interfaceClassName);
-			resolved = true;
-		}
-		return super.getOperation(opName);
-	}
+
 	
-	/**
-	 * 返回所有的Operation
-	 * @return
-	 */
-	public List<OperationDef> getOperations(){
-		if (!resolved){
-			this.resolveInterfaceClass(this.interfaceClassName);
-			resolved = true;
-		}
-		return super.getOperations();
-	}
-	
-	/**
-	 * 返回名字为operName的所有的Operation
-	 * @param opName
-	 * @return
-	 */
-	public List<OperationDef> getOperations(String opName){
-		if (!resolved){
-			this.resolveInterfaceClass(this.interfaceClassName);
-			resolved = true;
-		}
-		return super.getOperations(opName);
-	}
 	
 	/**
 	 * 解析接口类，构建Operations列表
 	 * @throws ClassNotFoundException 
 	 */
-	protected void resolveInterfaceClass(String className)  {
-		this.operationsList.clear();
+	public static List<OperationDef> resolveInterfaceClass(String className)  {
+		List<OperationDef> operations = new ArrayList<OperationDef>();
 		
 		PrioritizedParameterNameDiscoverer discover = PrioritizedParameterNameDiscoverer.DEFAULT;
 		
@@ -116,17 +101,17 @@ public class JavaInterfaceDef extends AbstractInterfaceDef implements InterfaceD
 			
 			OperationDefImpl op = new OperationDefImpl();
 			op.setOperationName(m.getName());
-			
+			Map<Integer,QName> methodParamMap = null;//TODO 待解决。this.parameterTypeMap.get(m.getName());
 			for (int i=0;i<types.length;i++){
 				Class t = types[i];
 				String paramName = paramNames[i];
 				
 				InputImpl input = new InputImpl();
-				if (this.parameterTypeMap.get(i)==null){
+				if (methodParamMap==null || methodParamMap.get(i)==null){
 					input.setDataType(new QName(NameSpaces.JAVA.getUri(),t.getName()));
 
 				}else{
-					input.setDataType(this.parameterTypeMap.get(i));
+					input.setDataType(methodParamMap.get(i));
 				}
 					
 
@@ -151,21 +136,22 @@ public class JavaInterfaceDef extends AbstractInterfaceDef implements InterfaceD
 				}
 				
 				output.setName(outputName);
-				if (this.parameterTypeMap.get(-1)==null){
+				if (methodParamMap==null || methodParamMap.get(-1)==null){
 					output.setDataType(new QName(NameSpaces.JAVA.getUri(),m.getReturnType().getName()));
 				}else{
-					output.setDataType(this.parameterTypeMap.get(-1));
+					output.setDataType(methodParamMap.get(-1));
 				}
 				
 				op.getOutputs().add(output);
 			}
 
 			
-			this.operationsList.add(op);
+			operations.add(op);
 		}
+		return operations;
 	}
 	
-	private boolean isExcluded(Method m){
+	private static boolean isExcluded(Method m){
 		String name = m.getName();
 		for (String s : EXCLUDED_METHODES){
 			if (s.equals(name)){
