@@ -22,8 +22,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.jxpath.AbstractFactory;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
-import org.apache.commons.jxpath.ri.model.dom.DOMNodePointer;
-import org.firesoa.common.jxpath.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

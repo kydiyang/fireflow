@@ -90,6 +90,83 @@ public class JavaDataTypeConvertor {
 //		}
 //	}
 
+	public static boolean isTypeValueMatch(String dataTypeStr,Object value)
+		throws ClassNotFoundException{
+		if (value==null)return true;
+		if (isInt(dataTypeStr)){
+			if (value instanceof Integer){
+				return true;
+			}else {
+				return false;
+			}
+		}
+		else if (isShort(dataTypeStr)){
+			if (value instanceof Short){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		else if (isLong(dataTypeStr)){
+			if (value instanceof Long){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		else if (isByte(dataTypeStr)){
+			if (value instanceof Byte){
+				return true ;
+			}else {
+				return false;
+			}
+		}
+		else if (isFloat(dataTypeStr)){
+			if (value instanceof Float){
+				return true;
+			}else {
+				return false;
+			}
+		}
+		else if (isDouble(dataTypeStr)){
+			if (value instanceof Double){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		else if (isBoolean(dataTypeStr)){
+			if (value instanceof Boolean){
+				return true;
+			}else {
+				return false;
+			}
+		}
+		else if (isChar(dataTypeStr)){
+			if (value instanceof java.lang.Character){
+				return true;
+			}else{
+				return false;
+			}
+		}else if (isString(dataTypeStr)){
+			if (value instanceof String){
+				return true;
+			}else{
+				return false;
+			}
+		} else {
+			Class clz = Class.forName(dataTypeStr);
+			
+
+			if (clz.isInstance(value)) {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
+	}
+	
 	/**
 	 * 判断是否是基本数据类型或者其包装类型; 包含String类型和java.util.Date类型
 	 * 
@@ -104,7 +181,8 @@ public class JavaDataTypeConvertor {
 
 		if (isInt(s) || isFloat(s) || isDouble(s) || isLong(s) || isShort(s)
 				|| isChar(s) || isBoolean(s)
-				|| isString(s) || isDate(s)) {
+				|| isString(s) || isDate(s)
+				|| isByte(s)) {
 			return true;
 		}
 
@@ -122,6 +200,8 @@ public class JavaDataTypeConvertor {
 		return isPrimaryDataType(dataType);
 	}
 
+	
+	
 	public static boolean isChar(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
 			return false;
@@ -210,6 +290,18 @@ public class JavaDataTypeConvertor {
 
 		return false;
 	}
+	
+	public static boolean isByte(String dateTypeStr){
+		if (StringUtils.isEmpty(dateTypeStr)) {
+			return false;
+		}
+		String s = dateTypeStr.trim();
+		
+		if (s.equals("byte") || s.equals("java.lang.Byte")){
+			return true;
+		}
+		return false;
+	}
 
 	public static boolean isFloat(String dataTypeStr) {
 		if (StringUtils.isEmpty(dataTypeStr)) {
@@ -272,6 +364,9 @@ public class JavaDataTypeConvertor {
 			} else if (isChar(typeClassStr)) {
 				return convertToChar(source);
 			}
+			else if (isByte(typeClassStr)){
+				return convertToByte(source);
+			}
 
 			else if (isDate(typeClassStr)) {
 				if (source instanceof Date) {
@@ -317,6 +412,23 @@ public class JavaDataTypeConvertor {
 		}
 	}
 
+	public static Byte convertToByte(Object object)throws ClassCastException {
+		if (object == null)
+			return 0;
+		if (object instanceof Byte) {
+			return (Byte) object;
+		}
+
+		else if (object instanceof String && isNum((String)object)){
+			String s = ((String)object).trim();
+			if (s.equals("")){
+				s = "0";
+			}
+			return Byte.parseByte(s);
+		}
+		throw new ClassCastException("Can NOT convert from "
+				+ object.getClass().toString() + " to java.lang.Integer");
+	}
 	public static Integer convertToInt(Object object) throws ClassCastException {
 		if (object == null)
 			return 0;
@@ -335,7 +447,7 @@ public class JavaDataTypeConvertor {
 		if (object instanceof Short) {
 			return ((Short) object).intValue();
 		}
-		if (object instanceof String && StringUtils.isNumeric((String)object)){
+		if (object instanceof String && isNum((String)object)){
 			String s = ((String)object).trim();
 			if (s.equals("")){
 				s = "0";
@@ -364,7 +476,7 @@ public class JavaDataTypeConvertor {
 		if (object instanceof Short) {
 			return new Float((Short) object);
 		}
-		if (object instanceof String && StringUtils.isNumeric((String)object)){
+		if (object instanceof String && isNum((String)object)){
 			return Float.parseFloat((String)object);
 		}
 		throw new ClassCastException("Can NOT convert from "
@@ -390,7 +502,7 @@ public class JavaDataTypeConvertor {
 		if (object instanceof Short) {
 			return new Double((Short) object);
 		}
-		if (object instanceof String && StringUtils.isNumeric((String)object)){
+		if (object instanceof String && isNum((String)object)){
 			return Double.parseDouble((String)object);
 		}
 		throw new ClassCastException("Can NOT convert from "
@@ -415,7 +527,7 @@ public class JavaDataTypeConvertor {
 		if (object instanceof Short) {
 			return new Long((Short) object);
 		}
-		if (object instanceof String && StringUtils.isNumeric((String)object)){
+		if (object instanceof String && isNum((String)object)){
 			return Long.parseLong((String)object);
 		}
 		throw new ClassCastException("Can NOT convert from "
@@ -440,7 +552,7 @@ public class JavaDataTypeConvertor {
 		if (object instanceof Short) {
 			return (Short) object;
 		}
-		if (object instanceof String && StringUtils.isNumeric((String)object)){
+		if (object instanceof String && isNum((String)object)){
 			return Short.parseShort((String)object);
 		}
 		throw new ClassCastException("Can NOT convert from "
@@ -470,8 +582,21 @@ public class JavaDataTypeConvertor {
 		if (object instanceof Character) {
 			return (Character) object;
 		}
+		else if (object instanceof String){
+			String s = ((String)object);
+			if (s.length()>0){
+				return s.charAt(0);
+			}
+			else{
+				return null;
+			}
+		}
 		throw new ClassCastException("Can NOT convert from "
 				+ object.getClass().toString() + " to java.lang.Character");
+	}
+	
+	private static boolean isNum(String str){
+		return str.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
 	}
 	
 }
