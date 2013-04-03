@@ -312,6 +312,8 @@ public interface WorkflowServer extends EngineModule {
 			@WebParam(name="varName") String name,
 			@WebParam(name="varValue") ObjectWrapper obj,
 			@WebParam(name="headers")PropertiesConvertor convertor );
+	
+	public @WebResult(name="result") boolean isSessionValid(@WebParam(name="sessionId")String sessionId);
 	/* 下面两个方法用于测试 */
 	
 //	@WebMethod

@@ -313,7 +313,7 @@ public class ScriptEngineHelper {
 
 		Map<String, Object> result = resolveAssignments(
 				runtimeContext, assignmentsList, contextVars);
-		
+		//System.out.println("===解析后的Assignment is "+result);
 		if (result==null)return;
 
 		Map<String,Object> procInstVars = (Map<String, Object>)result.get(ScriptContextVariableNames.PROCESS_VARIABLES);

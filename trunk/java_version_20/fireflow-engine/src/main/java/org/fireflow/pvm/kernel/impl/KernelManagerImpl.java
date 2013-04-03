@@ -31,7 +31,6 @@ import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.pvm.kernel.BookMark;
 import org.fireflow.pvm.kernel.ExecutionEntrance;
@@ -40,7 +39,6 @@ import org.fireflow.pvm.kernel.KernelManager;
 import org.fireflow.pvm.kernel.PObject;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
-import org.fireflow.pvm.kernel.TokenState;
 import org.fireflow.pvm.translate.Process2PObjectTranslator;
 
 
@@ -127,9 +125,9 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 			try {
 				processObjectList = translator.translateProcess(pk);
 			} catch (InvalidModelException e) {
-				throw new KernelException(e);
+				throw new KernelException(null,e);
 			} catch (WorkflowProcessNotFoundException e) {
-				throw new KernelException(e);
+				throw new KernelException(null,e);
 			}
 			
 			if (processObjectList!=null){
@@ -366,6 +364,11 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 		}
 		buf.append("\n======================");
 		return buf.toString();
+	}
+	
+	public void clearCachedPObject(){
+		this.processObjectStorage.clear();
+		this.loadedProcesses.clear();
 	}
 }
 

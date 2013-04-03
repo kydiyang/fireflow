@@ -21,39 +21,58 @@ package org.fireflow.pvm.kernel;
  * @version 2.0
  */
 public class KernelException extends RuntimeException {
-
+	PObject source = null;
 	/**
 	 * 
 	 */
-	public KernelException() {
+	public KernelException(PObject source) {
 		super();
-		// TODO Auto-generated constructor stub
+		this.source = source;
 	}
 
 	/**
 	 * @param message
 	 * @param cause
 	 */
-	public KernelException(String message, Throwable cause) {
+	public KernelException(PObject source,String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		this.source = source;
 	}
 
 	/**
 	 * @param message
 	 */
-	public KernelException(String message) {
+	public KernelException(PObject source,String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		this.source = source;
 	}
 
 	/**
 	 * @param cause
 	 */
-	public KernelException(Throwable cause) {
+	public KernelException(PObject source,Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		this.source = source;
 	}
+
+	
+	
+	@Override
+	public String getMessage() {
+		StringBuffer sbuf = new StringBuffer();
+		if (this.source!=null){
+			PObjectKey key = this.source.getKey();
+			sbuf.append("Inside PObject[processId=").append(key.getProcessId())
+				.append(",processVersion=").append(key.getVersion())
+				.append(",processType=").append(key.getProcessType())
+				.append(",elementId=").append(key.getWorkflowElementId()).append("]:");
+				
+		}
+		sbuf.append(super.getMessage());
+		return sbuf.toString();
+	}
+
+
 
 	/**
 	 * 

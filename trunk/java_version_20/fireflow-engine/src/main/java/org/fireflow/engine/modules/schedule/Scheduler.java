@@ -29,7 +29,7 @@ import org.fireflow.engine.invocation.ServiceInvoker;
  * @version 2.0
  */
 public interface Scheduler extends EngineModule{
-	public static final String JOB_GROUP_NAME = "org.fireflow.constants.FIRE_WORKFLOW_JOBS";
+	public static final String JOB_GROUP_NAME = "org.fireflow.constants.schedule.FIRE_WORKFLOW_JOBS";
 	public void schedule(ScheduleJob scheduleJob,RuntimeContext runtimeContext);
 	public void unSchedule(ScheduleJob scheduleJob,RuntimeContext runtimeContext);
 	public void onTimerTriggered(ScheduleJob scheduleJob,RuntimeContext runtimeContext);

@@ -27,6 +27,7 @@ import org.fireflow.engine.entity.repository.ProcessDescriptorProperty;
 import org.fireflow.engine.entity.repository.ResourceDescriptorProperty;
 import org.fireflow.engine.entity.repository.ServiceDescriptorProperty;
 import org.fireflow.engine.entity.runtime.ActivityInstanceProperty;
+import org.fireflow.engine.entity.runtime.ProcessInstanceProperty;
 import org.fireflow.engine.entity.runtime.ScheduleJobProperty;
 import org.fireflow.engine.entity.runtime.VariableProperty;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
@@ -56,7 +57,7 @@ public class EntityPropertyXmlAdapter extends
 			return ProcessDescriptorProperty.fromValue(v.substring(WorkflowEntity.ENTITY_NAME_PROCESS_DESCRIPTOR.length()+1));
 		}
 		else if (v.startsWith(WorkflowEntity.ENTITY_NAME_PROCESS_INSTANCE+".")){
-			return ProcessDescriptorProperty.fromValue(v.substring(WorkflowEntity.ENTITY_NAME_PROCESS_INSTANCE.length()+1));
+			return ProcessInstanceProperty.fromValue(v.substring(WorkflowEntity.ENTITY_NAME_PROCESS_INSTANCE.length()+1));
 		}
 		else if (v.startsWith(WorkflowEntity.ENTITY_NAME_REASSIGN_CONFIG+".")){
 			return ReassignConfigProperty.fromValue(v.substring(WorkflowEntity.ENTITY_NAME_REASSIGN_CONFIG.length()+1));
