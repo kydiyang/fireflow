@@ -24,13 +24,15 @@
 		<module>fireflow-services</module>
 		<module>fireflow-demo</module>
     <module>fireflow-simple-demo</module>
+    <module>fireflow-simulator</module>
+    <module>fireflow-services-enterprise</module>
   </modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<junit.version>4.4</junit.version>
+		<junit.version>4.10</junit.version>
 		<slf4j.version>1.5.8</slf4j.version>
 		<log4j.version>1.2.14</log4j.version>
 
@@ -64,12 +66,10 @@
 		<hibernate-core.version>3.3.2.GA</hibernate-core.version>
 		<ejb3-persistence.version>1.0.2.GA</ejb3-persistence.version>
  		
-		<commons-jexl.version>2.0.1</commons-jexl.version>
+		<commons-jexl.version>2.1.1</commons-jexl.version>
 		<IKExpression.version>2.1.2</IKExpression.version>
 
 		<dom4j.version>1.6.1</dom4j.version>
-
-		<hsqldb.version>1.8.0.7</hsqldb.version>
 		<mysql-connector-java.version>5.1.6</mysql-connector-java.version>
 		<jtds.version>1.2</jtds.version>
 	</properties>
@@ -89,12 +89,7 @@
 			<version>${mysql-connector-java.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>${hsqldb.version}</version>
-			<scope>test</scope>
-		</dependency>
+
 		<!-- <dependency> <groupId>org.wltea.expression</groupId> <artifactId>IKExpression</artifactId> 
 			<version>${IKExpression.version}</version> </dependency> -->
 		<dependency>
@@ -378,6 +373,12 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.4</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.5.6</version>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 
