@@ -1,6 +1,7 @@
 package org.firesoa.common.schema;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -49,7 +50,7 @@ public class SQLSchemaGenerator {
 			return null;
 		ByteArrayInputStream in = null;
 		try {
-			in = new ByteArrayInputStream(sql.getBytes("UTF-8"));
+			in = new ByteArrayInputStream(sql.getBytes(Charset.defaultCharset().name()));
 		} catch (Exception e) {
 
 		}

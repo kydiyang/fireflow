@@ -18,6 +18,7 @@
 package org.firesoa.common.schema;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -83,7 +84,7 @@ public class DOMInitializer {
 		try {
 			Transformer transformer = transformerFactory.newTransformer();
 
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer.setOutputProperty(OutputKeys.ENCODING, Charset.defaultCharset().name());
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(
 					"{http://xml.apache.org/xslt}indent-amount", "2");

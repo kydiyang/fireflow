@@ -2,6 +2,7 @@ package org.firesoa.common.schema;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ public class JAXBUtil {
 			public Result createOutput(String namespaceUri,
 					String suggestedFileName) throws IOException {
 				ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
 				StreamResult result = new StreamResult(outStream);
 				
 				result.setSystemId(suggestedFileName);
@@ -66,7 +68,7 @@ public class JAXBUtil {
 		while(keys.hasNext()){
 			String key = keys.next();
 			ByteArrayOutputStream outStream = _allSchemas.get(key);
-			String schemaString = outStream.toString("UTF-8");
+			String schemaString = outStream.toString(Charset.defaultCharset().name());
 
 			allSchemasAsString.put(key, schemaString);
 		}
