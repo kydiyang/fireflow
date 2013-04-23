@@ -140,7 +140,7 @@ public class BpelProcess implements WorkflowBehavior{
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
-		kernelManager.startPObject(session, pobjectKey, parentToken);
+		kernelManager.startPObject(session, pobjectKey, parentToken,null);
 		
 		ExecuteResult result = new ExecuteResult();
 		result.setStatus(BusinessStatus.RUNNING);
