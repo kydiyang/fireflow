@@ -75,7 +75,9 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 
 		if (result!=null && result.getServiceContent()!=null){
 			try {
-				ByteArrayInputStream byteIn = new ByteArrayInputStream(result.getServiceContent().getBytes("UTF-8"));
+				String content = result.getServiceContent();
+				String charset = Utils.findXmlCharset(content);
+				ByteArrayInputStream byteIn = new ByteArrayInputStream(content.getBytes(charset));
 				
 				
 				List<ServiceDef> services = ServiceParser.deserialize(byteIn);
@@ -172,12 +174,17 @@ public class ServicePersisterHibernateImpl extends AbsPersisterHibernateImpl imp
 		try {
 			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
+			
+			String charset = Utils.findXmlCharset(bytesIn);
+			
 			List<ServiceDef> services = ServiceParser.deserialize(bytesIn);
 			
 			
-			repository.setServiceContent(new String(bytes,"UTF-8"));
+			repository.setServiceContent(new String(bytes,charset));
 			repository.setFileName(serviceFileName);
 			repository.setServices(services);
+			//TODO repository.setServiceDescriptors(...);
+			
 			return repository;
 		} catch (IOException e) {
 			throw new DeserializerException(e);

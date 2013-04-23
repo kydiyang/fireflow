@@ -93,18 +93,34 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 			
 			ProcessUtil processUtil = runtimeContext.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
 			ServiceDef svc = processUtil.getServiceDef(activityInstance,theActivity, serviceBinding.getServiceId());
+			if (svc==null){
+				ServiceInvocationException ex = new ServiceInvocationException("没有找到Id为"+serviceBinding.getServiceId()+"的服务");
+				ex.setErrorCode(ServiceInvocationException.SERVICE_DEF_NOT_FOUND);
+				ex.setActivityInstance(activityInstance);
+				throw ex;
+			}
+			
 			// 1、首先获得Service Object
 			Object serviceObject = this.getServiceObject(runtimeContext,
 					session, activityInstance, serviceBinding,svc,theActivity);
 			
-			if (serviceObject==null)throw new ServiceInvocationException("Can't initialize the service object for serive[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
+			if (serviceObject==null){
+				ServiceInvocationException ex = new ServiceInvocationException("无法初始化 service object，Service定义是[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
+				ex.setErrorCode(ServiceInvocationException.SERVICE_OBJECT_NOT_FOUND);
+				ex.setActivityInstance(activityInstance);
+				throw new ServiceInvocationException();
+			}
 
 			// 2、然后获得被调用的Method
 			String methodName = this.getOperationName(runtimeContext,
 					session, activityInstance, serviceBinding);
 			
-			if (methodName==null || methodName.trim().equals(""))
-				throw new ServiceInvocationException("The operation name can not be null, the service is  serive[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
+			if (methodName==null || methodName.trim().equals("")){
+				ServiceInvocationException ex = new ServiceInvocationException("服务没有名称为"+serviceBinding.getOperationName()+"的方法，Service定义是[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
+				ex.setErrorCode(ServiceInvocationException.OPERATION_NOT_FOUND);
+				ex.setActivityInstance(activityInstance);
+				throw new ServiceInvocationException();
+			}
 
 			
 			
@@ -127,41 +143,48 @@ public abstract class AbsServiceInvoker implements ServiceInvoker {
 
 			return true;
 		}
+		catch(ServiceInvocationException e){
+			if (e.getActivityInstance()==null){
+				e.setActivityInstance(activityInstance);
+			}
+			throw e;
+		}
 		catch (ScriptException e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
 		}
 		catch (SecurityException e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
 		} catch (NoSuchMethodException e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
 		} catch (IllegalArgumentException e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
 		} catch (IllegalAccessException e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
 		} catch (InvocationTargetException e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			ServiceInvocationException ex = new ServiceInvocationException(e);
 			ex.setErrorCode(findRootCause(e).getClass().getName());
-
+			ex.setActivityInstance(activityInstance);
 			throw ex;
 		}
 

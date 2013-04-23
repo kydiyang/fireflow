@@ -26,7 +26,12 @@ import org.fireflow.engine.entity.runtime.ActivityInstance;
  */
 public class ServiceInvocationException extends Exception {
 	//下面是一些预定义的错误代号
-	public static final String SERVICE_NOT_FOUND = "SERVICE_NOT_FOUND";
+	public static final String SERVICE_DEF_NOT_FOUND = "SERVICE_DEF_NOT_FOUND";
+	public static final String SERVICE_OBJECT_NOT_FOUND = "SERVICE_OBJECT_NOT_FOUND";
+	public static final String OPERATION_NOT_FOUND = "OPERATION_NOT_FOUND";
+	public static final String PROCESS_DEF_NOT_FOUND = "PROCESS_DEF_NOT_FOUND";
+	public static final String INVALID_PROCESS_MODEL = "INVALID_PROCESS_MODEL";
+
 	
 	protected ActivityInstance activityInstance = null;
 	protected String errorCode = null;

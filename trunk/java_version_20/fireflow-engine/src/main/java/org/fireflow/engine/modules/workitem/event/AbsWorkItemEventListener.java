@@ -16,8 +16,6 @@
  */
 package org.fireflow.engine.modules.workitem.event;
 
-import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.modules.instancemanager.event.ProcessInstanceEventTrigger;
 
 /**
  * 

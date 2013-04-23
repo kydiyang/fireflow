@@ -76,7 +76,9 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 		if (result!=null && 
 				result.getResourceContent()!=null){
 			try {
-				ByteArrayInputStream byteIn = new ByteArrayInputStream(result.getResourceContent().getBytes("UTF-8"));
+				String content = result.getResourceContent();
+				String charset = Utils.findXmlCharset(content);
+				ByteArrayInputStream byteIn = new ByteArrayInputStream(content.getBytes(charset));
 				
 				ResourceDeserializer parser = new ResourceDeserializer();
 				List<ResourceDef> resources = parser.deserialize(byteIn);
@@ -169,12 +171,17 @@ public class ResourcePersisterHibernateImpl extends AbsPersisterHibernateImpl im
 		try {
 			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
+			
+			String charset = Utils.findXmlCharset(bytesIn);
+			
 			List<ResourceDef> resources = parser.deserialize(bytesIn);
 			
-			
-			repository.setResourceContent(new String(bytes,"UTF-8"));
+			repository.setResourceContent(new String(bytes,charset));
 			repository.setFileName(resourceFileName);
 			repository.setResources(resources);
+			
+			//TODO repository.setResourceDescriptors(descriptors)
+			
 			return repository;
 		} catch (IOException e) {
 			throw new InvalidModelException(e);

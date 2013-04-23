@@ -16,6 +16,7 @@
  */
 package org.fireflow.client.impl;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -862,10 +863,15 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 	}
 	public ProcessDescriptor uploadProcessXml(String processXml,boolean publishState, String bizCategory, String ownerDeptId)throws InvalidModelException{
 		if (processXml==null)throw new InvalidModelException("流程定义文件不能为空。");
+		
+		//识别字符集
+		String encoding = Utils.findXmlCharset(processXml);
+		
+		
 		RuntimeContext ctx = this.session.getRuntimeContext();
 		ByteArrayInputStream byteIn = null;
 		try {
-			byteIn = new ByteArrayInputStream(processXml.getBytes("UTF-8"));
+			byteIn = new ByteArrayInputStream(processXml.getBytes(encoding));
 		} catch (UnsupportedEncodingException e) {
 			throw new InvalidModelException(e);
 		}
@@ -886,11 +892,15 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		return this._uploadProcess(process, processXml, publishState,bizCategory,ownerDeptId);
 	}
 
-	public ProcessDescriptor uploadProcessStream(InputStream inStream,
+	public ProcessDescriptor uploadProcessStream(InputStream stream,
 			boolean publishState,
 			String bizCategory,String ownerDeptId)
 			throws InvalidModelException {
-
+		InputStream inStream = stream;
+		if (!inStream.markSupported()){
+			inStream = new BufferedInputStream(stream);
+		}
+		
 		RuntimeContext ctx = this.session.getRuntimeContext();
 		
 		ProcessUtil processUtil = ctx.getEngineModule(ProcessUtil.class, processType);
@@ -902,7 +912,8 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		
 		String processXml = null;
 		try {
-			processXml = Utils.inputStream2String(inStream, "UTF-8");
+			String charset = Utils.findXmlCharset(inStream);
+			processXml = Utils.inputStream2String(inStream, charset);
 		} catch (IOException e) {
 			throw new InvalidModelException(e);
 		}

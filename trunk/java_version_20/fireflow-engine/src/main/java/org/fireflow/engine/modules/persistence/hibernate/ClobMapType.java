@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.fireflow.misc.Utils;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.ClobStringType;
@@ -33,11 +35,14 @@ public class ClobMapType extends ClobStringType {
 		String s = (String) theString;
 		if (s == null || s.trim().equals(""))
 			return new HashMap<String, String>();
+		String encoding = Utils.findXmlCharset(theString);
+		
 		Map map = new HashMap<String, String>();
 		SAXReader reader = new SAXReader();
+		reader.setEncoding(encoding);
 		try {
 			Document doc = reader.read(new ByteArrayInputStream(s
-					.getBytes("UTF-8")));
+					.getBytes(encoding)));
 			Element theMapElement = doc.getRootElement();
 			List<Element> entryElements = theMapElement.elements("entry");
 			if (entryElements != null) {
@@ -82,7 +87,7 @@ public class ClobMapType extends ClobStringType {
 		try {
 			StringWriter writer = new StringWriter();
 			OutputFormat format = OutputFormat.createPrettyPrint();
-			format.setEncoding("UTF-8");
+			format.setEncoding(Charset.defaultCharset().name());
 
 			XMLWriter xmlwriter = new XMLWriter(writer, format);
 			xmlwriter.write(document);

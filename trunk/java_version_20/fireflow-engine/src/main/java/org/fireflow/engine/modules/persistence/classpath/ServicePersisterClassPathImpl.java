@@ -73,10 +73,13 @@ public class ServicePersisterClassPathImpl implements ServicePersister {
 			
 			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
+			
+			String charset = Utils.findXmlCharset(bytesIn);
+			
 			List<ServiceDef> services = ServiceParser.deserialize(bytesIn);
 			
 			ServiceRepositoryImpl repository = new ServiceRepositoryImpl();
-			repository.setServiceContent(new String(bytes,"UTF-8"));
+			repository.setServiceContent(new String(bytes,charset));
 			repository.setFileName(serviceFileName);
 			repository.setServices(services);
 			
@@ -95,6 +98,8 @@ public class ServicePersisterClassPathImpl implements ServicePersister {
 					
 					serviceDescriptors.add(desc);
 				}
+				
+				repository.setServiceDescriptors(serviceDescriptors);
 			}
 			
 			return repository;

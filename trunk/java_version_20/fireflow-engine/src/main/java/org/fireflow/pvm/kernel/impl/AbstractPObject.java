@@ -606,7 +606,7 @@ public abstract class AbstractPObject implements PObject {
 					"Illegal token state ,the TokenState.RUNNING is expected,but it is  "
 							+ thisToken.getState().name());
 		}
-		System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 进入错误处理逻辑");
+		//System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 进入错误处理逻辑");
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
@@ -618,10 +618,10 @@ public abstract class AbstractPObject implements PObject {
 			if (processObject!=null){
 				s = processObject.getKey().getWorkflowElementId();
 			}
-			System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 采用defaultFaultHandler="+s);
+			//System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 采用defaultFaultHandler="+s);
 		}else{
 			processObject = this.getFaultHandler(faultCode);
-			System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 根据faultCode获得faultHandler="+processObject);
+			//System.out.println("===Inside "+this.getKey().getWorkflowElementId()+": 根据faultCode获得faultHandler="+processObject);
 			if (processObject==null){//如果没有找到匹配的错误处理器，则自动采用缺省的错误处理器
 				processObject = this.defaultFaultHandler;
 			}
@@ -706,7 +706,7 @@ public abstract class AbstractPObject implements PObject {
 					bookMark.setExtraArg(BookMark.ERROR_CODE, faultCode);
 					kernelManager.addBookMark(bookMark);
 
-					thisToken.setState(TokenState.FAULTING);
+					thisToken.setState(TokenState.FAULTED);//如果向上层抛出，则应该记录为Faulted
 					kernelManager.saveOrUpdateToken(thisToken);
 					WorkflowBehavior behavior = this.getWorkflowBehavior();
 					behavior.onTokenStateChanged(session, thisToken, this
@@ -714,7 +714,11 @@ public abstract class AbstractPObject implements PObject {
 				}
 				//如果没有父元素，则抛出异常
 				else{
-										
+					thisToken.setState(TokenState.FAULTED);//如果向上层抛出，则应该记录为Faulted
+					kernelManager.saveOrUpdateToken(thisToken);
+					WorkflowBehavior behavior = this.getWorkflowBehavior();
+					behavior.onTokenStateChanged(session, thisToken, this
+							.getWorkflowElement());		
 					//抛出异常
 					throw new KernelException(this,"No fault handler found for FaultCode="+faultCode);
 				}
