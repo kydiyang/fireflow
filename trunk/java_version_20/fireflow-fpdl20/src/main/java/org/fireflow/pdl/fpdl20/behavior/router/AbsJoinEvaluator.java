@@ -15,20 +15,15 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.pdl.fpdl20.behavior.router.impl;
+package org.fireflow.pdl.fpdl20.behavior.router;
 
 import java.util.List;
 
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.entity.runtime.ProcessInstance;
-import org.fireflow.engine.entity.runtime.impl.ActivityInstanceImpl;
-import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
-import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.TokenPersister;
-import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
@@ -37,24 +32,23 @@ import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.kernel.TokenState;
 
 /**
- * 动态判断是否有活动的前驱来确定是否汇聚
- * 
- * @author 非也 nychen2000@163.com Fire Workflow 官方网站：www.firesoa.com 或者
- *         www.fireflow.org
- * 
+ *
+ * @author 非也 nychen2000@163.com
+ * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
+ *
  */
-public class DynamicJoinEvaluator implements JoinEvaluator {
-	public static final String JOIN_DESCRIPTION = "汇聚逻辑：当任意输入Transition到达时，判断是否有活动的前驱结点，如果有则等待汇聚，否则执行后续分支。";
-	public String getJoinDescription(){
-		return JOIN_DESCRIPTION;
-	}
+public abstract class AbsJoinEvaluator implements JoinEvaluator {
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator#canBeFired(org.fireflow.client.WorkflowSession, org.fireflow.pvm.kernel.Token, java.util.List, org.fireflow.pdl.fpdl20.process.Synchronizer)
+	 */
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator#canBeFired()
 	 */
-	public boolean canBeFired(WorkflowSession session, Token token,
-			Synchronizer node) {
+	public int canBeFired(WorkflowSession session, Token current_token_for_router,
+			List<Token> siblingTokens, Synchronizer node) {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(
@@ -69,21 +63,23 @@ public class DynamicJoinEvaluator implements JoinEvaluator {
 
 		// 1、通过elementInstanceId判断是否已经被执行
 		if (multiEnteringTransitions) {
-			Token tokenFromDB = tokenPersister.find(Token.class, token.getId());
+			Token tokenFromDB = tokenPersister.find(Token.class, current_token_for_router.getId());
 			if (tokenFromDB.getElementInstanceId() != null
 					&& !tokenFromDB.getElementInstanceId().trim().equals("")) {
 				// 说明已经执行过
 				tokenFromDB.setState(TokenState.COMPLETED);
 				tokenPersister.saveOrUpdate(tokenFromDB);
-				return false;
+				return -1;
 			}
+		}else{//如果只有一条输入边，则直接返回
+			return current_token_for_router.getStepNumber();
 		}
 
 		// 2、判断汇聚是否完成
 		boolean canBeFired = false;
 		if (multiEnteringTransitions) {
 
-			if (this.hasAlivePreviousNode(session, token, node)) {
+			if (this.hasAlivePreviousNode(session, current_token_for_router, node)) {
 				canBeFired = false;
 			} else {
 				canBeFired = true;
@@ -92,9 +88,29 @@ public class DynamicJoinEvaluator implements JoinEvaluator {
 			canBeFired = true;
 		}
 
+		if (!canBeFired){
+			return -1;
+		}
+
+		//表示汇聚完毕，返回stepnumber最大的值，
+		Token tmpToken = current_token_for_router;//current_token_for_router;
+		if (siblingTokens!=null){
+			for (Token sibling:siblingTokens){
+				if (tmpToken.getStepNumber()>sibling.getStepNumber()){
+					
+				}else{
+					Token t = tmpToken;
+					tmpToken = sibling;
+					
+				}
+				if (!sibling.getId().equals(current_token_for_router.getId())){
+					sibling.setState(TokenState.COMPLETED);
+				}
+			}
+		}
 
 
-		return canBeFired;
+		return tmpToken.getStepNumber();
 	}
 	
 	/**

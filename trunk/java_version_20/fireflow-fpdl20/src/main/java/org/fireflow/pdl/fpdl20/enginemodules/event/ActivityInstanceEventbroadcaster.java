@@ -19,6 +19,8 @@ package org.fireflow.pdl.fpdl20.enginemodules.event;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
@@ -38,7 +40,8 @@ import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
  *
  */
 public class ActivityInstanceEventbroadcaster implements EventBroadcaster {
-
+	private Log log = LogFactory.getLog(ActivityInstanceEventbroadcaster.class);
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.EventBroadcaster#fireEvent(org.fireflow.engine.WorkflowSession, org.fireflow.engine.modules.event.Event)
 	 */
@@ -70,22 +73,31 @@ public class ActivityInstanceEventbroadcaster implements EventBroadcaster {
 //		}
 //	}
 	
-	private void fireEvent(WorkflowSession session,EventListenerDef eventListenerDef,ActivityInstanceEvent event){
-		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
-		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
-		
-		String referencedBeanId = eventListenerDef.getBeanName();
-		if (referencedBeanId!=null){
-			try{
-				Object _listener = beanFactory.getBean(referencedBeanId);
-				if (_listener!=null && (_listener instanceof ActivityInstanceEventListener)){
-					((ActivityInstanceEventListener)_listener).onActivityInstanceEventFired(event);
-				}
-			}catch(Exception e){
-				//TODO 
-				e.printStackTrace();
-//				log.error(e.getMessage(), e);
+	private void fireEvent(WorkflowSession session,
+			EventListenerDef eventListenerDef, ActivityInstanceEvent event) {
+		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl) session)
+				.getRuntimeContext();
+		BeanFactory beanFactory = runtimeContext.getEngineModule(
+				BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
+
+		String referencedBeanId = eventListenerDef.getListenerBeanName();
+		String listenerClassName = eventListenerDef.getListenerClassName();
+		try {
+			Object _listener = null;
+			if (referencedBeanId != null && !referencedBeanId.trim().equals("")) {
+				_listener = beanFactory.getBean(referencedBeanId);
+			} else {
+				_listener = beanFactory.createBean(listenerClassName);
 			}
+			if (_listener != null
+					&& (_listener instanceof ActivityInstanceEventListener)) {
+				((ActivityInstanceEventListener) _listener)
+						.onActivityInstanceEventFired(event);
+			}
+		} catch (Exception e) {
+
+			log.error(e.getMessage(), e);
 		}
+
 	}
 }

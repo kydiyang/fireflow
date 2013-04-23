@@ -15,11 +15,12 @@
  * with this library; if not, see http://www.gnu.org/licenses/lgpl.html.
  *
  */
-package org.fireflow.pdl.fpdl20.behavior.router;
+package org.fireflow.pdl.fpdl20.behavior.router.impl;
 
 import java.util.List;
 
 import org.fireflow.client.WorkflowSession;
+import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pvm.kernel.Token;
 
@@ -29,21 +30,17 @@ import org.fireflow.pvm.kernel.Token;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public interface JoinEvaluator {
-	/**
-	 * 汇聚逻辑描述信息
-	 * @return
-	 */
-	public String getJoinDescription();
-	/**
-	 * 判断汇聚是否完成，如果完成则返回step_number最大的token,其他token置为completed状态;
-	 * 否则返回null
-	 * @param session
-	 * @param current_token_for_router
-	 * @param siblingTokens TODO
-	 * @param router
-	 * @return
+public class XOrJoinEvaluator implements JoinEvaluator {
+	public static final String JOIN_DESCRIPTION = "汇聚逻辑：任意输入Transition到达后立即执行后续分支。如果有N条输入Transition到达，则后续分支被执行N次";
+	public String getJoinDescription(){
+		return JOIN_DESCRIPTION;
+	}
+	/* (non-Javadoc)
+	 * @see org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator#canBeFired(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, org.fireflow.pdl.fpdl20.process.Synchronizer)
 	 */
 	public int canBeFired(WorkflowSession session, Token current_token_for_router,
-			List<Token> siblingTokens, Synchronizer router);
+			List<Token> siblingTokens, Synchronizer router) {
+		return current_token_for_router.getStepNumber();//任何一条输入都可以触发
+	}
+
 }

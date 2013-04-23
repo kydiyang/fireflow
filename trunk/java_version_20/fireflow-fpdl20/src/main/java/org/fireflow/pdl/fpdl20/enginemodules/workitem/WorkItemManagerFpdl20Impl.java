@@ -19,12 +19,6 @@ package org.fireflow.pdl.fpdl20.enginemodules.workitem;
 
 import java.util.Map;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;

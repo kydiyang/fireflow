@@ -27,29 +27,41 @@ import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
  */
 public class EventListenerDefImpl extends AbstractModelElement implements
 		EventListenerDef {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7035440449471905773L;
 	String beanName = null;
+	String className = null;
 	String bizCategory = null;
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.event.EventListenerDef#getBeanName()
 	 */
-	public String getBeanName() {
+	public String getListenerBeanName() {
 		return beanName;
 	}
 	
-	public void setBeanName(String beanName){
+	public void setListenerBeanName(String beanName){
 		this.beanName = beanName;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.event.EventListenerDef#getBizCategory()
 	 */
-	public String getBizCategory() {
-		return bizCategory;
+//	public String getBizCategory() {
+//		return bizCategory;
+//	}
+//	
+//	public void setBizCategory(String bizCategory){
+//		this.bizCategory = bizCategory;
+//	}
+
+	public String getListenerClassName(){
+		return className;
 	}
 	
-	public void setBizCategory(String bizCategory){
-		this.bizCategory = bizCategory;
+	public void setListenerClassName(String clzName){
+		this.className = clzName;
 	}
-
 }

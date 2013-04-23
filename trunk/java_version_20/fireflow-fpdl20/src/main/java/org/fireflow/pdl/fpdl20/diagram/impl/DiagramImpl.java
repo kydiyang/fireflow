@@ -27,8 +27,9 @@ import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.GroupShape;
 import org.fireflow.pdl.fpdl20.diagram.MessageFlowShape;
 import org.fireflow.pdl.fpdl20.diagram.PoolShape;
-import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
 import org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape;
+import org.fireflow.pdl.fpdl20.diagram.TransitionShape;
+import org.fireflow.pdl.fpdl20.process.SubProcess;
 
 /**
  *
@@ -38,6 +39,9 @@ import org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape;
  */
 public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	private String direction = Diagram.HORIZONAL;
+	private Boolean snapEnabled = true;
+	private Boolean gridEnabled = false;
+	private Boolean rulerEnabled = false;
 	
 	private List<TransitionShape> transitions = new ArrayList<TransitionShape>();
 	private List<ProcessNodeShape> workflowNodes = new ArrayList<ProcessNodeShape>();
@@ -48,9 +52,9 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	private List<CommentShape> comments = new ArrayList<CommentShape>();
 	private List<AssociationShape> associations = new ArrayList<AssociationShape>();
 
-	public DiagramImpl(String id,String subflowId){
+	public DiagramImpl(String id,SubProcess subProcess){
 		this.id = id;
-		this.workflowElementId = subflowId;
+		this.workflowElementRef = subProcess;
 	}
 	
 	public DiagramElement findChild(String diagramElementId){
@@ -117,17 +121,24 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 
 	
 	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
-		if (workflowElementId.equals(this.workflowElementId)){
+		if (workflowElementRef==null)return null;
+		if (workflowElementId.equals(this.workflowElementRef.getId())){
 			return this;
 		}
 		for (DiagramElement diagramElm : transitions){
-			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
+			if (diagramElm.getWorkflowElementRef()==null){
+				continue;
+			}
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef().getId())){
 				return diagramElm;
 			}
 		}
 		
 		for (DiagramElement diagramElm : workflowNodes){
-			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
+			if (diagramElm.getWorkflowElementRef()==null){
+				continue;
+			}
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef().getId())){
 				return diagramElm;
 			}
 			DiagramElement tmp = diagramElm.findChildByWorkflowElementId(workflowElementId);
@@ -255,6 +266,30 @@ public class DiagramImpl extends AbsDiagramElement implements Diagram {
 	public void addGroup(GroupShape groupShape) {
 		this.groups.add(groupShape);
 		
+	}
+
+	public Boolean getSnapEnabled() {
+		return snapEnabled;
+	}
+
+	public void setSnapEnabled(Boolean snapEnabled) {
+		this.snapEnabled = snapEnabled;
+	}
+
+	public Boolean getGridEnabled() {
+		return gridEnabled;
+	}
+
+	public void setGridEnabled(Boolean gridEnabled) {
+		this.gridEnabled = gridEnabled;
+	}
+
+	public Boolean getRulerEnabled() {
+		return rulerEnabled;
+	}
+
+	public void setRulerEnabled(Boolean rulerEnabled) {
+		this.rulerEnabled = rulerEnabled;
 	}
 
 }

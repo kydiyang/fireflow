@@ -29,29 +29,26 @@ import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Transition;
-import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 
 /**
- * 通过计算transition的转移条件来确定是否激活
+ * 仅有一个满足条件的输出
  * 
  * @author 非也 nychen2000@163.com Fire Workflow 官方网站：www.firesoa.com 或者
  *         www.fireflow.org
  * 
  */
-public class DynamicSplitEvaluator implements SplitEvaluator {
-	public static final String SPLIT_DESCRIPTION = "分支逻辑：所有符合条件分支都会被执行。";
+public class XOrSplitEvaluator implements SplitEvaluator {
+	public static final String SPLIT_DESCRIPTION = "分支逻辑：第一个满足转移条件的分支会被执行，其他分支被忽略。因此，要求后续分支的判断条件是互斥的，如果同时有多个分支的转移条件计算结果为true，则有不可预知的结果。";
 	public String getSplitDescription(){
 		return SPLIT_DESCRIPTION;
 	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator#
 	 * determineNextTransitions(org.fireflow.engine.WorkflowSession,
-	 * org.fireflow.pvm.kernel.Token,
-	 * org.fireflow.pdl.fpdl20.process.Synchronizer)
+	 * org.fireflow.pvm.kernel.Token, org.fireflow.pdl.fpdl20.process.Node)
 	 */
 	public List<String> determineNextTransitions(WorkflowSession session,
 			Token token4Node, Node node) {
@@ -65,7 +62,7 @@ public class DynamicSplitEvaluator implements SplitEvaluator {
 						sessionLocal.getCurrentActivityInstance());
 
 		List<String> result = new ArrayList<String>();
-		
+
 		List<Transition> leavingTransitions = node.getLeavingTransitions();
 		Transition defaultTransition = null;
 		if (leavingTransitions != null) {
@@ -90,6 +87,7 @@ public class DynamicSplitEvaluator implements SplitEvaluator {
 
 				if (b) {
 					result.add(transition.getId());
+					break;//找到任何一个满足条件的转移便退出循环。
 				}
 			}
 		}

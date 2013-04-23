@@ -17,6 +17,7 @@
  */
 package org.fireflow.pdl.fpdl20.diagram;
 
+import org.fireflow.model.ModelElement;
 import org.fireflow.pdl.fpdl20.diagram.figure.Figure;
 
 
@@ -34,8 +35,8 @@ public interface DiagramElement {
 	public String getId();
 	public void setId(String id);
 	
-	public String getWorkflowElementRef();
-	public void setWorkflowElementRef(String wfElmId);
+	public ModelElement getWorkflowElementRef();
+	public void setWorkflowElementRef(ModelElement wfElm);
 	
 	public Figure getFigure();
 //	public void setFigure(Figure sp);//figure只能在构造函数中初始化，不能外部设置

@@ -17,8 +17,8 @@
  */
 package org.fireflow.pdl.fpdl20.process.features.router.impl;
 
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.XOrJoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.XOrSplitEvaluator;
 import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
 
 /**
@@ -27,22 +27,24 @@ import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
  * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
  *
  */
-public class DynamicRouterFeature implements RouterFeature {
-	private static final String joinEvaluatorName = DynamicJoinEvaluator.class.getName();
-	private static final String splitEvaluatorName = DynamicSplitEvaluator.class.getName();
+public class XOrJoinXOrSplitRouterFeature implements RouterFeature {
+
+	private static final String joinEvaluatorName = XOrJoinEvaluator.class.getName();
+	private static final String splitEvaluatorName = XOrSplitEvaluator.class.getName();
 	
+
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
 	@Override
 	public String getJoinDescription() {
-		return DynamicJoinEvaluator.JOIN_DESCRIPTION;
+		return XOrJoinEvaluator.JOIN_DESCRIPTION;
 	}
 	
 	public String getSplitDescription(){
-		return DynamicSplitEvaluator.SPLIT_DESCRIPTION;
+		return XOrSplitEvaluator.SPLIT_DESCRIPTION;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getJoinEvaluatorClass()
 	 */

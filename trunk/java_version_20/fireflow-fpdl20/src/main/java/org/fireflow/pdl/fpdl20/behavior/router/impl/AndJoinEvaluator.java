@@ -29,6 +29,7 @@ import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pvm.kernel.Token;
+import org.fireflow.pvm.kernel.TokenState;
 
 /**
  * 
@@ -49,33 +50,47 @@ public class AndJoinEvaluator implements JoinEvaluator {
 	 * fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token,
 	 * org.fireflow.pdl.fpdl20.process.Synchronizer)
 	 */
-	public boolean canBeFired(WorkflowSession session, Token token,
-			Synchronizer node) {
+	public int canBeFired(WorkflowSession session, Token current_token_for_router,
+			List<Token> siblingTokens, Synchronizer node) {
 		List<Transition> enteringTransitionsList = node
 				.getEnteringTransitions();
 		// 仅有一条边的情况下，直接返回true
 		if (enteringTransitionsList == null
 				|| enteringTransitionsList.size() == 0
 				|| enteringTransitionsList.size() == 1) {
-			return true;
+			return current_token_for_router.getStepNumber();
 		}
 
+		//如果有多条边的情况，则
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)
 				.getRuntimeContext();
 		PersistenceService persistenceStrategy = ctx.getEngineModule(
 				PersistenceService.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		TokenPersister tokenPersister = persistenceStrategy.getTokenPersister();
 		
-		List<Token> siblings = tokenPersister.findSiblings(token);
-		
-		if (siblings==null || siblings.size()==0){
-			return false;
+		if (siblingTokens==null || siblingTokens.size()==0){
+			return -1;//显然非法，继续等待
 		}
 		
-		if (siblings.size()<enteringTransitionsList.size()){
-			return false;
+		if (siblingTokens.size()<enteringTransitionsList.size()){
+			return -1;//还需等待汇聚
 		}else{
-			return true;//表示汇聚完毕
+			//表示汇聚完毕，返回stepnumber最大的值，其他的token置为completed状态
+			Token tmpToken = current_token_for_router;
+			for (Token sibling:siblingTokens){
+				if (tmpToken.getStepNumber()>sibling.getStepNumber()){
+					
+				}else{
+					Token t = tmpToken;
+					tmpToken = sibling;
+				}
+				
+				if (!sibling.getId().equals(current_token_for_router.getId())){
+					sibling.setState(TokenState.COMPLETED);
+				}
+			}
+
+			return tmpToken.getStepNumber();
 		}
 	}
 

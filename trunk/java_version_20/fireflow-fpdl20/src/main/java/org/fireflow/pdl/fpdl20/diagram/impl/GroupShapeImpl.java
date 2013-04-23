@@ -72,7 +72,10 @@ public class GroupShapeImpl extends AbsNodeShapeImpl implements GroupShape {
 
 		
 		for (DiagramElement diagramElm : workflowNodes){
-			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
+			if (diagramElm.getWorkflowElementRef()==null){
+				continue;
+			}
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef().getId())){
 				return diagramElm;
 			}
 		}

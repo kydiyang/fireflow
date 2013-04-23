@@ -91,8 +91,8 @@ public interface FPDLNames extends ModelElementNames{
     
     String DEFAULT_ROUTER_FEATURE = "default-router-feature";
     String ANDJOIN_ANDSPLIT_FEATURE = "andjoin-andsplit-feature";
+    String XORJOIN_XORSPLIT_FEATURE = "xorjoin-xorsplit-feature";
     String ORJOIN_ORSPLIT_FEATURE = "orjoin-orsplit-feature";
-    String DYNAMIC_JOIN_SPLIT_FEATURE = "dynamic-join-split-feature";
     String CUSTOMIZED_JOIN_SPLIT_FEATURE = "customized-join-split-feature";
     String JOIN_EVALUATOR = "join-evaluator";
     String SPLIT_EVALUATOR = "split-evaluator";
@@ -163,6 +163,7 @@ public interface FPDLNames extends ModelElementNames{
     String LANE = "lane";
     String GROUP = "group";
     
+    String WORKITEM_EVENT_LISTENERS = "workitem_event-listeners";
     String EVENT_LISTENERS = "event-listeners";
     String EVENT_LISTENER = "event-listener";
 
@@ -176,8 +177,11 @@ public interface FPDLNames extends ModelElementNames{
     
     String DIAGRAMS = "diagrams";
     String DIAGRAM = "diagram";
-    String SUBFLOW_ID = "subflow_id";
+    String SUBFLOW_ID = "subflow-id";
     String DIRECTION = "direction";
+    String GRID_ENABLED = "grid-enabled";
+    String RULER_ENABLED = "ruler-enabled";
+    String SNAP_ENABLED = "snap-enabled";
     
     //String PLANE = "plane";
     String LABEL = "titleLabel";

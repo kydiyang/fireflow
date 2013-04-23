@@ -23,7 +23,7 @@ import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrJoinEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.EndNode;
 import org.fireflow.pdl.fpdl20.process.Node;
@@ -43,18 +43,19 @@ import org.fireflow.pvm.pdllogic.ContinueDirection;
  * @version 2.0
  */
 public class EndNodeBehavior extends AbsSynchronizerBehavior {
-	public Boolean canBeFired(WorkflowSession session, Token token,
+	public int canBeFired(WorkflowSession session, Token token,List<Token> siblings,
 			Synchronizer synchronizer){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		String className = DynamicJoinEvaluator.class.getName();
-		JoinEvaluator joinEvaluator = this.joinEvaluatorRegistry.get(className);
+
+		String className = OrJoinEvaluator.class.getName();
+		JoinEvaluator joinEvaluator = joinEvaluatorRegistry.get(className);
 		if (joinEvaluator==null){
 			joinEvaluator = (JoinEvaluator)beanFactory.createBean(className);
 			joinEvaluatorRegistry.put(className, joinEvaluator);
 		}
-		return joinEvaluator.canBeFired(session, token, synchronizer);
+		return joinEvaluator.canBeFired(session, token, siblings, synchronizer);
 	}
 	/* (non-Javadoc)
 	 * @see org.fireflow.pvm.pdllogic.WorkflowBehavior#continueOn(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, java.lang.Object)

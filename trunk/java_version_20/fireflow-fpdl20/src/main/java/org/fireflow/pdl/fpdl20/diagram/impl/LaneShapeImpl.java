@@ -108,9 +108,12 @@ public class LaneShapeImpl extends AbsNodeShapeImpl implements LaneShape {
 		return null;
 	}
 	public DiagramElement findChildByWorkflowElementId(String workflowElementId){
-		
+		if (workflowElementId==null)return null;
 		for (DiagramElement diagramElm : workflowNodes){
-			if (diagramElm.getWorkflowElementRef().equals(workflowElementId)){
+			if (diagramElm.getWorkflowElementRef()==null ){
+				continue;
+			}
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef().getId())){
 				return diagramElm;
 			}
 		}

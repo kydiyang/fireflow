@@ -28,11 +28,9 @@ import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
  *
  */
 public class OrJoinOrSplitRouterFeature implements RouterFeature {
-
 	private static final String joinEvaluatorName = OrJoinEvaluator.class.getName();
 	private static final String splitEvaluatorName = OrSplitEvaluator.class.getName();
 	
-
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
@@ -44,7 +42,7 @@ public class OrJoinOrSplitRouterFeature implements RouterFeature {
 	public String getSplitDescription(){
 		return OrSplitEvaluator.SPLIT_DESCRIPTION;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getJoinEvaluatorClass()
 	 */

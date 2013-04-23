@@ -43,7 +43,7 @@ import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.ModelElement;
 import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrSplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.StartNode;
@@ -75,7 +75,7 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		String className = DynamicSplitEvaluator.class.getName();
+		String className = OrSplitEvaluator.class.getName();
 		
 		SplitEvaluator splitEvaluator = this.splitEvaluatorRegistry.get(className);
 		if (splitEvaluator==null){
@@ -85,9 +85,9 @@ public class StartNodeBehavior extends AbsSynchronizerBehavior implements
 		return splitEvaluator.determineNextTransitions(session, token4Node, node);
 	}
 	
-	public Boolean canBeFired(WorkflowSession session, Token token,
+	public int canBeFired(WorkflowSession session, Token token,List<Token> liblings,
 			Synchronizer synchronizer){
-		return true;
+		return token.getStepNumber();
 	}
 	protected boolean hasAlivePreviousNode(WorkflowSession session,
 			Token token, Node thisNode) {

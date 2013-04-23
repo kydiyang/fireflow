@@ -23,17 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.entity.repository.ProcessKey;
-import org.fireflow.engine.entity.runtime.ActivityInstance;
-import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.engine.modules.event.Event;
 import org.fireflow.engine.modules.event.EventBroadcaster;
-import org.fireflow.engine.modules.process.ProcessUtil;
 import org.fireflow.engine.modules.workitem.event.WorkItemEvent;
 import org.fireflow.engine.modules.workitem.event.WorkItemEventListener;
-import org.fireflow.engine.modules.workitem.event.WorkItemEventTrigger;
-import org.fireflow.model.InvalidModelException;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.event.EventListenerDef;
@@ -51,17 +45,24 @@ public class WorkItemEventBroadcaster implements EventBroadcaster {
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		String referencedBeanId = eventListenerDef.getBeanName();
-		if (referencedBeanId!=null){
-			try{
-				Object _listener = beanFactory.getBean(referencedBeanId);
-				if (_listener!=null && (_listener instanceof WorkItemEventListener)){
-					((WorkItemEventListener)_listener).onWorkItemEventFired(event);
-				}
-			}catch(Exception e){
-				log.error(e.getMessage(), e);
+		String referencedBeanId = eventListenerDef.getListenerBeanName();
+		String listenerClassName = eventListenerDef.getListenerClassName();
+
+		try {
+			Object _listener = null;
+			if (referencedBeanId != null) {
+				_listener = beanFactory.getBean(referencedBeanId);
+			} else {
+				_listener = beanFactory.createBean(listenerClassName);
 			}
+			if (_listener != null
+					&& (_listener instanceof WorkItemEventListener)) {
+				((WorkItemEventListener) _listener).onWorkItemEventFired(event);
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
+
 	}
 
 
@@ -70,7 +71,7 @@ public class WorkItemEventBroadcaster implements EventBroadcaster {
 	 */
 	public void fireEvent(WorkflowSession session, Event event) {
 		Activity activity =  (Activity)event.getWorkflowElement();
-		List<EventListenerDef> eventListeners = activity.getEventListeners();
+		List<EventListenerDef> eventListeners = activity.getWorkItemEventListeners();
 		if (eventListeners != null) {
 			for (EventListenerDef eventListenerDef : eventListeners) {
 				fireEvent(session, eventListenerDef, (WorkItemEvent)event);

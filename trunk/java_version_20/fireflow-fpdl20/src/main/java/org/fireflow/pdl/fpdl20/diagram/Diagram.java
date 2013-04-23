@@ -18,7 +18,6 @@
 package org.fireflow.pdl.fpdl20.diagram;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -30,6 +29,14 @@ public interface Diagram extends DiagramElement{
 	public static final String HORIZONAL = "H";
 	public static final String VERTICAL = "V";
 
+	public Boolean getSnapEnabled();//自动对齐
+	public void setSnapEnabled(Boolean b);
+	
+	public Boolean getGridEnabled();
+	public void setGridEnabled(Boolean b);
+	
+	public Boolean getRulerEnabled();
+	public void setRulerEnabled(Boolean b);
 
 	public String getDirection();//泳道的方向
 	public void setDirection(String d);
