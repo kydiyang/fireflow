@@ -17,6 +17,7 @@
  */
 package org.fireflow.client.impl;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -501,12 +502,18 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	 * @see org.fireflow.engine.WorkflowStatement#uploadProcessStream(java.io.InputStream, boolean, java.util.Map)
 	 */
 	@Override
-	public ProcessDescriptor uploadProcessStream(InputStream inStream,
+	public ProcessDescriptor uploadProcessStream(InputStream stream,
 			boolean publishState,
 			String bizCategory, String ownerDeptId)
 			throws InvalidModelException {
+		InputStream inStream = stream;
+		
+		if (!stream.markSupported()){
+			inStream = new BufferedInputStream(stream) ;
+		}
 		try {
-			String processXml = Utils.inputStream2String(inStream, "UTF-8");
+			String charset = Utils.findXmlCharset(inStream);
+			String processXml = Utils.inputStream2String(inStream, charset);
 			return this.uploadProcessXml(processXml, publishState, bizCategory, ownerDeptId);
 		} catch (IOException e) {
 			throw new InvalidModelException(e);

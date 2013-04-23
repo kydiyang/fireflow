@@ -12,6 +12,7 @@ import org.dom4j.io.DOMReader;
 import org.dom4j.io.DOMWriter;
 import org.dom4j.io.SAXReader;
 import org.fireflow.engine.entity.runtime.Variable;
+import org.fireflow.misc.Utils;
 import org.firesoa.common.schema.NameSpaces;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
@@ -43,11 +44,12 @@ public class VariablePayloadType extends ClobStringType {
 			String encoding = (String)headers.get(Variable.HEADER_KEY_ENCODING);
 			
 			if (StringUtils.isEmpty(encoding)){
-				encoding = "UTF-8";
+				encoding = Utils.findXmlCharset(s);
 			}
 			try{
 				ByteArrayInputStream in = new ByteArrayInputStream(s.getBytes(encoding));
 				SAXReader reader = new SAXReader();
+				reader.setEncoding(encoding);
 				Document dom4jDoc = reader.read(in);
 				
 				if (StringUtils.isEmpty(className) || className.trim().equals("org.w3c.dom.Document")){

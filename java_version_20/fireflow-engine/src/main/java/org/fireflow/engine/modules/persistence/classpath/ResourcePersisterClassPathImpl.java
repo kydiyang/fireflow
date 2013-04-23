@@ -80,12 +80,16 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 		try {
 			byte[] bytes = Utils.inputStream2ByteArray(inStream);
 			ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
+			
+			String charset = Utils.findXmlCharset(bytesIn);
+			
 			List<ResourceDef> resources = parser.deserialize(bytesIn);
 			
 			ResourceRepositoryImpl repository = new ResourceRepositoryImpl();
-			repository.setResourceContent(new String(bytes,"UTF-8"));
+			repository.setResourceContent(new String(bytes,charset));
 			repository.setResources(resources);
 			repository.setFileName(resourceFileName);
+			
 			
 			if (resources!=null){
 				List<ResourceDescriptor> resourceDescriptors = new ArrayList<ResourceDescriptor>();
@@ -100,6 +104,8 @@ public class ResourcePersisterClassPathImpl implements ResourcePersister {
 					
 					resourceDescriptors.add(desc);
 				}
+				
+				repository.setResourceDescriptors(resourceDescriptors);
 			}
 			
 			return repository;

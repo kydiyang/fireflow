@@ -24,10 +24,12 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.context.RuntimeContextAware;
 import org.fireflow.engine.entity.repository.ProcessKey;
+import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.exception.WorkflowProcessNotFoundException;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.TokenPersister;
@@ -93,9 +95,15 @@ public class KernelManagerImpl  extends AbsEngineModule implements KernelManager
 //		this.execute(session);
 //	}
 	
-	public void startPObject(WorkflowSession session,PObjectKey childPObjectKey,Token parentToken){
+	public void startPObject(WorkflowSession session,PObjectKey childPObjectKey,
+				Token parentToken,ProcessInstance childProcessInstance){
 		this.loadProcess(ProcessKey.valueOf(childPObjectKey));
 		Token childToken = new TokenImpl(parentToken);
+		
+		if (childProcessInstance!=null){
+			childToken.setProcessInstanceId(childProcessInstance.getId());
+			childToken.setElementInstanceId(childProcessInstance.getId());
+		}
 		
 		childToken.setProcessId(childPObjectKey.getProcessId());
 		childToken.setProcessType(childPObjectKey.getProcessType());

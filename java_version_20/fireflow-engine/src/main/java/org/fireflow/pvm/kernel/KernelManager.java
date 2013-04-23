@@ -21,6 +21,7 @@ import java.util.List;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.context.EngineModule;
 import org.fireflow.engine.entity.repository.ProcessKey;
+import org.fireflow.engine.entity.runtime.ProcessInstance;
 
 /**
  * @author 非也
@@ -29,8 +30,15 @@ import org.fireflow.engine.entity.repository.ProcessKey;
 public interface KernelManager extends EngineModule{
 	public void loadProcess(ProcessKey pk );
 
-	
-	public void startPObject(WorkflowSession session,PObjectKey childPOjbectKey,Token parentToken);
+	/**
+	 * 
+	 * @param session
+	 * @param childPOjbectKey
+	 * @param parentToken
+	 * @param childProcessInstance 启动ProcessInstance类型的PObject时，需要传入ProcessInstance实例
+	 */
+	public void startPObject(WorkflowSession session,PObjectKey childPOjbectKey,
+			Token parentToken,ProcessInstance childProcessInstance);
 	
 	
 	/**

@@ -34,6 +34,7 @@ import org.fireflow.engine.entity.repository.impl.ProcessRepositoryImpl;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
 import org.fireflow.engine.modules.process.ProcessUtil;
+import org.fireflow.misc.Utils;
 import org.fireflow.model.InvalidModelException;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -122,7 +123,8 @@ public class ProcessPersisterHibernateImpl extends
 			try{
 				ProcessUtil processUtil = persistenceService.getProcessUtil(processKey.getProcessType());
 				String xml = repository.getProcessContent();
-				ByteArrayInputStream inStream = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+				String encoding = Utils.findXmlCharset(xml);
+				ByteArrayInputStream inStream = new ByteArrayInputStream(xml.getBytes(encoding));
 				Object obj = processUtil.deserializeXml2Process(inStream);
 				((ProcessRepositoryImpl)repository).setProcessObject(obj);
 				//TODO 

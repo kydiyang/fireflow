@@ -16,7 +16,6 @@
  */
 package org.fireflow.engine.modules.workitem.event;
 
-import org.fireflow.engine.exception.EngineException;
 
 /**
  * 

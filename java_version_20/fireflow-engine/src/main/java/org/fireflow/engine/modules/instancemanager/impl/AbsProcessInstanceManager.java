@@ -103,7 +103,8 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 		
 		//启动流程实例
 		kernelManager.startPObject(session, new PObjectKey(processInstance.getProcessId(),
-				processInstance.getVersion(),processInstance.getProcessType(),processInstance.getSubProcessId()), parentToken);
+				processInstance.getVersion(),processInstance.getProcessType(),processInstance.getSubProcessId()), 
+				parentToken,processInstance);
 		
 		if (parentToken==null){//当parentToken不为空时，kernelManager已经处于执行状态；否则需要调用kernelManager.execute(session)启动一下
 			kernelManager.execute(session);

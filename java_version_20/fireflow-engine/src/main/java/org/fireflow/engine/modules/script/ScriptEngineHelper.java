@@ -186,6 +186,11 @@ public class ScriptEngineHelper {
 
 		engineScope.put(ScriptContextVariableNames.SESSION_ATTRIBUTES,
 				localSession.getAllAttributes());
+		
+		engineScope.put(ScriptContextVariableNames.WORKFLOW_SESSION, session);
+		
+		engineScope.put(ScriptContextVariableNames.RUNTIME_CONTEXT, runtimeContext);
+		
 		return engineScope;
 	}
 

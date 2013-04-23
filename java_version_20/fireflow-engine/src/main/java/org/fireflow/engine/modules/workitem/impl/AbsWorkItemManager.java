@@ -16,10 +16,7 @@
  */
 package org.fireflow.engine.modules.workitem.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,7 +46,6 @@ import org.fireflow.engine.modules.calendar.CalendarService;
 import org.fireflow.engine.modules.event.EventBroadcaster;
 import org.fireflow.engine.modules.event.EventBroadcasterManager;
 import org.fireflow.engine.modules.instancemanager.ActivityInstanceManager;
-import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.ousystem.impl.FireWorkflowSystem;
 import org.fireflow.engine.modules.persistence.ActivityInstancePersister;
 import org.fireflow.engine.modules.persistence.PersistenceService;
@@ -63,7 +59,6 @@ import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.resourcedef.WorkItemAssignmentStrategy;
-import org.fireflow.model.servicedef.ServiceDef;
 
 /**
  * 
