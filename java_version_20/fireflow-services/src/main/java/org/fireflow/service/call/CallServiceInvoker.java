@@ -77,14 +77,16 @@ public class CallServiceInvoker implements ServiceInvoker {
 			//1、确定子流程的ProcessId,SubflowId,版本号等信息
 			CallServiceDef subflowService = (CallServiceDef)processUtil.getServiceDef(activityInstance, theActivity, serviceBinding.getServiceId());
 			if (subflowService==null){
-				ServiceInvocationException ex = new ServiceInvocationException("");
-				ex.setErrorCode(ServiceInvocationException.SERVICE_NOT_FOUND);
+				ServiceInvocationException ex = new ServiceInvocationException("没有找到Id为"+serviceBinding.getServiceId()+"的服务");
+				ex.setErrorCode(ServiceInvocationException.SERVICE_DEF_NOT_FOUND);
+				ex.setActivityInstance(activityInstance);
 				throw ex;
 			}
 			String subflowId = subflowService.getSubProcessId();
 			String processId = subflowService.getProcessId();
 			String processType = activityInstance.getProcessType();
 			Integer version = subflowService.getProcessVersion();
+			//同一流程只能用相同的版本号
 			if (processId.equals(activityInstance.getProcessId())){
 				version = activityInstance.getVersion();
 			}
@@ -94,7 +96,7 @@ public class CallServiceInvoker implements ServiceInvoker {
 				ProcessLoadStrategy loadStrategy = context.getEngineModule(
 						ProcessLoadStrategy.class, activityInstance.getProcessType());
 				ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(session,
-						processId, oldActivityInstance.getProcessType());
+						processId, activityInstance.getProcessType());
 				
 				version = pk.getVersion();
 			}
@@ -104,8 +106,10 @@ public class CallServiceInvoker implements ServiceInvoker {
 			try {
 				variables = AbsServiceInvoker.resolveInputAssignments(context, session, oldProcessInstance, oldActivityInstance, serviceBinding,subflowService);
 			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ServiceInvocationException ex = new ServiceInvocationException(e);
+				ex.setErrorCode(findRootCause(e).getClass().getName());
+				ex.setActivityInstance(activityInstance);
+				throw ex;
 			}
 			
 			ProcessInstanceManager processInstanceManager = context.getEngineModule(ProcessInstanceManager.class, processType);
@@ -115,10 +119,16 @@ public class CallServiceInvoker implements ServiceInvoker {
 			try {
 				repository = processPersister.findProcessRepositoryByProcessKey(new ProcessKey(processId,version,processType));
 				if (repository==null){
-					throw new ServiceInvocationException("流程库中没有ProcessId="+processId+",version="+version+"的流程定义文件。");
+					ServiceInvocationException ex = new ServiceInvocationException("流程库中没有ProcessId="+processId+",version="+version+"的流程定义文件。");
+					ex.setActivityInstance(activityInstance);
+					ex.setErrorCode(ServiceInvocationException.PROCESS_DEF_NOT_FOUND);
+					throw ex;
 				}
 			} catch (InvalidModelException e) {
-				throw new ServiceInvocationException(e);
+				ServiceInvocationException ex = new ServiceInvocationException(e.getMessage(),e);
+				ex.setErrorCode(ServiceInvocationException.INVALID_PROCESS_MODEL);
+				ex.setActivityInstance(activityInstance);
+				throw ex;
 			}
 
 			Object workflowProcess = repository.getProcessObject();
@@ -136,6 +146,15 @@ public class CallServiceInvoker implements ServiceInvoker {
 
 		return false;//表示异步调用
 	}
+	
+	private Throwable findRootCause(Throwable e){
+
+		if (e.getCause()==null){
+			return e;
+		}
+		return findRootCause(e.getCause());
+	}
+
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.invocation.ServiceInvoker#determineActivityCloseStrategy(org.fireflow.engine.WorkflowSession, org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object)
