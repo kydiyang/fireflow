@@ -2,8 +2,6 @@ package org.fireflow.model.servicedef;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 public interface InterfaceDef {
 //	public String getNamespaceUri();//通过ServiceDef.TargetNamespaceUri表达，2012-03-01
 	
@@ -28,4 +26,11 @@ public interface InterfaceDef {
 	 * @return
 	 */
 	public List<OperationDef> getOperations(String opName);
+	
+	/**
+	 * 接口的metadata是否已经解析
+	 * @return
+	 */
+	public boolean isResolved() ;
+	public void setResolved(boolean resolved);
 }

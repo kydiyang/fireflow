@@ -82,6 +82,8 @@ public abstract class ServiceParser implements ModelElementNames {
 
 	public abstract ServiceDef deserializeService(Element element)
 			throws DeserializerException;
+	
+	private static final String DEFAULT_CHARSET = "UTF-8";
 
 	/**
 	 * 将service序列化成element，并将该element作为parentElement的子元素。
@@ -154,17 +156,22 @@ public abstract class ServiceParser implements ModelElementNames {
 		}
 	}
 
-	public static String serializeToXmlString(List<ServiceDef> services)
-			throws InvalidModelException, SerializerException {
+	public static String serializeToXmlString(List<ServiceDef> services,String charset)
+	throws InvalidModelException, SerializerException{
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		try {
-			serialize(services, out);
+			serialize(services, out,charset);
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		}
 		return out.toString();
+	}
+	
+	public static String serializeToXmlString(List<ServiceDef> services)
+			throws InvalidModelException, SerializerException {
+		return serializeToXmlString(services,DEFAULT_CHARSET);
 
 	}
 
@@ -181,16 +188,16 @@ public abstract class ServiceParser implements ModelElementNames {
 			parser.serializeService(svc, servicesElement);
 		}
 	}
-
-	public static void serialize(List<ServiceDef> services, OutputStream out)
-			throws IOException, InvalidModelException, SerializerException {
+	
+	public static void serialize(List<ServiceDef> services, OutputStream out,String charset)
+		throws IOException, InvalidModelException, SerializerException {
 		try {
 			Document document = serializeToDOM(services);
 
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer.setOutputProperty(OutputKeys.ENCODING, charset);
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(
 					"{http://xml.apache.org/xslt}indent-amount", "2");
@@ -205,7 +212,12 @@ public abstract class ServiceParser implements ModelElementNames {
 		} finally {
 
 		}
+	}
 
+	public static void serialize(List<ServiceDef> services, OutputStream out)
+			throws IOException, InvalidModelException, SerializerException {
+
+		serialize(services,out,DEFAULT_CHARSET);
 	}
 
 	public static void loadServices(List<ServiceDef> servicesList,
