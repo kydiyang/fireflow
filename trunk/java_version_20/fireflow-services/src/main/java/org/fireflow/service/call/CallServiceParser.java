@@ -24,6 +24,7 @@ import org.fireflow.model.io.Util4Serializer;
 import org.fireflow.model.io.service.ServiceParser;
 import org.fireflow.model.servicedef.InterfaceDef;
 import org.fireflow.model.servicedef.ServiceDef;
+import org.fireflow.model.servicedef.impl.CommonInterfaceDef;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -60,11 +61,14 @@ public class CallServiceParser extends ServiceParser {
 							+ localName_1 + "'");
 		}
 		CallServiceDef subflowService = new CallServiceDef();
+		
 		this.loadCommonServiceAttribute(subflowService, element);
 
-		InterfaceDef _interface = this.loadCommonInterface(subflowService,
-				Util4Deserializer.child(element, INTERFACE_COMMON));
+		
+		InterfaceDef _interface = this.loadCallServiceInterfaceDef(subflowService,
+				Util4Deserializer.child(element, CallServiceInterfaceDef.INTERFACE_CALL_SERVICE));
 		subflowService.setInterface(_interface);
+		
 
 		subflowService.setProcessId(Util4Deserializer.elementAsString(element,
 				PROCESS_ID));
@@ -101,8 +105,10 @@ public class CallServiceParser extends ServiceParser {
 
 		this.writeCommonServiceAttribute(callService, svcElem);
 
-		this.writeCommonInterface(service.getInterface(), svcElem);
-
+		
+		this.writeCallServiceInterfaceDef(service.getInterface(), svcElem);
+		
+		
 		Util4Serializer.addElement(svcElem, PROCESS_ID,
 				callService.getProcessId());
 		Util4Serializer.addElement(svcElem, SUBPROCESS_ID,
@@ -116,6 +122,26 @@ public class CallServiceParser extends ServiceParser {
 
 		parentElement.appendChild(svcElem);
 
+	}
+	
+	private Element writeCallServiceInterfaceDef(InterfaceDef _interface,Element svcElem){
+		CallServiceInterfaceDef callInterface = (CallServiceInterfaceDef) _interface;
+		
+		Element element = Util4Serializer.addElement(svcElem, CallServiceInterfaceDef.INTERFACE_CALL_SERVICE);
+		
+		element.setAttribute(NAME, callInterface.getName());
+		return element;
+	}
+	
+	
+	private InterfaceDef loadCallServiceInterfaceDef(ServiceDef service,Element element) {
+		CallServiceInterfaceDef _interface = new CallServiceInterfaceDef();
+		if (element!=null){
+			_interface.setName(element.getAttribute(NAME));
+		}
+		
+		
+		return _interface;
 	}
 
 }

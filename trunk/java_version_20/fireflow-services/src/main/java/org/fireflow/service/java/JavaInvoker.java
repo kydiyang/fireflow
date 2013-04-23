@@ -62,9 +62,10 @@ public class JavaInvoker extends AbsServiceInvoker implements ServiceInvoker {
 		}
 
 		if (bean == null) {
-			throw new ServiceInvocationException(
-					(!StringUtils.isEmpty(beanName) ? ("Service bean NOT found for " + beanName)
-							: ("Service bean can NOT be instantiated for " + javaClass)));
+			ServiceInvocationException ex = new ServiceInvocationException("无法初始化 service object，Service定义是[name="+svc.getName()+",displayName="+svc.getDisplayName()+"]");
+			ex.setErrorCode(ServiceInvocationException.SERVICE_OBJECT_NOT_FOUND);
+			ex.setActivityInstance(activityInstance);
+			throw ex;
 		} else {
 			return bean;
 		}
@@ -102,9 +103,13 @@ public class JavaInvoker extends AbsServiceInvoker implements ServiceInvoker {
 		else{
 			Method[] candidateMethods = getMethods(serviceClass,methodName,_params.length);
 			if (candidateMethods==null || candidateMethods.length==0){
-				throw new ServiceInvocationException("Operation[name="+methodName+
-						"] is not found for service object[class="+serviceClass.getName()+
-						"], the input parameter types is "+parameterTypesToString(parameterTypes));
+				ServiceInvocationException ex = new ServiceInvocationException("Java服务没有名称为"+
+						methodName+"的方法，Java服务的类名是[class="+serviceClass.getName()+
+						"，输入参数类型是 "+parameterTypesToString(parameterTypes));
+				ex.setErrorCode(ServiceInvocationException.OPERATION_NOT_FOUND);
+
+				throw ex;
+
 			}
 			parameterTypes = findExactParameterTypes(serviceClass,methodName,candidateMethods,parameterTypes);
 			return parameterTypes;
@@ -128,26 +133,36 @@ public class JavaInvoker extends AbsServiceInvoker implements ServiceInvoker {
 		sBuf.append("]");
 		return sBuf.toString();
 	}
-	private Class[] findExactParameterTypes(Class serviceClass,String methodName,Method[] candidateMethods,Class[] parameterTypes)throws ServiceInvocationException{
+	private Class[] findExactParameterTypes(Class serviceClass,String methodName,Method[] candidateMethods,Class[] actInputParamTypes)throws ServiceInvocationException{
 		for (Method m : candidateMethods){
 			Class[] candidateParamTypes = m.getParameterTypes();
 			int paramLength = candidateParamTypes.length;
 			boolean isTheSameParamTypes = true;
 			for (int i=0;i<paramLength;i++){
-				if (parameterTypes[i].getName().equals(NullClass.class.getName())){
+				if (actInputParamTypes[i].getName().equals(NullClass.class.getName())){
 					continue;
-				}else if (!parameterTypes[i].getName().equals(candidateParamTypes[i].getName())){
-					isTheSameParamTypes = false;
-					break;
+				}else {
+					Class actParamClass = actInputParamTypes[i];
+					Class candidateParamClass = candidateParamTypes[i];
+					
+					if (candidateParamClass.isAssignableFrom(actParamClass)){
+						isTheSameParamTypes = true;
+					}else{
+						isTheSameParamTypes = false;
+						break;
+					}				
+					
 				}
 			}
 			if (isTheSameParamTypes){
 				return m.getParameterTypes();
 			}
 		}
-		throw new ServiceInvocationException("Operation[name="+methodName+
-				"] is not found for service object[class="+serviceClass.getName()+
-				"], the input parameter types is "+parameterTypesToString(parameterTypes));
+		ServiceInvocationException ex = new ServiceInvocationException("Java服务没有名称为"+
+				methodName+"的方法，Java服务的类名是[class="+serviceClass.getName()+
+				"，输入参数类型是 "+parameterTypesToString(actInputParamTypes));
+		ex.setErrorCode(ServiceInvocationException.OPERATION_NOT_FOUND);
+		throw ex;
 	}
 	/**
 	 * 查找名字和参数数量相匹配的method

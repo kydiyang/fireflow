@@ -19,8 +19,6 @@ package org.fireflow.service.call;
 
 import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.model.servicedef.impl.AbstractServiceDef;
-import org.fireflow.model.servicedef.impl.CommonInterfaceDef;
-import org.fireflow.model.servicedef.impl.OperationDefImpl;
 
 /**
  *
@@ -35,8 +33,7 @@ public class CallServiceDef extends AbstractServiceDef implements ServiceDef {
 	private static final long serialVersionUID = -6959933380266010700L;
 
 	public static final int THE_LATEST_VERSION = 0;//0表示流程库中最新版本流程
-	public static final String INTERFACE_NAME = "call_subprocess_interface";
-	public static final String OPERATION_NAME = "call_subprocess";
+
 	
 	String processId = null;
 	String subflowId = null;
@@ -46,7 +43,11 @@ public class CallServiceDef extends AbstractServiceDef implements ServiceDef {
 		this.invokerClassName = CallServiceInvoker.class.getName();
 		this.parserClassName = CallServiceParser.class.getName();
 		
+		CallServiceInterfaceDef callInterfaceDef = new CallServiceInterfaceDef();
+		this.setInterface(callInterfaceDef);
+		
 		//构造缺省的interface和operation
+		/*
 		CommonInterfaceDef commonInterface = new CommonInterfaceDef();
 		commonInterface.setName(INTERFACE_NAME);
 		this.setInterface(commonInterface);
@@ -54,6 +55,7 @@ public class CallServiceDef extends AbstractServiceDef implements ServiceDef {
 		OperationDefImpl op = new OperationDefImpl();
 		op.setOperationName(OPERATION_NAME);
 		commonInterface.getOperations().add(op);
+		*/
 	}
 	
 	public String getSubProcessId(){
