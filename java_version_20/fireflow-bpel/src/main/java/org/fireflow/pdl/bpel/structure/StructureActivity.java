@@ -42,7 +42,7 @@ public abstract class StructureActivity extends AbstractActivity {
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
-		kernelManager.startPObject(session, pobjectKey, parentToken);
+		kernelManager.startPObject(session, pobjectKey, parentToken,null);
 	}	
 	
 	public void abort(WorkflowSession session,Token thisToken,Object workflowElement){
