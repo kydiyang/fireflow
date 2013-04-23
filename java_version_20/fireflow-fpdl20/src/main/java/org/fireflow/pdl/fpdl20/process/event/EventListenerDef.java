@@ -8,13 +8,17 @@ public interface EventListenerDef extends ModelElement{
 	 * 例如："户政业务/户口迁入"
 	 * @return
 	 */
-	public String getBizCategory();
+	//public String getBizCategory();
 	
 	/**
-	 * 获得所引用的EventListener的bean的Id或bean的class name。
-	 * 如果该值以"#"开头，则表示bean 的id，否则表示bean的class name。
+	 * 获得所引用的EventListener的bean的Id
 	 * @return
 	 */
-	public String getBeanName();
+	public String getListenerBeanName();
 	
+	public String getListenerClassName();
+	
+	public void setListenerBeanName(String beanName);
+	
+	public void setListenerClassName(String clzName);
 }

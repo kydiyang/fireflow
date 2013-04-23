@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fireflow.client.WorkflowQuery;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.RuntimeContext;
@@ -80,22 +81,34 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		PersistenceService persistenceService = context.getEngineModule(PersistenceService.class, token.getProcessType());
 
 		ProcessInstancePersister procInstPersistSvc = persistenceService.getProcessInstancePersister();
+		
 		ProcessInstance newProcessInstance = (ProcessInstance)sessionLocal.getCurrentProcessInstance();
+		if (newProcessInstance==null || !newProcessInstance.getId().equals(token.getProcessInstanceId())){
+			WorkflowQuery<ProcessInstance> q4ProcInst = sessionLocal.createWorkflowQuery(ProcessInstance.class);
+			newProcessInstance = q4ProcInst.get(token.getProcessInstanceId());
+			sessionLocal.setCurrentProcessInstance(newProcessInstance);
+		}
+	
+
+
+		
+		//考虑到启动子流程的问题，不允许在此处设置processInstanceId，只能在KernelManager.startPObject(...)有设置
+//		token.setProcessInstanceId(newProcessInstance.getId());
+		//考虑到启动子流程的问题，不允许在此处设置elementInstanceId
+//		token.setElementInstanceId(newProcessInstance.getId());
+		
+//		TokenPersister tokenPersister = persistenceService.getTokenPersister();
+//		tokenPersister.saveOrUpdate(token);
+
+		
+		((ProcessInstanceImpl)newProcessInstance).setTokenId(token.getId());
+		procInstPersistSvc.saveOrUpdate(newProcessInstance);
 		
 		//发布事件
 		ProcessInstanceManager procInstManager = context.getEngineModule(ProcessInstanceManager.class, token.getProcessType());
 		procInstManager.fireProcessInstanceEvent(session, newProcessInstance, workflowElement, ProcessInstanceEventTrigger.BEFORE_PROCESS_INSTANCE_RUN);
 		
 		
-
-		((ProcessInstanceImpl)newProcessInstance).setTokenId(token.getId());
-		procInstPersistSvc.saveOrUpdate(newProcessInstance);
-		
-		token.setProcessInstanceId(newProcessInstance.getId());
-		token.setElementInstanceId(newProcessInstance.getId());
-		TokenPersister tokenPersister = persistenceService.getTokenPersister();
-		tokenPersister.saveOrUpdate(token);
-
 		return true;//true表示告诉虚拟机，“我”已经准备妥当了。
 	}
 	
@@ -116,7 +129,7 @@ public class SubProcessBehavior implements WorkflowBehavior {
 		
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		KernelManager kernelManager = ctx.getDefaultEngineModule(KernelManager.class);
-		kernelManager.startPObject(session, pobjectKey, processToken);
+		kernelManager.startPObject(session, pobjectKey, processToken,null);
 		
 		ExecuteResult result = new ExecuteResult();
 		result.setStatus(BusinessStatus.RUNNING);

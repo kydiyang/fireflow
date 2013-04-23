@@ -100,7 +100,7 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		mainflow.getTransitions().add(transition2);
 		
 		//构造mainflow的图形信息
-		DiagramImpl diagram = new DiagramImpl(mainflow.getId()+"_diagram",mainflow.getId());
+		DiagramImpl diagram = new DiagramImpl(mainflow.getId()+"_diagram",mainflow);
 		process.addDiagram(diagram);		
 		
 		PoolShapeImpl pool = new PoolShapeImpl(mainflow.getId()+"_pool");
@@ -129,25 +129,25 @@ public class FPDLSerializerTest  extends FireWorkflowJunitEnviroment{
 		
 		
 		StartNodeShape startNodeShape = new StartNodeShapeImpl(startNode.getId()+"_shape");
-		startNodeShape.setWorkflowElementRef(startNode.getId());
+		startNodeShape.setWorkflowElementRef(startNode);
 		diagram.addProcessNodeShape(startNodeShape);
 		
 		ActivityShape activityShape = new ActivityShapeImpl(activity.getId()+"_shape");
-		activityShape.setWorkflowElementRef(activity.getId());
+		activityShape.setWorkflowElementRef(activity);
 		lane1.addProcessNodeShape(activityShape);
 		
 		EndNodeShape endNodeShape = new EndNodeShapeImpl(endNode.getId()+"_shape");
-		endNodeShape.setWorkflowElementRef(endNode.getId());
+		endNodeShape.setWorkflowElementRef(endNode);
 		diagram.addProcessNodeShape(endNodeShape);
 		
 		TransitionShape transitionShape1 = new TransitionShapeImpl(transition1.getId()+"_shape");
-		transitionShape1.setWorkflowElementRef(transition1.getId());
+		transitionShape1.setWorkflowElementRef(transition1);
 		transitionShape1.setFromNode(startNodeShape);
 		transitionShape1.setToNode(activityShape);
 		diagram.addTransition(transitionShape1);
 		
 		TransitionShape transitionShape2 = new TransitionShapeImpl(transition2.getId()+"_shape");
-		transitionShape2.setWorkflowElementRef(transition2.getId());
+		transitionShape2.setWorkflowElementRef(transition2);
 		transitionShape2.setFromNode(activityShape);
 		transitionShape2.setToNode(endNodeShape);
 		diagram.addTransition(transitionShape2);

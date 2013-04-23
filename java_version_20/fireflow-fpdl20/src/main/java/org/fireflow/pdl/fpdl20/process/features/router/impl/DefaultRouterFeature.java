@@ -17,8 +17,8 @@
  */
 package org.fireflow.pdl.fpdl20.process.features.router.impl;
 
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrJoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrSplitEvaluator;
 import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
 
 /**
@@ -28,19 +28,19 @@ import org.fireflow.pdl.fpdl20.process.features.router.RouterFeature;
  *
  */
 public class DefaultRouterFeature implements RouterFeature {
-	private static final String joinEvaluatorName = DynamicJoinEvaluator.class.getName();
-	private static final String splitEvaluatorName = DynamicSplitEvaluator.class.getName();
+	private static final String joinEvaluatorName = OrJoinEvaluator.class.getName();
+	private static final String splitEvaluatorName = OrSplitEvaluator.class.getName();
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
 	@Override
 	public String getJoinDescription() {
-		return DynamicJoinEvaluator.JOIN_DESCRIPTION;
+		return OrJoinEvaluator.JOIN_DESCRIPTION;
 	}
 	
 	public String getSplitDescription(){
-		return DynamicSplitEvaluator.SPLIT_DESCRIPTION;
+		return OrSplitEvaluator.SPLIT_DESCRIPTION;
 	}
 
 	/* (non-Javadoc)

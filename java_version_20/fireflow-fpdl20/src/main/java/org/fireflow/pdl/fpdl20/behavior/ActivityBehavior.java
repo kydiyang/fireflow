@@ -46,7 +46,7 @@ import org.fireflow.engine.modules.persistence.TokenPersister;
 import org.fireflow.engine.modules.persistence.VariablePersister;
 import org.fireflow.model.data.Property;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrSplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Activity;
 import org.fireflow.pdl.fpdl20.process.Node;
@@ -90,12 +90,13 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		PersistenceService persistenceStrategy = ctx.getEngineModule(PersistenceService.class, token.getProcessType());
 		ActivityInstancePersister actInstPersistSvc = persistenceStrategy.getActivityInstancePersister();
 		
+		//0、校验processInstance与token的一致性
 		ProcessInstance processInstance = sessionLocalImpl.getCurrentProcessInstance();
 
-		if (processInstance==null){
+		if (processInstance==null || !processInstance.getId().equals(token.getProcessInstanceId())){
 			WorkflowQuery<ProcessInstance> q4ProcInst = sessionLocalImpl.createWorkflowQuery(ProcessInstance.class);
-			ProcessInstance procInst = q4ProcInst.get(token.getProcessInstanceId());
-			sessionLocalImpl.setCurrentProcessInstance(procInst);
+			processInstance = q4ProcInst.get(token.getProcessInstanceId());
+			sessionLocalImpl.setCurrentProcessInstance(processInstance);
 		}
 		
 		//1、创建并保存环节实例
@@ -495,7 +496,7 @@ public class ActivityBehavior extends AbsNodeBehavior implements WorkflowBehavio
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		String className = DynamicSplitEvaluator.class.getName();
+		String className = OrSplitEvaluator.class.getName();
 		
 		SplitEvaluator splitEvaluator = this.splitEvaluatorRegistry.get(className);
 		if (splitEvaluator==null){

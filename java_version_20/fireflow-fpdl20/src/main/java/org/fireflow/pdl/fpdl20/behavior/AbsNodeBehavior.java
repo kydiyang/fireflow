@@ -17,21 +17,16 @@
 package org.fireflow.pdl.fpdl20.behavior;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
-import org.fireflow.engine.context.RuntimeContext;
-import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.engine.modules.workitem.WorkItemManager;
-import org.fireflow.model.data.Expression;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
 import org.fireflow.pdl.fpdl20.process.Node;
-import org.fireflow.pdl.fpdl20.process.Synchronizer;
-import org.fireflow.pdl.fpdl20.process.Transition;
 import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 import org.fireflow.pvm.pdllogic.CompensationHandler;
@@ -43,8 +38,8 @@ import org.fireflow.pvm.pdllogic.WorkflowBehavior;
  * @version 2.0
  */
 public abstract class AbsNodeBehavior implements WorkflowBehavior {
-	protected Map<String,JoinEvaluator> joinEvaluatorRegistry = new HashMap<String,JoinEvaluator>();
-	protected Map<String,SplitEvaluator> splitEvaluatorRegistry = new HashMap<String,SplitEvaluator>();
+	protected static Map<String,JoinEvaluator> joinEvaluatorRegistry = new Hashtable<String,JoinEvaluator>();
+	protected static Map<String,SplitEvaluator> splitEvaluatorRegistry = new Hashtable<String,SplitEvaluator>();
 
 	public CompensationHandler getCompensationHandler(String compensationCode) {
 		return null;

@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.invocation.TimerOperationName;
 import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.ModelElement;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.binding.impl.AssignmentImpl;
@@ -110,8 +111,8 @@ import org.fireflow.pdl.fpdl20.process.features.endnode.impl.ThrowTerminationFea
 import org.fireflow.pdl.fpdl20.process.features.router.impl.AndJoinAndSplitRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.CustomizedRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.DefaultRouterFeature;
-import org.fireflow.pdl.fpdl20.process.features.router.impl.DynamicRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.OrJoinOrSplitRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.XOrJoinXOrSplitRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.TimerStartFeature;
@@ -166,9 +167,13 @@ public class FPDLDeserializer implements FPDLNames{
 	public WorkflowProcess deserialize(InputStream in) throws IOException,
 			DeserializerException ,InvalidModelException{
 		try {
-
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+
 			Document document = docBuilder.parse(in);
+			
+			String encoding = document.getXmlEncoding();
+			log.info("Xml文件的字符集是:"+encoding);
+			
 			final org.w3c.dom.Node pi = 
 				document.createProcessingInstruction(StreamResult.PI_DISABLE_OUTPUT_ESCAPING,"");
 			document.appendChild(pi);
@@ -258,11 +263,35 @@ public class FPDLDeserializer implements FPDLNames{
 		String id = diagramElm.getAttribute(ID);
 		String subflowId = diagramElm.getAttribute(REF);
 		String direction = diagramElm.getAttribute(DIRECTION);
+		String snapEnabled = diagramElm.getAttribute(SNAP_ENABLED);
+		String gridEnabled = diagramElm.getAttribute(GRID_ENABLED);
+		String rulerEnabled = diagramElm.getAttribute(RULER_ENABLED);
 		
-		Diagram diagram = new DiagramImpl(id,subflowId);
+		SubProcess subProcess = wp.getLocalSubProcess(subflowId);
+		
+		Diagram diagram = new DiagramImpl(id,subProcess);
 		if (!StringUtils.isEmpty(direction)){
 			diagram.setDirection(direction);
 		}
+		
+		try{
+			diagram.setGridEnabled(Boolean.parseBoolean(gridEnabled));
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
+		
+		try{
+			diagram.setRulerEnabled(Boolean.parseBoolean(rulerEnabled));
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
+		
+		try{
+			diagram.setSnapEnabled(Boolean.parseBoolean(snapEnabled));
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
+		
 		wp.addDiagram(diagram);
 		
 		
@@ -274,24 +303,24 @@ public class FPDLDeserializer implements FPDLNames{
 				if (type==null) type="";
 
 				if (ACTIVITY.equals(type)){
-					ActivityShape activityShape =loadActivityShape(childElm);
+					ActivityShape activityShape =loadActivityShape(subProcess,childElm);
 					diagram.addProcessNodeShape(activityShape);
 				}else if (START_NODE.equals(type)){
-					StartNodeShape startNodeShape = loadStartNodeShape(childElm);
+					StartNodeShape startNodeShape = loadStartNodeShape(subProcess,childElm);
 					diagram.addProcessNodeShape(startNodeShape);
 				}else if (END_NODE.equals(type)){
-					EndNodeShape endNodeShape = loadEndNodeShape(childElm);
+					EndNodeShape endNodeShape = loadEndNodeShape(subProcess,childElm);
 					diagram.addProcessNodeShape(endNodeShape);
 				}else if (ROUTER.equals(type)){
-					RouterShape routerShape = loadRouterShape(childElm);
+					RouterShape routerShape = loadRouterShape(subProcess,childElm);
 					diagram.addProcessNodeShape(routerShape);
 				}
 				else if (GROUP.equals(type)){
-					GroupShape groupShape = loadGroupShapeWithoutConnector(childElm);
+					GroupShape groupShape = loadGroupShapeWithoutConnector(subProcess,childElm);
 					diagram.addGroup(groupShape);
 				}
 				else if (type.equals(POOL)){
-					PoolShape poolShape = loadPoolShapeWithoutConnector(diagram,childElm);
+					PoolShape poolShape = loadPoolShapeWithoutConnector(subProcess,diagram,childElm);
 					diagram.addPool(poolShape);
 				}
 				else if (type.equals(COMMENT)){
@@ -325,7 +354,7 @@ public class FPDLDeserializer implements FPDLNames{
 				String type = childElm.getAttribute(TYPE);
 				if (type==null) type="";
 				if (TRANSITION.equals(type)){
-					TransitionShape transitionShape = loadTransitionShape(diagram,childElm);
+					TransitionShape transitionShape = loadTransitionShape(subProcess,diagram,childElm);
 					ProcessNodeShape from = (ProcessNodeShape)transitionShape.getFromNode();
 					if (from!=null){
 						from.getLeavingTransitionShapes().add(transitionShape);
@@ -365,7 +394,7 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 	}
 	
-	protected GroupShape loadGroupShapeWithoutConnector(Element groupElement){
+	protected GroupShape loadGroupShapeWithoutConnector(SubProcess subProcess,Element groupElement){
 		String id = groupElement.getAttribute(ID);
 		GroupShape groupShape = new GroupShapeImpl(id);
 		
@@ -386,16 +415,16 @@ public class FPDLDeserializer implements FPDLNames{
 				String type = childElm.getAttribute(TYPE);
 				if (type==null) type="";
 				if (ACTIVITY.equals(type)){
-					ActivityShape activityShape =loadActivityShape(childElm);
+					ActivityShape activityShape =loadActivityShape(subProcess,childElm);
 					groupShape.addProcessNodeShape(activityShape);
 				}else if (START_NODE.equals(type)){
-					StartNodeShape startNodeShape = loadStartNodeShape(childElm);
+					StartNodeShape startNodeShape = loadStartNodeShape(subProcess,childElm);
 					groupShape.addProcessNodeShape(startNodeShape);
 				}else if (END_NODE.equals(type)){
-					EndNodeShape endNodeShape = loadEndNodeShape(childElm);
+					EndNodeShape endNodeShape = loadEndNodeShape(subProcess,childElm);
 					groupShape.addProcessNodeShape(endNodeShape);
 				}else if (ROUTER.equals(type)){
-					RouterShape routerShape = loadRouterShape(childElm);
+					RouterShape routerShape = loadRouterShape(subProcess,childElm);
 					groupShape.addProcessNodeShape(routerShape);
 				}
 				else if (COMMENT.equals(type)){
@@ -429,7 +458,7 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 	}
 	*/
-	protected PoolShape loadPoolShapeWithoutConnector(Diagram diagram,Element poolElm){
+	protected PoolShape loadPoolShapeWithoutConnector(SubProcess subProcess,Diagram diagram,Element poolElm){
 		if (poolElm==null){
 			return null;
 		}
@@ -438,9 +467,12 @@ public class FPDLDeserializer implements FPDLNames{
 		String wfElementRef = poolElm.getAttribute(REF);
 		
 		PoolShape pool = new PoolShapeImpl(id);
+
 		if (!StringUtils.isEmpty(wfElementRef)){
-			pool.setWorkflowElementRef(wfElementRef);
+			ModelElement modelElm = subProcess==null?null:subProcess.findWFElementById(wfElementRef);
+			pool.setWorkflowElementRef(modelElm);
 		}
+
 		Element figureElement = Util4Deserializer.child(poolElm, FIGURE);
 		Element planeElm = Util4Deserializer.child(figureElement, RECTANGLE);
 		this.loadRectangle(pool, planeElm);
@@ -460,7 +492,7 @@ public class FPDLDeserializer implements FPDLNames{
 				if (type==null) type="";
 				
 				if (LANE.equals(type)){
-					LaneShape lane = loadLaneShape(child);
+					LaneShape lane = loadLaneShape(subProcess,child);
 					pool.addLane(lane);
 				}
 			}
@@ -500,7 +532,7 @@ public class FPDLDeserializer implements FPDLNames{
 	}
 	*/
 	
-	protected TransitionShape loadTransitionShape(Diagram diagram,Element transitionElm){
+	protected TransitionShape loadTransitionShape(SubProcess subProcess,Diagram diagram,Element transitionElm){
 		if (transitionElm==null)return null;
 		
 		String id = transitionElm.getAttribute(ID);
@@ -508,12 +540,14 @@ public class FPDLDeserializer implements FPDLNames{
 		String from = transitionElm.getAttribute(FROM);
 		String to = transitionElm.getAttribute(TO);
 		
+		ModelElement modelElm = subProcess==null?null:subProcess.findWFElementById(ref);
+		
 		DiagramElement fromElm = diagram.findChild(from);
 		DiagramElement toElm = diagram.findChild(to);
 		
 		
 		TransitionShape transitionShape = new TransitionShapeImpl(id);
-		transitionShape.setWorkflowElementRef(ref);
+		transitionShape.setWorkflowElementRef(modelElm);
 		transitionShape.setFromNode((ProcessNodeShape)fromElm);
 		transitionShape.setToNode((ProcessNodeShape)toElm);
 		
@@ -524,14 +558,15 @@ public class FPDLDeserializer implements FPDLNames{
 		return transitionShape;
 	}
 	
-	protected RouterShape loadRouterShape(Element routerShapeElm){
+	protected RouterShape loadRouterShape(SubProcess subProcess,Element routerShapeElm){
 		if (routerShapeElm==null) return null;
 		
 		String id = routerShapeElm.getAttribute(ID);
 		String ref = routerShapeElm.getAttribute(REF);
+		ModelElement modelElm = subProcess==null?null:subProcess.findWFElementById(ref);
 		
 		RouterShape routerShape = new RouterShapeImpl(id);
-		routerShape.setWorkflowElementRef(ref);
+		routerShape.setWorkflowElementRef(modelElm);
 		
 		Element figureElement = Util4Deserializer.child(routerShapeElm, FIGURE);
 		Element rectElm = Util4Deserializer.child(figureElement, RECTANGLE);
@@ -540,13 +575,14 @@ public class FPDLDeserializer implements FPDLNames{
 		return routerShape;
 	}
 	
-	protected EndNodeShape loadEndNodeShape(Element endNodeShapeElm){
+	protected EndNodeShape loadEndNodeShape(SubProcess subProcess,Element endNodeShapeElm){
 		if (endNodeShapeElm==null) return null;
 		String id = endNodeShapeElm.getAttribute(ID);
 		String ref = endNodeShapeElm.getAttribute(REF);
+		ModelElement modelElm = subProcess==null?null:subProcess.findWFElementById(ref);
 		
 		EndNodeShape endNodeShape = new EndNodeShapeImpl(id);
-		endNodeShape.setWorkflowElementRef(ref);
+		endNodeShape.setWorkflowElementRef(modelElm);
 		
 		Element figureElement = Util4Deserializer.child(endNodeShapeElm, FIGURE);
 		Element circleElm = Util4Deserializer.child(figureElement,CIRCLE);
@@ -555,14 +591,15 @@ public class FPDLDeserializer implements FPDLNames{
 		return endNodeShape;
 	}
 	
-	protected StartNodeShape loadStartNodeShape(Element startNodeShapeElm){
+	protected StartNodeShape loadStartNodeShape(SubProcess subProcess,Element startNodeShapeElm){
 		if (startNodeShapeElm==null) return null;
 		
 		String id = startNodeShapeElm.getAttribute(ID);
 		String ref = startNodeShapeElm.getAttribute(REF);
+		ModelElement modelElm = subProcess==null?null:subProcess.findWFElementById(ref);
 		
 		StartNodeShape startNodeShape = new StartNodeShapeImpl(id);
-		startNodeShape.setWorkflowElementRef(ref);
+		startNodeShape.setWorkflowElementRef(modelElm);
 		
 		Element figureElement = Util4Deserializer.child(startNodeShapeElm, FIGURE);
 		Element circleElm = Util4Deserializer.child(figureElement,CIRCLE);
@@ -611,7 +648,7 @@ public class FPDLDeserializer implements FPDLNames{
 		circle.setFulfilStyle(fulfilStyle);
 	}
 	
-	protected ActivityShape loadActivityShape(Element activityShapeElm){
+	protected ActivityShape loadActivityShape(SubProcess subProcess,Element activityShapeElm){
 		if (activityShapeElm==null){
 			return null;
 		}
@@ -619,8 +656,10 @@ public class FPDLDeserializer implements FPDLNames{
 		String id = activityShapeElm.getAttribute(ID);
 		String ref = activityShapeElm.getAttribute(REF);
 		
+		ModelElement modelElement = subProcess==null?null:subProcess.findWFElementById(ref);
+		
 		ActivityShape activityShape = new ActivityShapeImpl(id);
-		activityShape.setWorkflowElementRef(ref);
+		activityShape.setWorkflowElementRef(modelElement);
 		
 		Element figureElement = Util4Deserializer.child(activityShapeElm,FIGURE);
 		Element rectElm = Util4Deserializer.child(figureElement, RECTANGLE);
@@ -642,7 +681,7 @@ public class FPDLDeserializer implements FPDLNames{
 		List<Element> attachedStartNodeList = Util4Deserializer.children(activityShapeElm, NODE);
 		if (attachedStartNodeList!=null){
 			for (Element startNodeElm : attachedStartNodeList){
-				StartNodeShape startNodeShape = this.loadStartNodeShape(startNodeElm);
+				StartNodeShape startNodeShape = this.loadStartNodeShape(subProcess,startNodeElm);
 				activityShape.addAttachedStartNodeShape(startNodeShape);
 			}
 		}
@@ -650,7 +689,7 @@ public class FPDLDeserializer implements FPDLNames{
 		return activityShape;
 	}
 	
-	protected LaneShape loadLaneShape(Element laneElm){
+	protected LaneShape loadLaneShape(SubProcess subProcess,Element laneElm){
 		if (laneElm==null) return null;
 		String id = laneElm.getAttribute(ID);
 		LaneShape lane = new LaneShapeImpl(id);
@@ -674,16 +713,16 @@ public class FPDLDeserializer implements FPDLNames{
 				if (type==null) type="";
 				
 				if (ACTIVITY.equals(type)){
-					ActivityShape activityShape =loadActivityShape(child);
+					ActivityShape activityShape =loadActivityShape(subProcess,child);
 					lane.addProcessNodeShape(activityShape);
 				}else if (START_NODE.equals(type)){
-					StartNodeShape startNodeShape = loadStartNodeShape(child);
+					StartNodeShape startNodeShape = loadStartNodeShape(subProcess,child);
 					lane.addProcessNodeShape(startNodeShape);
 				}else if (END_NODE.equals(type)){
-					EndNodeShape endNodeShape = loadEndNodeShape(child);
+					EndNodeShape endNodeShape = loadEndNodeShape(subProcess,child);
 					lane.addProcessNodeShape(endNodeShape);
 				}else if (ROUTER.equals(type)){
-					RouterShape routerShape = loadRouterShape(child);
+					RouterShape routerShape = loadRouterShape(subProcess,child);
 					lane.addProcessNodeShape(routerShape);
 				}
 				else if (COMMENT.equals(type)){
@@ -691,7 +730,7 @@ public class FPDLDeserializer implements FPDLNames{
 					lane.addComment(commentShape);
 				}
 				else if (GROUP.equals(type)){
-					GroupShape groupShape = this.loadGroupShapeWithoutConnector(child);
+					GroupShape groupShape = this.loadGroupShapeWithoutConnector(subProcess,child);
 					lane.addGroup(groupShape);
 				}
 			}
@@ -1236,10 +1275,10 @@ public class FPDLDeserializer implements FPDLNames{
 			
 			listener.setName(elm.getAttribute(NAME));
 			listener.setDisplayName(elm.getAttribute(DISPLAY_NAME));
-			listener.setBizCategory(elm.getAttribute(BIZ_CATEGORY));
+			//listener.setBizCategory(elm.getAttribute(BIZ_CATEGORY));
 			listener.setDescription(this.loadCDATA(Util4Deserializer.child(elm,DESCRIPTION)));
-			listener.setBeanName(elm.getAttribute(BEAN_NAME));
-
+			listener.setListenerBeanName(elm.getAttribute(BEAN_NAME));
+			listener.setListenerClassName(elm.getAttribute(CLASS_NAME));
 			listeners.add(listener);
 		}
 	}
@@ -1482,13 +1521,13 @@ public class FPDLDeserializer implements FPDLNames{
 				if (fElm!=null){
 					router.setFeature(new AndJoinAndSplitRouterFeature());
 				}
+				fElm = Util4Deserializer.child(featuresElm, XORJOIN_XORSPLIT_FEATURE);
+				if (fElm!=null){
+					router.setFeature(new XOrJoinXOrSplitRouterFeature());
+				}
 				fElm = Util4Deserializer.child(featuresElm, ORJOIN_ORSPLIT_FEATURE);
 				if (fElm!=null){
 					router.setFeature(new OrJoinOrSplitRouterFeature());
-				}
-				fElm = Util4Deserializer.child(featuresElm, DYNAMIC_JOIN_SPLIT_FEATURE);
-				if (fElm!=null){
-					router.setFeature(new DynamicRouterFeature());
 				}
 				fElm = Util4Deserializer.child(featuresElm, CUSTOMIZED_JOIN_SPLIT_FEATURE);
 				if (fElm!=null){
@@ -1553,6 +1592,10 @@ public class FPDLDeserializer implements FPDLNames{
 	
 			loadEventListeners(activity.getEventListeners(), Util4Deserializer.child(
 					activityElement, EVENT_LISTENERS));
+			
+			loadEventListeners(activity.getWorkItemEventListeners(), Util4Deserializer.child(
+					activityElement, WORKITEM_EVENT_LISTENERS));
+			
 			loadExtendedAttributes(activity.getExtendedAttributes(),
 					Util4Deserializer.child(activityElement, EXTENDED_ATTRIBUTES));
 

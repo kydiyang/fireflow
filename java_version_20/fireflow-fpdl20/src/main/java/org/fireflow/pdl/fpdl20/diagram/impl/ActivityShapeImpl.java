@@ -57,7 +57,10 @@ public class ActivityShapeImpl extends AbsProcessNodeShapeImpl implements
 
 		
 		for (DiagramElement diagramElm : attachedStartNodes){
-			if (workflowElementId.equals(diagramElm.getWorkflowElementRef())){
+			if (diagramElm.getWorkflowElementRef()==null){
+				continue;
+			}
+			if (workflowElementId.equals(diagramElm.getWorkflowElementRef().getId())){
 				return diagramElm;
 			}
 		}

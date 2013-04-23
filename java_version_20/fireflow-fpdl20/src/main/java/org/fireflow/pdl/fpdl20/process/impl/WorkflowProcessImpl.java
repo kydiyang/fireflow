@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.fireflow.model.AbstractModelElement;
+import org.fireflow.model.ModelElement;
 import org.fireflow.model.misc.Duration;
 import org.fireflow.model.process.WorkflowElement;
 import org.fireflow.model.resourcedef.ResourceDef;
@@ -104,7 +105,7 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 			this.addSubProcess(newSubProcess);
 			
 			String diagramId = UUID.randomUUID().toString();
-			Diagram subflowDiagram = new DiagramImpl(diagramId,newSubProcess.getId());
+			Diagram subflowDiagram = new DiagramImpl(diagramId,newSubProcess);
 			this.addDiagram(subflowDiagram);
 		}
 	}
@@ -335,7 +336,11 @@ public class WorkflowProcessImpl extends AbstractModelElement implements
 	
 	public void addDiagram(Diagram diagram){
 		if (diagram==null)return;
-		this.diagramsMap.put(diagram.getWorkflowElementRef(), diagram);
+		ModelElement wfElmRef = diagram.getWorkflowElementRef();
+		if (wfElmRef!=null){
+			this.diagramsMap.put(wfElmRef.getId(), diagram);
+		}
+		
 	}
 	
 	public List<Diagram> getDiagrams(){

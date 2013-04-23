@@ -18,6 +18,7 @@
 package org.fireflow.pdl.fpdl20.diagram.impl;
 
 import org.apache.commons.lang.StringUtils;
+import org.fireflow.model.ModelElement;
 import org.fireflow.pdl.fpdl20.diagram.DiagramElement;
 import org.fireflow.pdl.fpdl20.diagram.figure.Figure;
 
@@ -30,7 +31,7 @@ import org.fireflow.pdl.fpdl20.diagram.figure.Figure;
 public abstract class AbsDiagramElement implements DiagramElement {
 //	protected String sn = UUID.randomUUID().toString();
 	protected String id = null;
-	protected String workflowElementId = null;
+	protected ModelElement workflowElementRef = null;
 	protected Figure figure = null;
 
 //	public String getSn(){
@@ -51,13 +52,13 @@ public abstract class AbsDiagramElement implements DiagramElement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.DiagramElement#getWorkflowElementRef()
 	 */
-	public String getWorkflowElementRef() {
+	public ModelElement getWorkflowElementRef() {
 		
-		return this.workflowElementId;
+		return this.workflowElementRef;
 	}
 	
-	public void setWorkflowElementRef(String wfElmId){
-		this.workflowElementId = wfElmId;
+	public void setWorkflowElementRef(ModelElement wfElmId){
+		this.workflowElementRef = wfElmId;
 	}
 
 	/* (non-Javadoc)

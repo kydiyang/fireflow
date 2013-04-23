@@ -65,7 +65,7 @@ public interface WorkflowProcess extends ModelElement{
 	/**
 	 * 根据WorkflowElmentId查找对应的Workflow Element; 
 	 * Workflow Element可以是subprocess,StartNode,Activity,EndNode,Router,Transition。
-	 * @param workflowElementId
+	 * @param workflowElementRef
 	 * @return
 	 */
 	public WorkflowElement findWorkflowElementById(String workflowElementId);

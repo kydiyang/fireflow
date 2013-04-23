@@ -18,6 +18,7 @@ package org.fireflow.pdl.fpdl20.enginemodules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.fireflow.engine.context.AbsEngineModule;
 import org.fireflow.engine.context.RuntimeContext;
@@ -313,13 +314,21 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 							String compensationCode = compensationDecorator.getCompensationCode();
 							if (compensationCode==null || compensationCode.trim().equals("")){
 								compensationCode = CatchCompensationFeature.CATCH_ALL_COMPENSATION;
-							}
-							if (compensationCode.equals(CatchCompensationFeature.CATCH_ALL_COMPENSATION)){
-								((NodeInstanceImpl)pobject4Activity).setCompensationHandler(compensationCode,  po,true);
 							}else{
-								((NodeInstanceImpl)pobject4Activity).setCompensationHandler(compensationCode,  po);
+								//分号分割
+								StringTokenizer tokenizer = new StringTokenizer(compensationCode,";");
+								while (tokenizer.hasMoreTokens()){
+									String code = tokenizer.nextToken();
+									if (code==null || code.trim().equals("")){
+										continue;
+									}
+									if (CatchCompensationFeature.CATCH_ALL_COMPENSATION.equals(code.trim())){
+										((NodeInstanceImpl)pobject4Activity).setCompensationHandler(code.trim(),  po,true);
+									}else{
+										((NodeInstanceImpl)pobject4Activity).setCompensationHandler(code.trim(),  po);
+									}
+								}
 							}
-							
 						}
 					}else if (decorator!=null && decorator instanceof CatchFaultFeature){
 						CatchFaultFeature exceptionDecorator = (CatchFaultFeature)decorator;
@@ -329,12 +338,26 @@ public class Process2PObjectTranslatorFpdl20Impl  extends AbsEngineModule implem
 							String errorCode = exceptionDecorator.getErrorCode();
 							if (errorCode==null || errorCode.trim().equals("")){
 								((NodeInstanceImpl)pobject4Activity).setFaultHandler(CatchFaultFeature.CATCH_ALL_FAULT, po,true);
-							}else if (errorCode.trim().equals(CatchFaultFeature.CATCH_ALL_FAULT)){
-								((NodeInstanceImpl)pobject4Activity).setFaultHandler(CatchFaultFeature.CATCH_ALL_FAULT, po,true);
 							}
 							else{
-								((NodeInstanceImpl)pobject4Activity).setFaultHandler(errorCode, po);
+								//分号分割
+								StringTokenizer tokenizer = new StringTokenizer(errorCode,";");
+								while (tokenizer.hasMoreTokens()){
+									String code = tokenizer.nextToken();
+									if (code==null || code.trim().equals("")){
+										continue;
+									}
+									
+									if (CatchFaultFeature.CATCH_ALL_FAULT.equals(code.trim())){
+										((NodeInstanceImpl)pobject4Activity).setFaultHandler(CatchFaultFeature.CATCH_ALL_FAULT, po,true);
+									}
+									else{
+										((NodeInstanceImpl)pobject4Activity).setFaultHandler(code.trim(), po);
+									}
+								}
+	
 							}
+
 							
 						}
 					}

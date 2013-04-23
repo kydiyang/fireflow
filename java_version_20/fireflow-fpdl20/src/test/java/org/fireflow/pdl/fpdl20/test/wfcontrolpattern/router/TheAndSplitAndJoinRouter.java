@@ -111,6 +111,7 @@ public class TheAndSplitAndJoinRouter extends FireWorkflowJunitEnviroment {
 		StartNodeImpl startNode = new StartNodeImpl(subflow,"Start");
 		RouterImpl router1 = new RouterImpl(subflow,"Router1");
 		
+		
 		ActivityImpl activity1 = new ActivityImpl(subflow,"Activity1");
 		activity1.setDuration(new Duration(6,Duration.DAY));
 		

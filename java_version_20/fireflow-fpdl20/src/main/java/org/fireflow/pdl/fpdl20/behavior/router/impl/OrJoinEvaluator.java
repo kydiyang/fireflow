@@ -17,28 +17,32 @@
  */
 package org.fireflow.pdl.fpdl20.behavior.router.impl;
 
+import java.util.List;
+
 import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.impl.WorkflowSessionLocalImpl;
+import org.fireflow.engine.context.RuntimeContext;
+import org.fireflow.engine.modules.persistence.PersistenceService;
+import org.fireflow.engine.modules.persistence.TokenPersister;
+import org.fireflow.pdl.fpdl20.behavior.router.AbsJoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
+import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
 import org.fireflow.pvm.kernel.Token;
+import org.fireflow.pvm.kernel.TokenState;
 
 /**
- *
- * @author 非也 nychen2000@163.com
- * Fire Workflow 官方网站：www.firesoa.com 或者 www.fireflow.org
- *
+ * 动态判断是否有活动的前驱来确定是否汇聚
+ * 
+ * @author 非也 nychen2000@163.com Fire Workflow 官方网站：www.firesoa.com 或者
+ *         www.fireflow.org
+ * 
  */
-public class OrJoinEvaluator implements JoinEvaluator {
-	public static final String JOIN_DESCRIPTION = "汇聚逻辑：任意输入Transition到达后立即执行后续分支。如果有N条输入Transition到达，则后续分支被执行N次";
+public class OrJoinEvaluator extends AbsJoinEvaluator implements JoinEvaluator {
+	public static final String JOIN_DESCRIPTION = "汇聚逻辑：当任意输入Transition到达时，判断是否有活动的前驱结点，如果有则等待汇聚，否则执行后续分支。";
 	public String getJoinDescription(){
 		return JOIN_DESCRIPTION;
 	}
-	/* (non-Javadoc)
-	 * @see org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator#canBeFired(org.fireflow.engine.WorkflowSession, org.fireflow.pvm.kernel.Token, org.fireflow.pdl.fpdl20.process.Synchronizer)
-	 */
-	public boolean canBeFired(WorkflowSession session, Token token_for_router,
-			Synchronizer router) {
-		return true;//任何一条输入都可以触发
-	}
+
 
 }

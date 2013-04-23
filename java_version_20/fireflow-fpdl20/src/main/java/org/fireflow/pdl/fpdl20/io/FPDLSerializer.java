@@ -37,6 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.fireflow.model.InvalidModelException;
+import org.fireflow.model.ModelElement;
 import org.fireflow.model.binding.Assignment;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
@@ -87,8 +88,8 @@ import org.fireflow.pdl.fpdl20.process.features.endnode.ThrowTerminationFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.AndJoinAndSplitRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.CustomizedRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.DefaultRouterFeature;
-import org.fireflow.pdl.fpdl20.process.features.router.impl.DynamicRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.router.impl.OrJoinOrSplitRouterFeature;
+import org.fireflow.pdl.fpdl20.process.features.router.impl.XOrJoinXOrSplitRouterFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchCompensationFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.CatchFaultFeature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.NormalStartFeature;
@@ -108,11 +109,21 @@ public class FPDLSerializer implements FPDLNames {
 
     public static final String DEFAULT_FPDL_VERSION = "2.0";
     public static final String DEFAULT_VENDOR = "www.firesoa.com";
+    
+    private String charset = "UTF-8";
 
     private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
     static{
     	documentBuilderFactory.setNamespaceAware(true);
     	documentBuilderFactory.setCoalescing(true);
+    }
+    
+    public void setCharset(String charset){
+    	this.charset = charset;
+    }
+    
+    public String getCharset(){
+    	return charset;
     }
 
 	public void serialize(WorkflowProcess workflowProcess, OutputStream out)
@@ -123,7 +134,7 @@ public class FPDLSerializer implements FPDLNames {
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer.setOutputProperty(OutputKeys.ENCODING, charset);
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -153,6 +164,7 @@ public class FPDLSerializer implements FPDLNames {
 			throw new SerializerException(e);
 		}
     	Document document = documentBuilder.newDocument();
+
     	//处理指示器，对特殊字符不进行转换
 		final Node pi = 
 			document.createProcessingInstruction(StreamResult.PI_DISABLE_OUTPUT_ESCAPING,"");
@@ -217,9 +229,12 @@ public class FPDLSerializer implements FPDLNames {
     protected void writeDiagram(Diagram diagram,Element diagramsElement){
     	Element diagramElm = Util4Serializer.addElement(diagramsElement, DIAGRAM);
     	diagramElm.setAttribute(ID, diagram.getId());
-    	diagramElm.setAttribute(REF, diagram.getWorkflowElementRef());
+    	ModelElement wfElmRef =  diagram.getWorkflowElementRef();
+    	diagramElm.setAttribute(REF,wfElmRef==null?"":wfElmRef.getId());
     	diagramElm.setAttribute(DIRECTION, diagram.getDirection());
-    	
+    	diagramElm.setAttribute(GRID_ENABLED, diagram.getGridEnabled()==null?"false":diagram.getGridEnabled().toString());
+    	diagramElm.setAttribute(RULER_ENABLED, diagram.getRulerEnabled()==null?"false":diagram.getRulerEnabled().toString());
+    	diagramElm.setAttribute(SNAP_ENABLED, diagram.getSnapEnabled()==null?"true":diagram.getSnapEnabled().toString());
     	List<PoolShape> poolList = diagram.getPools();
     	if (poolList!=null && poolList.size()>0){
     		for (PoolShape pool : poolList){
@@ -319,8 +334,9 @@ public class FPDLSerializer implements FPDLNames {
 		Element poolElm = Util4Serializer.addElement(poolshapesElm, NODE);
 		poolElm.setAttribute(TYPE, POOL);
 		poolElm.setAttribute(ID, pool.getId());
-		if (!StringUtils.isEmpty(pool.getWorkflowElementRef())) {
-			poolElm.setAttribute(REF, pool.getWorkflowElementRef());
+		ModelElement wfElmRef = pool.getWorkflowElementRef();
+		if (wfElmRef!=null && !StringUtils.isEmpty(wfElmRef.getId())) {
+			poolElm.setAttribute(REF, wfElmRef.getId());
 		}
 
 		Figure figure = pool.getFigure();
@@ -338,7 +354,8 @@ public class FPDLSerializer implements FPDLNames {
     	Element transitionElm = Util4Serializer.addElement(transitionsElm, CONNECTOR);
     	transitionElm.setAttribute(TYPE, TRANSITION);
     	transitionElm.setAttribute(ID, transitionShape.getId());
-    	transitionElm.setAttribute(REF,transitionShape.getWorkflowElementRef());
+    	ModelElement wfElmRef = transitionShape.getWorkflowElementRef();
+    	transitionElm.setAttribute(REF,wfElmRef==null?"":wfElmRef.getId());
     	
     	if (transitionShape.getFromNode()!=null){
     		transitionElm.setAttribute(FROM, transitionShape.getFromNode().getId());
@@ -390,7 +407,8 @@ public class FPDLSerializer implements FPDLNames {
     	if (nodeElm==null) return;
     	
     	nodeElm.setAttribute(ID, node.getId());
-    	nodeElm.setAttribute(REF, node.getWorkflowElementRef());
+    	ModelElement wfElmRef = node.getWorkflowElementRef();
+    	nodeElm.setAttribute(REF, wfElmRef==null?"":wfElmRef.getId());
     	writeFigure(node.getFigure(),nodeElm);
     	
     	if (node instanceof ActivityShape){
@@ -672,6 +690,44 @@ public class FPDLSerializer implements FPDLNames {
     	}
     }    
 
+    private void writeEventListener(EventListenerDef listener,Element eventListenersElm){
+        Element eventListenerElm = Util4Serializer.addElement(
+                eventListenersElm, EVENT_LISTENER);
+        
+        //一般情况下，listener不需要id,name等信息
+        if (listener.getId()!=null && !listener.getId().trim().equals("")){
+        	eventListenerElm.setAttribute(ID, listener.getId());
+        }
+        
+        if (listener.getName()!=null && !listener.getName().trim().equals("")){
+        	eventListenerElm.setAttribute(NAME, listener.getName());
+        }
+        if (listener.getDisplayName()!=null && !listener.getDisplayName().trim().equals("")){
+        	eventListenerElm.setAttribute(DISPLAY_NAME, listener.getDisplayName());
+        }
+        if (listener.getDescription()!=null && !listener.getDescription().trim().equals("")){
+        	eventListenerElm.setAttribute(DESCRIPTION, listener.getDescription());
+        }
+        if (listener.getListenerBeanName()!=null && !listener.getListenerBeanName().trim().equals("")){
+        	eventListenerElm.setAttribute(BEAN_NAME, listener.getListenerBeanName());
+        }else{
+        	eventListenerElm.setAttribute(CLASS_NAME, listener.getListenerClassName());
+        }
+    }
+    
+    protected void writeWorkItemEventListeners(List<EventListenerDef> eventListeners, Element parentElement){
+        if (eventListeners == null || eventListeners.size() == 0) {
+            return;
+        }
+
+        Element eventListenersElm =
+                Util4Serializer.addElement(parentElement,
+                WORKITEM_EVENT_LISTENERS);
+        for (int i = 0; i < eventListeners.size(); i++) {
+        	EventListenerDef listener = (EventListenerDef) eventListeners.get(i);
+        	writeEventListener(listener,eventListenersElm);
+        }
+    }
     protected void writeEventListeners(List<EventListenerDef> eventListeners, Element parentElement) {
         if (eventListeners == null || eventListeners.size() == 0) {
             return;
@@ -682,17 +738,7 @@ public class FPDLSerializer implements FPDLNames {
                 EVENT_LISTENERS);
         for (int i = 0; i < eventListeners.size(); i++) {
         	EventListenerDef listener = (EventListenerDef) eventListeners.get(i);
-            Element eventListenerElm = Util4Serializer.addElement(
-                    eventListenersElm, EVENT_LISTENER);
-            
-            eventListenerElm.setAttribute(ID, listener.getId());
-            if (listener.getName()!=null && !listener.getName().trim().equals("")){
-            	eventListenerElm.setAttribute(NAME, listener.getName());
-            }
-            if (listener.getDisplayName()!=null && !listener.getDisplayName().trim().equals("")){
-            	eventListenerElm.setAttribute(DISPLAY_NAME, listener.getDisplayName());
-            }
-            eventListenerElm.setAttribute(BEAN_NAME, listener.getBeanName());
+        	writeEventListener(listener,eventListenersElm);
         }
     }
 
@@ -932,10 +978,10 @@ public class FPDLSerializer implements FPDLNames {
         	}
         	else if (feature instanceof AndJoinAndSplitRouterFeature){
         		Util4Serializer.addElement(featuresElement, ANDJOIN_ANDSPLIT_FEATURE);
+        	}else if (feature instanceof XOrJoinXOrSplitRouterFeature){
+        		Util4Serializer.addElement(featuresElement, XORJOIN_XORSPLIT_FEATURE);
         	}else if (feature instanceof OrJoinOrSplitRouterFeature){
         		Util4Serializer.addElement(featuresElement, ORJOIN_ORSPLIT_FEATURE);
-        	}else if (feature instanceof DynamicRouterFeature){
-        		Util4Serializer.addElement(featuresElement, DYNAMIC_JOIN_SPLIT_FEATURE);
         	}
         	else if (feature instanceof CustomizedRouterFeature){
         		Element fElm = Util4Serializer.addElement(featuresElement, CUSTOMIZED_JOIN_SPLIT_FEATURE);
@@ -1000,6 +1046,7 @@ public class FPDLSerializer implements FPDLNames {
         this.writeResourceBinding(activity.getResourceBinding(),activityElement);
         
         writeEventListeners(activity.getEventListeners(), activityElement);
+        writeWorkItemEventListeners(activity.getWorkItemEventListeners(),activityElement);
         writeExtendedAttributes(activity.getExtendedAttributes(),
                 activityElement);
     }

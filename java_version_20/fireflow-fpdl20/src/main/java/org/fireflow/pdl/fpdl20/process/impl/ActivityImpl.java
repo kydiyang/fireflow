@@ -53,6 +53,8 @@ public class ActivityImpl extends NodeImpl implements Activity{
 	 */
 	private List<EventListenerDef> eventListenerDefs = new ArrayList<EventListenerDef>();
 	
+	private List<EventListenerDef> workItemEventListenerDefs = new ArrayList<EventListenerDef>();
+	
 	private LoopStrategy loopStrategy = LoopStrategy.REDO;
 	
 	public ActivityImpl(){
@@ -74,7 +76,9 @@ public class ActivityImpl extends NodeImpl implements Activity{
 	public List<EventListenerDef> getEventListeners() {
 		return eventListenerDefs;
 	}
-
+	public List<EventListenerDef> getWorkItemEventListeners(){
+		return this.workItemEventListenerDefs;
+	}
 	public List<Property> getProperties() {
 		return properties;
 	}

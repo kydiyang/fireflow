@@ -25,8 +25,8 @@ import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.modules.beanfactory.BeanFactory;
 import org.fireflow.pdl.fpdl20.behavior.router.JoinEvaluator;
 import org.fireflow.pdl.fpdl20.behavior.router.SplitEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicJoinEvaluator;
-import org.fireflow.pdl.fpdl20.behavior.router.impl.DynamicSplitEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrJoinEvaluator;
+import org.fireflow.pdl.fpdl20.behavior.router.impl.OrSplitEvaluator;
 import org.fireflow.pdl.fpdl20.misc.FpdlConstants;
 import org.fireflow.pdl.fpdl20.process.Node;
 import org.fireflow.pdl.fpdl20.process.Synchronizer;
@@ -39,24 +39,25 @@ import org.fireflow.pvm.pdllogic.WorkflowBehavior;
  * @version 2.0
  */
 public class RouterBehavior extends AbsSynchronizerBehavior implements WorkflowBehavior {
-	public Boolean canBeFired(WorkflowSession session, Token token,
+	public int canBeFired(WorkflowSession session, Token token,List<Token> siblings,
 			Synchronizer synchronizer){
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		String className = DynamicJoinEvaluator.class.getName();//缺省是DynamicJoin
+		String className = OrJoinEvaluator.class.getName();//缺省是DynamicJoin
 		
 		RouterFeature feature = (RouterFeature)synchronizer.getFeature();
 		if (feature!=null && !StringUtils.isEmpty(feature.getJoinEvaluatorClass())){
 			className = feature.getJoinEvaluatorClass();
 		}
 		
-		JoinEvaluator joinEvaluator = this.joinEvaluatorRegistry.get(className);
+		JoinEvaluator joinEvaluator = joinEvaluatorRegistry.get(className);
 		if (joinEvaluator==null){
 			joinEvaluator = (JoinEvaluator)beanFactory.createBean(className);
 			joinEvaluatorRegistry.put(className, joinEvaluator);
 		}
-		return joinEvaluator.canBeFired(session, token, synchronizer);
+
+		return joinEvaluator.canBeFired(session, token, siblings, synchronizer);
 	}
 	
 	protected List<String> determineNextTransitions(
@@ -64,7 +65,7 @@ public class RouterBehavior extends AbsSynchronizerBehavior implements WorkflowB
 		RuntimeContext runtimeContext = ((WorkflowSessionLocalImpl)session).getRuntimeContext();
 		BeanFactory beanFactory = runtimeContext.getEngineModule(BeanFactory.class, FpdlConstants.PROCESS_TYPE_FPDL20);
 		
-		String className = DynamicSplitEvaluator.class.getName();
+		String className = OrSplitEvaluator.class.getName();
 		
 		RouterFeature feature = (RouterFeature)node.getFeature();
 		if (feature!=null && !StringUtils.isEmpty(feature.getSplitEvaluatorClass())){
