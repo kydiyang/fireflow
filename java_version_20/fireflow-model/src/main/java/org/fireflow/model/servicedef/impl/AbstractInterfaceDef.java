@@ -19,7 +19,15 @@ public abstract class AbstractInterfaceDef implements InterfaceDef {
 //	public void setNamespaceUri(String uri){
 //		this.namespaceUri = uri;
 //	}
+	protected boolean resolved = false;
+
 	
+	public boolean isResolved() {
+		return resolved;
+	}
+	public void setResolved(boolean resolved) {
+		this.resolved = resolved;
+	}
 	public String getName(){
 		return name;
 	}

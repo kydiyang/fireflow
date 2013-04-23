@@ -50,6 +50,7 @@ import org.w3c.dom.Element;
  * @version 2.0
  */
 public class ResourceSerializer implements ModelElementNames {
+	private static final String DEFAULT_CHARSET = "UTF-8";
 	private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 	static {
 		documentBuilderFactory.setNamespaceAware(true);
@@ -105,26 +106,31 @@ public class ResourceSerializer implements ModelElementNames {
 		}
 
 	}
-	
 	public static String serializeToXmlString(List<ResourceDef> resources)throws  SerializerException{
+		return serializeToXmlString(resources,DEFAULT_CHARSET);
+	}
+	public static String serializeToXmlString(List<ResourceDef> resources,String charset)throws  SerializerException{
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
-			serialize(resources, out);
+			serialize(resources, out,charset);
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		}
         return out.toString();
 	}
-	
 	public static  void serialize(List<ResourceDef> resources, OutputStream out)
+	throws IOException, SerializerException {
+		serialize(resources,out,DEFAULT_CHARSET);
+	}
+	public static  void serialize(List<ResourceDef> resources, OutputStream out,String charset)
 			throws IOException, SerializerException {
 		try{
 			Document document = serializeToDOM(resources);
 			
 			TransformerFactory  transformerFactory  =  TransformerFactory.newInstance();  
 			Transformer transformer = transformerFactory.newTransformer();  
-			transformer.setOutputProperty(OutputKeys.ENCODING,"UTF-8");  
+			transformer.setOutputProperty(OutputKeys.ENCODING,charset);  
 			transformer.setOutputProperty(OutputKeys.INDENT,"yes");  
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");  
 

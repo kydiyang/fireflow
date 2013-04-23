@@ -32,15 +32,7 @@ public class JavaInterfaceDef extends AbstractInterfaceDef implements InterfaceD
 	
 	protected String interfaceClassName = null;
 	protected Map<String,Map<Integer,QName>> parameterTypeMap = new HashMap<String,Map<Integer,QName>>();
-	protected boolean resolved = false;
 
-	
-	public boolean isResolved() {
-		return resolved;
-	}
-	public void setResolved(boolean resolved) {
-		this.resolved = resolved;
-	}
 	public JavaInterfaceDef(){
 //		this.namespaceUri = NameSpaces.JAVA.getUri();
 	}
