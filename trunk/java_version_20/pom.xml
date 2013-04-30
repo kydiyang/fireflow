@@ -22,7 +22,6 @@
 		<module>fireflow-bpel</module>
 		<module>fireflow-fpdl20</module>
 		<module>fireflow-services</module>
-		<module>fireflow-demo</module>
     <module>fireflow-simple-demo</module>
     <module>fireflow-simulator</module>
     <module>fireflow-services-enterprise</module>
@@ -32,241 +31,92 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<junit.version>4.10</junit.version>
-		<slf4j.version>1.5.8</slf4j.version>
-		<log4j.version>1.2.14</log4j.version>
-
-		<spring.version>3.1.1.RELEASE</spring.version>
-
-		<antlr.version>2.7.6</antlr.version>
-		<aopalliance.version>1.0</aopalliance.version>
-		<jta.version>1.1</jta.version>
-
-		<commons-logging.version>1.1.1</commons-logging.version>
-		<commons-collections.version>3.2</commons-collections.version>
-		<commons-lang.version>2.2</commons-lang.version>
-		<commons-digester.version>1.8</commons-digester.version>
+		<!-- ==================================== -->
+		<!-- ====== Apache commons 版本        ========= -->
+		<!-- ==================================== -->
+		<commons-attributes.version>2.2</commons-attributes.version>
+		<commons-beanutils.version>1.7.0</commons-beanutils.version>
 		<commons-codec.version>1.3</commons-codec.version>
+		<commons-collections.version>3.2.1</commons-collections.version>
+		<commons-dbcp.version>1.3</commons-dbcp.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
-		<commons-jxpath.version>1.3</commons-jxpath.version>
-
-		<!-- 
-		<hibernate-annotations.version>3.4.0.GA</hibernate-annotations.version>
-		<hibernate-commons-annotations.version>3.1.0.GA</hibernate-commons-annotations.version>
-		<hibernate-entitymanager.version>4.1.2</hibernate-entitymanager.version>
-		<hibernate-validator.version>4.2.0.Final</hibernate-validator.version>
-		<hibernate-core.version>4.1.2</hibernate-core.version>
-		<ejb3-persistence.version>1.0.2.GA</ejb3-persistence.version>
- 		-->
- 		
- 		<hibernate-annotations.version>3.4.0.GA</hibernate-annotations.version>
-		<hibernate-commons-annotations.version>3.1.0.GA</hibernate-commons-annotations.version>
-		<hibernate-entitymanager.version>3.4.0.GA</hibernate-entitymanager.version>
-		<hibernate-validator.version>3.1.0.GA</hibernate-validator.version>
-		<hibernate-core.version>3.3.2.GA</hibernate-core.version>
-		<ejb3-persistence.version>1.0.2.GA</ejb3-persistence.version>
- 		
+		<!-- <commons-digester.version>1.8</commons-digester.version> -->
 		<commons-jexl.version>2.1.1</commons-jexl.version>
-		<IKExpression.version>2.1.2</IKExpression.version>
-
-		<dom4j.version>1.6.1</dom4j.version>
+		<commons-jxpath.version>1.3</commons-jxpath.version>
+		<commons-logging.version>1.1.1</commons-logging.version>
+		<commons-lang.version>2.4</commons-lang.version>
+		<commons-pool.version>1.4</commons-pool.version>
+		
+		<!-- ==================================== -->
+		<!-- ===== Spring,Hibernate,JDBC 版本        === -->
+		<!-- ==================================== -->
+		<spring.version>2.5.6</spring.version>
+		<hibernate.version>3.1.3</hibernate.version>
 		<mysql-connector-java.version>5.1.6</mysql-connector-java.version>
+		
+		<!-- ==================================== -->
+		<!-- ==========Xml以及Webservice 版本      ====== -->
+		<!-- ==================================== -->
+		<dom4j.version>1.6.1</dom4j.version>
+		<xstream.version>1.3.1</xstream.version>
+		<wsdl4j.version>1.6.2</wsdl4j.version>
+		<xmlschema-core.version>2.0.1</xmlschema-core.version>
+		<xerces.version>2.9.1</xerces.version>
+		<xalan.version>2.7.1</xalan.version>
+		
+		<!-- ==================================== -->
+		<!-- ==========       其他依赖包的 版本           ====== -->
+		<!-- ==================================== -->
+		<asm.version>2.2.3</asm.version>
+		<antlr.version>2.7.6</antlr.version>
+		<aopalliance.version>1.0</aopalliance.version>		
+		<quartz.version>1.6.1</quartz.version>
+		<slf4j.version>1.5.3</slf4j.version>
+		<log4j.version>1.2.14</log4j.version>
+		<ehcache.version>2.5.6</ehcache.version>
+
+		<!-- ==================================== -->
+		<!-- =========   JDK5缺少的jsr规范包版本     ====== -->
+		<!-- ==================================== -->
+		<jta.version>1.1</jta.version>
+		<jaxb.version>2.2.1</jaxb.version>
+		<jaxws-api.version>2.2.1</jaxws-api.version>
+		<jaxws-rt.version>2.2.1</jaxws-rt.version>
+		<javax.script.version>1.0</javax.script.version>
+		<javax.jws.version>1.0-MR1</javax.jws.version>
+ 		<javax.annotation.version>1.0</javax.annotation.version>
+ 		<activation.version>1.1</activation.version>
+ 		<httpserver.version>20070405</httpserver.version>
+		<!-- 
+		<IKExpression.version>2.1.2</IKExpression.version>
 		<jtds.version>1.2</jtds.version>
+		 -->
+		 
+		<junit.version>4.10</junit.version>
 	</properties>
 
 	<dependencies>
-		<!-- other dependence -->
-		<!-- <dependency> <groupId>net.sourceforge.jtds</groupId> <artifactId>jtds</artifactId> 
-			<version>${jtds.version}</version> </dependency> -->
+		<!-- ==================================== -->
+		<!-- ====== Apache commons 依赖        ========= -->
+		<!-- ==================================== -->
 		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm-all</artifactId>
-			<version>2.2.3</version>
+		  	<groupId>commons-attributes</groupId>
+  			<artifactId>commons-attributes-api</artifactId>
+			<version>${commons-attributes.version}</version>
+			<scope>compile</scope> 	  
+    	</dependency>
+		<dependency>
+  			<groupId>commons-attributes</groupId>
+			<artifactId>commons-attributes-compiler</artifactId>
+			<version>${commons-attributes.version}</version>
+			<scope>compile</scope> 	  
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql-connector-java.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- <dependency> <groupId>org.wltea.expression</groupId> <artifactId>IKExpression</artifactId> 
-			<version>${IKExpression.version}</version> </dependency> -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-jexl</artifactId>
-			<version>${commons-jexl.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>${commons-collections.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>antlr</groupId>
-			<artifactId>antlr</artifactId>
-			<version>${antlr.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>aopalliance</groupId>
-			<artifactId>aopalliance</artifactId>
-			<version>${aopalliance.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>${hibernate-annotations.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-commons-annotations</artifactId>
-			<version>${hibernate-commons-annotations.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate-entitymanager.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate-validator.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>${hibernate-core.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>${jta.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>ejb3-persistence</artifactId>
-			<version>${ejb3-persistence.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>${commons-lang.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-			<version>${commons-digester.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-jxpath</groupId>
-			<artifactId>commons-jxpath</artifactId>
-			<version>${commons-jxpath.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>${commons-logging.version}</version>
-		</dependency>
+  			<groupId>commons-beanutils</groupId>
+  			<artifactId>commons-beanutils</artifactId>	
+ 			<version>${commons-beanutils.version}</version>
+			<scope>compile</scope> 			
+  		</dependency>	
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -274,11 +124,84 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>${commons-collections.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>${commons-dbcp.version}</version>
+		</dependency>		
+		<!-- 
+		<dependency>
 			<groupId>commons-discovery</groupId>
 			<artifactId>commons-discovery</artifactId>
 			<version>${commons-discovery.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		 
+		<dependency>
+			<groupId>commons-digester</groupId>
+			<artifactId>commons-digester</artifactId>
+			<version>${commons-digester.version}</version>
+			<scope>compile</scope>
+		</dependency>	
+		-->	
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-jexl</artifactId>
+			<version>${commons-jexl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-jxpath</groupId>
+			<artifactId>commons-jxpath</artifactId>
+			<version>${commons-jxpath.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${commons-lang.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<version>${commons-pool.version}</version>
+		</dependency>
+		
+		<!-- ==================================== -->
+		<!-- === Spring hibernate jdbc 依赖      ====== -->
+		<!-- ==================================== -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>${spring.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate</artifactId>
+			<version>${hibernate.version}</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		
+		<!-- ==================================== -->
+		<!-- ==========Xml以及Webservice 依赖      ====== -->
+		<!-- ==================================== -->	
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
@@ -291,16 +214,52 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>${xstream.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>${wsdl4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.xmlschema</groupId>
+			<artifactId>xmlschema-core</artifactId>
+			<version>${xmlschema-core.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>${xerces.version}</version>
+		</dependency>
+		<dependency>
+		  	<groupId>xalan</groupId>
+  			<artifactId>xalan</artifactId>
+  			<version>${xalan.version}</version>
+  		</dependency>
+		
+		<!-- ==================================== -->
+		<!-- ==========      其他 依赖包                          ====== -->
+		<!-- ==================================== -->
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm-all</artifactId>
+			<version>${asm.version}</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
-			<version>${slf4j.version}</version> <scope>provided</scope> </dependency> 
-			<dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
-			<version>${slf4j.version}</version> <scope>provided</scope> </dependency> -->
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>${antlr.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>${aopalliance.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -325,61 +284,107 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>20030825.184428</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-			<version>20030825.183949</version>
-		</dependency>
-		<!-- <dependency> <groupId>org.apache.tuscany.sdo</groupId> <artifactId>tuscany-sdo-api-r2.1</artifactId> 
-			<version>1.1.1</version> </dependency> <dependency> <groupId>org.apache.tuscany.sdo</groupId> 
-			<artifactId>tuscany-sdo-impl</artifactId> <version>1.1.1</version> <scope>compile</scope> 
-			</dependency> <dependency> <groupId>org.apache.tuscany.sdo</groupId> <artifactId>tuscany-sdo-lib</artifactId> 
-			<version>1.1.1</version> <scope>compile</scope> </dependency> <dependency> 
-			<groupId>org.ow2.easywsdl</groupId> <artifactId>easywsdl-wsdl</artifactId> 
-			<version>2.1</version> <scope>compile</scope> </dependency> <dependency> 
-			<groupId>org.ow2.easywsdl</groupId> <artifactId>easywsdl-schema</artifactId> 
-			<version>2.1</version> <scope>compile</scope> </dependency> -->
-		<dependency>
-			<groupId>org.apache.ws.xmlschema</groupId>
-			<artifactId>xmlschema-core</artifactId>
-			<version>2.0.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<!-- <dependency> <groupId>org.apache.woden</groupId> <artifactId>woden</artifactId> 
-			<version>1.0M9</version> <type>pom</type> </dependency> -->
 
 		<dependency>
 			<groupId>org.opensymphony.quartz</groupId>
 			<artifactId>quartz</artifactId>
-			<version>1.6.1</version>
+			<version>${quartz.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>wsdl4j</groupId>
-			<artifactId>wsdl4j</artifactId>
-			<version>1.6.2</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-			<scope>test</scope>
+			<version>${slf4j.version}</version>
+			<scope>compile</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
-			<version>2.5.6</version>
+			<version>${ehcache.version}</version>
 			<type>pom</type>
 		</dependency>
+		
+		<!-- =============================== -->
+		<!-- ===  JDK5缺少的Java规范      ========== -->
+		<!-- =============================== -->		
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>${jta.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>${jaxb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>${jaxb.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>javax.jws</groupId>
+			<artifactId>jsr181-api</artifactId>
+			<version>${javax.jws.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
+			<version>${jaxws-api.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<version>${jaxws-rt.version}</version>
+		</dependency>
+		<dependency>
+		  	<groupId>javax.annotation</groupId>
+  			<artifactId>jsr250-api</artifactId>
+  			<version>${javax.annotation.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.script</groupId>
+			<artifactId>script-api</artifactId>
+			<version>${javax.script.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>${activation.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.net.httpserver</groupId>
+			<artifactId>http</artifactId>
+			<version>${httpserver.version}</version>
+		</dependency>		
+
+		<!-- =============================== -->
+		<!-- ========   测试相关的依赖       ========== -->
+		<!-- =============================== -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql-connector-java.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>		
 	</dependencies>
 
 	<build>
@@ -387,8 +392,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.5</source>
+					<target>1.5</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
@@ -494,7 +499,8 @@
 			</plugin>
 		</plugins>
 	</reporting>
-<!-- 
+	
+	
 	<repositories>
 		<repository>
 			<id>offical</id>
@@ -503,8 +509,14 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
-		
+		</repository>	
+	   <repository>
+      		<id>mirrors.ibiblio.org</id>
+      		<url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+   		</repository>
+
+
+		<!-- 
 		<repository>
 			<id>googlecode</id>
 			<layout>default</layout>
@@ -516,7 +528,7 @@
 			</snapshots>
 			<url>http://fireflow.googlecode.com/svn/mvnrepo</url>
 		</repository>
-
+ 		-->
 	</repositories>
-			 -->
+			
 </project>
