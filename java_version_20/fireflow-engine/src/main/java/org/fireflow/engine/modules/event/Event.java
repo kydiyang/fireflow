@@ -17,6 +17,8 @@
  */
 package org.fireflow.engine.modules.event;
 
+import org.fireflow.client.WorkflowSession;
+
 /**
  *
  * @author 非也 nychen2000@163.com
@@ -37,8 +39,14 @@ public interface Event {
 	public Object getSource();
 	
 	/**
-	 * 获得事件源对应的Workflow元素，一般是Subflow或者Activity
+	 * 获得事件源对应的Workflow元素，一般是SubProcess或者Activity
 	 * @return
 	 */
 	public Object getWorkflowElement();
+	
+	/**
+	 * 当前的WorkflowSession
+	 * @return
+	 */
+	public WorkflowSession getCurrentWorkflowSession();
 }

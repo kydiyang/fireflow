@@ -53,6 +53,7 @@ public class ProcessPersisterHibernateImpl extends
 	private static final Log log = LogFactory.getLog(ProcessPersisterHibernateImpl.class);
 	
 	//TODO 下面这个Cache是否需要，待研究……
+	// process相关的信息实际上已经缓存在KernelManager中了，所以无需保留，2013-04-24
 	Map<ProcessKey,ProcessRepository> cache = new HashMap<ProcessKey,ProcessRepository>();
 	private boolean useProcessCache = false;
 	

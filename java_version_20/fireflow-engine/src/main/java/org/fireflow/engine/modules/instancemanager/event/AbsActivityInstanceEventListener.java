@@ -37,27 +37,27 @@ public abstract class AbsActivityInstanceEventListener implements
 		else if (type.equals(ActivityInstanceEventTrigger.AFTER_ACTIVITY_INSTANCE_END)){
 			this.afterActivityInstanceEnd(e);
 		}
-		//暂时不发布这两个事件，貌似没有什么意义。2011-02-06
-//		else if (type.equals(EventType.ON_ACTIVITY_INSTANCE_SUSPENDED)){
-//			this.onActivityInstanceSuspended(e);
-//		}
-//		else if (type.equals(EventType.ON_ACTIVITY_INSTANCE_RESTORED)){
-//			this.onActivityInstanceRestored(e);
-//		}
+		
+		else if (type.equals(ActivityInstanceEventTrigger.ON_ACTIVITY_INSTANCE_SUSPENDED)){
+			this.onActivityInstanceSuspended(e);
+		}
+		else if (type.equals(ActivityInstanceEventTrigger.ON_ACTIVITY_INSTANCE_RESTORED)){
+			this.onActivityInstanceRestored(e);
+		}
 	}
-	public void onActivityInstanceCreated(ActivityInstanceEvent e){
+	protected void onActivityInstanceCreated(ActivityInstanceEvent e){
 		
 	}
 
-	public void afterActivityInstanceEnd(ActivityInstanceEvent e){
+	protected void afterActivityInstanceEnd(ActivityInstanceEvent e){
 		
 	}
 	
-	public void onActivityInstanceSuspended(ActivityInstanceEvent e){
+	protected void onActivityInstanceSuspended(ActivityInstanceEvent e){
 		
 	}
 	
-	public void onActivityInstanceRestored(ActivityInstanceEvent e){
+	protected void onActivityInstanceRestored(ActivityInstanceEvent e){
 		
 	}
 }

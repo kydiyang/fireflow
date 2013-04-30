@@ -56,13 +56,11 @@ public interface ProcessUtil extends RuntimeContextAware,EngineModule {
 	
 	/**
 	 * 获得ServiceBinding对象
-	 * @param processKey processId,processType,version组成的processKey对象
-	 * @param subflowId 对于没有subflowId的模型，该值等于processId
-	 * @param activityId 需要获取servicebinding的activity的Id
+	 * @param activity 特定流程定义语言的Activity对象
 	 * @return
 	 * @throws InvalidModelException
 	 */
-    public ServiceBinding getServiceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException;
+    public ServiceBinding getServiceBinding(Object activity)throws InvalidModelException;
     
     /**
      * 根据serviceBinding.getServiceId()和activity，找到ServiceDef对象
@@ -82,13 +80,19 @@ public interface ProcessUtil extends RuntimeContextAware,EngineModule {
     public ResourceDef getResourceDef(ActivityInstance activityInstance,Object activity,String resourceId);
     /**
      * 获得resource binding对象
-     * @param processKey processId,processType,version组成的processKey对象
-     * @param subflowId 对于没有subflowId的模型，该值等于processId
-     * @param activityId 需要获取resourcebinding的activity的Id
+     * @param activity 特定流程定义语言的Activity对象
      * @return
      * @throws InvalidModelException
      */
-    public ResourceBinding getResourceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException;
+    public ResourceBinding getResourceBinding(Object activity)throws InvalidModelException;
+    
+    /**
+     * 提取子流程或者Activity的流程变量（Property对象）。
+     * @param workflowDefinitionElement SubProcess 或者 Activity对象，由于Engine对流程定义语言的结构一无所知，所以需要交给特定流程定义语言的ProcessUtil工具类来返回Property对象。 
+     * @param propertyName property的名字
+     * @return
+     */
+    public Property getProperty(Object workflowDefinitionElement,String propertyName);
     
     /**
      * 根据条件查找Activity
@@ -98,16 +102,8 @@ public interface ProcessUtil extends RuntimeContextAware,EngineModule {
      * @return
      * @throws InvalidModelException
      */
-    public Object getActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException;
+    public Object findActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException;
     
-    /**
-     * 提取子流程或者Activity的流程变量（Property对象）。
-     * @param processKey 
-     * @param workflowElementId 在FPDL2.0中可以是subflow或者activity的id
-     * @param propertyName property的名字
-     * @return
-     */
-    public Property getProperty(ProcessKey processKey,String workflowElementId, String propertyName)throws InvalidModelException;
-    
-//    public Schema getSchema
+
+    public Object findSubProcess(ProcessKey processKey,String subflowId )throws InvalidModelException;
 }

@@ -456,6 +456,19 @@ public interface WorkflowStatement {
 	/***************   查询相关的api ******************************/
 	/*****************************************************************/
 
+	/**
+	 * 通过ProcessKey从数据库中查询流程定义对象，
+	 */
 	public Object getWorkflowProcess(ProcessKey key) throws InvalidModelException;
 
+	/**
+	 * 通过ActivityInstance或者ProcessInstance查询对应的流程定义对象；
+	 * 例如输入ActivityInstance返回与之对应的Activity；
+	 * 输入ProcessInstance返回与之对应的SubProcess；
+	 * 其他Scope类型参数均为非法，返回null
+	 * @param scope ActivityInstance或者ProcessInstance
+	 * @return 与scope对应的流程定义对象。
+	 * @throws InvalidModelException
+	 */
+	public Object getWorkflowDefinitionElement(Scope scope)throws InvalidModelException;
 }

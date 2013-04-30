@@ -10,12 +10,10 @@ public class MessageImpl<T> implements Message<T> {
 	private T payload = null;
 	private Properties headers = new Properties();
 	
-	@Override
 	public Properties getHeaders() {
 		return headers;
 	}
 
-	@Override
 	public T getPayload() {
 		return payload;
 	}

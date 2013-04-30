@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.modules.instancemanager.event;
 
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
 import org.fireflow.engine.modules.event.Event;
 import org.fireflow.engine.modules.event.EventTrigger;
@@ -29,6 +30,7 @@ public class ProcessInstanceEvent implements Event{
     ProcessInstanceEventTrigger eventType = null;
     ProcessInstance source = null;
     Object workflowElement = null;
+    WorkflowSession currentSession = null;
 
     /**
      * 返回触发事件的流程实例
@@ -57,12 +59,23 @@ public class ProcessInstanceEvent implements Event{
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.Event#getWorkflowElement()
 	 */
-	@Override
 	public Object getWorkflowElement() {
 		return workflowElement;
 	}
 	
 	public void setWorkflowElement(Object wfElm){
 		this.workflowElement = wfElm;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.event.Event#getCurrentWorkflowSession()
+	 */
+	public WorkflowSession getCurrentWorkflowSession() {
+		return this.currentSession;
+	}
+	
+	public void setCurrentWorkflowSession(WorkflowSession session){
+		this.currentSession = session;
 	}
 }

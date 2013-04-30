@@ -7,7 +7,9 @@ import org.fireflow.engine.modules.event.EventTrigger;
 
 public enum WorkItemEventTrigger implements EventTrigger{
 	ON_WORKITEM_CREATED,
-//	AFTER_WORKITEM_END//暂时保留，2011-02-06
+	BEFORE_WORKITEM_CLAIMED,
+	AFTER_WORKITEM_CLAIMED,
+	AFTER_WORKITEM_END
 	;
 		
 	public String getDisplayName(Locale locale){

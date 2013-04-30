@@ -26,9 +26,9 @@ import javax.jws.WebParam;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSessionFactory;
 import org.fireflow.client.impl.WorkflowQueryImpl;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
@@ -69,6 +69,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  */
 public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContextAware,EngineModule{
+	private static final Log log = LogFactory.getLog(WorkflowServerInternalImpl.class);
+	
 	private static final String SESSION_CACHE = "SESSION_CACHE";
 	protected RuntimeContext runtimeContext = null;
 	private int sessionToIdleSeconds = 30*60;//最大空闲时间，30分钟，
@@ -86,16 +88,26 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	}
 	
 	public void init(RuntimeContext runtimeContext)throws EngineException{
-		cacheManager = CacheManager.newInstance();
-		Cache cache = new Cache(
-				  new CacheConfiguration(SESSION_CACHE, maxSessions)
-				    .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)
-				    .overflowToDisk(false)
-				    .eternal(false)
-				    .timeToLiveSeconds(0)
-				    .timeToIdleSeconds(sessionToIdleSeconds)
-				    .diskPersistent(false));
-		cacheManager.addCache(cache);
+		try {
+			cacheManager = CacheManager.create();
+
+			/*
+			 * CacheConfiguration config = new CacheConfiguration(); config
+			 * .setName(SESSION_CACHE);
+			 * config.setMaxElementsInMemory(maxSessions);
+			 * config.setMemoryStoreEvictionPolicyFromObject
+			 * (MemoryStoreEvictionPolicy.LFU); config.setOverflowToDisk(false);
+			 * config.setEternal(false); config.setTimeToLiveSeconds(0);
+			 * config.setTimeToIdleSeconds(sessionToIdleSeconds);
+			 * config.setDiskPersistent(false);
+			 */
+
+			Cache cache = new Cache(SESSION_CACHE, maxSessions, false, false,
+					0, sessionToIdleSeconds);
+			cacheManager.addCache(cache);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 
@@ -128,7 +140,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.context.RuntimeContextAware#setRuntimeContext(org.fireflow.engine.context.RuntimeContext)
 	 */
-	@Override
 	public void setRuntimeContext(RuntimeContext ctx) {
 		runtimeContext = ctx;
 		
@@ -137,7 +148,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.context.RuntimeContextAware#getRuntimeContext()
 	 */
-	@Override
 	public RuntimeContext getRuntimeContext() {
 		return runtimeContext;
 	}
@@ -145,7 +155,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.server.WorkflowServer#login(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public WorkflowSessionLocalImpl login(String userName, String password) throws EngineException{
 		//OUSystemConnector是一个与流程语言无关的Module，
 		OUSystemConnector connector = runtimeContext.getDefaultEngineModule(OUSystemConnector.class);
@@ -159,9 +168,14 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		}
 		
 		WorkflowSessionLocalImpl session = (WorkflowSessionLocalImpl)WorkflowSessionFactory.createWorkflowSession(runtimeContext, u);
-		
-		Cache cache = cacheManager.getCache(SESSION_CACHE);
-		cache.put(new Element(session.getSessionId(),session));
+		if (cacheManager!=null){
+			Cache cache = cacheManager.getCache(SESSION_CACHE);
+			if (cache!=null){
+				cache.put(new Element(session.getSessionId(),session));
+			}
+			
+		}
+
 		
 		return session;
 	}
@@ -170,7 +184,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	 * @see org.fireflow.engine.server.WorkflowServer#uploadProcessXml(java.lang.String, org.fireflow.engine.entity.repository.ProcessDescriptor)
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public ProcessDescriptorImpl uploadProcessXml(String sessionId,
 			final String processXml,final boolean publishState,
 			final String bizType,final String ownerDeptId)throws EngineException{
@@ -178,7 +191,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessDescriptorImpl descriptor = (ProcessDescriptorImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					return statement.uploadProcessXml(processXml, publishState, bizType, ownerDeptId);
@@ -238,21 +250,32 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	}
 	
 	protected WorkflowSessionLocalImpl validateSession(String sessionId){
-		Cache cache = cacheManager.getCache(SESSION_CACHE);
-		Element cacheElement = cache.get(sessionId);
-		if (cacheElement==null){
-			throw new EngineException("Workflow Session超时，sessionId是："+sessionId);
-		}
-		WorkflowSessionLocalImpl session = (WorkflowSessionLocalImpl)cacheElement.getValue();
+		if (cacheManager!=null){
+			Cache cache = cacheManager.getCache(SESSION_CACHE);
+			if (cache!=null){
+				try{
+					Element cacheElement = cache.get(sessionId);
+					if (cacheElement==null){
+						throw new EngineException("Workflow Session超时，sessionId是："+sessionId);
+					}
+					WorkflowSessionLocalImpl session = (WorkflowSessionLocalImpl)cacheElement.getValue();
 
-		return session;
+					return session;
+				}catch(Exception e){
+					log.error(e.getMessage(),e);
+				}
+
+			}
+
+		}
+
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.server.WorkflowServer#createProcessInstance(java.lang.String, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public ProcessInstanceImpl createProcessInstance1(String sessionId,
 			final String workflowProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -260,7 +283,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -278,7 +300,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public ProcessInstanceImpl createProcessInstance2(String sessionId,
 			final String workflowProcessId,final int version) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -286,7 +307,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -304,7 +324,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
 	public ProcessInstanceImpl createProcessInstance4(String sessionId,
 			final String workflowProcessId,final int version,final String subProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -312,7 +331,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -329,7 +347,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		return procInst;
 	}
 	@SuppressWarnings("unchecked")
-	@Override
 	public ProcessInstanceImpl createProcessInstance3(String sessionId,
 			final String workflowProcessId,final String subProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -337,7 +354,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -365,7 +381,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				processInstance = statement.runProcessInstance(processInstanceId, bizId, mapConvertor.getMap());
@@ -389,7 +404,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -421,7 +435,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -452,7 +465,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -484,7 +496,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		final WorkflowStatementLocalImpl statement = (WorkflowStatementLocalImpl)session.createWorkflowStatement();
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance processInstance = null;
 				try {
@@ -512,7 +523,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		ActivityInstanceImpl actInst = (ActivityInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ActivityInstance actInst = null;
 				try {
@@ -536,7 +546,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		ActivityInstanceImpl actInst = (ActivityInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ActivityInstance actInst = null;
 				try {
@@ -560,7 +569,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		ActivityInstanceImpl actInst = (ActivityInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ActivityInstance actInst = null;
 				try {
@@ -584,7 +592,7 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
+	
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance procInst = null;
 				try {
@@ -608,7 +616,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance procInst = null;
 				try {
@@ -632,7 +639,7 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		ProcessInstanceImpl procInst = (ProcessInstanceImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
+	
 			public Object doInTransaction(TransactionStatus status){
 				ProcessInstance procInst = null;
 				try {
@@ -655,7 +662,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -677,7 +683,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -701,7 +706,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -727,7 +731,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -754,7 +757,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -781,7 +783,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -808,7 +809,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -835,7 +835,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		@SuppressWarnings("rawtypes")
 		WorkItemImpl workItem = (WorkItemImpl)springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				WorkItem workItem = null;
 				try {
@@ -887,7 +886,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		
 		springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				try {
 					statement.setVariableValue(scopeBean, name, obj==null?null:obj.getOriginalValue());
@@ -908,7 +906,6 @@ public class WorkflowServerInternalImpl implements WorkflowServer,RuntimeContext
 		
 		springTransactionTemplate.execute(new TransactionCallback(){
 
-			@Override
 			public Object doInTransaction(TransactionStatus status){
 				try {
 					statement.setVariableValue(scopeBean, name, obj==null?null:obj.getOriginalValue(),

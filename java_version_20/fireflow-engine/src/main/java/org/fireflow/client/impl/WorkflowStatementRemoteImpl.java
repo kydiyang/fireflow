@@ -87,7 +87,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#getProcessType()
 	 */
-	@Override
 	public String getProcessType() {
 		return processType;
 	}
@@ -137,7 +136,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#startProcess(java.lang.String, int, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance startProcess(String workflowProcessId, int version,
 			String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
@@ -153,7 +151,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#startProcess(java.lang.String, int, java.lang.String, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance startProcess(String workflowProcessId, int version,
 			String subProcessId, String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
@@ -169,7 +166,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#startProcess(java.lang.String, java.lang.String, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance startProcess(String workflowProcessId,
 			String subProcessId, String bizId, Map<String, Object> variables)
 			throws InvalidModelException, WorkflowProcessNotFoundException,
@@ -185,7 +181,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#startProcess(java.lang.String, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance startProcess(String workflowProcessId, String bizId,
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
@@ -200,7 +195,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#startProcess(java.lang.Object, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance startProcess(Object process, String bizId,
 			Map<String, Object> variables) throws InvalidModelException,
 			WorkflowProcessNotFoundException, InvalidOperationException {
@@ -210,7 +204,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId)
 			throws InvalidModelException, WorkflowProcessNotFoundException {
 		return workflowServer.createProcessInstance1(remoteSession.getSessionId(), workflowProcessId);
@@ -219,7 +212,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.Object)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(Object process)
 			throws InvalidModelException {
 		throw new UnsupportedOperationException("远程接口不支持该方法，只能为流程库中已经存在的流程创建实例");
@@ -228,7 +220,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String, int)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			int version) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -238,7 +229,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String, int, java.lang.String)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			int version, String subProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -248,7 +238,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			String subProcessId) throws InvalidModelException,
 			WorkflowProcessNotFoundException {
@@ -259,7 +248,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#runProcessInstance(java.lang.String, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance runProcessInstance(String processInstanceId,
 			String bizId, Map<String, Object> variables) {
 		//远程接口只能传递简单类型的流程参数（包括java.util.Date)
@@ -296,7 +284,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#abortProcessInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ProcessInstance abortProcessInstance(String processInstanceId,
 			String note) throws InvalidOperationException {
 		return this.workflowServer.abortProcessInstance(this.remoteSession.getSessionId(),
@@ -306,7 +293,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#suspendProcessInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ProcessInstance suspendProcessInstance(String processInstanceId,
 			String note) throws InvalidOperationException {
 		return this.workflowServer.suspendProcessInstance(this.remoteSession.getSessionId(),
@@ -316,7 +302,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#restoreProcessInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ProcessInstance restoreProcessInstance(String processInstanceId,
 			String note) throws InvalidOperationException {
 		return this.workflowServer.restoreProcessInstance(this.remoteSession.getSessionId(),
@@ -326,7 +311,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#suspendActivityInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ActivityInstance suspendActivityInstance(String activityInstanceId,
 			String note) throws InvalidOperationException {
 		return this.workflowServer.suspendActivityInstance(this.remoteSession.getSessionId(),
@@ -336,7 +320,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#restoreActivityInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ActivityInstance restoreActivityInstance(String activityInstanceId,
 			String note) throws InvalidOperationException {
 		return this.workflowServer.restoreActivityInstance(this.remoteSession.getSessionId(),
@@ -346,7 +329,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#abortActivityInstance(java.lang.String, java.lang.String)
 	 */
-	@Override
 	public ActivityInstance abortActivityInstance(String activityInstanceId,
 			String note) throws InvalidOperationException {
 		return this.workflowServer.abortActivityInstance(this.remoteSession.getSessionId(),
@@ -356,7 +338,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#claimWorkItem(java.lang.String)
 	 */
-	@Override
 	public WorkItem claimWorkItem(String workItemId)
 			throws InvalidOperationException {
 		return this.workflowServer.claimWorkItem(this.remoteSession.getSessionId(),
@@ -366,7 +347,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#disclaimWorkItem(java.lang.String, java.util.Map)
 	 */
-	@Override
 	public WorkItem disclaimWorkItem(String workItemId,
 			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
@@ -377,7 +357,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#withdrawWorkItem(java.lang.String)
 	 */
-	@Override
 	public WorkItem withdrawWorkItem(String workItemId)
 			throws InvalidOperationException {
 		return this.workflowServer.withdrawWorkItem(this.remoteSession.getSessionId(),
@@ -387,7 +366,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItem(java.lang.String, java.util.Map)
 	 */
-	@Override
 	public WorkItem completeWorkItem(String workItemId,
 			String attachmentId, String attachmentType, String note)
 			throws InvalidOperationException {
@@ -399,7 +377,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItem(java.lang.String, java.util.Map, java.util.Map)
 	 */
-	@Override
 	public WorkItem completeWorkItem(String workItemId,
 			Map<String, AssignmentHandler> assignmentStrategy,
 			String attachmentId, String attachmentType, String note)
@@ -443,7 +420,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItemAndJumpTo(java.lang.String, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public WorkItem completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
 			String attachmentId, String attachmentType, String note)
@@ -456,7 +432,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#completeWorkItemAndJumpTo(java.lang.String, java.lang.String, java.util.Map, java.util.Map)
 	 */
-	@Override
 	public WorkItem completeWorkItemAndJumpTo(String workItemId,
 			String targetActivityId,
 			Map<String, AssignmentHandler> assignmentStrategy,
@@ -477,7 +452,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#reassignWorkItemTo(java.lang.String, org.fireflow.engine.invocation.AssignmentHandler, java.util.Map)
 	 */
-	@Override
 	public WorkItem reassignWorkItemTo(String workItemId,
 			ReassignmentHandler reassignHandler,
 			String attachmentId, String attachmentType, String note)
@@ -490,7 +464,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#uploadProcessObject(java.lang.Object, boolean, java.util.Map)
 	 */
-	@Override
 	public ProcessDescriptor uploadProcessObject(Object processObject,
 			boolean publishState,
 			String bizCategory, String ownerDeptId)
@@ -501,7 +474,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#uploadProcessStream(java.io.InputStream, boolean, java.util.Map)
 	 */
-	@Override
 	public ProcessDescriptor uploadProcessStream(InputStream stream,
 			boolean publishState,
 			String bizCategory, String ownerDeptId)
@@ -527,7 +499,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#uploadModelDefsInZipFile(java.io.File, boolean)
 	 */
-	@Override
 	public List<RepositoryDescriptor> uploadModelDefsInZipFile(File zipFile,
 			boolean publishState) throws InvalidModelException {
 		Map<String,InputStream> modelDefsMap = parseModelDefsFromZipFile(zipFile);
@@ -606,31 +577,28 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#uploadServicesStream(java.io.InputStream, java.lang.Boolean, java.util.Map)
 	 */
-	@Override
 	public List<ServiceDescriptor> uploadServicesStream(InputStream inStream,
 			Boolean publishState,
 			Map<ServiceDescriptorProperty, Object> metadata)
 			throws InvalidModelException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("远程接口暂不支持该方法");
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#uploadResourcesStream(java.io.InputStream, java.lang.Boolean, java.util.Map)
 	 */
-	@Override
 	public List<ResourceDescriptor> uploadResourcesStream(InputStream inStream,
 			Boolean publishState,
 			Map<ResourceDescriptorProperty, Object> metadata)
 			throws InvalidModelException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("远程接口暂不支持该方法");
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#getVariableValue(org.fireflow.engine.entity.runtime.Scope, java.lang.String)
 	 */
-	@Override
 	public Object getVariableValue(Scope scope, String name) {
 		if (scope==null || name==null)return null;
 		ScopeBean bean = ScopeBean.fromScopeObject(scope);
@@ -646,7 +614,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#setVariableValue(org.fireflow.engine.entity.runtime.Scope, java.lang.String, java.lang.Object)
 	 */
-	@Override
 	public void setVariableValue(Scope scope, String name, Object value)
 			throws InvalidOperationException {
 		if (!JavaDataTypeConvertor.isPrimaryObject(value)){
@@ -669,7 +636,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#setVariableValue(org.fireflow.engine.entity.runtime.Scope, java.lang.String, java.lang.Object, java.util.Map)
 	 */
-	@Override
 	public void setVariableValue(Scope scope, String name, Object value,
 			Properties headers) throws InvalidOperationException {
 		if (!JavaDataTypeConvertor.isPrimaryObject(value)){
@@ -696,7 +662,6 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#getVariableValues(org.fireflow.engine.entity.runtime.Scope)
 	 */
-	@Override
 	public Map<String, Object> getVariableValues(Scope scope) {
 		if (scope==null)return null;
 		ScopeBean bean = ScopeBean.fromScopeObject(scope);
@@ -713,11 +678,12 @@ public class WorkflowStatementRemoteImpl implements WorkflowStatement {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#getWorkflowProcess(org.fireflow.engine.entity.repository.ProcessKey)
 	 */
-	@Override
 	public Object getWorkflowProcess(ProcessKey key)
 			throws InvalidModelException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("远程接口不支持该方法");
 	}
 
+	public Object getWorkflowDefinitionElement(Scope scope)throws InvalidModelException{
+		throw new UnsupportedOperationException("远程接口不支持该方法");
+	}
 }

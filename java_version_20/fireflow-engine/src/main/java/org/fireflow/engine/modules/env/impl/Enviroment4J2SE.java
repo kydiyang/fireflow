@@ -60,7 +60,6 @@ public class Enviroment4J2SE  extends AbsEngineModule implements Environment {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.env.Environment#getWorkDir()
 	 */
-	@Override
 	public String getWorkDir() {
 
 		return workspaceDirName;
@@ -69,7 +68,6 @@ public class Enviroment4J2SE  extends AbsEngineModule implements Environment {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.env.Environment#getWebServiceContextPath()
 	 */
-	@Override
 	public String getWebserviceContextPath() {
 		return webserviceContextPath;
 	}

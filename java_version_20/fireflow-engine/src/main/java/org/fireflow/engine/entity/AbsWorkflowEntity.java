@@ -68,7 +68,6 @@ public abstract class AbsWorkflowEntity implements WorkflowEntity {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.WorkflowEntity#getId()
 	 */
-	@Override
 	public String getId() {
 		return id;
 	}
@@ -76,7 +75,6 @@ public abstract class AbsWorkflowEntity implements WorkflowEntity {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.WorkflowEntity#getLastUpdateTime()
 	 */
-	@Override
 	public Date getLastUpdateTime() {
 		return lastUpdateTime;
 	}

@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.modules.instancemanager.event;
 
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.modules.event.Event;
 import org.fireflow.engine.modules.event.EventTrigger;
@@ -50,12 +51,23 @@ public class ActivityInstanceEvent implements Event{
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.Event#getWorkflowElement()
 	 */
-	@Override
 	public Object getWorkflowElement() {
 		return workflowElement;
 	}
 	
 	public void setWorkflowElement(Object wfElm){
 		this.workflowElement = wfElm;
+	}
+	
+    WorkflowSession currentSession = null;
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.event.Event#getCurrentWorkflowSession()
+	 */
+	public WorkflowSession getCurrentWorkflowSession() {
+		return this.currentSession;
+	}
+	
+	public void setCurrentWorkflowSession(WorkflowSession session){
+		this.currentSession = session;
 	}
 }

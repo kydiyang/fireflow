@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowStatement;
 import org.fireflow.client.impl.InternalSessionAttributeKeys;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.AbsEngineModule;
@@ -119,6 +120,16 @@ public abstract class AbsActivityInstanceManager  extends AbsEngineModule implem
 		((ActivityInstanceImpl)activityInstance).setSuspended(true);
 		persister.saveOrUpdate(activityInstance);
 		
+		//发布事件
+		try{
+			WorkflowStatement stmt = localSession.createWorkflowStatement();
+			Object thisActivity = stmt.getWorkflowDefinitionElement(activityInstance);
+			this.fireActivityInstanceEvent(localSession, activityInstance, thisActivity, ActivityInstanceEventTrigger.ON_ACTIVITY_INSTANCE_SUSPENDED);
+
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
+		
 		return activityInstance;
 	}
 	
@@ -139,6 +150,18 @@ public abstract class AbsActivityInstanceManager  extends AbsEngineModule implem
 		ActivityInstancePersister persister = persistenceService.getActivityInstancePersister();
 		((ActivityInstanceImpl)activityInstance).setSuspended(false);
 		persister.saveOrUpdate(activityInstance);
+		
+		//发布事件
+		try{
+			WorkflowStatement stmt = localSession.createWorkflowStatement();
+			Object thisActivity = stmt.getWorkflowDefinitionElement(activityInstance);
+			this.fireActivityInstanceEvent(localSession, activityInstance, thisActivity, ActivityInstanceEventTrigger.ON_ACTIVITY_INSTANCE_RESTORED);
+
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
+		
+		
 		return activityInstance;
 	}
 	protected ServiceInvoker getServiceInvoker(RuntimeContext runtimeContext,ServiceDef service,String processType){
@@ -224,19 +247,24 @@ public abstract class AbsActivityInstanceManager  extends AbsEngineModule implem
 	}
 
 	public void fireActivityInstanceEvent(WorkflowSession session,ActivityInstance actInst,Object activity,ActivityInstanceEventTrigger eventType){
-
-		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
-		RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
-		EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
-		
-		EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(ActivityInstanceEvent.class.getName());
-		if (broadcaster!=null){
-			ActivityInstanceEvent event = new ActivityInstanceEvent();
-			event.setSource(actInst);
-			event.setEventTrigger(eventType);
-			event.setWorkflowElement(activity);
+		try{
+			WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+			RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
+			EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
 			
-			broadcaster.fireEvent(sessionLocalImpl, event);
+			EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(ActivityInstanceEvent.class.getName());
+			if (broadcaster!=null){
+				ActivityInstanceEvent event = new ActivityInstanceEvent();
+				event.setSource(actInst);
+				event.setEventTrigger(eventType);
+				event.setWorkflowElement(activity);
+				event.setCurrentWorkflowSession(sessionLocalImpl);
+				
+				broadcaster.fireEvent(sessionLocalImpl, event);
+			}
+		}catch(Exception e){
+			log.error(e.getMessage(),e);
 		}
+
 	}
 }

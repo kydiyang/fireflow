@@ -13,6 +13,8 @@ import org.fireflow.engine.modules.event.EventTrigger;
 public enum ProcessInstanceEventTrigger implements EventTrigger{
 	ON_PROCESS_INSTANCE_CREATED,
 	BEFORE_PROCESS_INSTANCE_RUN,
+	ON_PROCESS_INSTANCE_SUSPENDED,
+	ON_PROCESS_INSTANCE_RESTORED,
 	AFTER_PROCESS_INSTANCE_END
 
 	;

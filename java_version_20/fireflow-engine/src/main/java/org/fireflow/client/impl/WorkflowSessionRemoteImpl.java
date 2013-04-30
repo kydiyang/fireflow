@@ -67,7 +67,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowSession#getCurrentUser()
 	 */
-	@Override
 	public User getCurrentUser() {
 		return user;
 	}
@@ -104,7 +103,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowSession#createWorkflowStatement(java.lang.String)
 	 */
-	@Override
 	public WorkflowStatement createWorkflowStatement(String processType) {
 		WorkflowStatementRemoteImpl statement = new WorkflowStatementRemoteImpl(this,processType);
 		statement.setWorkflowServer(workflowServer);
@@ -114,7 +112,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowSession#createWorkflowStatement()
 	 */
-	@Override
 	public WorkflowStatement createWorkflowStatement() {
 		WorkflowStatementRemoteImpl statement = new WorkflowStatementRemoteImpl(this,"FPDL20");//TODO 默认为FPDL20
 		statement.setWorkflowServer(workflowServer);
@@ -136,7 +133,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowSession#createWorkflowQuery(java.lang.Class)
 	 */
-	@Override
 	public <T extends WorkflowEntity> WorkflowQuery<T> createWorkflowQuery(
 			Class<T> c) {
 		WorkflowQueryImpl<T> queryRemote = new WorkflowQueryImpl<T>(c);
@@ -168,7 +164,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		/* (non-Javadoc)
 		 * @see org.fireflow.client.WorkflowQueryDelegate#executeQueryList(org.fireflow.client.WorkflowQuery)
 		 */
-		@Override
 		public <T extends WorkflowEntity> List<T> executeQueryList(
 				WorkflowQuery<T> q) {
 			WorkflowQueryImpl queryImpl = (WorkflowQueryImpl)q;
@@ -185,7 +180,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		/* (non-Javadoc)
 		 * @see org.fireflow.client.WorkflowQueryDelegate#executeQueryCount(org.fireflow.client.WorkflowQuery)
 		 */
-		@Override
 		public <T extends WorkflowEntity> int executeQueryCount(
 				WorkflowQuery<T> q) {
 			WorkflowQueryImpl queryImpl = (WorkflowQueryImpl)q;
@@ -196,7 +190,6 @@ public class WorkflowSessionRemoteImpl implements WorkflowSession {
 		 * @see org.fireflow.client.WorkflowQueryDelegate#getEntity(java.lang.String, java.lang.Class)
 		 */
 		@SuppressWarnings("unchecked")
-		@Override
 		public <T extends WorkflowEntity> T getEntity(String entityId,
 				Class<T> entityClass) {
 			AbsWorkflowEntity entity = workflowServer.getEntity(sessionId, entityId, entityClass.getName());

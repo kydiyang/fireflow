@@ -36,7 +36,6 @@ public class EventBroadcasterManagerImpl  extends AbsEngineModule implements Eve
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.EventBroadcasterManager#getEventBroadcasters()
 	 */
-	@Override
 	public Map<String, EventBroadcaster> getEventBroadcasters() {
 		return eventBroadcasterRegistry;
 	}
@@ -44,7 +43,6 @@ public class EventBroadcasterManagerImpl  extends AbsEngineModule implements Eve
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.EventBroadcasterManager#getEventBroadcaster(java.lang.String)
 	 */
-	@Override
 	public EventBroadcaster getEventBroadcaster(String eventClassName) {
 		if (eventBroadcasterRegistry==null)return null;
 		return eventBroadcasterRegistry.get(eventClassName);
@@ -53,7 +51,6 @@ public class EventBroadcasterManagerImpl  extends AbsEngineModule implements Eve
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.EventBroadcasterManager#setEventBroadcasters(java.util.Map)
 	 */
-	@Override
 	public void setEventBroadcasters(Map<String, EventBroadcaster> broadcasters) {
 		eventBroadcasterRegistry = broadcasters;
 		

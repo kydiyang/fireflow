@@ -33,18 +33,31 @@ public abstract class AbsWorkItemEventListener implements WorkItemEventListener 
 		if (type.equals(WorkItemEventTrigger.ON_WORKITEM_CREATED)){
 			this.onWorkItemCreated(e);
 		}
-		//暂时不发布这个事件，貌似没有意义，2011-02-06
-//		else if (type.equals(EventType.AFTER_WORKITEM_END)){
-//			this.afterWorkItemEnd(e);
-//		}
 
+		else if (type.equals(WorkItemEventTrigger.AFTER_WORKITEM_END)){
+			this.afterWorkItemEnd(e);
+		}
+		else if (type.equals(WorkItemEventTrigger.AFTER_WORKITEM_CLAIMED)){
+			this.afterWorkItemClaimed(e);
+		}
+		else if (type.equals(WorkItemEventTrigger.BEFORE_WORKITEM_CLAIMED)){
+			beforeWorkItemClaimed(e);
+		}
 	}
 
-	public void onWorkItemCreated(WorkItemEvent e){
+	protected void onWorkItemCreated(WorkItemEvent e){
 		
 	}
 	
-	public void afterWorkItemEnd(WorkItemEvent e){
+	protected void afterWorkItemEnd(WorkItemEvent e){
+		
+	}
+	
+	protected void afterWorkItemClaimed(WorkItemEvent e){
+		
+	}
+	
+	protected void beforeWorkItemClaimed(WorkItemEvent e){
 		
 	}
 }

@@ -16,6 +16,7 @@
  */
 package org.fireflow.engine.modules.workitem.event;
 
+import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.modules.event.Event;
 import org.fireflow.engine.modules.event.EventTrigger;
@@ -45,25 +46,36 @@ public class WorkItemEvent implements Event {
 	/**
 	 * @return the source
 	 */
-	public Object getSource() {
+	public WorkItem getSource() {
 		return source;
 	}
 	/**
 	 * @param source the source to set
 	 */
-	public void setSource(Object source) {
+	public void setSource(WorkItem source) {
 		this.source = (WorkItem)source;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.event.Event#getWorkflowElement()
 	 */
-	@Override
 	public Object getWorkflowElement() {
 		return this.workflowElement;
 	}
 	
 	public void setWorkflowElement(Object wfElm){
 		this.workflowElement = wfElm;
+	}
+	
+    WorkflowSession currentSession = null;
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.event.Event#getCurrentWorkflowSession()
+	 */
+	public WorkflowSession getCurrentWorkflowSession() {
+		return this.currentSession;
+	}
+	
+	public void setCurrentWorkflowSession(WorkflowSession session){
+		this.currentSession = session;
 	}
 }

@@ -60,7 +60,7 @@ public class VariablePayloadType extends ClobStringType {
 					return dom4jDoc;
 				}
 			}catch(Exception e){
-				throw new SQLException(e);
+				throw new SQLException(e.getMessage());
 			}
 
 		}
