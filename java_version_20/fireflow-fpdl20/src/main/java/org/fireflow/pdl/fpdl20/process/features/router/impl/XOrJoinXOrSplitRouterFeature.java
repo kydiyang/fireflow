@@ -36,7 +36,6 @@ public class XOrJoinXOrSplitRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
-	@Override
 	public String getJoinDescription() {
 		return XOrJoinEvaluator.JOIN_DESCRIPTION;
 	}

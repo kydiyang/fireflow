@@ -73,7 +73,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#getX()
 	 */
-	@Override
 	public int getX() {
 		return x;
 	}
@@ -81,7 +80,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#setX(int)
 	 */
-	@Override
 	public void setX(int x) {
 		this.x = x;
 		
@@ -90,7 +88,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#getY()
 	 */
-	@Override
 	public int getY() {
 		return y;
 	}
@@ -98,7 +95,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#setY()
 	 */
-	@Override
 	public void setY(int y) {
 		this.y = y;
 	}
@@ -106,7 +102,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#getRadius()
 	 */
-	@Override
 	public int getCornerRadius() {
 		return radius;
 	}
@@ -114,7 +109,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#setRadius(int)
 	 */
-	@Override
 	public void setCornerRadius(int r) {
 		radius = r;
 		
@@ -123,7 +117,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#getThick()
 	 */
-	@Override
 	public int getThick() {
 		return thick;
 	}
@@ -131,7 +124,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#setThick(int)
 	 */
-	@Override
 	public void setThick(int thick) {
 		this.thick = thick;
 		
@@ -140,7 +132,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#getLineType()
 	 */
-	@Override
 	public String getLineType() {
 		return lineType;
 	}
@@ -148,7 +139,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#setLineType(java.lang.String)
 	 */
-	@Override
 	public void setLineType(String type) {
 		lineType = type;
 		
@@ -157,7 +147,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#getColor()
 	 */
-	@Override
 	public String getColor() {
 		return color;
 	}
@@ -165,7 +154,6 @@ public class BoundsImpl implements Bounds {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Bounds#setColor(java.lang.String)
 	 */
-	@Override
 	public void setColor(String color) {
 		this.color = color;
 	}

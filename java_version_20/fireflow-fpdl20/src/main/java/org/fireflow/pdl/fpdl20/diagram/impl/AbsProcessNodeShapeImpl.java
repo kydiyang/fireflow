@@ -37,7 +37,6 @@ public abstract class AbsProcessNodeShapeImpl extends AbsNodeShapeImpl implement
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape#getLeavingTransitionShapes()
 	 */
-	@Override
 	public List<TransitionShape> getLeavingTransitionShapes() {
 		return leavingTransitionShapes;
 	}
@@ -45,7 +44,6 @@ public abstract class AbsProcessNodeShapeImpl extends AbsNodeShapeImpl implement
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.ProcessNodeShape#getEnteringTransitionShapes()
 	 */
-	@Override
 	public List<TransitionShape> getEnteringTransitionShapes() {
 		return enteringTransitionShapes;
 	}

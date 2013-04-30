@@ -70,11 +70,8 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 		return workflowProcessId+"."+WorkflowProcess.MAIN_PROCESS_NAME;
 	}
 	
-    public ServiceBinding getServiceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
-    	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
-    	if (process==null) return null;
-    	SubProcess subflow = process.getLocalSubProcess(subflowId);
-    	Activity activity = subflow.getActivity(activityId);
+    public ServiceBinding getServiceBinding(Object argActivity)throws InvalidModelException{
+    	Activity activity = (Activity)argActivity;
     	if (activity==null){
     		return null;
     	}else{
@@ -82,11 +79,9 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     	}
     }
     
-    public ResourceBinding getResourceBinding(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
-    	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
-    	if (process==null) return null;
-    	SubProcess subflow = process.getLocalSubProcess(subflowId);
-    	Activity activity = subflow.getActivity(activityId);
+    public ResourceBinding getResourceBinding(Object argActivity)throws InvalidModelException{
+
+    	Activity activity = (Activity)argActivity;
     	if (activity==null){
     		return null;
     	}else{
@@ -94,12 +89,19 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
     	}
     }
     
-    public Object getActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
+    public Object findActivity(ProcessKey processKey,String subflowId, String activityId)throws InvalidModelException{
     	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
     	if (process==null) return null;
     	SubProcess subflow = process.getLocalSubProcess(subflowId);
     	Activity activity = subflow.getActivity(activityId);
     	return activity;
+    }
+    
+    public Object findSubProcess(ProcessKey processKey,String subProcessId)throws InvalidModelException{
+    	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
+    	if (process==null) return null;
+    	SubProcess subflow = process.getLocalSubProcess(subProcessId);
+    	return subflow;
     }
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.context.RuntimeContextAware#getRuntimeContext()
@@ -296,11 +298,8 @@ public class ProcessUtilFpdl20Impl  extends AbsEngineModule implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.process.ProcessUtil#getProperty(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String, java.lang.String)
 	 */
-	public Property getProperty(ProcessKey processKey, String processElementId,
-			String propertyName)throws InvalidModelException {
-    	WorkflowProcess process = (WorkflowProcess)this.getWorkflowProcess(processKey);
-    	if (process==null) return null;
-    	WorkflowElement  workflowElement = process.findWorkflowElementById(processElementId);
+	public Property getProperty(Object workflowElement,
+			String propertyName) {
     	if (workflowElement instanceof SubProcess){
     		return ((SubProcess)workflowElement).getProperty(propertyName);
     	}else if (workflowElement instanceof Activity){

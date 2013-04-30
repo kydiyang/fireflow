@@ -34,7 +34,6 @@ public class DefaultRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
-	@Override
 	public String getJoinDescription() {
 		return OrJoinEvaluator.JOIN_DESCRIPTION;
 	}
@@ -46,7 +45,6 @@ public class DefaultRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getJoinEvaluatorClass()
 	 */
-	@Override
 	public String getJoinEvaluatorClass() {
 		return joinEvaluatorName;
 	}
@@ -54,7 +52,6 @@ public class DefaultRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getSplitEvalutorClass()
 	 */
-	@Override
 	public String getSplitEvaluatorClass() {
 		return splitEvaluatorName;
 	}

@@ -184,7 +184,7 @@ public interface FPDLNames extends ModelElementNames{
     String SNAP_ENABLED = "snap-enabled";
     
     //String PLANE = "plane";
-    String LABEL = "titleLabel";
+    String LABEL = "label";
     String CONTENT = "content";
     
     String BOUNDS = "bounds";

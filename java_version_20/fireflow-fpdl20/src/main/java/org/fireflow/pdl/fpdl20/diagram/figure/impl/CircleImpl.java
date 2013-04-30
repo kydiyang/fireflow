@@ -93,7 +93,6 @@ public class CircleImpl implements Circle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Circle#getBounds()
 	 */
-	@Override
 	public Bounds getBounds() {
 		return bounds;
 	}

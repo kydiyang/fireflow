@@ -54,7 +54,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#getTextDirection()
 	 */
-	@Override
 	public String getTextDirection() {
 		return direction;
 	}
@@ -62,7 +61,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#setTextDirection(java.lang.String)
 	 */
-	@Override
 	public void setTextDirection(String d) {
 		direction = d;
 		
@@ -71,7 +69,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#getFontName()
 	 */
-	@Override
 	public String getFontName() {
 		return fontName;
 	}
@@ -79,7 +76,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#setFontName(java.lang.String)
 	 */
-	@Override
 	public void setFontName(String fontName) {
 		this.fontName = fontName;
 		
@@ -88,7 +84,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#getFontSize()
 	 */
-	@Override
 	public int getFontSize() {
 		return fontSize;
 	}
@@ -96,7 +91,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#setFontSize(int)
 	 */
-	@Override
 	public void setFontSize(int size) {
 		fontSize = size;
 		
@@ -105,7 +99,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#getFontColor()
 	 */
-	@Override
 	public String getFontColor() {
 		return fontColor;
 	}
@@ -113,7 +106,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#setFontColor(java.lang.String)
 	 */
-	@Override
 	public void setFontColor(String cl) {
 		fontColor = cl;
 		
@@ -122,7 +114,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#getWeight()
 	 */
-	@Override
 	public String getFontStyle() {
 		return weight;
 	}
@@ -130,7 +121,6 @@ public class LabelImpl implements Label {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.Label#setWeight(java.lang.String)
 	 */
-	@Override
 	public void setFontStyle(String wt) {
 		weight = wt;
 		
