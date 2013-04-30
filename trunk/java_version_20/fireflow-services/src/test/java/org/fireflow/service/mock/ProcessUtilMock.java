@@ -58,7 +58,7 @@ public class ProcessUtilMock implements ProcessUtil {
 		return null;
 	}
 
-	public Object getActivity(ProcessKey processKey, String subflow, String activityId)
+	public Object findActivity(ProcessKey processKey, String subflow, String activityId)
 			throws InvalidModelException {
 		// TODO Auto-generated method stub
 		return null;
@@ -107,8 +107,43 @@ public class ProcessUtilMock implements ProcessUtil {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.process.ProcessUtil#generateProcessDescriptor(java.lang.Object)
 	 */
-	@Override
 	public ProcessDescriptor generateProcessDescriptor(Object process) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getServiceBinding(java.lang.Object)
+	 */
+	public ServiceBinding getServiceBinding(Object activity)
+			throws InvalidModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getResourceBinding(java.lang.Object)
+	 */
+	public ResourceBinding getResourceBinding(Object activity)
+			throws InvalidModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#getProperty(java.lang.Object, java.lang.String)
+	 */
+	public Property getProperty(Object workflowDefinitionElement,
+			String propertyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.process.ProcessUtil#findSubProcess(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String)
+	 */
+	public Object findSubProcess(ProcessKey processKey, String subflowId)
+			throws InvalidModelException {
 		// TODO Auto-generated method stub
 		return null;
 	}
