@@ -34,7 +34,6 @@ public class JSR181ParameterNameDiscover implements ParameterNameDiscoverer {
 	/* (non-Javadoc)
 	 * @see org.firesoa.common.util.ParameterNameDiscoverer#getParameterNames(java.lang.reflect.Method)
 	 */
-	@Override
 	public String[] getParameterNames(Method method) {
 		Annotation[][] annotations = method.getParameterAnnotations();
 		int paramNum = annotations.length;

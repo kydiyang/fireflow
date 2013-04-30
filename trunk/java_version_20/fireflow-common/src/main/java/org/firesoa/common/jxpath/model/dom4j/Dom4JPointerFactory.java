@@ -35,7 +35,6 @@ public class Dom4JPointerFactory implements NodePointerFactory {
 	/* (non-Javadoc)
 	 * @see org.apache.commons.jxpath.ri.model.NodePointerFactory#getOrder()
 	 */
-	@Override
 	public int getOrder() {
 		// TODO Auto-generated method stub
 		return 150;
@@ -44,7 +43,6 @@ public class Dom4JPointerFactory implements NodePointerFactory {
 	/* (non-Javadoc)
 	 * @see org.apache.commons.jxpath.ri.model.NodePointerFactory#createNodePointer(org.apache.commons.jxpath.ri.QName, java.lang.Object, java.util.Locale)
 	 */
-	@Override
 	public NodePointer createNodePointer(QName name, Object bean,
 			Locale locale) {
         if (bean instanceof Node) {
@@ -56,7 +54,6 @@ public class Dom4JPointerFactory implements NodePointerFactory {
 	/* (non-Javadoc)
 	 * @see org.apache.commons.jxpath.ri.model.NodePointerFactory#createNodePointer(org.apache.commons.jxpath.ri.model.NodePointer, org.apache.commons.jxpath.ri.QName, java.lang.Object)
 	 */
-	@Override
 	public NodePointer createNodePointer(NodePointer parent, QName name,
 			Object bean) {
         if (bean instanceof Node) {

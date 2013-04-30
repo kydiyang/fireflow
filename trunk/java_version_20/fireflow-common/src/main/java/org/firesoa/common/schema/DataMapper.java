@@ -40,9 +40,9 @@ public class DataMapper {
 		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.CHAR , "string");
 		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.VARCHAR, "string");
 		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.LONGVARCHAR, "string");
-		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.NCHAR , "string");
-		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.NVARCHAR, "string");
-		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.LONGNVARCHAR, "string");
+		//SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.NCHAR , "string");
+		//SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.NVARCHAR, "string");
+		//SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.LONGNVARCHAR, "string");
 		
 		
 		SQLTYPES_2_XSD_LOCALNAME_MAP.put(java.sql.Types.NUMERIC, "decimal");
@@ -73,14 +73,15 @@ public class DataMapper {
 		
 	}
 	
+	
 	static {
 		QName qstring = new QName (URI_2001_SCHEMA_XSD, "string");
 		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.CHAR ,qstring);
 		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.VARCHAR, qstring);
 		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.LONGVARCHAR, qstring);
-		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.NCHAR , qstring);
-		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.NVARCHAR, qstring);
-		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.LONGNVARCHAR, qstring);
+		//SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.NCHAR , qstring);
+		//SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.NVARCHAR, qstring);
+		//SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.LONGNVARCHAR, qstring);
 		
 		QName qdecimal = new QName(URI_2001_SCHEMA_XSD,"decimal");
 		SQLTYPES_2_XSD_QNAME_MAP.put(java.sql.Types.NUMERIC, qdecimal);

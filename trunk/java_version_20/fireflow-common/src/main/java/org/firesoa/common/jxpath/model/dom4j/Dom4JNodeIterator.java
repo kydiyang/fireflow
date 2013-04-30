@@ -41,12 +41,12 @@ public class Dom4JNodeIterator implements NodeIterator {
         this.nodeTest = nodeTest;
         this.reverse = reverse;
     }    
-	@Override
+
 	public int getPosition() {
         return position;
 	}
 
-	@Override
+
 	public boolean setPosition(int position) {
         while (this.position < position) {
             if (!next()) {
@@ -61,7 +61,7 @@ public class Dom4JNodeIterator implements NodeIterator {
         return true;
 	}
 
-	@Override
+
 	public NodePointer getNodePointer() {
         if (child == null) {
             if (!setPosition(1)) {

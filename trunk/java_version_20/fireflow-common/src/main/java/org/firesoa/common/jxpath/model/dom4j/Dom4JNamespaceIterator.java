@@ -31,12 +31,12 @@ public class Dom4JNamespaceIterator implements NodeIterator {
             collectNamespaces((Element) node);
         }
     }
-	@Override
+
 	public int getPosition() {
         return position;
 	}
 
-	@Override
+
 	public boolean setPosition(int position) {
         if (namespaces == null) {
             return false;
@@ -45,7 +45,7 @@ public class Dom4JNamespaceIterator implements NodeIterator {
         return position >= 1 && position <= namespaces.size();
 	}
 
-	@Override
+
 	public NodePointer getNodePointer() {
         if (position == 0) {
             if (!setPosition(1)) {

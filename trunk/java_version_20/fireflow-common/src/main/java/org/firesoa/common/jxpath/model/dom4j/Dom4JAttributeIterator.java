@@ -72,12 +72,12 @@ public class Dom4JAttributeIterator implements NodeIterator {
 	}
 	
 
-	@Override
+
 	public int getPosition() {
         return position;
 	}
 
-	@Override
+
 	public boolean setPosition(int position) {
         if (attributes == null) {
             return false;
@@ -86,7 +86,7 @@ public class Dom4JAttributeIterator implements NodeIterator {
         return position >= 1 && position <= attributes.size();
 	}
 
-	@Override
+
 	public NodePointer getNodePointer() {
         if (position == 0) {
             if (!setPosition(1)) {
