@@ -52,8 +52,30 @@ import org.w3c.dom.Element;
 public class ResourceSerializer implements ModelElementNames {
 	private static final String DEFAULT_CHARSET = "UTF-8";
 	private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+	private static String CDATA_SECTION_ELEMENT_LIST = "";
+	
+    public static final String JDK_TRANSFORMER_CLASS = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    
+    protected static boolean useJDKTransformerFactory = false;//需要规避bug
+
 	static {
+		TransformerFactory transformerFactory = TransformerFactory
+		.newInstance();
+		if (JDK_TRANSFORMER_CLASS.equals(transformerFactory.getClass().getName())){
+			useJDKTransformerFactory = true;
+		}
+
 		documentBuilderFactory.setNamespaceAware(true);
+		
+    	StringBuffer buf = new StringBuffer();
+    	buf.append("{").append(ModelElementNames.SERVICE_NS_URI).append("}").append(ModelElementNames.DESCRIPTION).append(" " )
+    		.append("{").append(ModelElementNames.SERVICE_NS_URI).append("}").append(ModelElementNames.BODY).append(" ")
+
+    		.append("{").append(ModelElementNames.RESOURCE_NS_URI).append("}").append(ModelElementNames.DESCRIPTION).append(" " )
+    		.append("{").append(ModelElementNames.RESOURCE_NS_URI).append("}").append(ModelElementNames.BODY).append(" ");
+
+    	
+    	CDATA_SECTION_ELEMENT_LIST = buf.toString();
 	}
 	
 	public static void writeResources(List<ResourceDef> resources,Element parentElement)throws SerializerException{
@@ -132,7 +154,8 @@ public class ResourceSerializer implements ModelElementNames {
 			Transformer transformer = transformerFactory.newTransformer();  
 			transformer.setOutputProperty(OutputKeys.ENCODING,charset);  
 			transformer.setOutputProperty(OutputKeys.INDENT,"yes");  
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");  
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); 
+			transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, CDATA_SECTION_ELEMENT_LIST);
 
 			transformer.transform(new DOMSource(document), new StreamResult(out)); 
 			out.flush();
@@ -210,7 +233,7 @@ public class ResourceSerializer implements ModelElementNames {
 		Document doc = parent.getOwnerDocument();
 		Element descElem = Util4Serializer.addElement(parent, DESCRIPTION);
 
-		CDATASection cdata = doc.createCDATASection(desc);
+		CDATASection cdata = doc.createCDATASection(useJDKTransformerFactory?(" "+desc):desc);
 		descElem.appendChild(cdata);
 	}
 }
