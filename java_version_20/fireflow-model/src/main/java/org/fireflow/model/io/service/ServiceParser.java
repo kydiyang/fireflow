@@ -75,8 +75,25 @@ import org.xml.sax.SAXException;
 public abstract class ServiceParser implements ModelElementNames {
 	protected static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 			.newInstance();
+	private static String CDATA_SECTION_ELEMENT_LIST = "";
+    public static final String JDK_TRANSFORMER_CLASS = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    
+    protected static boolean useJDKTransformerFactory = false;//需要规避bug
+
 	static {
+		TransformerFactory transformerFactory = TransformerFactory
+		.newInstance();
+		if (JDK_TRANSFORMER_CLASS.equals(transformerFactory.getClass().getName())){
+			useJDKTransformerFactory = true;
+		}
 		documentBuilderFactory.setNamespaceAware(true);
+    	StringBuffer buf = new StringBuffer();
+    	buf.append("{").append(ModelElementNames.SERVICE_NS_URI).append("}").append(ModelElementNames.DESCRIPTION).append(" " )
+		.append("{").append(ModelElementNames.SERVICE_NS_URI).append("}").append(ModelElementNames.BODY).append(" ")
+
+		.append("{").append(ModelElementNames.RESOURCE_NS_URI).append("}").append(ModelElementNames.DESCRIPTION).append(" " )
+		.append("{").append(ModelElementNames.RESOURCE_NS_URI).append("}").append(ModelElementNames.BODY).append(" ");
+    	CDATA_SECTION_ELEMENT_LIST = buf.toString();
 	}
 	private static Map<String, ServiceParser> parserCache = new HashMap<String, ServiceParser>();
 
@@ -196,12 +213,13 @@ public abstract class ServiceParser implements ModelElementNames {
 
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
+			
 			Transformer transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.ENCODING, charset);
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(
 					"{http://xml.apache.org/xslt}indent-amount", "2");
-
+			transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, CDATA_SECTION_ELEMENT_LIST);
 			transformer.transform(new DOMSource(document),
 					new StreamResult(out));
 			out.flush();
@@ -585,7 +603,8 @@ public abstract class ServiceParser implements ModelElementNames {
         }
         expressionElem.setAttribute(LANGUAGE, exp.getLanguage());
         Document doc = parent.getOwnerDocument();
-        CDATASection cdata = doc.createCDATASection(exp.getBody()==null?"":exp.getBody());
+        String body = exp.getBody()==null?"":exp.getBody();
+        CDATASection cdata = doc.createCDATASection(useJDKTransformerFactory?(" "+body):body);
         Element bodyElem = Util4Serializer.addElement(expressionElem, BODY);
         bodyElem.appendChild(cdata);
         
@@ -615,7 +634,16 @@ public abstract class ServiceParser implements ModelElementNames {
 		if (cdataElement==null){
 			return "";
 		}else{
-			return cdataElement.getTextContent();
+			String data = cdataElement.getTextContent();
+			if (data==null)return data;
+			else{
+				if (useJDKTransformerFactory){
+					if (data.startsWith(" ")){
+						return data.substring(1);//去掉一个空格
+					}
+				}
+				return data;
+			}
 		}
 	}
 	
@@ -624,7 +652,7 @@ public abstract class ServiceParser implements ModelElementNames {
 		Document doc = parent.getOwnerDocument();
 		Element descElem = Util4Serializer.addElement(parent, DESCRIPTION);
 
-		CDATASection cdata = doc.createCDATASection(desc);
+		CDATASection cdata = doc.createCDATASection(useJDKTransformerFactory?(" "+desc):desc);
 		descElem.appendChild(cdata);
 	}
 }

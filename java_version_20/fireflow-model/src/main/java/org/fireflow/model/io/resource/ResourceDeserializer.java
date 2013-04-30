@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerFactory;
 
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.model.io.ModelElementNames;
@@ -46,7 +47,16 @@ import org.xml.sax.SAXException;
 public class ResourceDeserializer implements ModelElementNames {
 	private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 			.newInstance();
+    public static final String JDK_TRANSFORMER_CLASS = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    
+    protected static boolean useJDKTransformerFactory = false;//需要规避bug
+
 	static {
+		TransformerFactory transformerFactory = TransformerFactory
+		.newInstance();
+		if (JDK_TRANSFORMER_CLASS.equals(transformerFactory.getClass().getName())){
+			useJDKTransformerFactory = true;
+		}
 		documentBuilderFactory.setNamespaceAware(true);
 	}
 
@@ -141,7 +151,16 @@ public class ResourceDeserializer implements ModelElementNames {
 		if (cdataElement==null){
 			return "";
 		}else{
-			return cdataElement.getTextContent();
+			String data = cdataElement.getTextContent();
+			if (data==null)return data;
+			else{
+				if (useJDKTransformerFactory){
+					if (data.startsWith(" ")){
+						return data.substring(1);//去掉一个空格
+					}
+				}
+				return data;
+			}
 		}
 	}
 	
