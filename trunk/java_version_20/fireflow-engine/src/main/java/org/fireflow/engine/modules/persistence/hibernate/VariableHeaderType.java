@@ -129,65 +129,58 @@ public class VariableHeaderType implements UserType {
 		return document.toString();
 	}
 	
-	@Override
 	public Object assemble(Serializable cached, Object owner)
 			throws HibernateException {
 		return cached;
 	}
 
-	@Override
 	public Object deepCopy(Object arg0) throws HibernateException {
 		return arg0;
 	}
 
-	@Override
 	public Serializable disassemble(Object arg0) throws HibernateException {
 		return (Serializable)arg0;
 	}
 
-	@Override
 	public boolean equals(Object x, Object y) throws HibernateException {
 		return EqualsHelper.equals(x, y);
 	}
 
-	@Override
 	public int hashCode(Object arg0) throws HibernateException {
 		return arg0.hashCode();
 	}
 
-	@Override
 	public boolean isMutable() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
+
 	public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
 			throws HibernateException, SQLException {
 		String s = (String) Hibernate.STRING.nullSafeGet(rs, names[0]);
 		return this.xmlString2Map(s);
 	}
 
-	@Override
+
 	public void nullSafeSet(PreparedStatement st, Object value, int index)
 			throws HibernateException, SQLException {
 		Hibernate.STRING.nullSafeSet(st, this.map2XmlString((Properties)value), index);
 
 	}
 
-	@Override
+
 	public Object replace(Object arg0, Object arg1, Object arg2)
 			throws HibernateException {
 		// TODO Auto-generated method stub
 		return arg0;
 	}
 
-	@Override
 	public Class returnedClass() {
 		return Map.class;
 	}
 
-	@Override
+
 	public int[] sqlTypes() {
 		// TODO Auto-generated method stub
 		return TYPES;

@@ -94,6 +94,8 @@ import org.fireflow.model.binding.ServiceBinding;
 import org.fireflow.model.data.Property;
 import org.fireflow.model.io.DeserializerException;
 import org.fireflow.pvm.kernel.KernelManager;
+import org.fireflow.pvm.kernel.PObject;
+import org.fireflow.pvm.kernel.PObjectKey;
 import org.fireflow.pvm.kernel.Token;
 import org.firesoa.common.schema.NameSpaces;
 import org.firesoa.common.util.JavaDataTypeConvertor;
@@ -797,11 +799,11 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		ServiceBinding serviceBinding = null;
 		ResourceBinding resourceBinding = null;
 		try {
-			theActivity = processUtil.getActivity(pKey, activityInstance.getSubProcessId(), activityInstance.getNodeId());
+			theActivity = this.getWorkflowDefinitionElement(activityInstance);
 		
-			serviceBinding = processUtil.getServiceBinding(pKey, activityInstance.getSubProcessId(), activityInstance.getNodeId());
+			serviceBinding = processUtil.getServiceBinding(theActivity);
 			
-			resourceBinding = processUtil.getResourceBinding(pKey, activityInstance.getSubProcessId(), activityInstance.getNodeId());
+			resourceBinding = processUtil.getResourceBinding(theActivity);
 		} catch (InvalidModelException e) {
 			throw new InvalidOperationException(e);
 		}
@@ -1107,9 +1109,8 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		
 		Property property = null;
 		try{
-			property = processUtil.getProperty(
-					new ProcessKey(scope.getProcessId(), scope.getVersion(), scope
-							.getProcessType()), scope.getProcessElementId(), name);
+			Object wfDefElm = this.getWorkflowDefinitionElement(scope);
+			property = processUtil.getProperty(wfDefElm, name);
 		}catch(InvalidModelException e){
 			throw new InvalidOperationException(e);
 		}
@@ -1283,7 +1284,6 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId)
 	 throws InvalidModelException ,WorkflowProcessNotFoundException{
 		RuntimeContext runtimeContext = this.session.getRuntimeContext();
@@ -1301,7 +1301,6 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.Object)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(Object process)throws InvalidModelException {
 		ProcessDescriptor repository = this.uploadProcessObject(process, Boolean.TRUE, null, null);
 		return _createProcessInstance(process,repository,null);
@@ -1329,7 +1328,6 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#createProcessInstance(java.lang.String, int)
 	 */
-	@Override
 	public ProcessInstance createProcessInstance(String workflowProcessId,
 			int version)throws InvalidModelException,WorkflowProcessNotFoundException  {
 		RuntimeContext runtimeContext = this.session.getRuntimeContext();
@@ -1371,7 +1369,6 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.WorkflowStatement#runProcessInstance(java.lang.String, java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ProcessInstance runProcessInstance(String processInstanceId,
 			String bizId, Map<String, Object> variables) {
 		RuntimeContext runtimeContext = this.session.getRuntimeContext();
@@ -1401,5 +1398,48 @@ public class WorkflowStatementLocalImpl implements WorkflowStatement,WorkflowQue
 		}
 	}
 	
+	public Object getWorkflowDefinitionElement(Scope scope)throws InvalidModelException{
+		Object workflowElement = null;
+		//首先从KenelManager的换从中查抄，只要KernelManager已经load改流程，便可命中
+		KernelManager kernelManager = this.session.getRuntimeContext().getDefaultEngineModule(KernelManager.class);
 
+		if (scope instanceof ActivityInstance){
+			ActivityInstance actInst = (ActivityInstance)scope;
+			PObjectKey pobjectKey = new PObjectKey(
+					actInst.getProcessId(),actInst.getVersion(),actInst.getProcessType(),actInst.getNodeId());
+		
+			PObject pObject = kernelManager.getProcessObject(pobjectKey);
+			workflowElement = pObject.getWorkflowElement();
+		}
+		else if (scope instanceof ProcessInstance){
+			ProcessInstance procInst = (ProcessInstance)scope;
+			PObjectKey pobjectKey = new PObjectKey(
+					procInst.getProcessId(),procInst.getVersion(),procInst.getProcessType(),procInst.getSubProcessId());
+		
+			PObject pObject = kernelManager.getProcessObject(pobjectKey);
+			workflowElement = pObject.getWorkflowElement();
+
+		}else{
+			return null;
+		}
+		
+		if (workflowElement!=null){
+			return workflowElement;
+		}
+		
+		//如果没有找到，则从数据库查找
+		ProcessUtil processUtil = this.session.getRuntimeContext().getEngineModule(ProcessUtil.class, scope.getProcessType());
+		if (scope instanceof ActivityInstance){
+			ActivityInstance actInst = (ActivityInstance)scope;
+			ProcessKey procKey = new ProcessKey(actInst.getProcessId(),actInst.getVersion(),actInst.getProcessType());
+			
+			workflowElement = processUtil.findActivity(procKey, actInst.getSubProcessId(), actInst.getNodeId());
+		}else if (scope instanceof ProcessInstance){
+			ProcessInstance procInst = (ProcessInstance)scope;
+			ProcessKey procKey = new ProcessKey(procInst.getProcessId(),procInst.getVersion(),procInst.getProcessType());
+			
+			workflowElement = processUtil.findSubProcess(procKey, procInst.getSubProcessId());
+		}
+		return workflowElement;//
+	}
 }

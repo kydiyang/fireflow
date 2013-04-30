@@ -108,7 +108,6 @@ public class TokenPersisterHibernateImpl extends AbsPersisterHibernateImpl
 	public Token findTokenByElementInstanceId(final String elementInstanceId){
 		Object result = this.getHibernateTemplate().execute(new HibernateCallback(){
 
-			@Override
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
 				Criteria c = session.createCriteria(TokenImpl.class);

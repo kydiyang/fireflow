@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowQuery;
 import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowStatement;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.client.query.Restrictions;
 import org.fireflow.engine.context.AbsEngineModule;
@@ -147,7 +148,7 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	 * 取消一个WorkItem
 	 * @param wi
 	 */
-	protected void abortWorkItem(WorkflowSession currentSession,WorkItem wi){
+	protected void abortWorkItem(WorkflowSession currentSession,WorkItem wi,Object thisActivity){
 		if (wi.getState().getValue()>WorkItemState.DELIMITER.getValue())return;
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 		
@@ -163,6 +164,8 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		
 		persister.saveOrUpdate(wi);
 
+		//发布事件
+		this.fireWorkItemEvent(currentSession, wi, thisActivity, WorkItemEventTrigger.AFTER_WORKITEM_END);
 	}
 	
 	/**
@@ -173,9 +176,18 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		WorkflowQuery query = currentSession.createWorkflowQuery(WorkItem.class);
 		query.add(Restrictions.eq(WorkItemProperty.ACTIVITY_INSTANCE_$_ID, actInst.getId()));
 		List<WorkItem> workItemList = query.list();
+		
+		Object thisActivity = null;
+		try{
+			WorkflowStatement stmt = currentSession.createWorkflowStatement();
+			thisActivity = stmt.getWorkflowDefinitionElement(actInst);
+		}catch(Exception e){
+			log.error(e.getMessage(),e);
+		}
+		
 		if (workItemList!=null){
 			for (WorkItem wi : workItemList){
-				this.abortWorkItem(currentSession, wi);
+				this.abortWorkItem(currentSession, wi,thisActivity);
 			}
 		}
 	}
@@ -187,6 +199,17 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		RuntimeContext rtCtx = ((WorkflowSessionLocalImpl)currentSession).getRuntimeContext();
 		
 		ActivityInstance activityInstance = workItem.getActivityInstance();
+		
+		WorkflowStatement __statement = currentSession.createWorkflowStatement();
+		Object thisActivity = null;
+		try {
+			thisActivity = __statement.getWorkflowDefinitionElement(activityInstance);
+		} catch (InvalidModelException e) {
+			log.error(e.getMessage(),e);
+		}
+		//这个事件估计没有什么实际意义
+		this.fireWorkItemEvent(currentSession, workItem, thisActivity, WorkItemEventTrigger.BEFORE_WORKITEM_CLAIMED);
+		
 		PersistenceService persistenceService = rtCtx.getEngineModule(PersistenceService.class, activityInstance.getProcessType());
 		CalendarService calendarService = rtCtx.getEngineModule(CalendarService.class, activityInstance.getProcessType());
 		
@@ -212,6 +235,10 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		activityInstancePersister.saveOrUpdate(activityInstance);
 
 		
+		
+		//发布事件
+		this.fireWorkItemEvent(currentSession, workItem, thisActivity, WorkItemEventTrigger.AFTER_WORKITEM_CLAIMED);
+		
 		return workItem;
 	}
 
@@ -222,40 +249,50 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		ProcessInstance thisProcessInstance = thisActivityInstance.getProcessInstance(currentSession);
 		((WorkflowSessionLocalImpl)currentSession).setCurrentProcessInstance(thisProcessInstance);
 		
+		WorkflowStatement localStatement = currentSession.createWorkflowStatement();
+		
 		ProcessKey pKey = new ProcessKey(thisActivityInstance.getProcessId(),thisActivityInstance.getVersion(),thisActivityInstance.getProcessType());
 
 		PersistenceService persistenceService = rtCtx.getEngineModule(PersistenceService.class, thisActivityInstance.getProcessType());
 		CalendarService calendarService = rtCtx.getEngineModule(CalendarService.class, thisActivityInstance.getProcessType());
 		ProcessUtil processService = rtCtx.getEngineModule(ProcessUtil.class, thisActivityInstance.getProcessType());
 		
+		Object theActivity = null;
+		try{
+			theActivity = localStatement.getWorkflowDefinitionElement(thisActivityInstance);
+		}catch(InvalidModelException e){
+			log.error(e);
+			throw new InvalidOperationException(e);
+		}
+		
 		ServiceBinding serviceBinding = null;
 		try{
-			serviceBinding = processService.getServiceBinding(pKey, thisActivityInstance.getSubProcessId(), thisActivityInstance.getNodeId());
+			serviceBinding = processService.getServiceBinding(theActivity);
 		}catch(InvalidModelException e){
 			log.error(e);
 			throw new InvalidOperationException(e);
 		}
 		ResourceBinding resourceBinding = null;
 		try{
-			resourceBinding = processService.getResourceBinding(pKey, thisActivityInstance.getSubProcessId(), thisActivityInstance.getNodeId());
+			resourceBinding = processService.getResourceBinding(theActivity);
 		}catch(InvalidModelException e){
 			log.error(e);
 			throw new InvalidOperationException(e);
 		}
 		
-		Object theActivity = null;
-		try{
-			theActivity = processService.getActivity(pKey, thisActivityInstance.getSubProcessId(), thisActivityInstance.getNodeId());
-		}catch(InvalidModelException e){
-			log.error(e);
-			throw new InvalidOperationException(e);
-		}
+		
+
 		try {
-			this.invoke(currentSession, thisActivityInstance,serviceBinding,resourceBinding, theActivity);
 			((AbsWorkItem)workItemToBeDisclaimed).setState(WorkItemState.DISCLAIMED);
 			((AbsWorkItem)workItemToBeDisclaimed).setEndTime(calendarService.getSysDate());
 			WorkItemPersister workItemPersister = persistenceService.getWorkItemPersister();
 			workItemPersister.saveOrUpdate(workItemToBeDisclaimed);
+			
+			//发布事件
+			this.fireWorkItemEvent(currentSession, workItemToBeDisclaimed, theActivity, WorkItemEventTrigger.AFTER_WORKITEM_END);
+			
+			this.invoke(currentSession, thisActivityInstance,serviceBinding,resourceBinding, theActivity);
+
 			return workItemToBeDisclaimed;
 		} catch (ServiceInvocationException e) {
 			// TODO Auto-generated catch block
@@ -317,6 +354,18 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		((AbsWorkItem)workItemToBeCompleted).setEndTime(calendarService.getSysDate());
 		workItemPersister.saveOrUpdate(workItemToBeCompleted);
 		
+		//发布事件
+		try {
+			WorkflowStatement stmt = currentSession.createWorkflowStatement();
+			Object thisActivity = stmt
+					.getWorkflowDefinitionElement(thisActivityInstance);
+			this.fireWorkItemEvent(currentSession, workItemToBeCompleted,
+					thisActivity, WorkItemEventTrigger.AFTER_WORKITEM_END);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		
+		
 		if (workItemToBeCompleted.getParentWorkItemId() == null
 				|| workItemToBeCompleted.getParentWorkItemId().trim().equals("")
 				|| workItemToBeCompleted.getParentWorkItemId().trim().equals(
@@ -371,6 +420,14 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		((AbsWorkItem)workItemToBeReassign).setEndTime(calendarService.getSysDate());
 		workItemPersister.saveOrUpdate(workItemToBeReassign);
 		
+		//发布事件
+		try {
+			this.fireWorkItemEvent(currentSession, workItemToBeReassign,
+					theActivity, WorkItemEventTrigger.AFTER_WORKITEM_END);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		
 		return result;
 	}
 
@@ -418,6 +475,18 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 		((AbsWorkItem)workItemToBeCompleted).setEndTime(calendarService.getSysDate());
 		workItemPersister.saveOrUpdate(workItemToBeCompleted);
 		
+		//发布事件
+		try {
+			WorkflowStatement stmt = currentSession.createWorkflowStatement();
+			Object thisActivity = stmt
+					.getWorkflowDefinitionElement(thisActivityInstance);
+			this.fireWorkItemEvent(currentSession, workItemToBeCompleted,
+					thisActivity, WorkItemEventTrigger.AFTER_WORKITEM_END);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		
+		//后续处理
 		if (workItemToBeCompleted.getParentWorkItemId() == null
 				|| workItemToBeCompleted.getParentWorkItemId().trim().equals("")
 				|| workItemToBeCompleted.getParentWorkItemId().trim().equals(
@@ -486,6 +555,9 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 				}
 			}
 		}
+		
+		
+		
 		return workItemToBeCompleted;
 	}
 	private WorkItem cloneWorkItem(WorkItem wi,CalendarService calendarService){
@@ -557,18 +629,24 @@ public abstract class AbsWorkItemManager  extends AbsEngineModule implements Wor
 	
 	public void fireWorkItemEvent(WorkflowSession session,WorkItem workItem,Object activity,WorkItemEventTrigger eventType){
 
-		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
-		RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
-		EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
-		
-		EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(WorkItemEvent.class.getName());
-		if (broadcaster!=null){
-			WorkItemEvent event = new WorkItemEvent();
-			event.setSource(workItem);
-			event.setEventTrigger(eventType);
-			event.setWorkflowElement(activity);
+		try{
+			WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+			RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
+			EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
 			
-			broadcaster.fireEvent(sessionLocalImpl, event);
+			EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(WorkItemEvent.class.getName());
+			if (broadcaster!=null){
+				WorkItemEvent event = new WorkItemEvent();
+				event.setSource(workItem);
+				event.setEventTrigger(eventType);
+				event.setWorkflowElement(activity);
+				event.setCurrentWorkflowSession(sessionLocalImpl);
+				
+				broadcaster.fireEvent(sessionLocalImpl, event);
+			}
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
 		}
+
 	}
 }

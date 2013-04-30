@@ -37,13 +37,33 @@ public abstract class AbsProcessInstanceEventListener implements
 		else if (type.equals(ProcessInstanceEventTrigger.AFTER_PROCESS_INSTANCE_END)){
 			this.afterProcessInstanceEnd(e);
 		}
+		else if (type.equals(ProcessInstanceEventTrigger.BEFORE_PROCESS_INSTANCE_RUN)){
+			beforeProcessInstanceRun(e);
+		}
+		else if (type.equals(ProcessInstanceEventTrigger.ON_PROCESS_INSTANCE_SUSPENDED)){
+			onProcessInstanceSuspended(e);
+		}
+		else if (type.equals(ProcessInstanceEventTrigger.ON_PROCESS_INSTANCE_RESTORED)){
+			onProcessInstanceRestored(e);
+		}
 	}
 	
-	public void onProcessInstanceCreated(ProcessInstanceEvent e){
+	protected void onProcessInstanceCreated(ProcessInstanceEvent e){
 		
 	}
-	public void afterProcessInstanceEnd(ProcessInstanceEvent e){
+	protected void afterProcessInstanceEnd(ProcessInstanceEvent e){
 		
 	}
 
+	protected void beforeProcessInstanceRun(ProcessInstanceEvent e){
+		
+	}
+	
+	protected void onProcessInstanceSuspended(ProcessInstanceEvent e){
+		
+	}
+	
+	protected void onProcessInstanceRestored(ProcessInstanceEvent e){
+		
+	}
 }

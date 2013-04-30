@@ -51,7 +51,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getScopeId()
 	 */
-	@Override
 	public String getScopeId() {
 		return scopeId;
 	}
@@ -59,7 +58,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getParentScopeId()
 	 */
-	@Override
 	public String getParentScopeId() {
 		return parentScopeId;
 	}
@@ -67,7 +65,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getVariableValue(org.fireflow.client.WorkflowSession, java.lang.String)
 	 */
-	@Override
 	public Object getVariableValue(WorkflowSession session, String name) {
 		throw new UnsupportedOperationException("不支持该方法，此Bean仅用作Webservice参数传递。");
 	}
@@ -75,7 +72,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#setVariableValue(org.fireflow.client.WorkflowSession, java.lang.String, java.lang.Object)
 	 */
-	@Override
 	public void setVariableValue(WorkflowSession session, String name,
 			Object value) throws InvalidOperationException {
 		throw new UnsupportedOperationException("不支持该方法，此Bean仅用作Webservice参数传递。");
@@ -85,7 +81,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#setVariableValue(org.fireflow.client.WorkflowSession, java.lang.String, java.lang.Object, java.util.Map)
 	 */
-	@Override
 	public void setVariableValue(WorkflowSession session, String name,
 			Object value, Properties headers)
 			throws InvalidOperationException {
@@ -96,7 +91,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getVariableValues(org.fireflow.client.WorkflowSession)
 	 */
-	@Override
 	public Map<String, Object> getVariableValues(WorkflowSession session) {
 		throw new UnsupportedOperationException("不支持该方法，此Bean仅用作Webservice参数传递。");
 	}
@@ -104,7 +98,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getProcessElementId()
 	 */
-	@Override
 	public String getProcessElementId() {
 		return processElementId;
 	}
@@ -112,7 +105,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getProcessId()
 	 */
-	@Override
 	public String getProcessId() {
 		return processId;
 	}
@@ -120,7 +112,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getVersion()
 	 */
-	@Override
 	public Integer getVersion() {
 		return version;
 	}
@@ -128,7 +119,6 @@ public class ScopeBean implements Scope {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.runtime.Scope#getProcessType()
 	 */
-	@Override
 	public String getProcessType() {
 		return processType;
 	}

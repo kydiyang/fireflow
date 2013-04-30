@@ -30,8 +30,8 @@ import org.fireflow.engine.modules.event.EventTrigger;
  */
 public enum ActivityInstanceEventTrigger implements EventTrigger {
 	ON_ACTIVITY_INSTANCE_CREATED,
-//	ON_ACTIVITY_INSTANCE_SUSPENDED,//暂时保留，2011-02-06
-//	ON_ACTIVITY_INSTANCE_RESTORED,//暂时保留，2011-02-06
+	ON_ACTIVITY_INSTANCE_SUSPENDED,
+	ON_ACTIVITY_INSTANCE_RESTORED,
 	AFTER_ACTIVITY_INSTANCE_END,
 
 	;

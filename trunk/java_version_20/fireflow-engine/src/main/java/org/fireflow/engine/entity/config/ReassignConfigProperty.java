@@ -38,7 +38,6 @@ public enum ReassignConfigProperty  implements EntityProperty {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.EntityProperty#getPropertyName()
 	 */
-	@Override
 	public String getPropertyName() {
 		return propertyName;
 	}
@@ -46,7 +45,6 @@ public enum ReassignConfigProperty  implements EntityProperty {
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.entity.EntityProperty#getColumnName()
 	 */
-	@Override
 	public String getColumnName() {
 		return this.name();
 	}

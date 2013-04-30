@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fireflow.client.WorkflowSession;
+import org.fireflow.client.WorkflowStatement;
 import org.fireflow.client.impl.InternalSessionAttributeKeys;
 import org.fireflow.client.impl.WorkflowSessionLocalImpl;
 import org.fireflow.engine.context.AbsEngineModule;
@@ -57,6 +60,8 @@ import org.fireflow.pvm.kernel.Token;
  * @version 2.0
  */
 public abstract class AbsProcessInstanceManager  extends AbsEngineModule implements ProcessInstanceManager,RuntimeContextAware{
+	Log log = LogFactory.getLog(AbsProcessInstanceManager.class);
+	
 	protected RuntimeContext runtimeContext = null;
 	public ProcessInstance runProcessInstance(WorkflowSession session,String processInstanceId,String processType,
 			String bizId, Map<String, Object> variables) {
@@ -216,6 +221,16 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 		ProcessInstancePersister persister = persistenceService.getProcessInstancePersister();
 		((ProcessInstanceImpl)processInstance).setSuspended(false);
 		persister.saveOrUpdate(processInstance);
+		
+		//触发事件
+		try{
+			WorkflowStatement stmt = localSession.createWorkflowStatement();
+			Object thisSubProcess = stmt.getWorkflowDefinitionElement(processInstance);
+			this.fireProcessInstanceEvent(localSession, processInstance, thisSubProcess, ProcessInstanceEventTrigger.ON_PROCESS_INSTANCE_RESTORED);
+			
+		}catch(Exception e){
+			log.error(e.getMessage(),e);
+		}
 		return processInstance;
 	}
 
@@ -253,6 +268,17 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 		ProcessInstancePersister persister = persistenceService.getProcessInstancePersister();
 		((ProcessInstanceImpl)processInstance).setSuspended(true);
 		persister.saveOrUpdate(processInstance);
+		
+		//触发事件
+		try{
+			WorkflowStatement stmt = localSession.createWorkflowStatement();
+			Object thisSubProcess = stmt.getWorkflowDefinitionElement(processInstance);
+			this.fireProcessInstanceEvent(localSession, processInstance, thisSubProcess, ProcessInstanceEventTrigger.ON_PROCESS_INSTANCE_SUSPENDED);
+			
+		}catch(Exception e){
+			log.error(e.getMessage(),e);
+		}
+
 		return processInstance;
 
 	}
@@ -272,19 +298,24 @@ public abstract class AbsProcessInstanceManager  extends AbsEngineModule impleme
 	}
 	
 	public void fireProcessInstanceEvent(WorkflowSession session,ProcessInstance procInst,Object subflow,ProcessInstanceEventTrigger eventType){
-
-		WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
-		RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
-		EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
-		
-		EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(ProcessInstanceEvent.class.getName());
-		if (broadcaster!=null){
-			ProcessInstanceEvent event = new ProcessInstanceEvent();
-			event.setSource(procInst);
-			event.setEventTrigger(eventType);
-			event.setWorkflowElement(subflow);
+		try{
+			WorkflowSessionLocalImpl sessionLocalImpl = (WorkflowSessionLocalImpl)session;
+			RuntimeContext rtCtx = sessionLocalImpl.getRuntimeContext();
+			EventBroadcasterManager evetBroadcasterMgr = rtCtx.getDefaultEngineModule(EventBroadcasterManager.class);
 			
-			broadcaster.fireEvent(sessionLocalImpl, event);
+			EventBroadcaster broadcaster = evetBroadcasterMgr.getEventBroadcaster(ProcessInstanceEvent.class.getName());
+			if (broadcaster!=null){
+				ProcessInstanceEvent event = new ProcessInstanceEvent();
+				event.setSource(procInst);
+				event.setEventTrigger(eventType);
+				event.setWorkflowElement(subflow);
+				event.setCurrentWorkflowSession(sessionLocalImpl);
+				
+				broadcaster.fireEvent(sessionLocalImpl, event);
+			}
+		}catch(Exception e){
+			log.error(e.getMessage(),e);
 		}
+
 	}
 }
