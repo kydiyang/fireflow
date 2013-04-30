@@ -40,7 +40,6 @@ public abstract class AbsNodeShapeImpl extends AbsDiagramElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.NodeShape#getLeavingAssociationShapes()
 	 */
-	@Override
 	public List<AssociationShape> getLeavingAssociationShapes() {
 		return leavingAssociationShapes;
 	}
@@ -48,7 +47,6 @@ public abstract class AbsNodeShapeImpl extends AbsDiagramElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.NodeShape#getEnteringAssociationShapes()
 	 */
-	@Override
 	public List<AssociationShape> getEnteringAssociationShapes() {
 		return enteringAssociationShapes;
 	}
@@ -56,7 +54,6 @@ public abstract class AbsNodeShapeImpl extends AbsDiagramElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.NodeShape#getLeavingMessageFlowShapes()
 	 */
-	@Override
 	public List<MessageFlowShape> getLeavingMessageFlowShapes() {
 		return leavingMessageFlowShapes;
 	}
@@ -64,7 +61,6 @@ public abstract class AbsNodeShapeImpl extends AbsDiagramElement implements
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.NodeShape#getEnteringMessageFlowShapes()
 	 */
-	@Override
 	public List<MessageFlowShape> getEnteringMessageFlowShapes() {
 		return enteringMessageFlowShapes;
 	}

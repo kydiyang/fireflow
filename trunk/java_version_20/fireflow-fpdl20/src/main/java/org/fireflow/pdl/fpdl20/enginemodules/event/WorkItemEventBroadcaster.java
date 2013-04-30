@@ -50,7 +50,7 @@ public class WorkItemEventBroadcaster implements EventBroadcaster {
 
 		try {
 			Object _listener = null;
-			if (referencedBeanId != null) {
+			if (referencedBeanId != null && !referencedBeanId.trim().equals("")) {
 				_listener = beanFactory.getBean(referencedBeanId);
 			} else {
 				_listener = beanFactory.createBean(listenerClassName);

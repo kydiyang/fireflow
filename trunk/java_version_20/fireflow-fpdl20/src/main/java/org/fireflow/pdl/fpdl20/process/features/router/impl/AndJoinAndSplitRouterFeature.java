@@ -34,7 +34,6 @@ public class AndJoinAndSplitRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
-	@Override
 	public String getJoinDescription() {
 		return AndJoinEvaluator.JOIN_DESCRIPTION;
 	}

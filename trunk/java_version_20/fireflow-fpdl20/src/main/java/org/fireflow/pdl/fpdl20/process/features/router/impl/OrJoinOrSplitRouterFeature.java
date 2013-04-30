@@ -34,7 +34,7 @@ public class OrJoinOrSplitRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
-	@Override
+
 	public String getJoinDescription() {
 		return OrJoinEvaluator.JOIN_DESCRIPTION;
 	}

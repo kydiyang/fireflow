@@ -28,6 +28,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
@@ -142,14 +143,30 @@ import org.xml.sax.SAXException;
 public class FPDLDeserializer implements FPDLNames{
 	private static final Log log = LogFactory.getLog(FPDLDeserializer.class);
 	private static final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+    public static final String JDK_TRANSFORMER_CLASS = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    
+    private boolean useJDKTransformerFactory = false;//需要规避bug
+
+    
 	static {
 		docBuilderFactory.setNamespaceAware(true);
-    	docBuilderFactory.setCoalescing(true);
+    	docBuilderFactory.setCoalescing(false);
 	}
     private static ImportLoader defaultImportLoader = new ImportLoaderClasspathImpl();
     
     protected ImportLoader importLoader = defaultImportLoader;
     
+	/**
+	 * 
+	 */
+	public FPDLDeserializer() {
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		
+		if (JDK_TRANSFORMER_CLASS.equals(transformerFactory.getClass().getName())){
+			useJDKTransformerFactory = true;
+		}
+	}
+
 	/**
 	 * @return the importLoader
 	 */
@@ -1132,7 +1149,7 @@ public class FPDLDeserializer implements FPDLNames{
 		}
 		
 		// 所有的监听器
-		loadEventListeners(subflow.getEventListeners(), Util4Deserializer.child(
+		loadEventListeners(subflow,subflow.getEventListeners(), Util4Deserializer.child(
 				subflowElement, EVENT_LISTENERS));
 		// 加载扩展属性
 		Map<String, String> extAttrs = subflow.getExtendedAttributes();
@@ -1257,7 +1274,7 @@ public class FPDLDeserializer implements FPDLNames{
 	 * @param listeners
 	 * @param element
 	 */
-	protected void loadEventListeners(List<EventListenerDef> listeners,
+	protected void loadEventListeners(ModelElement parent,List<EventListenerDef> listeners,
 			Element element) {
 		listeners.clear();
 		if (element == null) {
@@ -1272,7 +1289,7 @@ public class FPDLDeserializer implements FPDLNames{
 		while (iter.hasNext()) {
 			Element elm = iter.next();
 			EventListenerDefImpl listener = new EventListenerDefImpl();
-			
+			listener.setParent(parent);
 			listener.setName(elm.getAttribute(NAME));
 			listener.setDisplayName(elm.getAttribute(DISPLAY_NAME));
 			//listener.setBizCategory(elm.getAttribute(BIZ_CATEGORY));
@@ -1590,10 +1607,10 @@ public class FPDLDeserializer implements FPDLNames{
 			//Load Resource Binding
 			loadResourceBinding(subflow,activity,Util4Deserializer.child(activityElement, RESOURCE_BINDING));
 	
-			loadEventListeners(activity.getEventListeners(), Util4Deserializer.child(
+			loadEventListeners(activity,activity.getEventListeners(), Util4Deserializer.child(
 					activityElement, EVENT_LISTENERS));
 			
-			loadEventListeners(activity.getWorkItemEventListeners(), Util4Deserializer.child(
+			loadEventListeners(activity,activity.getWorkItemEventListeners(), Util4Deserializer.child(
 					activityElement, WORKITEM_EVENT_LISTENERS));
 			
 			loadExtendedAttributes(activity.getExtendedAttributes(),
@@ -2011,7 +2028,21 @@ public class FPDLDeserializer implements FPDLNames{
 		if (cdataElement==null){
 			return "";
 		}else{
-			return cdataElement.getTextContent();
+			String data = cdataElement.getTextContent();
+			if (data==null)return data;
+			else{
+				if (data.trim().equals(Label.CONTENT_FROM_WORKFLOW_ELEMENT)){
+					return Label.CONTENT_FROM_WORKFLOW_ELEMENT;
+				}else if (data.trim().equals(Label.CONTENT_IGNORE)){
+					return Label.CONTENT_IGNORE;
+				}else if (useJDKTransformerFactory){
+					if (data.startsWith(" ")){
+						return data.substring(1);//去掉一个空格
+					}
+				}
+				return data;
+			}
+			
 		}
 	}
 }

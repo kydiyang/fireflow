@@ -2,7 +2,7 @@ package org.fireflow.test;
 
 public class CalculatorEx extends Calculator implements ICalculatorEx {
 
-	@Override
+
 	public int minus(int a, int b) {
 		System.out.println("====调用到此处,a="+a+";b="+b);
 		return a-b;

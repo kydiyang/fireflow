@@ -45,7 +45,6 @@ public abstract class AbsSplitEvaluator implements SplitEvaluator {
 	 * determineNextTransitions(org.fireflow.client.WorkflowSession,
 	 * org.fireflow.pvm.kernel.Token, org.fireflow.pdl.fpdl20.process.Node)
 	 */
-	@Override
 	public List<String> determineNextTransitions(WorkflowSession session,
 			Token token4Node, Node node) {
 		RuntimeContext ctx = ((WorkflowSessionLocalImpl) session)

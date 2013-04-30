@@ -109,13 +109,33 @@ public class FPDLSerializer implements FPDLNames {
 
     public static final String DEFAULT_FPDL_VERSION = "2.0";
     public static final String DEFAULT_VENDOR = "www.firesoa.com";
-    
+    public static String CDATA_SECTION_ELEMENT_LIST = "";
+
     private String charset = "UTF-8";
+    
+    public static final String JDK_TRANSFORMER_CLASS = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    
+    private boolean useJDKTransformerFactory = false;//需要规避bug
 
     private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
     static{
     	documentBuilderFactory.setNamespaceAware(true);
-    	documentBuilderFactory.setCoalescing(true);
+    	documentBuilderFactory.setCoalescing(false);
+    	
+    	StringBuffer buf = new StringBuffer();
+    	buf.append("{").append(FPDLNames.FPDL_NS_URI).append("}").append(FPDLNames.DESCRIPTION).append(" " )
+    		.append("{").append(FPDLNames.FPDL_NS_URI).append("}").append(FPDLNames.BODY).append(" ")
+    		.append("{").append(FPDLNames.FPDL_NS_URI).append("}").append(FPDLNames.LABEL).append(" ")
+    		
+    		.append("{").append(FPDLNames.SERVICE_NS_URI).append("}").append(FPDLNames.DESCRIPTION).append(" " )
+    		.append("{").append(FPDLNames.SERVICE_NS_URI).append("}").append(FPDLNames.BODY).append(" ")
+    		.append("{").append(FPDLNames.SERVICE_NS_URI).append("}").append(FPDLNames.LABEL).append(" ")
+    		
+    		.append("{").append(FPDLNames.RESOURCE_NS_URI).append("}").append(FPDLNames.DESCRIPTION).append(" " )
+    		.append("{").append(FPDLNames.RESOURCE_NS_URI).append("}").append(FPDLNames.BODY).append(" ")
+    		.append("{").append(FPDLNames.RESOURCE_NS_URI).append("}").append(FPDLNames.LABEL).append(" ");
+    	
+    	CDATA_SECTION_ELEMENT_LIST = buf.toString();
     }
     
     public void setCharset(String charset){
@@ -131,13 +151,21 @@ public class FPDLSerializer implements FPDLNames {
 		try {
 			Document document = serializeToDOM(workflowProcess);
 
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			
+			if (JDK_TRANSFORMER_CLASS.equals(transformerFactory.getClass().getName())){
+				useJDKTransformerFactory = true;
+			}
+			
 			Transformer transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.ENCODING, charset);
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+
+			transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, 
+					CDATA_SECTION_ELEMENT_LIST);
 			
 			transformer.setOutputProperty(
 					"{http://xml.apache.org/xslt}indent-amount", "2");
@@ -561,7 +589,7 @@ public class FPDLSerializer implements FPDLNames {
 			}
 
 			Document doc = parentElm.getOwnerDocument();
-			CDATASection cdata = doc.createCDATASection(lb.getText());
+			CDATASection cdata = doc.createCDATASection(useJDKTransformerFactory?(" "+lb.getText()):lb.getText());//规避jdk的GBK bug 
 			labelElm.appendChild(cdata);
 		}
 
@@ -706,7 +734,7 @@ public class FPDLSerializer implements FPDLNames {
         	eventListenerElm.setAttribute(DISPLAY_NAME, listener.getDisplayName());
         }
         if (listener.getDescription()!=null && !listener.getDescription().trim().equals("")){
-        	eventListenerElm.setAttribute(DESCRIPTION, listener.getDescription());
+        	writeDescription(eventListenerElm,listener.getDescription());
         }
         if (listener.getListenerBeanName()!=null && !listener.getListenerBeanName().trim().equals("")){
         	eventListenerElm.setAttribute(BEAN_NAME, listener.getListenerBeanName());
@@ -1274,7 +1302,7 @@ public class FPDLSerializer implements FPDLNames {
         
         Element bodyElem = Util4Serializer.addElement(expressionElem, BODY);
         String body = exp.getBody()!=null?exp.getBody():"";
-        CDATASection cdata = doc.createCDATASection(body);
+        CDATASection cdata = doc.createCDATASection(useJDKTransformerFactory?(" "+body):body);//规避jdk 的GBK bug
         bodyElem.appendChild(cdata);
 
         
@@ -1325,7 +1353,7 @@ public class FPDLSerializer implements FPDLNames {
 		Document doc = parent.getOwnerDocument();
 		Element descElem = Util4Serializer.addElement(parent, DESCRIPTION);
 
-		CDATASection cdata = doc.createCDATASection(desc);
+		CDATASection cdata = doc.createCDATASection(useJDKTransformerFactory?(" "+desc):desc);//规避jdk的GBK bug 
 		descElem.appendChild(cdata);
 	}
 

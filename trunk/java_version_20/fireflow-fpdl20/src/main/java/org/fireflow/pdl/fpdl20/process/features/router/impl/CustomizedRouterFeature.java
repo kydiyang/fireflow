@@ -41,7 +41,6 @@ public class CustomizedRouterFeature implements RouterFeature {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.process.features.router.RouterFeature#getDescription()
 	 */
-	@Override
 	public String getJoinDescription() {
 		if(AndJoinEvaluator.class.getName().equals(joinEvaluatorName)){
 			return AndJoinEvaluator.JOIN_DESCRIPTION;

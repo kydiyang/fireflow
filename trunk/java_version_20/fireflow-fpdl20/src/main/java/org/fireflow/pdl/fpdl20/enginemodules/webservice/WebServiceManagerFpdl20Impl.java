@@ -87,10 +87,10 @@ import org.fireflow.pdl.fpdl20.process.WorkflowProcess;
 import org.fireflow.pdl.fpdl20.process.features.Feature;
 import org.fireflow.pdl.fpdl20.process.features.startnode.WebserviceStartFeature;
 import org.fireflow.server.WorkflowServer;
-import org.fireflow.server.WorkflowServerImpl;
 import org.fireflow.service.callback.CallbackService;
 import org.fireflow.service.callback.FireWorkflowServiceProvider;
 import org.firesoa.common.schema.NameSpaces;
+import org.firesoa.common.schema.WSDLConstants;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.w3c.dom.Document;
 
@@ -98,7 +98,6 @@ import com.ibm.wsdl.extensions.schema.SchemaImpl;
 import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBodyImpl;
-import com.sun.xml.internal.ws.wsdl.parser.WSDLConstants;
 
 /**
  * 
@@ -327,7 +326,6 @@ public class WebServiceManagerFpdl20Impl  extends AbsEngineModule implements Web
 	/* (non-Javadoc)
 	 * @see org.fireflow.engine.modules.webservice.WebServiceManager#publishFireWorkflowServer()
 	 */
-	@Override
 	public void publishFireWorkflowServer() throws WebservicePublishException {
 		Boolean b = (Boolean)servicePublishRegistry.get(WorkflowServer.SERVICE_QNAME);
 		if (b!=null && b)return;//已经发布

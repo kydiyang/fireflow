@@ -32,7 +32,6 @@ public class FulfilStyleImpl implements FulfilStyle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle#getColor()
 	 */
-	@Override
 	public String getColor1() {
 		return color1;
 	}
@@ -40,7 +39,6 @@ public class FulfilStyleImpl implements FulfilStyle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle#setColor(java.lang.String)
 	 */
-	@Override
 	public void setColor1(String color) {
 		this.color1 = color;
 		
@@ -49,7 +47,6 @@ public class FulfilStyleImpl implements FulfilStyle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle#getGradientStyle()
 	 */
-	@Override
 	public String getGradientStyle() {
 		return gradientStyle;
 	}
@@ -57,7 +54,6 @@ public class FulfilStyleImpl implements FulfilStyle {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.part.FulfilStyle#setGradientStyle(java.lang.String)
 	 */
-	@Override
 	public void setGradientStyle(String style) {
 		gradientStyle = style;
 		

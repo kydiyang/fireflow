@@ -93,7 +93,6 @@ public class LineImpl implements Line {
 	/* (non-Javadoc)
 	 * @see org.fireflow.pdl.fpdl20.diagram.figure.Line#getBounds()
 	 */
-	@Override
 	public Bounds getBounds() {
 		return bounds;
 	}
