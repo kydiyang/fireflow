@@ -16,7 +16,6 @@
  */
 package org.firesoa.common.util;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 

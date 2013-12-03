@@ -2,7 +2,8 @@ package org.firesoa.common.jxpath.model.dom4j;
 
 import org.apache.commons.jxpath.ri.QName;
 import org.apache.commons.jxpath.ri.model.NodePointer;
-import org.apache.commons.jxpath.ri.model.jdom.JDOMNamespacePointer;
+//import org.apache.commons.jxpath.ri.model.jdom.JDOMNamespacePointer;
+
 
 public class Dom4JNamespacePointer extends NodePointer {
     private String prefix;

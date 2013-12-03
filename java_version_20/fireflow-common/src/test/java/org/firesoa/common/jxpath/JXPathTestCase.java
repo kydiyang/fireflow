@@ -40,6 +40,7 @@ import org.apache.commons.jxpath.ri.model.NodePointer;
  */
 public abstract class JXPathTestCase extends TestCase {
 
+	
     /**
      * Construct a new instance of this test case.
      */
