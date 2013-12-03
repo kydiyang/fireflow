@@ -16,6 +16,7 @@
  */
 package org.firesoa.common.schema;
 
+
 /**
  * 
  * @author 非也 www.firesoa.com
@@ -26,8 +27,8 @@ public enum NameSpaces {
 	JAVA("java","http://jcp.org/en/jsr/detail?id=270"),
 	XSD("xsd","http://www.w3.org/2001/XMLSchema"),
 	;
-	String prefix;
-	String url ;
+	private String prefix;
+	private String url ;
 	private NameSpaces(String prefix,String url){
 		this.prefix =  prefix;
 		this.url = url;
@@ -44,6 +45,4 @@ public enum NameSpaces {
 	public void setUri(String uri) {
 		this.url = uri;
 	}
-	
-	
 }

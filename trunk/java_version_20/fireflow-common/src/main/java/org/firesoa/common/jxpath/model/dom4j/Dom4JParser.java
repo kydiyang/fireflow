@@ -10,6 +10,7 @@ import org.dom4j.io.SAXReader;
 
 public class Dom4JParser extends XMLParser2 {
 
+	
 	@Override
 	public Object parseXML(InputStream stream) {
 		SAXReader reader = new SAXReader();
