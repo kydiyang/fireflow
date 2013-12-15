@@ -5,7 +5,7 @@ import org.fireflow.model.servicedef.ServiceDef;
 import org.fireflow.model.servicedef.impl.AbstractServiceDef;
 
 public class HumanService extends AbstractServiceDef implements ServiceDef {
-	public static final String DEFAULT_INVOKER_CLASS_NAME = "org.fireflow.pdl.fpdl20.enginemodules.workitem.WorkItemManagerFpdl20Impl";
+	public static final String DEFAULT_INVOKER_CLASS_NAME = "org.fireflow.pdl.fpdl.enginemodules.workitem.WorkItemManagerFpdl20Impl";
 	public static final String DEFAULT_INVOKER_BEAN_NAME="workItemManager";
 	/**
 	 * 

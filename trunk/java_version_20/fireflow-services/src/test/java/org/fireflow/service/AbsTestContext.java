@@ -25,7 +25,7 @@ public class AbsTestContext extends AbstractJUnit4SpringContextTests {
 		ProcessInstanceImpl processInstance = new ProcessInstanceImpl();
 		processInstance.setProcessId("processId-123456");
 		processInstance.setVersion(1);
-		processInstance.setProcessType("FPDL20");
+		processInstance.setProcessType("FPDL");
 		processInstance.setSubProcessId("processId-123456.main_flow");
 		processInstance.setBizId("bizId-123456");
 		processInstance.setProcessName("TestProcess");

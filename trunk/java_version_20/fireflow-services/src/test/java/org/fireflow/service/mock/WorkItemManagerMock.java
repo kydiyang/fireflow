@@ -2,6 +2,7 @@ package org.fireflow.service.mock;
 
 import java.util.Map;
 
+import org.fireflow.client.WorkItemCenter;
 import org.fireflow.client.WorkflowSession;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
 import org.fireflow.engine.entity.runtime.ProcessInstance;
@@ -9,7 +10,6 @@ import org.fireflow.engine.entity.runtime.WorkItem;
 import org.fireflow.engine.entity.runtime.WorkItemProperty;
 import org.fireflow.engine.exception.EngineException;
 import org.fireflow.engine.modules.ousystem.User;
-import org.fireflow.engine.modules.workitem.WorkItemCenter;
 import org.fireflow.engine.modules.workitem.event.WorkItemEventTrigger;
 import org.fireflow.engine.modules.workitem.impl.AbsWorkItemManager;
 

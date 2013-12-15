@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="hibernatePersistenceService"
-		class="org.fireflow.engine.modules.persistence.PersistenceServiceImpl">
+		class="org.fireflow.engine.modules.persistence.PersistenceServiceDefaultImpl">
 		<property name="tokenPersister">
 			<bean class="org.fireflow.engine.modules.persistence.hibernate.TokenPersisterHibernateImpl">
 				<property name="sessionFactory">
