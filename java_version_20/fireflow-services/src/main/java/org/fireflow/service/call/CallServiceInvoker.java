@@ -38,9 +38,10 @@ import org.fireflow.engine.invocation.ServiceInvoker;
 import org.fireflow.engine.invocation.impl.AbsServiceInvoker;
 import org.fireflow.engine.modules.instancemanager.ProcessInstanceManager;
 import org.fireflow.engine.modules.loadstrategy.ProcessLoadStrategy;
+import org.fireflow.engine.modules.ousystem.User;
 import org.fireflow.engine.modules.persistence.PersistenceService;
 import org.fireflow.engine.modules.persistence.ProcessPersister;
-import org.fireflow.engine.modules.process.ProcessUtil;
+import org.fireflow.engine.modules.processlanguage.ProcessLanguageManager;
 import org.fireflow.engine.modules.script.ScriptContextVariableNames;
 import org.fireflow.engine.modules.script.ScriptEngineHelper;
 import org.fireflow.model.InvalidModelException;
@@ -72,7 +73,7 @@ public class CallServiceInvoker implements ServiceInvoker {
 		((WorkflowSessionLocalImpl)session).setCurrentProcessInstance(null);
 		((WorkflowSessionLocalImpl)session).setCurrentActivityInstance(null);
 		
-		ProcessUtil processUtil = context.getEngineModule(ProcessUtil.class, activityInstance.getProcessType());
+		ProcessLanguageManager processUtil = context.getEngineModule(ProcessLanguageManager.class, activityInstance.getProcessType());
 		try{
 			//1、确定子流程的ProcessId,SubflowId,版本号等信息
 			CallServiceDef subflowService = (CallServiceDef)processUtil.getServiceDef(activityInstance, theActivity, serviceBinding.getServiceId());
@@ -95,8 +96,9 @@ public class CallServiceInvoker implements ServiceInvoker {
 				//查找流程的最新版本号。
 				ProcessLoadStrategy loadStrategy = context.getEngineModule(
 						ProcessLoadStrategy.class, activityInstance.getProcessType());
-				ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(session,
-						processId, activityInstance.getProcessType());
+				User u = session.getCurrentUser();
+				ProcessKey pk = loadStrategy.findTheProcessKeyForRunning(
+						processId, activityInstance.getProcessType(),u,session);
 				
 				version = pk.getVersion();
 			}

@@ -2,13 +2,12 @@ package org.fireflow.service.mock;
 
 import java.io.InputStream;
 
-import org.fireflow.engine.context.RuntimeContext;
 import org.fireflow.engine.entity.repository.ProcessDescriptor;
 import org.fireflow.engine.entity.repository.ProcessKey;
 import org.fireflow.engine.entity.repository.ProcessRepository;
 import org.fireflow.engine.entity.runtime.ActivityInstance;
-import org.fireflow.engine.exception.EngineException;
-import org.fireflow.engine.modules.process.ProcessUtil;
+import org.fireflow.engine.exception.WebservicePublishException;
+import org.fireflow.engine.modules.processlanguage.AbsProcessLanguageManager;
 import org.fireflow.model.InvalidModelException;
 import org.fireflow.model.binding.ResourceBinding;
 import org.fireflow.model.binding.ServiceBinding;
@@ -16,18 +15,7 @@ import org.fireflow.model.data.Property;
 import org.fireflow.model.resourcedef.ResourceDef;
 import org.fireflow.model.servicedef.ServiceDef;
 
-public class ProcessUtilMock implements ProcessUtil {
-
-	public void setRuntimeContext(RuntimeContext ctx) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public RuntimeContext getRuntimeContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+public class ProcessLanguageMock extends AbsProcessLanguageManager {
 	public String serializeProcess2Xml(Object process)
 			throws InvalidModelException {
 		// TODO Auto-generated method stub
@@ -70,7 +58,7 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#getProcessEntryElementId(java.lang.String, int, java.lang.String)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#getProcessEntryElementId(java.lang.String, int, java.lang.String)
 	 */
 	public String getProcessEntryId(String workflowProcessId,
 			int version, String processType) {
@@ -78,16 +66,9 @@ public class ProcessUtilMock implements ProcessUtil {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.fireflow.engine.context.EngineModule#init(org.fireflow.engine.context.RuntimeContext)
-	 */
-	public void init(RuntimeContext runtimeContext) throws EngineException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#getServiceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#getServiceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
 	 */
 	public ServiceDef getServiceDef(ActivityInstance activityInstance,
 			Object activity, String serviceId) {
@@ -96,7 +77,7 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#getResourceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#getResourceDef(org.fireflow.engine.entity.runtime.ActivityInstance, java.lang.Object, java.lang.String)
 	 */
 	public ResourceDef getResourceDef(ActivityInstance activityInstance,
 			Object activity, String resourceId) {
@@ -105,7 +86,7 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#generateProcessDescriptor(java.lang.Object)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#generateProcessDescriptor(java.lang.Object)
 	 */
 	public ProcessDescriptor generateProcessDescriptor(Object process) {
 		// TODO Auto-generated method stub
@@ -113,7 +94,7 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#getServiceBinding(java.lang.Object)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#getServiceBinding(java.lang.Object)
 	 */
 	public ServiceBinding getServiceBinding(Object activity)
 			throws InvalidModelException {
@@ -122,7 +103,7 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#getResourceBinding(java.lang.Object)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#getResourceBinding(java.lang.Object)
 	 */
 	public ResourceBinding getResourceBinding(Object activity)
 			throws InvalidModelException {
@@ -131,7 +112,7 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#getProperty(java.lang.Object, java.lang.String)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#getProperty(java.lang.Object, java.lang.String)
 	 */
 	public Property getProperty(Object workflowDefinitionElement,
 			String propertyName) {
@@ -140,12 +121,20 @@ public class ProcessUtilMock implements ProcessUtil {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.fireflow.engine.modules.process.ProcessUtil#findSubProcess(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#findSubProcess(org.fireflow.engine.entity.repository.ProcessKey, java.lang.String)
 	 */
 	public Object findSubProcess(ProcessKey processKey, String subflowId)
 			throws InvalidModelException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.fireflow.engine.modules.processlanguage.ProcessLanguageManager#publishAllProcessServices()
+	 */
+	public void publishAllProcessServices() throws WebservicePublishException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

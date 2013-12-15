@@ -14,8 +14,8 @@
 		<property name="engineModules">
 			<map>
 				
-				<entry key="org.fireflow.engine.modules.process.ProcessUtil">
-					<bean class="org.fireflow.service.mock.ProcessUtilMock"></bean>
+				<entry key="org.fireflow.engine.modules.processlanguage.ProcessLanguageManager">
+					<bean class="org.fireflow.service.mock.ProcessLanguageMock"></bean>
 				</entry>
 				 
 				<entry key="org.fireflow.engine.modules.instancemanager.ProcessInstanceManager">
